@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.models.Community;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistance.PostDao;
@@ -19,6 +20,8 @@ public class PostServiceImpl implements PostService{
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private CommunityService communityService;
 
     @Override
     public List<Post> getAllPosts() {
@@ -29,12 +32,16 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    public void createPost(String title, String body, String username) {
+    public void createPost(String title, String body, String username, String communityName) {
         Optional<User> user = userService.findByUsername(username);
         if(!user.isPresent())
             throw new IllegalArgumentException("User not found");
         long userId = user.get().getId();
-        postDao.createPost(title,body,(int)userId,1,false, LocalDateTime.now());
+        Optional<Community> community = communityService.findByName(communityName);
+        if(!community.isPresent())
+            throw new IllegalArgumentException("Community not found");
+        long communityId = community.get().getId();
+        postDao.createPost(title,body,(int)userId,(int)communityId,false, LocalDateTime.now());
     }
 
 

@@ -12,6 +12,8 @@ public class NewPostForm {
     @Size(min = 1, max = 500)
     private String body;
 
+    private String community;
+
     public String getTitle() {
         return title;
     }
@@ -26,5 +28,14 @@ public class NewPostForm {
 
     public void setBody(String body) {
         this.body = body;
+    }
+
+
+    public String getCommunity() {
+        return community;
+    }
+
+    public void setCommunity(String community) {
+        this.community = community;
     }
 }

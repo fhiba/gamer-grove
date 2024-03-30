@@ -21,7 +21,7 @@ public class PostDaoJdbc implements PostDao{
             rs.getString("title"),
             rs.getString("body"),
             rs.getLong("author_id"),
-            rs.getLong("sub_id"),
+            rs.getLong("community_id"),
             rs.getBoolean("media"),
             rs.getLong("media_id"),
             rs.getTimestamp("post_date").toLocalDateTime(),
@@ -54,7 +54,7 @@ public class PostDaoJdbc implements PostDao{
         values.put("title",title);
         values.put("body",body);
         values.put("author_id",author_id);
-        values.put("sub_id",community_id);
+        values.put("community_id",community_id);
         values.put("media",media);
         values.put("post_date",now);
         values.put("groovines",0);

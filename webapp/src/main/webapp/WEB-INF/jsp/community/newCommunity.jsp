@@ -7,18 +7,13 @@
 </head>
 <body>
 <h1>NEW POST:</h1>
-<c:url var="postUrl" value="/post" />
-<form:form action="${postUrl}" method="post" modelAttribute="newPostForm">
+<c:url var="communityUrl" value="/new-community" />
+<form:form action="${communityUrl}" method="post" modelAttribute="newCommunityForm">
     <table>
         <tr>
-            <td>Title:</td>
-            <td><form:input path="title" /></td>
-            <td><form:errors path="title" cssStyle="color: red" cssClass="error" /></td>
-        </tr>
-        <tr>
-            <td>Body:</td>
-            <td><form:textarea path="body" /></td>
-            <td><form:errors path="body" cssStyle="color: red" cssClass="error" /></td>
+            <td>Name:</td>
+            <td><form:input path="name" /></td>
+            <td><form:errors path="name" cssStyle="color: red" cssClass="error" /></td>
         </tr>
         <tr>
             <td><input type="submit" value="Post" /></td>

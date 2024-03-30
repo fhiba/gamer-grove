@@ -1,9 +1,7 @@
 package ar.edu.itba.paw.webapp.controller;
 
-import ar.edu.itba.paw.services.PostService;
 import ar.edu.itba.paw.services.UserService;
 import ar.edu.itba.paw.webapp.form.LogInForm;
-import ar.edu.itba.paw.webapp.form.NewPostForm;
 import ar.edu.itba.paw.webapp.form.RegisterUserForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,9 +18,6 @@ public class UserController {
 
     @Autowired
     private UserService us;
-
-    @Autowired
-    private PostService ps;
 
 
     @RequestMapping(path = "/login")
@@ -46,24 +41,5 @@ public class UserController {
         return new ModelAndView("redirect:/");
     }
 
-    @RequestMapping(path="/post", method = RequestMethod.POST)
-    public ModelAndView newPost(@Valid @ModelAttribute("newPostForm") final NewPostForm newPostForm, final BindingResult errors) {
-        if(errors.hasErrors()) {
-            return getNewPost(newPostForm);
-        }
-        ps.createPost(newPostForm.getTitle(), newPostForm.getBody(), "shuiregay");
-        return new ModelAndView("redirect:/all-posts");
-    }
 
-    @RequestMapping(path="/post", method = RequestMethod.GET)
-    public ModelAndView getNewPost(@ModelAttribute("newPostForm") final NewPostForm newPostForm) {
-        return new ModelAndView("newPost");
-    }
-
-    @RequestMapping(path = "/all-posts", method = RequestMethod.GET)
-    public ModelAndView getAllPosts() {
-        ModelAndView mav = new ModelAndView("allPosts");
-        mav.addObject("posts", ps.getAllPosts());
-        return mav;
-    }
 }

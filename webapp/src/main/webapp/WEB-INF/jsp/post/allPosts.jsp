@@ -8,8 +8,15 @@
 <body>
 <c:forEach var="post" items="${posts}">
     <div >
-        <h1>${post.title}</h1>
-        <h3>${post.date}</h3>
+        <table>
+            <tr>
+                <td>${post.title}</td>
+            </tr>
+            <tr>
+                <td>${post.date}</td>
+                <td>${post.community_id}</td>
+            </tr>
+        </table>
     </div>
     <p>${post.body}</p>
     <hr>
