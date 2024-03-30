@@ -9,7 +9,7 @@ public interface CommunityDao {
 
     Optional<Community> findById(final long id);
 
-    void createCommunity(String name);
+    void createCommunity(String name, String description);
 
     List<Community> findAllCommunities();
 

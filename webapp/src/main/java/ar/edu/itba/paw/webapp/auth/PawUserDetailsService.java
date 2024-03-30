@@ -20,9 +20,7 @@ public class PawUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        System.out.println("entre:");
         final User user = us.findByUsername(s).orElseThrow(() -> new UsernameNotFoundException("User "+ s +" not found"));
-        System.out.println("User: " + user.getUsername());
         final Collection<? extends GrantedAuthority> authorities = Arrays.asList( new SimpleGrantedAuthority("ROLE_USER"));
         return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), authorities);
     }

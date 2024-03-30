@@ -15,8 +15,8 @@ public class CommunityServiceImpl implements CommunityService{
     private CommunityDao communityDao;
 
     @Override
-    public void createCommunity(String name) {
-        communityDao.createCommunity(name);
+    public void createCommunity(String name,String description) {
+        communityDao.createCommunity(name,description);
     }
 
     @Override

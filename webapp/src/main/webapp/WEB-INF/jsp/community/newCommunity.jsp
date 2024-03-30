@@ -6,7 +6,7 @@
     <title>Title</title>
 </head>
 <body>
-<h1>NEW POST:</h1>
+<h1>NEW COMMUNITY:</h1>
 <c:url var="communityUrl" value="/new-community" />
 <form:form action="${communityUrl}" method="post" modelAttribute="newCommunityForm">
     <table>
@@ -14,6 +14,11 @@
             <td>Name:</td>
             <td><form:input path="name" /></td>
             <td><form:errors path="name" cssStyle="color: red" cssClass="error" /></td>
+        </tr>
+        <tr>
+            <td>Description:</td>
+            <td><form:input path="description" /></td>
+            <td><form:errors path="description" cssStyle="color: red" cssClass="error" /></td>
         </tr>
         <tr>
             <td><input type="submit" value="Post" /></td>

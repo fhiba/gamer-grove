@@ -25,7 +25,7 @@ public class CommunityController {
     public ModelAndView createCommunity(@ModelAttribute("newCommunityForm") final NewCommunityForm newCommunityForm, BindingResult errors) {
         if(errors.hasErrors())
             return new ModelAndView("community/newCommunity");
-        cs.createCommunity(newCommunityForm.getName());
+        cs.createCommunity(newCommunityForm.getName(), newCommunityForm.getDescription());
         return new ModelAndView("redirect:/");
     }
 

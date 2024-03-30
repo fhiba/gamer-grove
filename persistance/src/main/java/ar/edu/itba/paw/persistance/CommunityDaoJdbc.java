@@ -18,7 +18,9 @@ public class CommunityDaoJdbc implements CommunityDao{
 
     private static final RowMapper<Community> ROW_MAPPER = (rs, rowNum) -> new Community(rs.getLong("id"),
             rs.getString("name"),
-            rs.getLong("portrait_id"));
+            rs.getLong("portrait_id"),
+            rs.getString("description"));
+
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
@@ -39,9 +41,10 @@ public class CommunityDaoJdbc implements CommunityDao{
     }
 
     @Override
-    public void createCommunity(String name) {
+    public void createCommunity(String name, String description) {
         Map<String, Object> args = new HashMap<>();
         args.put("name", name);
+        args.put("description", description);
         jdbcInsert.execute(args);
     }
 

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CommunityService {
-    void createCommunity(String name);
+    void createCommunity(String name,String description);
     List<Community> getAllCommunities();
 
     Optional<Community> findByName(String communityName);
