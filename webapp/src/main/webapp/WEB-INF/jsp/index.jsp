@@ -2,6 +2,8 @@
 
 <html>
 <body>
+
 <h2><c:out value="${message}" escapeXml="true"/>!</h2>
+
 </body>
 </html>
