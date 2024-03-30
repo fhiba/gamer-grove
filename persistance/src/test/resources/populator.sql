@@ -1,0 +1,1 @@
+INSERT INTO users(username, password, email, owner) VALUES ('Pedro', 'curti', 'pedro@curti.com', false);
