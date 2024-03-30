@@ -7,10 +7,12 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import org.springframework.jdbc.core.RowMapper;
 import javax.sql.DataSource;
+import java.util.List;
+import java.util.Optional;
 
 
 @Repository
-public class PostDaoJdbc {
+public class PostDaoJdbc implements PostDao{
 
     private static final RowMapper<Post> ROW_MAPPER = (rs, rowNum) -> new Post(rs.getLong("id"),
             rs.getString("title"),
@@ -32,5 +34,9 @@ public class PostDaoJdbc {
         jdbcInsert = new SimpleJdbcInsert(ds).usingGeneratedKeyColumns("id").withTableName("users");
     }
 
-
+    @Override
+    public Optional<Post> findById(final long id) {
+        final List<Post> list = jdbcTemplate.query("SELECT * FROM post WHERE id = ?",new Object[]{id},ROW_MAPPER);
+        return list.stream().findFirst();
+    }
 }

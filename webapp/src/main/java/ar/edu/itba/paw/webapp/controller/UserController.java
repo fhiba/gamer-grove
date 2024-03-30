@@ -23,15 +23,13 @@ public class UserController {
 
     @RequestMapping(path = "/login")
     public ModelAndView getLogIn(@ModelAttribute("loginForm") final LogInForm loginForm) {
-        ModelAndView mav = new ModelAndView("user/login");
-        return mav;
+        return new ModelAndView("login");
     }
 
     @RequestMapping(path = "/register", method = RequestMethod.GET)
     public ModelAndView getRegister(@ModelAttribute("registerForm") final RegisterUserForm registerUserForm) {
 
-        ModelAndView mav = new ModelAndView("user/register");
-        return mav;
+        return new ModelAndView("register");
     }
 
     @RequestMapping(path = "/register", method = RequestMethod.POST)
