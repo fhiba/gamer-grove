@@ -34,8 +34,10 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         // Call the super method to ensure default behavior
         super.addResourceHandlers(registry);
-         registry.addResourceHandler("/css/**")
+        registry.addResourceHandler("/css/**")
                 .addResourceLocations("/css/");
+        registry.addResourceHandler("/js/**")
+                .addResourceLocations("/js/");
     }
 
 
