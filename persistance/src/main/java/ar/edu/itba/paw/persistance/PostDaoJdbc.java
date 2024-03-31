@@ -25,7 +25,8 @@ public class PostDaoJdbc implements PostDao{
             rs.getBoolean("media"),
             rs.getLong("media_id"),
             rs.getTimestamp("post_date").toLocalDateTime(),
-            rs.getInt("grooviness"));
+            rs.getInt("grooviness"),
+            rs.getString("category"));
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
@@ -49,7 +50,7 @@ public class PostDaoJdbc implements PostDao{
     }
 
     @Override
-    public void createPost(String title, String body, int author_id, String community_name, boolean media, LocalDateTime now) {
+    public void createPost(final String title, final String body, final int author_id, final String community_name, final boolean media, final LocalDateTime now, final String category) {
         final Map<String,Object> values = new HashMap<>();
         values.put("title",title);
         values.put("body",body);
@@ -58,11 +59,17 @@ public class PostDaoJdbc implements PostDao{
         values.put("media",media);
         values.put("post_date",now);
         values.put("grooviness",0);
+        values.put("category", category);
         jdbcInsert.executeAndReturnKey(values);
     }
 
     @Override
     public List<Post> findPostsByCommunity(String communityName) {
         return jdbcTemplate.query("SELECT * FROM post WHERE community_name = ? ORDER BY post_date DESC",new Object[]{communityName},ROW_MAPPER);
+    }
+
+    @Override
+    public List<Post> findByCategory(String category) {
+        return jdbcTemplate.query("SELECT * FROM post WHERE category = ? ORDER BY post_date DESC",new Object[]{category},ROW_MAPPER);
     }
 }

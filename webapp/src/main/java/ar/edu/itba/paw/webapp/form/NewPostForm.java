@@ -1,5 +1,7 @@
 package ar.edu.itba.paw.webapp.form;
 
+import ar.edu.itba.paw.webapp.validators.interfaces.ValidPostCategoryConstraint;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
@@ -13,6 +15,10 @@ public class NewPostForm {
     private String body;
 
     private String community;
+
+    @NotBlank
+    @ValidPostCategoryConstraint
+    private String category;
 
     public String getTitle() {
         return title;
@@ -37,5 +43,13 @@ public class NewPostForm {
 
     public void setCommunity(String community) {
         this.community = community;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 }

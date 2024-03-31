@@ -32,7 +32,7 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    public void createPost(final String title, final String body, final String communityName) {
+    public void createPost(final String title, final String body, final String communityName, final String category) {
         Optional<User> user = userService.getLoggedUser();
         if(!user.isPresent())
             throw new IllegalArgumentException("User not found");
@@ -40,15 +40,20 @@ public class PostServiceImpl implements PostService{
         Optional<Community> community = communityService.findByName(communityName);
         if(!community.isPresent())
             throw new IllegalArgumentException("Community not found");
-        postDao.createPost(title,body,(int)userId,communityName,false, LocalDateTime.now());
+        postDao.createPost(title,body,(int)userId,communityName,false, LocalDateTime.now(), category);
     }
 
     @Override
     public List<Post> getPostsByCommunity(final String communityName) {
         List<Post> posts = postDao.findPostsByCommunity(communityName);
-        if(posts.isEmpty())
-            return Collections.emptyList();
-        return posts;
+        return posts.isEmpty()? Collections.emptyList(): posts;
+
+    }
+
+    @Override
+    public List<Post> getByCategory(String category) {
+        List<Post> posts = postDao.findByCategory(category);
+        return posts.isEmpty()? Collections.emptyList(): posts;
     }
 
 

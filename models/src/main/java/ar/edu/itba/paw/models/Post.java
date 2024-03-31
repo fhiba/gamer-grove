@@ -14,6 +14,9 @@ public class Post {
     private final LocalDateTime date;
     private final int grooviness;
 
+    private final String category;
+
+
     public long getId() {
         return id;
     }
@@ -49,8 +52,10 @@ public class Post {
     public int getGrooviness() {
         return grooviness;
     }
-
-    public Post(final long id, final String title, final String body, final long author_id, final String community_name, final boolean media, final long media_id, final LocalDateTime date, final int grooviness) {
+    public String getCategory() {
+        return category;
+    }
+    public Post(final long id, final String title, final String body, final long author_id, final String community_name, final boolean media, final long media_id, final LocalDateTime date, final int grooviness, final String category) {
         this.id = id;
         this.title = title;
         this.body = body;
@@ -60,6 +65,6 @@ public class Post {
         this.media_id = media_id;
         this.date = date;
         this.grooviness = grooviness;
+        this.category = category;
     }
-
 }
