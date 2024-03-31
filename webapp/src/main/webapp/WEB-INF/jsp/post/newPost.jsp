@@ -37,6 +37,19 @@
             </td>
         </tr>
         <tr>
+            <td>Category:</td>
+            <td>
+                <form:select itemValue="${categories}" name="category" path="category" class="mt-5 form-select form-select-lg" id="specialtiesSelect" aria-label="Floating label select example" >
+                    <c:forEach var="category" items="${categories}">
+                        <option value="<c:out value="${category}" escapeXml="true" />">
+                            <c:out value="${category}" escapeXml="true" />
+                        </option>
+                    </c:forEach>
+                    <label></label>
+                </form:select>
+            </td>
+        </tr>
+        <tr>
             <td><input type="submit" value="Post" /></td>
         </tr>
     </table>

@@ -9,7 +9,9 @@ public interface PostService {
 
     List<Post> getAllPosts();
 
-    void createPost(final String title, final String content, final String communityName);
+    void createPost(final String title, final String content, final String communityName, final String category);
 
     List<Post> getPostsByCommunity(final String communityName);
+
+    List<Post> getByCategory(final String category);
 }
