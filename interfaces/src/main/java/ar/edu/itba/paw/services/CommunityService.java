@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CommunityService {
-    void createCommunity(String name,String description);
+    void createCommunity(final String name,final String description);
     List<Community> getAllCommunities();
 
-    Optional<Community> findByName(String communityName);
+    Optional<Community> findByName(final String communityName);
 
-    Community findById(long communityId);
+    Community findById(final long communityId);
 }

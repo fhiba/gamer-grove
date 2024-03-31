@@ -32,8 +32,8 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    public void createPost(String title, String body, String username, String communityName) {
-        Optional<User> user = userService.findByUsername(username);
+    public void createPost(final String title, final String body, final String communityName) {
+        Optional<User> user = userService.getLoggedUser();
         if(!user.isPresent())
             throw new IllegalArgumentException("User not found");
         long userId = user.get().getId();
@@ -44,7 +44,7 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    public List<Post> getPostsByCommunity(String communityName) {
+    public List<Post> getPostsByCommunity(final String communityName) {
         List<Post> posts = postDao.findPostsByCommunity(communityName);
         if(posts.isEmpty())
             return Collections.emptyList();

@@ -11,4 +11,6 @@ public interface UserService {
 
     Optional<User> findByUsername(final String username);
     User create(String username, final String email, final String password);
+
+    Optional<User> getLoggedUser();
 }

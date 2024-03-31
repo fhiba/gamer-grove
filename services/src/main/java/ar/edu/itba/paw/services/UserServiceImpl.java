@@ -3,6 +3,7 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistance.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +35,13 @@ public class UserServiceImpl implements UserService {
     public User create(final String username, final String email, final String password) {
 
         return userDao.create(username, email, passwordEncoder.encode(password));
+    }
+
+    @Override
+    public Optional<User> getLoggedUser() {
+        return SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof org.springframework.security.core.userdetails.User ?
+                findByUsername(((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername())
+                : Optional.empty();
     }
 
 }

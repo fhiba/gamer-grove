@@ -15,7 +15,7 @@ public class CommunityServiceImpl implements CommunityService{
     private CommunityDao communityDao;
 
     @Override
-    public void createCommunity(String name,String description) {
+    public void createCommunity(final String name, final String description) {
         communityDao.createCommunity(name,description);
     }
 
@@ -28,12 +28,12 @@ public class CommunityServiceImpl implements CommunityService{
     }
 
     @Override
-    public Optional<Community> findByName(String communityName) {
+    public Optional<Community> findByName(final String communityName) {
         return communityDao.findByName(communityName);
     }
 
     @Override
-    public Community findById(long communityId) {
+    public Community findById(final long communityId) {
         Optional<Community> community = communityDao.findById(communityId);
         if(!community.isPresent())
             throw new IllegalArgumentException("Community not found");

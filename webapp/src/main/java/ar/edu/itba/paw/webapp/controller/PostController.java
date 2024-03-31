@@ -26,7 +26,7 @@ public class PostController {
         if(errors.hasErrors()) {
             return getNewPost(newPostForm);
         }
-        ps.createPost(newPostForm.getTitle(), newPostForm.getBody(), "pedro",newPostForm.getCommunity());
+        ps.createPost(newPostForm.getTitle(), newPostForm.getBody(), newPostForm.getCommunity());
         return new ModelAndView("redirect:/all-posts");
     }
 
