@@ -8,7 +8,7 @@ public class Post {
     private final String title;
     private final String body;
     private final long author_id;
-    private final long community_name;
+    private final String community_name;
     private final boolean media;
     private final long media_id;
     private final LocalDateTime date;
@@ -30,7 +30,7 @@ public class Post {
         return author_id;
     }
 
-    public long getCommunity_name() {
+    public String getCommunity_name() {
         return community_name;
     }
 
@@ -50,7 +50,7 @@ public class Post {
         return grooviness;
     }
 
-    public Post(final long id, final String title, final String body, final long author_id, final long community_name, final boolean media, final long media_id, final LocalDateTime date, final int grooviness) {
+    public Post(final long id, final String title, final String body, final long author_id, final String community_name, final boolean media, final long media_id, final LocalDateTime date, final int grooviness) {
         this.id = id;
         this.title = title;
         this.body = body;

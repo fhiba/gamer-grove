@@ -14,7 +14,7 @@
             </tr>
             <tr>
                 <td>${post.date}</td>
-                <td>${post.community_id}</td>
+                <td>${post.community_name}</td>
             </tr>
         </table>
     </div>

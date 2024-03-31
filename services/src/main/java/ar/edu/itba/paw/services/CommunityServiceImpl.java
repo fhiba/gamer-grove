@@ -31,4 +31,12 @@ public class CommunityServiceImpl implements CommunityService{
     public Optional<Community> findByName(String communityName) {
         return communityDao.findByName(communityName);
     }
+
+    @Override
+    public Community findById(long communityId) {
+        Optional<Community> community = communityDao.findById(communityId);
+        if(!community.isPresent())
+            throw new IllegalArgumentException("Community not found");
+        return community.get();
+    }
 }

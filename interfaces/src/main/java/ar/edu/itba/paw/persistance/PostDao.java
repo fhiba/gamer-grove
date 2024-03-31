@@ -12,5 +12,7 @@ public interface PostDao {
 
     List<Post>  findAllPosts();
 
-    void createPost(String title, String body, int author_id, int community_id, boolean media, LocalDateTime now);
+    void createPost(String title, String body, int author_id, String community_name, boolean media, LocalDateTime now);
+
+    List<Post> findPostsByCommunity(String communityId);
 }

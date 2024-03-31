@@ -40,8 +40,15 @@ public class PostServiceImpl implements PostService{
         Optional<Community> community = communityService.findByName(communityName);
         if(!community.isPresent())
             throw new IllegalArgumentException("Community not found");
-        long communityId = community.get().getId();
-        postDao.createPost(title,body,(int)userId,(int)communityId,false, LocalDateTime.now());
+        postDao.createPost(title,body,(int)userId,communityName,false, LocalDateTime.now());
+    }
+
+    @Override
+    public List<Post> getPostsByCommunity(String communityName) {
+        List<Post> posts = postDao.findPostsByCommunity(communityName);
+        if(posts.isEmpty())
+            return Collections.emptyList();
+        return posts;
     }
 
 

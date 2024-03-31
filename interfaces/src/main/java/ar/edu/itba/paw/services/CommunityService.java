@@ -10,4 +10,6 @@ public interface CommunityService {
     List<Community> getAllCommunities();
 
     Optional<Community> findByName(String communityName);
+
+    Community findById(long communityId);
 }
