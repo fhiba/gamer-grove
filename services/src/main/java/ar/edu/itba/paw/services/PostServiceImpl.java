@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.exceptions.NoSuchPostException;
 import ar.edu.itba.paw.models.Community;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
@@ -54,6 +55,14 @@ public class PostServiceImpl implements PostService{
     public List<Post> getByCategory(String category) {
         List<Post> posts = postDao.findByCategory(category);
         return posts.isEmpty()? Collections.emptyList(): posts;
+    }
+
+    @Override
+    public Post getPostById(long postId) throws NoSuchPostException{
+        Optional<Post> post = postDao.findById(postId);
+        if(!post.isPresent())
+            throw new NoSuchPostException("Post not found");
+        return post.get();
     }
 
 

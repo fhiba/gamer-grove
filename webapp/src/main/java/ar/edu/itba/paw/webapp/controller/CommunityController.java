@@ -5,6 +5,7 @@ import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.services.CommunityService;
 import ar.edu.itba.paw.services.PostService;
 import ar.edu.itba.paw.webapp.form.NewCommunityForm;
+import ar.edu.itba.paw.webapp.form.NewPostForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -54,6 +55,15 @@ public class CommunityController {
         List<Community> communities = cs.find(searchTerms);
         mav.addObject("communities",communities);
         return mav;
+    }
+
+    @RequestMapping(path="/community/{communityId}/new", method = RequestMethod.POST)
+    public ModelAndView newCommunityPost(@PathVariable("communityId") final long communityId,@ModelAttribute("newPostForm") final NewPostForm newPostForm,BindingResult errors) {
+        if(errors.hasErrors())
+            return community(communityId);
+        Community community = cs.findById(communityId);
+        ps.createPost(newPostForm.getTitle(),newPostForm.getBody(),community.getName(),newPostForm.getCategory());
+        return community(communityId);
     }
 
 }

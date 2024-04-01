@@ -3,11 +3,11 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <html>
 <head>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-    <title>Title</title>
+ <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="../../../css/bootstrap.min.css">
 </head>
 <body>
+<%@ include file="/WEB-INF/jsp/components/header.jsp" %>
 <h1>NEW POST:</h1>
 <c:url var="postUrl" value="/post" />
 <form:form action="${postUrl}" method="post" modelAttribute="newPostForm">
@@ -55,6 +55,7 @@
     </table>
     <form:errors cssStyle="color: red" cssClass="error" />
 </form:form>
+<%@ include file="/WEB-INF/jsp/components/footer.jsp" %>
 </body>
 </html>
 <script lang="javascript">

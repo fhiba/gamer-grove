@@ -8,10 +8,7 @@ import ar.edu.itba.paw.webapp.form.NewPostForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
@@ -54,4 +51,14 @@ public class PostController {
         return mav;
     }
 
+    @RequestMapping(path="/post/{postId}", method = RequestMethod.GET)
+    public ModelAndView singlePost(@PathVariable("postId") final long postId) {
+        ModelAndView mav = new ModelAndView("post/singlePost");
+        try {
+            mav.addObject("post", ps.getPostById(postId));
+        } catch (Exception e) {
+           //falta mandar a un 404
+        }
+        return mav;
+    }
 }
