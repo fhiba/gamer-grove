@@ -39,4 +39,9 @@ public class CommunityServiceImpl implements CommunityService{
             throw new IllegalArgumentException("Community not found");
         return community.get();
     }
+
+    @Override
+    public List<Community> find(final String searchTerms) {
+        return communityDao.find(searchTerms.replaceAll("([%_\\\\])", "\\\\$1"));
+    }
 }

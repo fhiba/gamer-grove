@@ -35,8 +35,9 @@
                     <a class="nav-link disabled" aria-disabled="true">Disabled</a>
                 </li>
             </ul>
-            <form class="d-flex" role="search">
-                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+            <c:url value="/communities" var="communitySearch"/>
+            <form class="d-flex" role="search" action="${communitySearch}" method="get">
+                <input class="form-control me-2" type="search" name="searchTerms" placeholder="Search" id="searchTerms" aria-label="Search">
                 <button class="btn btn-outline-success" type="submit">Search</button>
             </form>
         </div>

@@ -57,4 +57,9 @@ public class CommunityDaoJdbc implements CommunityDao{
     public Optional<Community> findByName(String communityName) {
         return jdbcTemplate.query("SELECT * FROM community WHERE name = ?", new Object[]{communityName}, ROW_MAPPER).stream().findFirst();
     }
+
+    @Override
+    public List<Community> find(String searchTerms) {
+        return jdbcTemplate.query("SELECT * FROM community WHERE name ILIKE ?", new Object[]{"%" + searchTerms + "%"}, ROW_MAPPER);
+    }
 }
