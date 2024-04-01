@@ -12,4 +12,6 @@ public interface CommunityService {
     Optional<Community> findByName(final String communityName);
 
     Community findById(final long communityId);
+
+    List<Community> find(final String searchTerms);
 }

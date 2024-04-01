@@ -14,4 +14,6 @@ public interface CommunityDao {
     List<Community> findAllCommunities();
 
     Optional<Community> findByName(String communityName);
+
+    List<Community> find(String searchTerms);
 }

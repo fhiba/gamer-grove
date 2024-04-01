@@ -48,4 +48,12 @@ public class CommunityController {
         return mav;
     }
 
+    @RequestMapping(path="/communities", method = RequestMethod.GET)
+    public ModelAndView communities(@ModelAttribute("searchTerms") final String searchTerms) {
+        ModelAndView mav = new ModelAndView("community/communities");
+        List<Community> communities = cs.find(searchTerms);
+        mav.addObject("communities",communities);
+        return mav;
+    }
+
 }
