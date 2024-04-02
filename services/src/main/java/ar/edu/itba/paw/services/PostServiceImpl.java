@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.exceptions.NoSuchPostException;
+import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.models.Community;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
@@ -63,6 +64,27 @@ public class PostServiceImpl implements PostService{
         if(!post.isPresent())
             throw new NoSuchPostException("Post not found");
         return post.get();
+    }
+
+    @Override
+    public void editGrooviness(long postId, int grooviness) throws NoSuchPostException, UserNotFoundException {
+        Optional<Post> post = postDao.findById(postId);
+        User user = userService.getLoggedUser().orElseThrow(() -> new UserNotFoundException("User not found"));
+        if(!post.isPresent())
+            throw new NoSuchPostException("Post not found");
+
+        switch (grooviness){
+            case 1:
+                postDao.editGrooviness(postId,1);
+                postDao.addToGroovy(user.getId(),postId,true);
+                break;
+            case -1:
+                postDao.editGrooviness(postId,-1);
+                postDao.addToGroovy(user.getId(),postId,false);
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid grooviness");
+        }
     }
 
 

@@ -61,4 +61,14 @@ public class PostController {
         }
         return mav;
     }
+
+    @RequestMapping(path="/post/{postId}/{grooviness}", method = RequestMethod.POST)
+    public ModelAndView moreGroovy(@PathVariable("postId") final long postId,@PathVariable("grooviness") final int grooviness) {
+        try {
+            ps.editGrooviness(postId,grooviness);
+        } catch (Exception e) {
+            //falta mandar a un 404
+        }
+        return new ModelAndView("redirect:/post/" + postId);
+    }
 }

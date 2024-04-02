@@ -30,12 +30,14 @@ public class PostDaoJdbc implements PostDao{
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
+    private final SimpleJdbcInsert jdbcInsertGroovyHistory;
 
 
     @Autowired
     public PostDaoJdbc(final DataSource ds){
         jdbcTemplate = new JdbcTemplate(ds);
         jdbcInsert = new SimpleJdbcInsert(ds).usingGeneratedKeyColumns("id").withTableName("post");
+        jdbcInsertGroovyHistory = new SimpleJdbcInsert(ds).withTableName("groovy_history");
     }
 
     @Override
@@ -72,4 +74,21 @@ public class PostDaoJdbc implements PostDao{
     public List<Post> findByCategory(String category) {
         return jdbcTemplate.query("SELECT * FROM post WHERE category = ? ORDER BY post_date DESC",new Object[]{category},ROW_MAPPER);
     }
+
+    @Override
+    public void editGrooviness(long postId, int i) {
+        jdbcTemplate.update("UPDATE post SET grooviness = grooviness + ? WHERE id = ?",i,postId);
+    }
+
+    @Override
+    public void addToGroovy(long userId, long postId, boolean grooviness) {
+        Map<String,Object> values = new HashMap<>();
+        values.put("user_id",userId);
+        values.put("post_id",postId);
+        values.put("groovy_type",grooviness);
+        jdbcInsertGroovyHistory.execute(values);
+    }
+
+
+
 }

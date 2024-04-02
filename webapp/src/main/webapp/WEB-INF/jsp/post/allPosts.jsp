@@ -57,8 +57,7 @@
                 </div>
 
             <p class="card-text post-body" id="post-body${post.id}">${post.body}</p>
-            <a href="#" class="card-link">upvote</a>
-            <a href="#" class="card-link">downvote</a>
+            <p class="card-text post-body" id="post-body${post.id}">${post.grooviness}</p>
         </div>
     </div>
     </a>

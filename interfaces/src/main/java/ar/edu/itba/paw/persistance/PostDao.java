@@ -16,4 +16,9 @@ public interface PostDao {
 
     List<Post> findPostsByCommunity(String communityId);
     List<Post> findByCategory(String category);
+
+    void editGrooviness(long postId, int i);
+
+    void addToGroovy(long userId, long postId, boolean grooviness);
+
 }
