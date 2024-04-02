@@ -9,7 +9,8 @@
 <body>
 <c:url value="/all-posts" var="postsUrl"/>
 
-    <label for="category"></label><select id="category" onclick="filterPosts()">
+    <label for="category"></label><select id="category" onchange="filterPosts()">
+        <option selected disabled hidden>Filter by category</option>
         <option value="all">All</option>
         <c:forEach var="category" items="${categories}">
             <option value="${category}">${category}</option>
@@ -38,11 +39,9 @@
 <script>
 const filterPosts = () => {
     let url = document.URL;
-    console.log(url);
     let category = document.getElementById('category').value;
     let newUrl = new URL(url);
     newUrl.searchParams.set('category', category);
-
     window.location.search = newUrl.search;
 }
 </script>
