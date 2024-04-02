@@ -50,7 +50,7 @@ public class PostDaoJdbc implements PostDao{
     }
 
     @Override
-    public void createPost(final String title, final String body, final int author_id, final String community_name, final boolean media, final LocalDateTime now, final String category) {
+    public Post createPost(final String title, final String body, final int author_id, final String community_name, final boolean media, final LocalDateTime now, final String category) {
         final Map<String,Object> values = new HashMap<>();
         values.put("title",title);
         values.put("body",body);
@@ -60,7 +60,8 @@ public class PostDaoJdbc implements PostDao{
         values.put("post_date",now);
         values.put("grooviness",0);
         values.put("category", category);
-        jdbcInsert.executeAndReturnKey(values);
+        Number id = jdbcInsert.executeAndReturnKey(values);
+        return new Post(id.longValue(), title, body, author_id, community_name, media, 0, now, 0, category);
     }
 
     @Override
