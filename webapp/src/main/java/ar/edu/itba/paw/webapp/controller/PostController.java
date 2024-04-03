@@ -28,7 +28,7 @@ public class PostController {
             return getNewPost(newPostForm);
         }
         ps.createPost(newPostForm.getTitle(), newPostForm.getBody(), newPostForm.getCommunity(), newPostForm.getCategory());
-        return new ModelAndView("redirect:/all-posts");
+        return new ModelAndView("redirect:/home");
     }
 
     @RequestMapping(path="/post", method = RequestMethod.GET)
