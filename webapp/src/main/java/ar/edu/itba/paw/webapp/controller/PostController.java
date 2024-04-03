@@ -56,7 +56,7 @@ public class PostController {
 
     @RequestMapping(path="/post/{postId}", method = RequestMethod.GET)
     public ModelAndView singlePost(@PathVariable("postId") final long postId) {
-        ModelAndView mav = new ModelAndView("post");
+        ModelAndView mav = new ModelAndView("/post/post");
         try {
             mav.addObject("post", ps.getPostById(postId));
         } catch (Exception e) {
