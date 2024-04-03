@@ -1,9 +1,13 @@
 package ar.edu.itba.paw.webapp.controller;
 
 
+import ar.edu.itba.paw.exceptions.NoSuchPostException;
+import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.PostCategories;
+import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.services.CommunityService;
 import ar.edu.itba.paw.services.PostService;
+import ar.edu.itba.paw.services.UserService;
 import ar.edu.itba.paw.webapp.form.NewPostForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -12,7 +16,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Optional;
 
 @Controller
 public class PostController {
@@ -21,6 +27,9 @@ public class PostController {
     private PostService ps;
     @Autowired
     private CommunityService cs;
+
+    @Autowired
+    private UserService us;
 
     @RequestMapping(path="/post", method = RequestMethod.POST)
     public ModelAndView newPost(@Valid @ModelAttribute("newPostForm") final NewPostForm newPostForm, final BindingResult errors) {
@@ -57,11 +66,21 @@ public class PostController {
     @RequestMapping(path="/post/{postId}", method = RequestMethod.GET)
     public ModelAndView singlePost(@PathVariable("postId") final long postId) {
         ModelAndView mav = new ModelAndView("/post/post");
+        mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+        Post post;
         try {
-            mav.addObject("post", ps.getPostById(postId));
-        } catch (Exception e) {
-           //falta mandar a un 404
+            post = ps.getPostById(postId);
+            mav.addObject("post", post);
+        } catch (NoSuchPostException e) {
+            return new ModelAndView("/error/404");
+
         }
+        Optional<User> author = us.findById(post.getAuthor_id());
+        mav.addObject("author", author.isPresent()?author.get().getUsername():"[deleted]");
+        //TODO: SHOULD BE THE ONES THAT ARE CURRENTLY BEING FOLLOWED BY USER OR A FEW RANDOMLY SELECTED
+        mav.addObject("communities", cs.getAllCommunities());
+        mav.addObject("posts", ps.getPostsByCommunity(post.getCommunity_name()));
+
         return mav;
     }
 
@@ -70,7 +89,7 @@ public class PostController {
         try {
             ps.editGrooviness(postId,grooviness);
         } catch (Exception e) {
-            //falta mandar a un 404
+            return new ModelAndView("/error/404");
         }
         return new ModelAndView("redirect:/post/" + postId);
     }

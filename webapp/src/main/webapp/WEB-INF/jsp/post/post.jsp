@@ -13,27 +13,14 @@
         <div class="col-3">
             <div class="card  border-light">
                 <div class="card-body">
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <h5 class="card-title">Community</h5>
-                            <p class="card-text">Some quick example to build on the card title and make up the
-                                bulk of the card's content.</p>
+                    <c:forEach var="community" items="${communities}">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">${community.name}</h5>
+                                <p class="card-text">${community.description}</p>
+                            </div>
                         </div>
-                    </div>
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <h5 class="card-title">Community</h5>
-                            <p class="card-text">Some quick example to build on the card title and make up the
-                                bulk of the card's content.</p>
-                        </div>
-                    </div>
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <h5 class="card-title">Community</h5>
-                            <p class="card-text">Some quick example to build on the card title and make up the
-                                bulk of the card's content.</p>
-                        </div>
-                    </div>
+                    </c:forEach>
                 </div>
             </div>
         </div>
@@ -43,19 +30,14 @@
             <div class="card border-light">
                 <div class="card-body">
                     <p class="fw-semibold card-subtitle mb-1">
-                        /community
-                        <span class="badge rounded-pill text-bg-primary pb-2">category</span>
+                        /${post.community_name}
+                        <span class="badge rounded-pill text-bg-primary pb-2">${post.category}</span>
                     </p>
-                    <h5 class="card-title mb-0">Post title</h5>
-                    <p class="card-subtitle mb-4">username</p>
+                    <h5 class="card-title mb-0">${post.title}</h5>
+                    <p class="card-subtitle mb-4">${author}</p>
 
-                    <p class="card-text">This is a wider card with supporting text below as a natural lead-in to
-                        additional content. This content is a little bit longer.This is a wider card with supporting text below as a natural lead-in to
-                        additional content. This content is a little bit longer.This is a wider card with supporting text below as a natural lead-in to
-                        additional content. This content is a little bit longer.This is a wider card with supporting text below as a natural lead-in to
-                        additional content. This content is a little bit longer.This is a wider card with supporting text below as a natural lead-in to
-                        additional content. This content is a little bit longer.</p>
-                    <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+                    <p class="card-text">${post.body}</p>
+                    <p class="card-text"><small class="text-body-secondary">${post.date.format(format)}</small></p>
                 </div>
             </div>
         </div>
@@ -63,13 +45,15 @@
         <div class="col-3">
             <div class="card  border-light">
                 <div class="card-body">
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <h5 class="card-title">Post title</h5>
-                            <p class="card-text">Some quick example to build on the card title and make up the
-                                bulk of the card's content.</p>
+                    <c:forEach items="${posts}" var="otherPost">
+                        <div class="card mb-3">
+                            <div class="card-body">
+
+                                <h5 class="card-title mb-4">${otherPost.title} <span class="badge rounded-pill text-bg-primary float-end">${otherPost.category}</span></h5>
+                                <p class="card-text">${otherPost.body}</p>
+                            </div>
                         </div>
-                    </div>
+                    </c:forEach>
                 </div>
             </div>
         </div>
