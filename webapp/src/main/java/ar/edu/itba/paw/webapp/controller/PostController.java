@@ -39,14 +39,17 @@ public class PostController {
         return mav;
     }
 
-    @RequestMapping(path = "/all-posts", method = RequestMethod.GET)
+    @RequestMapping(path = {"/home", "/"}, method = RequestMethod.GET)
     public ModelAndView getAllPosts(@RequestParam(value = "category", required = false) final String category) {
-        ModelAndView mav = new ModelAndView("post/allPosts");
+        ModelAndView mav = new ModelAndView("/home");
         if(category != null && !category.isEmpty() && !category.equals("all")) {
             mav.addObject("posts", ps.getByCategory(category));
         } else {
             mav.addObject("posts", ps.getAllPosts());
         }
+        //TODO: SHOULD BE THE ONES THAT ARE CURRENTLY BEING FOLLOWED BY USER OR A FEW RANDOMLY SELECTED
+        mav.addObject("communities", cs.getAllCommunities());
+        mav.addObject("news", ps.getByCategory(PostCategories.NEWS.getCategory()));
         mav.addObject("categories", Arrays.stream(PostCategories.values()).map(PostCategories::getCategory).toArray(String[]::new));
         return mav;
     }
