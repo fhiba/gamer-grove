@@ -12,7 +12,7 @@
 <%@ include file="components/header.jsp" %>
 <div class="container-fluid">
     <div class="row mt-4">
-        <%--LISTA DE COMUNIDADES--%>
+        <%--COMMUNITY LIST--%>
         <div class="col-3">
             <div class="card  border-light">
                 <div class="card-body">
@@ -78,6 +78,8 @@
         </div>
     </div>
 </div>
+<%@ include file="/WEB-INF/jsp/components/footer.jsp" %>
+
 </body>
 </html>
 <script lang="javascript">
