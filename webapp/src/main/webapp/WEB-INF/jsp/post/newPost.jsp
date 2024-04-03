@@ -15,27 +15,14 @@
         <div class="col-3">
             <div class="card  border-light">
                 <div class="card-body">
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <h5 class="card-title">Community</h5>
-                            <p class="card-text">Some quick example to build on the card title and make up the
-                                bulk of the card's content.</p>
+                    <c:forEach var="community" items="${communities}">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">${community.name}</h5>
+                                <p class="card-text">${community.description}</p>
+                            </div>
                         </div>
-                    </div>
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <h5 class="card-title">Community</h5>
-                            <p class="card-text">Some quick example to build on the card title and make up the
-                                bulk of the card's content.</p>
-                        </div>
-                    </div>
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <h5 class="card-title">Community</h5>
-                            <p class="card-text">Some quick example to build on the card title and make up the
-                                bulk of the card's content.</p>
-                        </div>
-                    </div>
+                    </c:forEach>
                 </div>
             </div>
         </div>
@@ -93,13 +80,14 @@
         <div class="col-3">
             <div class="card  border-light">
                 <div class="card-body">
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <h5 class="card-title">Post title</h5>
-                            <p class="card-text">Some quick example to build on the card title and make up the
-                                bulk of the card's content.</p>
+                    <c:forEach items="${news}" var="a_new">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">${a_new.title}</h5>
+                                <p class="card-text">${a_new.body}</p>
+                            </div>
                         </div>
-                    </div>
+                    </c:forEach>
                 </div>
             </div>
         </div>

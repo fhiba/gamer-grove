@@ -45,6 +45,7 @@ public class PostController {
         ModelAndView mav = new ModelAndView("post/newPost");
         mav.addObject("communities",cs.getAllCommunities());
         mav.addObject("categories", Arrays.stream(PostCategories.values()).map(PostCategories::getCategory).toArray(String[]::new));
+        mav.addObject("news", ps.getByCategory(PostCategories.NEWS.getCategory()));
         return mav;
     }
 
