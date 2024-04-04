@@ -39,10 +39,8 @@ public class PostServiceImpl implements PostService{
         if(!user.isPresent())
             throw new IllegalArgumentException("User not found");
         long userId = user.get().getId();
-        Optional<Community> community = communityService.findByName(communityName);
-        if(!community.isPresent())
-            throw new IllegalArgumentException("Community not found");
-        postDao.createPost(title,body,(int)userId,communityName,false, LocalDateTime.now(), category);
+        Community community = communityService.findByName(communityName);
+        postDao.createPost(title,body,(int)userId,community.getName(),false, LocalDateTime.now(), category);
     }
 
     @Override

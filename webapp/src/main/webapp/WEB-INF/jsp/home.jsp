@@ -17,12 +17,15 @@
             <div class="card  border-light">
                 <div class="card-body">
                     <c:forEach var="community" items="${communities}">
+                        <c:url value="community/${community.name}" var="communityUrl"/>
+                        <a href="${communityUrl}" class="card-link link-underline-light">
                         <div class="card mb-3">
                             <div class="card-body">
                                 <h5 class="card-title">${community.name}</h5>
                                 <p class="card-text post-body">${community.description}</p>
                             </div>
                         </div>
+                        </a>
                     </c:forEach>
                 </div>
             </div>
@@ -43,10 +46,12 @@
                             </select>
                             <label for="category">Category</label>
                         </div>
-                        <button type="button" class="btn  btn-primary  h-25 me-2 mt-1">Create post</button>
-
+                        <c:url value="/post" var="newPostUrl"/>
+                        <a href="${newPostUrl}" type="button" class="btn  btn-primary  h-25 me-2 mt-1">Create post</a>
                     </div>
                     <c:forEach var="post" items="${posts}">
+                        <c:url value="/post/${post.id}" var="postUrl"/>
+                        <a href="${postUrl}" class="card-link link-underline-light">
                         <div class="card mb-3">
                             <div class="card-body">
                                 <p class="fw-semibold card-subtitle mb-1">
@@ -57,6 +62,7 @@
                                 <p class="card-text post-body">${post.body}</p>
                             </div>
                         </div>
+                        </a>
                     </c:forEach>
                 </div>
             </div>

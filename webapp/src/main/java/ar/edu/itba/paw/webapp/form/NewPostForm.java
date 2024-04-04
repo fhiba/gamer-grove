@@ -11,7 +11,7 @@ public class NewPostForm {
     @Size(min = 1, max = 50)
     private String title;
 
-    @Size(min = 1, max = 500)
+    @Size(min = 1)
     private String body;
 
     private String community;

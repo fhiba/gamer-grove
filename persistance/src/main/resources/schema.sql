@@ -1,19 +1,17 @@
-
---Hay que cambiar los serials por sequences
-CREATE TABLE IF NOT EXISTS media(
-                                    id SERIAL PRIMARY KEY,
-                                    bytes BYTEA NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS users(
+CREATE TABLE users(
                       id SERIAL PRIMARY KEY,
                       username VARCHAR(50) UNIQUE NOT NULL,
                       email VARCHAR(50) UNIQUE NOT NULL,
                       password TEXT NOT NULL,
-                      owner boolean NOT NULL
+                      owner boolean NOT null default false
 );
 
-CREATE TABLE IF NOT EXISTS community(
+CREATE TABLE media(
+                      id SERIAL PRIMARY KEY,
+                      bytes bytea NOT NULL
+);
+
+CREATE TABLE community(
                           id SERIAL PRIMARY KEY,
                           name VARCHAR(50) UNIQUE NOT NULL,
                           description TEXT NOT NULL,
@@ -21,11 +19,7 @@ CREATE TABLE IF NOT EXISTS community(
                           FOREIGN KEY (portrait_id) REFERENCES media(id)
 );
 
-CREATE TABLE IF NOT EXISTS post_categories(
-                                              category TEXT PRIMARY KEY
-);
-
-CREATE TABLE IF NOT EXISTS post(
+CREATE TABLE post(
                      id SERIAL PRIMARY KEY,
                      title VARCHAR(50) NOT NULL,
                      body TEXT,
@@ -35,14 +29,12 @@ CREATE TABLE IF NOT EXISTS post(
                      media_id INT,
                      post_date TIMESTAMP NOT NULL,
                      grooviness INT NOT NULL DEFAULT 0,
-                     category TEXT DEFAULT 'Miscellaneous',
                      FOREIGN KEY (author_id) REFERENCES users(id),
                      FOREIGN KEY (community_name) REFERENCES community(name),
-                     FOREIGN KEY (media_id) REFERENCES media(id),
-                     FOREIGN KEY (category) REFERENCES post_categories(category)
+                     FOREIGN KEY (media_id) REFERENCES media(id)
 );
 
-CREATE TABLE IF NOT EXISTS comment(
+CREATE TABLE comment(
                         id SERIAL PRIMARY KEY,
                         body VARCHAR(500) NOT NULL,
                         author_id INT NOT NULL,
@@ -56,9 +48,33 @@ CREATE TABLE IF NOT EXISTS comment(
 
 );
 
-CREATE TABLE IF NOT EXISTS community_user(
+CREATE TABLE community_user(
                                community_id INT NOT NULL,
                                user_id INT NOT NULL,
                                community_role INT NOT NULL,
-                               PRIMARY KEY (community_id, user_id)
+                               PRIMARY KEY (community_id, user_id),
+                               foreign key(community_id) references community(id),
+                               foreign key(user_id) references users(id)
+);
+
+CREATE TABLE IF NOT EXISTS post_categories(
+                                              category TEXT PRIMARY KEY
+);
+INSERT INTO post_categories (category) VALUES ('Miscellaneous');
+INSERT INTO post_categories (category) VALUES('Help');
+INSERT INTO post_categories (category) VALUES('Review');
+INSERT INTO post_categories (category) VALUES('Recommendation');
+INSERT INTO post_categories (category) VALUES('Guide');
+INSERT INTO post_categories (category) VALUES('News');
+
+ALTER TABLE post ADD COLUMN category TEXT DEFAULT 'Miscellaneous';
+ALTER TABLE post ADD FOREIGN KEY (category) REFERENCES post_categories(category);
+
+create table if not exists groovy_history(
+                                             user_id INT not null,
+                                             post_id int not null,
+                                             groovy_type boolean not null,
+                                             primary key(user_id, post_id),
+                                             foreign key(user_id) references users(id),
+                                             foreign key(post_id) references post(id)
 );

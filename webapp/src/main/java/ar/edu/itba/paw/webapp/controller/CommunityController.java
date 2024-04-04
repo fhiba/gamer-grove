@@ -39,11 +39,11 @@ public class CommunityController {
     }
 
 
-    @RequestMapping(path="/community/{communityId}", method = RequestMethod.GET)
-    public ModelAndView community(@PathVariable("communityId") final long communityId) {
+    @RequestMapping(path="/community/{communityName}", method = RequestMethod.GET)
+    public ModelAndView community(@PathVariable("communityName") final String communityName) {
         ModelAndView mav = new ModelAndView("community/community");
-        Community community = cs.findById(communityId);
-        List<Post> posts = ps.getPostsByCommunity(community.getName());
+        Community community = cs.findByName(communityName);
+        List<Post> posts = ps.getPostsByCommunity(communityName);
         mav.addObject("community",community);
         mav.addObject("posts",posts);
         return mav;
@@ -57,13 +57,14 @@ public class CommunityController {
         return mav;
     }
 
-    @RequestMapping(path="/community/{communityId}/new", method = RequestMethod.POST)
-    public ModelAndView newCommunityPost(@PathVariable("communityId") final long communityId,@ModelAttribute("newPostForm") final NewPostForm newPostForm,BindingResult errors) {
+    @RequestMapping(path="/community/{communityName}/new", method = RequestMethod.POST)
+    public ModelAndView newCommunityPost(@PathVariable("communityName") final String communityName,@ModelAttribute("newPostForm") final NewPostForm newPostForm,BindingResult errors) {
         if(errors.hasErrors())
-            return community(communityId);
-        Community community = cs.findById(communityId);
+            return community(communityName);
+        //chequeo de que exista la community
+        Community community = cs.findByName(communityName);
         ps.createPost(newPostForm.getTitle(),newPostForm.getBody(),community.getName(),newPostForm.getCategory());
-        return community(communityId);
+        return community(communityName);
     }
 
 }
