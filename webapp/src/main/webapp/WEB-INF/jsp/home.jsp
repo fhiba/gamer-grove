@@ -5,7 +5,9 @@
 <html>
 <head>
     <title>GamerGrove</title>
+    <link rel="icon" href="${pageContext.request.contextPath}/images/favicon.ico" type="image/x-icon">
     <link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js" rel="stylesheet"/>
 
 </head>
 <body>
@@ -19,12 +21,12 @@
                     <c:forEach var="community" items="${communities}">
                         <c:url value="community/${community.name}" var="communityUrl"/>
                         <a href="${communityUrl}" class="card-link link-underline-light">
-                        <div class="card mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title">${community.name}</h5>
-                                <p class="card-text post-body">${community.description}</p>
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">${community.name}</h5>
+                                    <p class="card-text post-body">${community.description}</p>
+                                </div>
                             </div>
-                        </div>
                         </a>
                     </c:forEach>
                 </div>
@@ -37,7 +39,8 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between ">
                         <div class="form-floating w-25 mb-3">
-                            <select class="form-select" id="category" aria-label="Floating label select example" onchange="filterPosts()">
+                            <select class="form-select" id="category" aria-label="Floating label select example"
+                                    onchange="filterPosts()">
                                 <option disabled selected hidden>Filter by Category</option>
                                 <option value="all">All</option>
                                 <c:forEach var="category" items="${categories}">
@@ -52,16 +55,16 @@
                     <c:forEach var="post" items="${posts}">
                         <c:url value="/post/${post.id}" var="postUrl"/>
                         <a href="${postUrl}" class="card-link link-underline-light">
-                        <div class="card mb-3">
-                            <div class="card-body">
-                                <p class="fw-semibold card-subtitle mb-1">
-                                    /${post.community_name}
-                                    <span class="badge rounded-pill text-bg-primary pb-2">${post.category}</span>
-                                </p>
-                                <h4 class="card-title">${post.title}</h4>
-                                <p class="card-text post-body">${post.body}</p>
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <p class="fw-semibold card-subtitle mb-1">
+                                        /${post.community_name}
+                                        <span class="badge rounded-pill text-bg-primary">${post.category}</span>
+                                    </p>
+                                    <h4 class="card-title">${post.title}</h4>
+                                    <p class="card-text post-body">${post.body}</p>
+                                </div>
                             </div>
-                        </div>
                         </a>
                     </c:forEach>
                 </div>

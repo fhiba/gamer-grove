@@ -5,6 +5,8 @@
     <title>${community.name}</title>
     <link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js" rel="stylesheet"/>
+    <link rel="icon" href="${pageContext.request.contextPath}/images/favicon.ico" type="image/x-icon">
+
 </head>
 <body>
 <%@ include file="/WEB-INF/jsp/components/header.jsp" %>
@@ -69,7 +71,7 @@
                                 <div class="card-body">
                                     <p class="fw-semibold card-subtitle mb-1">
                                         /${post.community_name}
-                                        <span class="badge rounded-pill text-bg-primary pb-2">${post.category}</span>
+                                        <span class="badge rounded-pill text-bg-primary">${post.category}</span>
                                     </p>
                                     <h4 class="card-title">${post.title}</h4>
                                     <p class="card-text post-body text-secondary post-body">${post.body}</p>

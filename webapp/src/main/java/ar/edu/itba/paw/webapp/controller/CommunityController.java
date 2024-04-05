@@ -2,6 +2,7 @@ package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.models.Community;
 import ar.edu.itba.paw.models.Post;
+import ar.edu.itba.paw.models.PostCategories;
 import ar.edu.itba.paw.services.CommunityService;
 import ar.edu.itba.paw.services.PostService;
 import ar.edu.itba.paw.webapp.form.NewCommunityForm;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -53,6 +55,8 @@ public class CommunityController {
     public ModelAndView communities(@ModelAttribute("searchTerms") final String searchTerms) {
         ModelAndView mav = new ModelAndView("community/communities");
         List<Community> communities = cs.find(searchTerms);
+        mav.addObject("categories", Arrays.stream(PostCategories.values()).map(PostCategories::getCategory).toArray(String[]::new));
+        mav.addObject("news", ps.getByCategory(PostCategories.NEWS.getCategory()));
         mav.addObject("communities",communities);
         return mav;
     }

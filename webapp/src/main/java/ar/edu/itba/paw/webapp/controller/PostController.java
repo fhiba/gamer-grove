@@ -27,7 +27,6 @@ public class PostController {
     private PostService ps;
     @Autowired
     private CommunityService cs;
-
     @Autowired
     private UserService us;
 
