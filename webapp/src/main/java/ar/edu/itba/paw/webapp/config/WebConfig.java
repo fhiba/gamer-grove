@@ -38,18 +38,19 @@ public class WebConfig extends WebMvcConfigurerAdapter {
                 .addResourceLocations("/css/");
         registry.addResourceHandler("/js/**")
                 .addResourceLocations("/js/");
-        registry.addResourceHandler("/resources/**")
-                .addResourceLocations("/resources/");
+        registry.addResourceHandler("/images/**")
+                .addResourceLocations("/images/");
     }
 
-
+    //paw-2024a-09
+    //Zg1uq0uQi
     @Bean
     public DataSource dataSource() {
         final SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
         dataSource.setDriverClass(org.postgresql.Driver.class);
-        dataSource.setUrl("jdbc:postgresql://localhost:5432/postgres");
+        dataSource.setUrl("jdbc:postgresql://localhost:5432/");
         dataSource.setUsername("postgres");
-        dataSource.setPassword("root");
+        dataSource.setPassword("postgres");
         return dataSource;
     }
 

@@ -1,63 +1,106 @@
-<%@ page contentType="text/html;charset=UTF-8"%>
+<%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <html>
 <head>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <title>Title</title>
+    <link rel="icon" href="${pageContext.request.contextPath}/images/favicon.ico" type="image/x-icon">
+    <link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js" rel="stylesheet"/>
 </head>
 <body>
-<h1>NEW POST:</h1>
-<c:url var="postUrl" value="/post" />
-<form:form action="${postUrl}" method="post" modelAttribute="newPostForm">
-    <table>
-        <tr>
-            <td>Title:</td>
-            <td><form:input path="title" /></td>
-            <td><form:errors path="title" cssStyle="color: red" cssClass="error" /></td>
-        </tr>
-        <tr>
-            <td>Body:</td>
-            <td><form:textarea path="body" /></td>
-            <td><form:errors path="body" cssStyle="color: red" cssClass="error" /></td>
-        </tr>
 
-        <tr>
-            <td>Community:</td>
-            <td>
-                <form:select itemValue="${communities}" name="community" path="community" class="mt-5 form-select form-select-lg" id="specialtiesSelect" aria-label="Floating label select example" >
+<%@ include file="/WEB-INF/jsp/components/header.jsp" %>
+<div class="container-fluid h-100">
+    <div class="row mt-4">
+        <%--COMMUNITY LIST--%>
+        <div class="col-3">
+            <div class="card  border-light">
+                <div class="card-body">
                     <c:forEach var="community" items="${communities}">
-                        <option value="<c:out value="${community.name}" escapeXml="true" />">
-                            <c:out value="${community.name}" escapeXml="true" />
-                        </option>
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">${community.name}</h5>
+                                <p class="card-text">${community.description}</p>
+                            </div>
+                        </div>
                     </c:forEach>
-                    <label></label>
-                </form:select>
-            </td>
-        </tr>
-        <tr>
-            <td>Category:</td>
-            <td>
-                <form:select itemValue="${categories}" name="category" path="category" class="mt-5 form-select form-select-lg" id="specialtiesSelect" aria-label="Floating label select example" >
-                    <c:forEach var="category" items="${categories}">
-                        <option value="<c:out value="${category}" escapeXml="true" />">
-                            <c:out value="${category}" escapeXml="true" />
-                        </option>
+                </div>
+            </div>
+        </div>
+
+        <%--CREATE POST FORM--%>
+        <div class="col-6">
+            <div class="card border-light">
+                <div class="card-body">
+                    <h1 class="card-title">Create a post</h1>
+                    <c:url var="postUrl" value="/post"/>
+                    <form:form action="${postUrl}" method="post" modelAttribute="newPostForm">
+                        <div class="mb-3">
+                            <label for="titleInput" class="form-label">Title</label>
+                            <form:input path="title" class="form-control" id="titleInput"/>
+                            <form:errors path="title" cssStyle="color: red" cssClass="error"/>
+                        </div>
+                        <div class="mb-3">
+                            <label for="bodyInput" class="form-label">Body</label>
+                            <form:textarea path="body" class="form-control" id="bodyInput"/>
+                            <form:errors path="title" cssStyle="color: red" cssClass="error"/>
+                        </div>
+                        <div class="mb-3 d-flex">
+                        <div class="me-4">
+                            <label for="bodyInput" class="form-label">Community</label>
+                            <form:select itemValue="${communities}" name="community" path="community"
+                                         class="form-select" id="specialtiesSelect">
+                                <option disabled selected hidden>Choose a community</option>
+                                <c:forEach var="community" items="${communities}">
+                                    <option value="<c:out value="${community.name}" escapeXml="true" />">
+                                        <c:out value="${community.name}" escapeXml="true"/>
+                                    </option>
+                                </c:forEach>
+                            </form:select>
+                        </div>
+                        <div >
+                            <label for="bodyInput" class="form-label">Category</label>
+                            <form:select itemValue="${categories}" name="category" path="category"
+                                         class="form-select" id="specialtiesSelect">
+                                <option disabled selected hidden>Choose a category</option>
+                                <c:forEach var="category" items="${categories}">--%>
+                                    <option value="<c:out value="${category}" escapeXml="true" />">
+                                        <c:out value="${category}" escapeXml="true"/>
+                                    </option>
+                                </c:forEach>
+                            </form:select>
+                        </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Create</button>
+                        <form:errors cssStyle="color: red" cssClass="error"/>
+                    </form:form>
+                </div>
+            </div>
+        </div>
+        <%--POSTS LIST OF THE COMMUNITY--%>
+        <div class="col-3">
+            <div class="card  border-light">
+                <div class="card-body">
+                    <c:forEach items="${news}" var="a_new">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">${a_new.title}</h5>
+                                <p class="card-text">${a_new.body}</p>
+                            </div>
+                        </div>
                     </c:forEach>
-                    <label></label>
-                </form:select>
-            </td>
-        </tr>
-        <tr>
-            <td><input type="submit" value="Post" /></td>
-        </tr>
-    </table>
-    <form:errors cssStyle="color: red" cssClass="error" />
-</form:form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%@ include file="/WEB-INF/jsp/components/footer.jsp" %>
+
 </body>
 </html>
 <script lang="javascript">
     $('.dropdown-toggle').dropdown();
 
 </script>
+

@@ -1,7 +1,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt"%>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 
+<link rel="icon" href="${pageContext.request.contextPath}/images/favicon.ico" type="image/x-icon">
+<link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js" rel="stylesheet"/>
 
 <section class="vh-100 gradient-custom">
     <div class="container py-5 h-100">
@@ -41,7 +42,8 @@
                         </div>
                         </form>
                         <div>
-                            <p class="mb-0">Don't have an account? <a class="text-white-50 fw-bold">Sign Up</a>
+                            <c:url value="/register" var="registerUrl" />
+                            <p class="mb-0">Don't have an account? <a href="${registerUrl}" class="text-white-50 fw-bold">Sign Up</a>
                             </p>
                         </div>
 

@@ -1,18 +1,12 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: juani
-  Date: 3/28/2024
-  Time: 1:00 PM
-  To change this template use File | Settings | File Templates.
---%>
 <%@ page contentType="text/html;charset=UTF-8"%>
 <html>
 <head>
-    <title>Profile</title>
+    <title>Error - 404</title>
     <link rel="icon" href="${pageContext.request.contextPath}/images/favicon.ico" type="image/x-icon">
     <link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js" rel="stylesheet"/>
 </head>
 <body>
+<h1>NOT FOUND</h1>
 </body>
 </html>

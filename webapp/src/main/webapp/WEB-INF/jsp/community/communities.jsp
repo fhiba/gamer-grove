@@ -1,31 +1,77 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8"%>
 <html>
 <head>
     <title>Communities</title>
+    <link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js" rel="stylesheet"/>
+    <link rel="icon" href="${pageContext.request.contextPath}/images/favicon.ico" type="image/x-icon">
 </head>
 <body>
-    <c:url value="/community" var="getCommunityUrl"/>
-    <!--
-        <!c:url value="media/community/portrait" var="portraitUrl"/>
-        -->
-    <c:url var="portraitUrl" value="https://img.freepik.com/psd-gratis/marcos-fotos-maqueta_53876-57736.jpg"/>
-    <c:if test="${empty communities}">
-        <div>No communities found</div>
-    </c:if>
+<%@ include file="/WEB-INF/jsp/components/header.jsp" %>
 
-            <table>
-                    <c:forEach items="${communities}" var="community">
-                <tr>
-                    <td>
-                        <img width="50px" height="50px" src="${portraitUrl}" alt="image of a portrait"/>
-                        <!--<img src="${portraitUrl}/${community.id}" alt="portrait of community: '${community.name}'"/>-->
-                    </td>
-                    <td>
-                        <a href="${getCommunityUrl}/${community.id}">${community.name}</a>
-                    </td>
-                </tr>
+<div class="container-fluid">
+    <div class="row mt-4">
+        <%--COMMUNITY LIST--%>
+        <div class="col-3">
+            <%--                <div class="card  border-light">--%>
+            <%--                    <div class="card-body">--%>
+            <%--                        <c:forEach var="community" items="${communities}">--%>
+            <%--                            <c:url value="community/${community.name}" var="communityUrl"/>--%>
+            <%--                            <a href="${communityUrl}" class="card-link link-underline-light">--%>
+            <%--                                <div class="card mb-3">--%>
+            <%--                                    <div class="card-body">--%>
+            <%--                                        <h5 class="card-title">${community.name}</h5>--%>
+            <%--                                        <p class="card-text post-body">${community.description}</p>--%>
+            <%--                                    </div>--%>
+            <%--                                </div>--%>
+            <%--                            </a>--%>
+            <%--                        </c:forEach>--%>
+            <%--                    </div>--%>
+            <%--                </div>--%>
+        </div>
+
+        <%--LISTA DE COMMUNITIES--%>
+        <div class="col-6">
+            <div class="card  border-light">
+                <div class="card-body">
+                    <c:if test="${empty communities}">
+                        <div>No communities found</div>
+                    </c:if>
+                    <c:forEach var="community" items="${communities}">
+                        <c:url value="/community/${community.name}" var="communityUrl"/>
+                        <a href="${communityUrl}" class="card-link link-underline-light">
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h2 class="fw-semibold card-subtitle mb-1">
+                                        /${community.name}
+                                    </h2>
+                                    <h4 class="card-title text-secondary">${community.description}</h4>
+                                </div>
+                            </div>
+                        </a>
                     </c:forEach>
-            </table>
+                </div>
+            </div>
+        </div>
+        <%--LISTA DE NEWS--%>
+        <div class="col-3">
+            <div class="card  border-light">
+                <div class="card-body">
+                    <c:forEach var="a_new" items="${news}">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">${a_new.title}</h5>
+                                <p class="card-text post-body">${a_new.body}</p>
+                            </div>
+                        </div>
+                    </c:forEach>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%@ include file="/WEB-INF/jsp/components/footer.jsp" %>
+
 </body>
 </html>

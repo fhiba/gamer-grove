@@ -2,9 +2,11 @@ package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.models.Community;
 import ar.edu.itba.paw.models.Post;
+import ar.edu.itba.paw.models.PostCategories;
 import ar.edu.itba.paw.services.CommunityService;
 import ar.edu.itba.paw.services.PostService;
 import ar.edu.itba.paw.webapp.form.NewCommunityForm;
+import ar.edu.itba.paw.webapp.form.NewPostForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -38,11 +41,11 @@ public class CommunityController {
     }
 
 
-    @RequestMapping(path="/community/{communityId}", method = RequestMethod.GET)
-    public ModelAndView community(@PathVariable("communityId") final long communityId) {
+    @RequestMapping(path="/community/{communityName}", method = RequestMethod.GET)
+    public ModelAndView community(@PathVariable("communityName") final String communityName) {
         ModelAndView mav = new ModelAndView("community/community");
-        Community community = cs.findById(communityId);
-        List<Post> posts = ps.getPostsByCommunity(community.getName());
+        Community community = cs.findByName(communityName);
+        List<Post> posts = ps.getPostsByCommunity(communityName);
         mav.addObject("community",community);
         mav.addObject("posts",posts);
         return mav;
@@ -52,8 +55,20 @@ public class CommunityController {
     public ModelAndView communities(@ModelAttribute("searchTerms") final String searchTerms) {
         ModelAndView mav = new ModelAndView("community/communities");
         List<Community> communities = cs.find(searchTerms);
+        mav.addObject("categories", Arrays.stream(PostCategories.values()).map(PostCategories::getCategory).toArray(String[]::new));
+        mav.addObject("news", ps.getByCategory(PostCategories.NEWS.getCategory()));
         mav.addObject("communities",communities);
         return mav;
+    }
+
+    @RequestMapping(path="/community/{communityName}/new", method = RequestMethod.POST)
+    public ModelAndView newCommunityPost(@PathVariable("communityName") final String communityName,@ModelAttribute("newPostForm") final NewPostForm newPostForm,BindingResult errors) {
+        if(errors.hasErrors())
+            return community(communityName);
+        //chequeo de que exista la community
+        Community community = cs.findByName(communityName);
+        ps.createPost(newPostForm.getTitle(),newPostForm.getBody(),community.getName(),newPostForm.getCategory());
+        return community(communityName);
     }
 
 }

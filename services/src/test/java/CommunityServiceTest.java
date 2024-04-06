@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+
 
 @RunWith(MockitoJUnitRunner.class)
 public class CommunityServiceTest {
@@ -34,12 +34,11 @@ public class CommunityServiceTest {
         // Setup
         Mockito.when(mockDao.findByName(Mockito.eq(NAME))).thenReturn(Optional.of(new Community(ID, NAME, PORTRAIT_ID, DESCRIPTION)));
         // Exercise
-        Optional<Community> maybeCommunity = cs.findByName(NAME);
+        Community community = cs.findByName(NAME);
         // Verify
-        assertTrue(maybeCommunity.isPresent());
-        assertEquals(ID, maybeCommunity.get().getId());
-        assertEquals(NAME, maybeCommunity.get().getName());
-        assertEquals(DESCRIPTION, maybeCommunity.get().getDescription());
+        assertEquals(ID, community.getId());
+        assertEquals(NAME, community.getName());
+        assertEquals(DESCRIPTION, community.getDescription());
     }
 
     @Test
@@ -66,7 +65,7 @@ public class CommunityServiceTest {
     @Test
     public void find() {
         // Setup
-        Mockito.when(mockDao.find(Mockito.eq(NAME))).thenReturn(new ArrayList<>(Arrays.asList(new Community[]{new Community(ID, NAME, PORTRAIT_ID, DESCRIPTION), new Community(ID, NAME + "2", PORTRAIT_ID, DESCRIPTION)})));
+        Mockito.when(mockDao.find(Mockito.eq(NAME))).thenReturn(new ArrayList<>(Arrays.asList(new Community(ID, NAME, PORTRAIT_ID, DESCRIPTION), new Community(ID, NAME + "2", PORTRAIT_ID, DESCRIPTION))));
         // Exercise
         cs.find(NAME);
         // Verify

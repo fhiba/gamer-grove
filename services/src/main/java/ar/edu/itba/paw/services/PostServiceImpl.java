@@ -1,5 +1,7 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.exceptions.NoSuchPostException;
+import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.models.Community;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
@@ -34,13 +36,11 @@ public class PostServiceImpl implements PostService{
     @Override
     public void createPost(final String title, final String body, final String communityName, final String category) {
         Optional<User> user = userService.getLoggedUser();
-        if(!user.isPresent())
+        if(user.isEmpty())
             throw new IllegalArgumentException("User not found");
         long userId = user.get().getId();
-        Optional<Community> community = communityService.findByName(communityName);
-        if(!community.isPresent())
-            throw new IllegalArgumentException("Community not found");
-        postDao.createPost(title,body,(int)userId,communityName,false, LocalDateTime.now(), category);
+        Community community = communityService.findByName(communityName);
+        postDao.createPost(title,body,(int)userId,community.getName(),false, LocalDateTime.now(), category);
     }
 
     @Override
@@ -54,6 +54,35 @@ public class PostServiceImpl implements PostService{
     public List<Post> getByCategory(String category) {
         List<Post> posts = postDao.findByCategory(category);
         return posts.isEmpty()? Collections.emptyList(): posts;
+    }
+
+    @Override
+    public Post getPostById(long postId) throws NoSuchPostException{
+        Optional<Post> post = postDao.findById(postId);
+        if(post.isEmpty())
+            throw new NoSuchPostException("Post not found");
+        return post.get();
+    }
+
+    @Override
+    public void editGrooviness(long postId, int grooviness) throws NoSuchPostException, UserNotFoundException {
+        Optional<Post> post = postDao.findById(postId);
+        User user = userService.getLoggedUser().orElseThrow(() -> new UserNotFoundException("User not found"));
+        if(post.isEmpty())
+            throw new NoSuchPostException("Post not found");
+
+        switch (grooviness){
+            case 1:
+                postDao.editGrooviness(postId,1);
+                postDao.addToGroovy(user.getId(),postId,true);
+                break;
+            case -1:
+                postDao.editGrooviness(postId,-1);
+                postDao.addToGroovy(user.getId(),postId,false);
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid grooviness");
+        }
     }
 
 
