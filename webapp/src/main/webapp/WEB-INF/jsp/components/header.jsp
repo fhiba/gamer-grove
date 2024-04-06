@@ -1,3 +1,4 @@
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%--
   Created by IntelliJ IDEA.
   User: juani
@@ -18,10 +19,10 @@
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
                     <c:url value="/" var="homeUrl"/>
-                    <a class="nav-link active" aria-current="page" href="${homeUrl}">Home</a>
+                    <a class="nav-link active" aria-current="page" href="${homeUrl}"><spring:message code="Navbar.Home"/> </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Link</a>
+                    <a class="nav-link" href="#"><spring:message code="Navbar.Communities"/></a>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
@@ -47,13 +48,13 @@
                     <input class="form-control me-2" type="search" name="searchTerms" placeholder="Search"
                            id="searchTerms"
                            aria-label="Search">
-                    <button class="btn btn-outline-success" type="submit">Search</button>
+                    <button class="btn btn-outline-success" type="submit"><spring:message code="Navbar.Search"/> </button>
                 </form>
             </ul>
             <ul class="navbar-nav">
                 <li class="nav-item">
                     <c:url value="/login" var="loginUrl"/>
-                    <a class="btn btn-outline-success" href="${loginUrl}">Login</a>
+                    <a class="btn btn-outline-success" href="${loginUrl}"><spring:message code="Navbar.Login"/></a>
                 </li>
             </ul>
         </div>

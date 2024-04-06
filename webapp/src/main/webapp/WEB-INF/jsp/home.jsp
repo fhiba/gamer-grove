@@ -41,16 +41,16 @@
                         <div class="form-floating w-25 mb-3">
                             <select class="form-select" id="category" aria-label="Floating label select example"
                                     onchange="filterPosts()">
-                                <option disabled selected hidden>Filter by Category</option>
-                                <option value="all">All</option>
+                                <option disabled selected hidden><spring:message code="Home.FilterCategory"/> </option>
+                                <option value="all"><spring:message code="All"/></option>
                                 <c:forEach var="category" items="${categories}">
                                     <option value="${category}">${category}</option>
                                 </c:forEach>
                             </select>
-                            <label for="category">Category</label>
+                            <label for="category"><spring:message code="Home.Category"/></label>
                         </div>
                         <c:url value="/post" var="newPostUrl"/>
-                        <a href="${newPostUrl}" type="button" class="btn  btn-primary  h-25 me-2 mt-1">Create post</a>
+                        <a href="${newPostUrl}" type="button" class="btn  btn-primary  h-25 me-2 mt-1"><spring:message code="Post.Create"/></a>
                     </div>
                     <c:forEach var="post" items="${posts}">
                         <c:url value="/post/${post.id}" var="postUrl"/>

@@ -44,7 +44,7 @@
                     <p class="card-subtitle mb-4">${author}</p>
 
                     <p class="card-text">${post.body}</p>
-                    <p class="card-text"><small class="text-body-secondary">${post.date.format(format)}</small></p>
+                    <p class="card-text"><small class="text-body-secondary">${post.date.format  (format)}</small></p>
                 </div>
             </div>
         </div>

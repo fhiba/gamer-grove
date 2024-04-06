@@ -1,8 +1,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
-    <title>${community.name}</title>
+    <title>/${community.name}</title>
     <link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js" rel="stylesheet"/>
     <link rel="icon" href="${pageContext.request.contextPath}/images/favicon.ico" type="image/x-icon">
@@ -12,7 +13,7 @@
 <%@ include file="/WEB-INF/jsp/components/header.jsp" %>
 <!-- Button to trigger modal -->
 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createPostModal">
-    Create Post
+    <spring:message code="Post.Create"/>
 </button>
 
 <!-- Modal -->
@@ -20,7 +21,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="createPostModalLabel">Create a Post</h5>
+                <h5 class="modal-title" id="createPostModalLabel"><spring:message code="Post.Create"/> </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -62,7 +63,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between ">
                         <c:url value="/post" var="newPostUrl"/>
-                        <a href="${newPostUrl}" type="button" class="btn  btn-primary  h-25 me-2 mt-1">Create post</a>
+                        <a href="${newPostUrl}" type="button" class="btn  btn-primary  h-25 me-2 mt-1"><spring:message code="Post.Create"/> </a>
                     </div>
                     <c:forEach var="post" items="${posts}">
                         <c:url value="/post/${post.id}" var="postUrl"/>

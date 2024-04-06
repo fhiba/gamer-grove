@@ -33,25 +33,25 @@
         <div class="col-6">
             <div class="card border-light">
                 <div class="card-body">
-                    <h1 class="card-title">Create a post</h1>
+                    <h1 class="card-title"><spring:message code="Post.Create"/> </h1>
                     <c:url var="postUrl" value="/post"/>
                     <form:form action="${postUrl}" method="post" modelAttribute="newPostForm">
                         <div class="mb-3">
-                            <label for="titleInput" class="form-label">Title</label>
+                            <label for="titleInput" class="form-label"><spring:message code="Post.Title"/></label>
                             <form:input path="title" class="form-control" id="titleInput"/>
                             <form:errors path="title" cssStyle="color: red" cssClass="error"/>
                         </div>
                         <div class="mb-3">
-                            <label for="bodyInput" class="form-label">Body</label>
+                            <label for="bodyInput" class="form-label"><spring:message code="Post.Body"/></label>
                             <form:textarea path="body" class="form-control" id="bodyInput"/>
                             <form:errors path="title" cssStyle="color: red" cssClass="error"/>
                         </div>
                         <div class="mb-3 d-flex">
                         <div class="me-4">
-                            <label for="bodyInput" class="form-label">Community</label>
+                            <label for="bodyInput" class="form-label"><spring:message code="Post.Community"/></label>
                             <form:select itemValue="${communities}" name="community" path="community"
                                          class="form-select" id="specialtiesSelect">
-                                <option disabled selected hidden>Choose a community</option>
+                                <option disabled selected hidden><spring:message code="Post.ChooseCommunity"/></option>
                                 <c:forEach var="community" items="${communities}">
                                     <option value="<c:out value="${community.name}" escapeXml="true" />">
                                         <c:out value="${community.name}" escapeXml="true"/>
@@ -60,10 +60,10 @@
                             </form:select>
                         </div>
                         <div >
-                            <label for="bodyInput" class="form-label">Category</label>
+                            <label for="bodyInput" class="form-label"><spring:message code="Post.Category"/></label>
                             <form:select itemValue="${categories}" name="category" path="category"
                                          class="form-select" id="specialtiesSelect">
-                                <option disabled selected hidden>Choose a category</option>
+                                <option disabled selected hidden><spring:message code="Post.ChooseCategory"/></option>
                                 <c:forEach var="category" items="${categories}">--%>
                                     <option value="<c:out value="${category}" escapeXml="true" />">
                                         <c:out value="${category}" escapeXml="true"/>
@@ -72,7 +72,7 @@
                             </form:select>
                         </div>
                         </div>
-                        <button type="submit" class="btn btn-primary">Create</button>
+                        <button type="submit" class="btn btn-primary"><spring:message code="Post.CreateButton"/></button>
                         <form:errors cssStyle="color: red" cssClass="error"/>
                     </form:form>
                 </div>

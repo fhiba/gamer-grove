@@ -1,8 +1,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ page contentType="text/html;charset=UTF-8"%>
 <html>
 <head>
-    <title>Communities</title>
+    <title><spring:message code="Communities.Title"/> </title>
     <link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js" rel="stylesheet"/>
     <link rel="icon" href="${pageContext.request.contextPath}/images/favicon.ico" type="image/x-icon">
@@ -36,7 +37,7 @@
             <div class="card  border-light">
                 <div class="card-body">
                     <c:if test="${empty communities}">
-                        <div>No communities found</div>
+                        <div><spring:message code="Communities.NoCommunitites"/></div>
                     </c:if>
                     <c:forEach var="community" items="${communities}">
                         <c:url value="/community/${community.name}" var="communityUrl"/>
