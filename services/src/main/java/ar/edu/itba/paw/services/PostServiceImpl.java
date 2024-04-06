@@ -1,5 +1,7 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.exceptions.NoLoggedUserException;
+import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
 import ar.edu.itba.paw.exceptions.NoSuchPostException;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.models.Community;
@@ -34,10 +36,10 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    public void createPost(final String title, final String body, final String communityName, final String category) {
+    public void createPost(final String title, final String body, final String communityName, final String category) throws NoLoggedUserException, NoSuchCommunityException {
         Optional<User> user = userService.getLoggedUser();
         if(user.isEmpty())
-            throw new IllegalArgumentException("User not found");
+            throw new NoLoggedUserException("User not logged");
         long userId = user.get().getId();
         Community community = communityService.findByName(communityName);
         postDao.createPost(title,body,(int)userId,community.getName(),false, LocalDateTime.now(), category);
@@ -60,14 +62,14 @@ public class PostServiceImpl implements PostService{
     public Post getPostById(long postId) throws NoSuchPostException{
         Optional<Post> post = postDao.findById(postId);
         if(post.isEmpty())
-            throw new NoSuchPostException("Post not found");
+            throw new NoSuchPostException("Post with id:" + postId+ " not found");
         return post.get();
     }
 
     @Override
-    public void editGrooviness(long postId, int grooviness) throws NoSuchPostException, UserNotFoundException {
+    public void editGrooviness(long postId, int grooviness) throws NoSuchPostException, NoLoggedUserException {
+        User user = userService.getLoggedUser().orElseThrow(() -> new NoLoggedUserException("User not found"));
         Optional<Post> post = postDao.findById(postId);
-        User user = userService.getLoggedUser().orElseThrow(() -> new UserNotFoundException("User not found"));
         if(post.isEmpty())
             throw new NoSuchPostException("Post not found");
 

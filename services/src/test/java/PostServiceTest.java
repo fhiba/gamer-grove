@@ -1,3 +1,5 @@
+import ar.edu.itba.paw.exceptions.NoLoggedUserException;
+import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
 import ar.edu.itba.paw.models.Community;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.services.CommunityService;
@@ -33,7 +35,7 @@ public class PostServiceTest {
     public PostServiceImpl postService = new PostServiceImpl();
 
     @Test
-    public void testCreate() {
+    public void testCreate() throws NoSuchCommunityException, NoLoggedUserException {
         //	1.	Setup!
         when(mockUserService.getLoggedUser()).thenReturn(Optional.of(new User(1,"username", "password", "email")));
         when(mockCommunityService.findByName(COMMUNITY_NAME)).thenReturn(new Community(1, COMMUNITY_NAME, 0,"description"));
@@ -44,8 +46,8 @@ public class PostServiceTest {
         //no devulve nada todavia
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testFailedCreateWithNoUser(){
+    @Test(expected = NoLoggedUserException.class)
+    public void testFailedCreateWithNoUser() throws NoSuchCommunityException, NoLoggedUserException {
         //	1.	Setup!
         when(mockUserService.getLoggedUser()).thenReturn(Optional.empty());
         when(mockCommunityService.findByName(COMMUNITY_NAME)).thenReturn(new Community(1, COMMUNITY_NAME, 0,"description"));
@@ -56,8 +58,8 @@ public class PostServiceTest {
 
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testFailedCreateWithNoCommunity(){
+    @Test(expected = NoSuchCommunityException.class)
+    public void testFailedCreateWithNoCommunity() throws NoSuchCommunityException, NoLoggedUserException {
         //	1.	Setup!
         when(mockUserService.getLoggedUser()).thenReturn(Optional.of(new User(1,"username", "password", "email")));
         when(mockCommunityService.findByName(COMMUNITY_NAME)).thenReturn(null);

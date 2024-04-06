@@ -49,7 +49,7 @@
                         <div class="mb-3 d-flex">
                         <div class="me-4">
                             <label for="bodyInput" class="form-label"><spring:message code="Post.Community"/></label>
-                            <form:select itemValue="${communities}" name="community" path="community"
+                            <form:select  name="community" path="community"
                                          class="form-select" id="specialtiesSelect">
                                 <option disabled selected hidden><spring:message code="Post.ChooseCommunity"/></option>
                                 <c:forEach var="community" items="${communities}">
@@ -58,10 +58,11 @@
                                     </option>
                                 </c:forEach>
                             </form:select>
+                            <form:errors path="community" cssStyle="color: red" cssClass="error"/>
                         </div>
                         <div >
                             <label for="bodyInput" class="form-label"><spring:message code="Post.Category"/></label>
-                            <form:select itemValue="${categories}" name="category" path="category"
+                            <form:select  name="category" path="category"
                                          class="form-select" id="specialtiesSelect">
                                 <option disabled selected hidden><spring:message code="Post.ChooseCategory"/></option>
                                 <c:forEach var="category" items="${categories}">--%>
@@ -70,6 +71,7 @@
                                     </option>
                                 </c:forEach>
                             </form:select>
+                            <form:errors path="category" cssStyle="color: red" cssClass="error"/>
                         </div>
                         </div>
                         <button type="submit" class="btn btn-primary"><spring:message code="Post.CreateButton"/></button>

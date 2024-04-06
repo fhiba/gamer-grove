@@ -1,6 +1,8 @@
 package ar.edu.itba.paw.webapp.controller;
 
 
+import ar.edu.itba.paw.exceptions.NoLoggedUserException;
+import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
 import ar.edu.itba.paw.exceptions.NoSuchPostException;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.PostCategories;
@@ -8,6 +10,7 @@ import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.services.CommunityService;
 import ar.edu.itba.paw.services.PostService;
 import ar.edu.itba.paw.services.UserService;
+import ar.edu.itba.paw.webapp.excpetion.PostNotFoundException;
 import ar.edu.itba.paw.webapp.form.NewPostForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -31,17 +34,27 @@ public class PostController {
     private UserService us;
 
     @RequestMapping(path="/post", method = RequestMethod.POST)
-    public ModelAndView newPost(@Valid @ModelAttribute("newPostForm") final NewPostForm newPostForm, final BindingResult errors) {
+    public ModelAndView newPost(@Valid @ModelAttribute("newPostForm") final NewPostForm newPostForm, final BindingResult errors) throws NoLoggedUserException, NoSuchCommunityException {
+
         if(errors.hasErrors()) {
             return getNewPost(newPostForm);
         }
-        ps.createPost(newPostForm.getTitle(), newPostForm.getBody(), newPostForm.getCommunity(), newPostForm.getCategory());
+        try {
+            ps.createPost(newPostForm.getTitle(), newPostForm.getBody(), newPostForm.getCommunity(), newPostForm.getCategory());
+        } catch (NoLoggedUserException e) {
+            //TODO: log later
+            throw e;
+        } catch (NoSuchCommunityException e) {
+            //TODO: log later
+            throw e;
+        }
         return new ModelAndView("redirect:/home");
     }
 
     @RequestMapping(path="/post", method = RequestMethod.GET)
     public ModelAndView getNewPost(@ModelAttribute("newPostForm") final NewPostForm newPostForm) {
         ModelAndView mav = new ModelAndView("post/newPost");
+        //TODO: SHOULD BE THE ONES THAT ARE CURRENTLY BEING FOLLOWED BY USER OR A FEW RANDOMLY SELECTED
         mav.addObject("communities",cs.getAllCommunities());
         mav.addObject("categories", Arrays.stream(PostCategories.values()).map(PostCategories::getCategory).toArray(String[]::new));
         mav.addObject("news", ps.getByCategory(PostCategories.NEWS.getCategory()));
@@ -64,7 +77,7 @@ public class PostController {
     }
 
     @RequestMapping(path="/post/{postId}", method = RequestMethod.GET)
-    public ModelAndView singlePost(@PathVariable("postId") final long postId) {
+    public ModelAndView singlePost(@PathVariable("postId") final long postId) throws NoSuchPostException{
         ModelAndView mav = new ModelAndView("/post/post");
         mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
         Post post;
@@ -72,8 +85,8 @@ public class PostController {
             post = ps.getPostById(postId);
             mav.addObject("post", post);
         } catch (NoSuchPostException e) {
-            return new ModelAndView("/error/404");
-
+            //TODO: Should log
+            throw e;
         }
         Optional<User> author = us.findById(post.getAuthor_id());
         mav.addObject("author", author.isPresent()?author.get().getUsername():"[deleted]");
@@ -85,11 +98,15 @@ public class PostController {
     }
 
     @RequestMapping(path="/post/{postId}/{grooviness}", method = RequestMethod.POST)
-    public ModelAndView moreGroovy(@PathVariable("postId") final long postId,@PathVariable("grooviness") final int grooviness) {
+    public ModelAndView moreGroovy(@PathVariable("postId") final long postId,@PathVariable("grooviness") final int grooviness) throws NoLoggedUserException, NoSuchPostException {
         try {
             ps.editGrooviness(postId,grooviness);
-        } catch (Exception e) {
-            return new ModelAndView("/error/404");
+        } catch (NoLoggedUserException e) {
+            //TODO: Log
+            throw e;
+        } catch (NoSuchPostException e) {
+            //TODO: Log
+            throw e;
         }
         return new ModelAndView("redirect:/post/" + postId);
     }
