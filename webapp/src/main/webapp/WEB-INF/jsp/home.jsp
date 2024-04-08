@@ -7,7 +7,8 @@
     <title>GamerGrove</title>
     <link rel="icon" href="${pageContext.request.contextPath}/images/favicon.ico" type="image/x-icon">
     <link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet"/>
-    <link href="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js" rel="stylesheet"/>
+    <link href="${pageContext.request.contextPath}/css/general-styling.css" rel="stylesheet"/>
+    <script src="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js"></script>
 
 </head>
 <body>
@@ -15,16 +16,19 @@
 <div class="container-fluid">
     <div class="row mt-4">
         <%--COMMUNITY LIST--%>
-        <div class="col-3">
-            <div class="card  border-light">
+        <div class="col-2">
+            <div class="card border-light">
                 <div class="card-body">
                     <c:forEach var="community" items="${communities}">
                         <c:url value="community/${community.name}" var="communityUrl"/>
-                        <a href="${communityUrl}" class="card-link link-underline-light">
-                            <div class="card mb-3">
-                                <div class="card-body">
-                                    <h5 class="card-title">${community.name}</h5>
-                                    <p class="card-text post-body">${community.description}</p>
+                        <a href="${communityUrl}" class="card-link text-decoration-none">
+                            <div class="card-body d-flex align-items-center text-decoration-none">
+                                <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
+                                     class="very-small-profile-pic mb-1" alt="Profile Picture">
+                                <div class="text-decoration-none">
+                                    <h5 class="fw-semibold card-subtitle community-name">
+                                        /${community.name}
+                                    </h5>
                                 </div>
                             </div>
                         </a>
@@ -32,7 +36,7 @@
                 </div>
             </div>
         </div>
-
+        <div class="col-1"></div>
         <%--LISTA DE POSTS--%>
         <div class="col-6">
             <div class="card  border-light">
@@ -41,7 +45,7 @@
                         <div class="form-floating w-25 mb-3">
                             <select class="form-select" id="category" aria-label="Floating label select example"
                                     onchange="filterPosts()">
-                                <option disabled selected hidden><spring:message code="Home.FilterCategory"/> </option>
+                                <option disabled selected hidden><spring:message code="Home.FilterCategory"/></option>
                                 <option value="all"><spring:message code="All"/></option>
                                 <c:forEach var="category" items="${categories}">
                                     <option value="${category}">${category}</option>
@@ -50,18 +54,22 @@
                             <label for="category"><spring:message code="Home.Category"/></label>
                         </div>
                         <c:url value="/post" var="newPostUrl"/>
-                        <a href="${newPostUrl}" type="button" class="btn  btn-primary  h-25 me-2 mt-1"><spring:message code="Post.Create"/></a>
+                        <a href="${newPostUrl}" type="button" class="btn  btn-primary  h-25 me-2 mt-1"><spring:message
+                                code="Post.Create"/></a>
                     </div>
                     <c:forEach var="post" items="${posts}">
                         <c:url value="/post/${post.id}" var="postUrl"/>
                         <a href="${postUrl}" class="card-link link-underline-light">
                             <div class="card mb-3">
                                 <div class="card-body">
-                                    <p class="fw-semibold card-subtitle mb-1">
-                                        /${post.community_name}
-                                        <span class="badge rounded-pill text-bg-primary">${post.category}</span>
-                                    </p>
-                                    <h4 class="card-title">${post.title}</h4>
+                                    <div class="title-container mb-2">
+                                        <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
+                                             class="small-profile-pic mb-1" alt="Profile Picture">
+                                        <p class="fw-semibold card-subtitle">/${post.community_name}</p>
+                                        <span class="badge rounded-pill ${post.category} mb-1">${post.category}</span>
+                                    </div>
+
+                                    <h4 class="card-title fw-bold">${post.title}</h4>
                                     <p class="card-text post-body">${post.body}</p>
                                 </div>
                             </div>
@@ -70,14 +78,18 @@
                 </div>
             </div>
         </div>
+        <div class="col-1"></div>
         <%--LISTA DE NEWS--%>
-        <div class="col-3">
+        <div class="col-2">
             <div class="card  border-light">
+                <div class="card-title news-title">
+                    <h5><spring:message code="Home.News"/></h5>
+                </div>
                 <div class="card-body">
                     <c:forEach var="a_new" items="${news}">
                         <div class="card mb-3">
                             <div class="card-body">
-                                <h5 class="card-title">${a_new.title}</h5>
+                                <h5 class="card-title fw-bold">${a_new.title}</h5>
                                 <p class="card-text post-body">${a_new.body}</p>
                             </div>
                         </div>
@@ -100,10 +112,16 @@
         window.location.search = newUrl.search;
     }
     let postBody = document.getElementsByClassName('post-body');
-    console.log(postBody.length);
     for (let i = 0; i < postBody.length; i++) {
         if (postBody[i].innerText.length > 100) {
             postBody[i].innerText = postBody[i].innerText.substring(0, 100) + '...';
+        }
+    }
+
+    let communityName = document.getElementsByClassName('community-name');
+    for (let i = 0; i < communityName.length; i++) {
+        if (communityName[i].innerText.length > 10) {
+            communityName[i].innerText = communityName[i].innerText.substring(0, 10) + '...';
         }
     }
 </script>

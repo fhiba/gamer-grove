@@ -3,7 +3,7 @@
 
 <link rel="icon" href="${pageContext.request.contextPath}/images/favicon.ico" type="image/x-icon">
 <link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet"/>
-<link href="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js" rel="stylesheet"/>
+<script src="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js"></script>
 
 <section class="vh-100 gradient-custom">
     <div class="container py-5 h-100">

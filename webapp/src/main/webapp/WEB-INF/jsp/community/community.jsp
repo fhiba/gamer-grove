@@ -4,67 +4,85 @@
 <html>
 <head>
     <title>/${community.name}</title>
+    <script src="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js"></script>
     <link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet"/>
-    <link href="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js" rel="stylesheet"/>
+    <link href="${pageContext.request.contextPath}/css/general-styling.css" rel="stylesheet"/>
     <link rel="icon" href="${pageContext.request.contextPath}/images/favicon.ico" type="image/x-icon">
-
+    <script src="https://kit.fontawesome.com/002da5939d.js" crossorigin="anonymous"></script>
 </head>
 <body>
 <%@ include file="/WEB-INF/jsp/components/header.jsp" %>
-<!-- Button to trigger modal -->
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createPostModal">
-    <spring:message code="Post.Create"/>
-</button>
 
 <!-- Modal -->
 <div class="modal fade" id="createPostModal" tabindex="-1" aria-labelledby="createPostModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="createPostModalLabel"><spring:message code="Post.Create"/> </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form>
-                    <div class="mb-3">
-                        <label for="postTitle" class="form-label">Title</label>
-                        <input type="text" class="form-control" id="postTitle" placeholder="Enter post title">
-                    </div>
-                    <div class="mb-3">
-                        <label for="postContent" class="form-label">Content</label>
-                        <textarea class="form-control" id="postContent" rows="5" placeholder="Enter post content"></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label for="postCategory" class="form-label">Category</label>
-                        <select class="form-select" id="postCategory">
-                            <option selected>Select category...</option>
-                            <option value="1">Category 1</option>
-                            <option value="2">Category 2</option>
-                            <option value="3">Category 3</option>
-                        </select>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Create Post</button>
-            </div>
+            <c:url var="postUrl" value="/community/${community.name}"/>
+            <form:form action="${postUrl}" method="post" modelAttribute="newPostForm" id="postForm">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createPostModalLabel"><spring:message code="Post.Create"/></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3"><label for="titleInput" class="form-label"><spring:message
+                                code="Post.Title"/></label>
+                            <form:input path="title" class="form-control" id="titleInput"/>
+                            <form:errors path="title" cssStyle="color: red" cssClass="error"/>
+                        </div>
+                        <div class="mb-3">
+                            <label for="bodyInput" class="form-label"><spring:message code="Post.Body"/></label>
+                            <form:textarea path="body" class="form-control" id="bodyInput"/>
+                            <form:errors path="title" cssStyle="color: red" cssClass="error"/>
+                        </div>
+                        <div class="mb-3">
+                            <label for="bodyInput" class="form-label"><spring:message code="Post.Category"/></label>
+                            <form:select itemValue="${categories}" name="category" path="category"
+                                         class="form-select" id="specialtiesSelect">
+                                <option disabled selected hidden><spring:message code="Post.ChooseCategory"/></option>
+                                <c:forEach var="category" items="${categories}">
+                                    <option value="<c:out value="${category}" escapeXml="true" />">
+                                        <c:out value="${category}" escapeXml="true"/>
+                                    </option>
+                                </c:forEach>
+                            </form:select>
+                            <form:hidden path="community" value="${community.name}"/>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" onclick="submit()" class="btn btn-primary" data-bs-dismiss="modal">
+                        <spring:message code="Post.CreateButton"/></button>
+                    <form:errors cssStyle="color: red" cssClass="error"/>
+                </div>
+            </form:form>
         </div>
     </div>
 </div>
-<div class="container-fluid">
+<div class=" container-fluid">
     <div class="row mt-4">
         <div class="col-3">
         </div>
         <div class="col-6">
-            <h1 class="card-title">${community.name}</h1>
-            <h5 class="card-subtitle text-secondary">${community.description}</h5>
-            <div class="card  border-light">
+            <%--            <div class="img-container">--%>
+            <%--                <img src="${pageContext.request.contextPath}/images/test-image.jpg" class="img-fluid" alt="Community Image">--%>
+            <%--            </div>--%>
+            <div class="title-container d-flex justify-content-between">
+                <div class="d-flex align-items-center">
+                    <img src="${pageContext.request.contextPath}/images/profile-picture.jpg" class="profile-pic"
+                         alt="Profile Picture">
+                    <h1 class="card-title">/${community.name}</h1>
+                </div>
+                <!-- Button to trigger modal -->
+                <button type="button" class="btn btn-primary round-btn" data-bs-toggle="modal"
+                        data-bs-target="#createPostModal">
+                    <i class="fa-solid fa-plus"></i>
+                </button>
+            </div>
+            <h5 class="card-subtitle text-secondary mt-3 mb-1">${community.description}</h5>
+            <div class="card border-light">
                 <div class="card-body">
-                    <div class="d-flex justify-content-between ">
-                        <c:url value="/post" var="newPostUrl"/>
-                        <a href="${newPostUrl}" type="button" class="btn  btn-primary  h-25 me-2 mt-1"><spring:message code="Post.Create"/> </a>
-                    </div>
                     <c:forEach var="post" items="${posts}">
                         <c:url value="/post/${post.id}" var="postUrl"/>
                         <a href="${postUrl}" class="card-link link-underline-light">
@@ -72,7 +90,7 @@
                                 <div class="card-body">
                                     <p class="fw-semibold card-subtitle mb-1">
                                         /${post.community_name}
-                                        <span class="badge rounded-pill text-bg-primary">${post.category}</span>
+                                        <span class="badge rounded-pill ${post.category}">${post.category}</span>
                                     </p>
                                     <h4 class="card-title">${post.title}</h4>
                                     <p class="card-text post-body text-secondary post-body">${post.body}</p>
@@ -97,5 +115,9 @@
         if (postBody[i].innerText.length > 100) {
             postBody[i].innerText = postBody[i].innerText.substring(0, 100) + '...';
         }
+    }
+
+    let submit = () => {
+        document.getElementById('postForm').submit();
     }
 </script>

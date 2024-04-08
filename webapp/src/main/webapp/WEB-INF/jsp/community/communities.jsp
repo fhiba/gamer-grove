@@ -5,7 +5,8 @@
 <head>
     <title><spring:message code="Communities.Title"/> </title>
     <link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet"/>
-    <link href="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js" rel="stylesheet"/>
+    <link href="${pageContext.request.contextPath}/css/general-styling.css" rel="stylesheet"/>
+    <script src="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js"></script>
     <link rel="icon" href="${pageContext.request.contextPath}/images/favicon.ico" type="image/x-icon">
 </head>
 <body>
@@ -43,11 +44,14 @@
                         <c:url value="/community/${community.name}" var="communityUrl"/>
                         <a href="${communityUrl}" class="card-link link-underline-light">
                             <div class="card mb-3">
-                                <div class="card-body">
-                                    <h2 class="fw-semibold card-subtitle mb-1">
-                                        /${community.name}
-                                    </h2>
-                                    <h4 class="card-title text-secondary">${community.description}</h4>
+                                <div class="card-body d-flex ">
+                                    <img src="${pageContext.request.contextPath}/images/profile-picture.jpg" class="medium-profile-pic" alt="Profile Picture">
+                                    <div>
+                                        <h2 class="fw-semibold card-subtitle mb-1">
+                                            /${community.name}
+                                        </h2>
+                                        <h6 class="card-title text-secondary">${community.description}</h6>
+                                    </div>
                                 </div>
                             </div>
                         </a>
