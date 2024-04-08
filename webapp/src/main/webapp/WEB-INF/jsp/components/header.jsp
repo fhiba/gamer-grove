@@ -1,14 +1,14 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
-<nav class="navbar navbar-expand-lg ">
+<nav class="navbar">
     <div class="container-fluid">
         <div class="row w-100">
             <div class="col-3">
                 <c:url value="/" var="homeUrl"/>
                 <a class="navbar-brand d-flex align-items-end" href="${homeUrl}">
                     <img width="50" height="50" alt="logo" src="${pageContext.request.contextPath}/images/favicon.ico"/>
-                    <span class="h2"><spring:message
+                    <span class="h2 text-light mb-1"><spring:message
                             code="GamerGrove"/></span>
                 </a>
             </div>
