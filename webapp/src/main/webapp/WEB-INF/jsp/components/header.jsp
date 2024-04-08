@@ -32,7 +32,7 @@
             </div>
             <div class="col-3 d-flex justify-content-end align-items-center">
                 <c:url value="/login" var="loginUrl"/>
-                <a class="btn btn-outline-primary h-50" href="${loginUrl}"><spring:message code="Navbar.Login"/></a>
+                <a class="btn btn-outline-primary " href="${loginUrl}"><spring:message code="Navbar.Login"/></a>
             </div>
         </div>
     </div>
