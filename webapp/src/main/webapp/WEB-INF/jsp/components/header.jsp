@@ -1,11 +1,5 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<%--
-  Created by IntelliJ IDEA.
-  User: juani
-  Date: 3/30/2024
-  Time: 6:17 PM
-  To change this template use File | Settings | File Templates.
---%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <nav class="navbar navbar-expand-lg ">
     <div class="container-fluid">
@@ -30,10 +24,18 @@
                             code="Navbar.Search"/></button>
                 </form>
             </div>
+            <c:if test="${not empty pageContext.request.userPrincipal}">
             <div class="col-3 d-flex justify-content-end align-items-center">
-                <c:url value="/login" var="loginUrl"/>
-                <a class="btn btn-outline-primary " href="${loginUrl}"><spring:message code="Navbar.Login"/></a>
+                <c:url value="/logout" var="logoutUrl"/>
+                <a class="btn btn-outline-primary " href="${logoutUrl}"><spring:message code="Navbar.Login"/></a>
             </div>
+            </c:if>
+            <c:if test="${empty pageContext.request.userPrincipal}">
+                <div class="col-3 d-flex justify-content-end align-items-center">
+                    <c:url value="/login" var="loginUrl"/>
+                    <a class="btn btn-outline-primary " href="${loginUrl}"><spring:message code="Navbar.Login"/></a>
+                </div>
+            </c:if>
         </div>
     </div>
 </nav>

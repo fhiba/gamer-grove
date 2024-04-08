@@ -40,4 +40,15 @@ public class NewPostForm {
         return category;
     }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setCommunity(String community) {
+        this.community = community;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
 }

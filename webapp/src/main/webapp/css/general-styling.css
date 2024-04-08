@@ -1,0 +1,104 @@
+/* Import Inter font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+
+/* Apply Inter font to the entire page */
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+.miscellaneous {
+    background-color: #FF5733; /* Change to desired color for Miscellaneous */
+}
+
+.review {
+    background-color: #FFC300; /* Change to desired color for Review */
+}
+
+.help {
+    background-color: #3498DB; /* Change to desired color for Help */
+}
+
+.guide {
+    background-color: #27AE60; /* Change to desired color for Guide */
+}
+
+.news {
+    background-color: #9B59B6; /* Change to desired color for News */
+}
+
+.recommendation {
+    background-color: #34495E; /* Change to desired color for Recommendation */
+}
+
+.navbar {
+    background-color: #1c1919;!important; /* Change to desired color for Navbar */
+}
+
+.img-container {
+    width: 100%; /* Ensure the container spans the entire width of the middle column */
+    height: 30vh; /* Set the height to 30% of the viewport height */
+    overflow: hidden; /* Hide any overflow from the image */
+}
+
+.news-title {
+    margin-top: 10px; /* Moves the title a bit down */
+    margin-left: 15px;
+    text-align: left; /* Centers the title */
+}
+
+.community-card {
+    margin-bottom: 10px; /* Adjusts the space between each card */
+}
+
+.img-fluid {
+    position: absolute;
+    left: 50%; /* Position the image horizontally centered */
+    transform: translateX(-50%); /* Adjust the position to center the image */
+    width: 100%; /* Ensure the image takes the full width of its container */
+    height: 100%; /* Ensure the image takes the full height of its container */
+    object-fit: cover; /* Crop the image to cover the container while maintaining its aspect ratio */
+}
+
+.profile-pic {
+    width: 50px; /* Adjust as needed */
+    height: 50px; /* Adjust as needed */
+    border-radius: 50%; /* Makes the image circular */
+    object-fit: cover; /* Ensures the image covers the entire element, cropping if necessary */
+}
+
+.title-container {
+    display: flex; /* Aligns items in a row */
+    align-items: center; /* Vertically centers the items in the row */
+    gap: 10px; /* Adds a gap between the items */
+}
+
+.small-profile-pic {
+    width: 25px; /* Adjust as needed */
+    height: 25px; /* Adjust as needed */
+    border-radius: 50%; /* Makes the image circular */
+    object-fit: cover; /* Ensures the image covers the entire element, cropping if necessary */
+}
+
+.very-small-profile-pic {
+    width: 20px; /* Adjust as needed */
+    height: 20px; /* Adjust as needed */
+    border-radius: 50%; /* Makes the image circular */
+    object-fit: cover; /* Ensures the image covers the entire element, cropping if necessary */
+}
+
+.round-btn {
+    border-radius: 50%; /* Makes the button round */
+    padding: 10px 12px; /* Adjusts the padding to make the button larger */
+}
+
+.round-btn .fa-solid.fa-plus {
+    font-size: 20px; /* Increases the size of the plus icon */
+}
+
+.medium-profile-pic {
+    width: 35px; /* Adjusts the width of the image */
+    height: 35px; /* Adjusts the height of the image */
+    border-radius: 50%; /* Makes the image round */
+    margin-right: 10px; /* Adds some space between the image and the community name */
+    object-fit: cover; /* Ensures the image covers the entire element, cropping if necessary */
+}

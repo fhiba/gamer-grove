@@ -42,14 +42,27 @@ public class CommunityController {
 
 
     @RequestMapping(path="/community/{communityName}", method = RequestMethod.GET)
-    public ModelAndView community(@PathVariable("communityName") final String communityName) {
+    public ModelAndView community(@PathVariable("communityName") final String communityName, @ModelAttribute("newPostForm") final NewPostForm newPostForm){
         ModelAndView mav = new ModelAndView("community/community");
         Community community = cs.findByName(communityName);
         List<Post> posts = ps.getPostsByCommunity(communityName);
+        mav.addObject("categories", Arrays.stream(PostCategories.values()).map(PostCategories::getCategory).toArray(String[]::new));
         mav.addObject("community",community);
         mav.addObject("posts",posts);
         return mav;
     }
+
+    @RequestMapping(path="/community/{communityName}", method = RequestMethod.POST)
+    public ModelAndView createPostOnCommunity(@PathVariable("communityName") final String communityName, @ModelAttribute("newPostForm") final NewPostForm newPostForm,BindingResult errors) {
+
+        if(errors.hasErrors())
+            return community(communityName,newPostForm);
+
+        ps.createPost(newPostForm.getTitle(),newPostForm.getBody(),communityName,newPostForm.getCategory());
+        return new ModelAndView("redirect:/community/"+communityName);
+    }
+
+
 
     @RequestMapping(path="/communities", method = RequestMethod.GET)
     public ModelAndView communities(@ModelAttribute("searchTerms") final String searchTerms) {
@@ -63,12 +76,16 @@ public class CommunityController {
 
     @RequestMapping(path="/community/{communityName}/new", method = RequestMethod.POST)
     public ModelAndView newCommunityPost(@PathVariable("communityName") final String communityName,@ModelAttribute("newPostForm") final NewPostForm newPostForm,BindingResult errors) {
+        System.out.println(newPostForm.getCategory());
+        System.out.println(newPostForm.getBody());
+        System.out.println(newPostForm.getTitle());
+        System.out.println(newPostForm.getCommunity());
         if(errors.hasErrors())
-            return community(communityName);
+            return community(communityName,newPostForm);
         //chequeo de que exista la community
         Community community = cs.findByName(communityName);
         ps.createPost(newPostForm.getTitle(),newPostForm.getBody(),community.getName(),newPostForm.getCategory());
-        return community(communityName);
+        return community(communityName,newPostForm);
     }
 
 }
