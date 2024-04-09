@@ -11,7 +11,7 @@
 <body>
 <%@ include file="/WEB-INF/jsp/components/header.jsp" %>
 <div class="container-fluid h-100">
-    <div class="row mt-4">
+    <div class="row mt-4 mb-3">
         <%--COMMUNITY LIST--%>
         <div class="col-3">
             <div class="card  border-light">
@@ -108,8 +108,9 @@
             </div>
         </div>
     </div>
+    <%@ include file="/WEB-INF/jsp/components/footer.jsp" %>
 </div>
-<%@ include file="/WEB-INF/jsp/components/footer.jsp" %>
+
 </body>
 </html>
 <script>
