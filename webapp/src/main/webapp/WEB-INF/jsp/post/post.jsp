@@ -48,6 +48,43 @@
                     <p class="card-text"><small class="text-body-secondary">${post.date.format(format)}</small></p>
                 </div>
             </div>
+            <%--COMMENTS--%>
+            <div class="card bg-body-secondary">
+                <div class="card-body">
+                    <c:url var="commentUrl" value="/comment"/>
+                    <form:form action="${commentUrl}" method="post" modelAttribute="newCommentForm">
+                        <div class="form-outline form-white mb-4">
+                            <form:textarea path="body" class="w-100 rounded-3 pt-2 ps-2" rows="4"
+                                           placeholder="Join the discussion and leave a comment!"/>
+                            <form:errors path="body" cssStyle="color: red" cssClass="error"/>
+                        </div>
+                        <form:hidden path="postId" value="${post.id}"/>
+                        <button class="btn btn-primary" type="submit">
+                            <spring:message code="Post.Comment"/>
+                        </button>
+                        <form:errors cssStyle="color: red" cssClass="error"/>
+                    </form:form>
+                    <ul class="list-group">
+                        <c:forEach var="comment" items="${comments}">
+                            <li class="list-group-item d-flex justify-content-between align-items-start bg-body-secondary">
+                                <img src="${pageContext.request.contextPath}/images/default-avatar-icon.jpg"
+                                     height="50" width="50" class="rounded-5" alt="Profile Picture">
+                                <div class="ms-2 me-auto">
+                                    <div class="fw-bold"><c:out value="${comment.username}" escapeXml="true"/></div>
+                                    <p>
+                                        <c:out value="${comment.body}" escapeXml="true"/>
+                                    </p>
+                                    <p>
+                                        <small class="text-body-secondary">
+                                            <c:out value="${comment.date.format(format)}" escapeXml="true"/>
+                                        </small>
+                                    </p>
+                                </div>
+                            </li>
+                        </c:forEach>
+                    </ul>
+                </div>
+            </div>
         </div>
         <%--POSTS LIST OF THE COMMUNITY--%>
         <div class="col-3">
