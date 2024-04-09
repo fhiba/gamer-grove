@@ -7,6 +7,7 @@
     <link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="${pageContext.request.contextPath}/css/general-styling.css" rel="stylesheet"/>
     <script src="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
 <body>
 <%@ include file="/WEB-INF/jsp/components/header.jsp" %>
@@ -79,6 +80,78 @@
                                             <c:out value="${comment.date.format(format)}" escapeXml="true"/>
                                         </small>
                                     </p>
+                                </div>
+                                <div class="d-flex flex-column align-items-center">
+                                    <span class="grooviness-count">${comment.grooviness}</span>
+                                    <c:if test="${upComments.contains(comment)}">
+                                        <c:url value="/post/{postId}/+" var="upCommentUrl"/>
+                                        <form:form action="${upCommentUrl}" method="post"
+                                                   modelAttribute="newCommentGroovyForm">
+                                            <form:hidden path="commentId" value="${comment.id}"/>
+                                            <form:hidden path="commentPostId" value="${post.id}"/>
+                                            <form:hidden path="groovyType" value="false"/>
+                                            <button type="submit" class="btn">
+                                                <i class="fas fa-arrow-up text-primary"></i>
+                                            </button>
+                                        </form:form>
+
+                                        <c:url value="/post/{postId}/+" var="upCommentUrl"/>
+                                        <form:form action="${upCommentUrl}" method="post"
+                                                   modelAttribute="newCommentGroovyForm">
+                                            <form:hidden path="commentId" value="${comment.id}"/>
+                                            <form:hidden path="commentPostId" value="${post.id}"/>
+                                            <form:hidden path="groovyType" value="false"/>
+                                            <button type="submit" class="btn">
+                                                <i class="fas fa-arrow-down"></i>
+                                            </button>
+                                        </form:form>
+
+                                    </c:if>
+                                    <c:if test="${downComments.contains(comment)}">
+                                        <c:url value="/post/{postId}/+" var="upCommentUrl"/>
+                                        <form:form action="${upCommentUrl}" method="post"
+                                                   modelAttribute="newCommentGroovyForm">
+                                            <form:hidden path="commentId" value="${comment.id}"/>
+                                            <form:hidden path="commentPostId" value="${post.id}"/>
+                                            <form:hidden path="groovyType" value="true"/>
+                                            <button type="submit" class="btn">
+                                                <i class="fas fa-arrow-up"></i>
+                                            </button>
+                                        </form:form>
+                                        <c:url value="/post/{postId}/+" var="upCommentUrl"/>
+                                        <form:form action="${upCommentUrl}" method="post"
+                                                   modelAttribute="newCommentGroovyForm">
+                                            <form:hidden path="commentId" value="${comment.id}"/>
+                                            <form:hidden path="commentPostId" value="${post.id}"/>
+                                            <form:hidden path="groovyType" value="true"/>
+                                            <button type="submit" class="btn">
+                                                <i class="fas fa-arrow-down text-danger"></i>
+                                            </button>
+                                        </form:form>
+                                    </c:if>
+                                    <c:if test="${!upComments.contains(comment) && !downComments.contains(comment)}">
+                                        <c:url value="/post/{postId}/+" var="upCommentUrl"/>
+                                        <form:form action="${upCommentUrl}" method="post"
+                                                   modelAttribute="newCommentGroovyForm">
+                                            <form:hidden path="commentId" value="${comment.id}"/>
+                                            <form:hidden path="commentPostId" value="${post.id}"/>
+                                            <form:hidden path="groovyType" value="true"/>
+                                            <button type="submit" class="btn">
+                                                <i class="fas fa-arrow-up"></i>
+                                            </button>
+                                        </form:form>
+                                        <c:url value="/post/{postId}/+" var="upCommentUrl"/>
+                                        <form:form action="${upCommentUrl}" method="post"
+                                                   modelAttribute="newCommentGroovyForm">
+                                            <form:hidden path="commentId" value="${comment.id}"/>
+                                            <form:hidden path="commentPostId" value="${post.id}"/>
+                                            <form:hidden path="groovyType" value="false"/>
+                                            <button type="submit" class="btn">
+                                                <i class="fas fa-arrow-down"></i>
+                                            </button>
+                                        </form:form>
+
+                                    </c:if>
                                 </div>
                             </li>
                         </c:forEach>
