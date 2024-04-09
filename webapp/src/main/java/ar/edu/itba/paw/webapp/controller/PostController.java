@@ -2,12 +2,15 @@ package ar.edu.itba.paw.webapp.controller;
 
 
 import ar.edu.itba.paw.exceptions.NoSuchPostException;
+import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.PostCategories;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.services.CommentService;
 import ar.edu.itba.paw.services.CommunityService;
 import ar.edu.itba.paw.services.PostService;
 import ar.edu.itba.paw.services.UserService;
+import ar.edu.itba.paw.webapp.form.NewCommentForm;
 import ar.edu.itba.paw.webapp.form.NewPostForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,6 +21,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.validation.Valid;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -29,6 +33,9 @@ public class PostController {
     private CommunityService cs;
     @Autowired
     private UserService us;
+
+    @Autowired
+    private CommentService commentService;
 
     @RequestMapping(path="/post", method = RequestMethod.POST)
     public ModelAndView newPost(@Valid @ModelAttribute("newPostForm") final NewPostForm newPostForm, final BindingResult errors) {
@@ -64,7 +71,7 @@ public class PostController {
     }
 
     @RequestMapping(path="/post/{postId}", method = RequestMethod.GET)
-    public ModelAndView singlePost(@PathVariable("postId") final long postId) {
+    public ModelAndView singlePost(@PathVariable("postId") final long postId, @ModelAttribute("newCommentForm") final NewCommentForm newCommentForm) {
         ModelAndView mav = new ModelAndView("/post/post");
         mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
         Post post;
@@ -75,6 +82,12 @@ public class PostController {
             return new ModelAndView("/error/404");
 
         }
+//        try{
+            List<Comment> comments = commentService.getPostComments((postId));
+            mav.addObject("comments",comments);
+//        }catch (RuntimeException e){
+//            //TODO: Catch it
+//        }
         Optional<User> author = us.findById(post.getAuthor_id());
         mav.addObject("author", author.isPresent()?author.get().getUsername():"[deleted]");
         //TODO: SHOULD BE THE ONES THAT ARE CURRENTLY BEING FOLLOWED BY USER OR A FEW RANDOMLY SELECTED
