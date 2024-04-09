@@ -1,3 +1,4 @@
+import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
 import ar.edu.itba.paw.models.Community;
 import ar.edu.itba.paw.persistance.CommunityDao;
 import org.junit.Test;
@@ -34,7 +35,12 @@ public class CommunityServiceTest {
         // Setup
         Mockito.when(mockDao.findByName(Mockito.eq(NAME))).thenReturn(Optional.of(new Community(ID, NAME, PORTRAIT_ID, DESCRIPTION)));
         // Exercise
-        Community community = cs.findByName(NAME);
+        Community community = null;
+        try {
+            community = cs.findByName(NAME);
+        } catch (NoSuchCommunityException e) {
+            throw new RuntimeException(e);
+        }
         // Verify
         assertEquals(ID, community.getId());
         assertEquals(NAME, community.getName());
@@ -46,15 +52,21 @@ public class CommunityServiceTest {
         // Setup
         Mockito.when(mockDao.findById(Mockito.eq(ID))).thenReturn(Optional.of(new Community(ID, NAME, PORTRAIT_ID, DESCRIPTION)));
         // Exercise
-        Community community = cs.findById(ID);
+        Community community = null;
+        try {
+            community = cs.findById(ID);
+        } catch (NoSuchCommunityException e) {
+            throw new RuntimeException(e);
+        }
         // Verify
         assertEquals(ID, community.getId());
         assertEquals(NAME, community.getName());
         assertEquals(DESCRIPTION, community.getDescription());
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testFailedFindById() {
+    @Test(expected = NoSuchCommunityException.class)
+
+    public void testFailedFindById() throws NoSuchCommunityException {
         // Setup
         Mockito.when(mockDao.findById(Mockito.eq(ID))).thenReturn(Optional.empty());
         // Exercise

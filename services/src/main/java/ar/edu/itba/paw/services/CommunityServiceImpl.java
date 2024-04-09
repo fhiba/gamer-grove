@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
 import ar.edu.itba.paw.models.Community;
 import ar.edu.itba.paw.persistance.CommunityDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,20 +29,18 @@ public class CommunityServiceImpl implements CommunityService{
     }
 
     @Override
-    public Community findByName(final String communityName) {
+    public Community findByName(final String communityName) throws NoSuchCommunityException {
         Optional<Community> possibleCommunity = communityDao.findByName(communityName);
         if(possibleCommunity.isEmpty())
-            //TODO corregir exception a la correcta
-            throw new IllegalArgumentException("Community not found");
+            throw new NoSuchCommunityException("Community " + communityName+ " not found");
         return possibleCommunity.get();
     }
 
     @Override
-    public Community findById(final long communityId) {
+    public Community findById(final long communityId) throws NoSuchCommunityException{
         Optional<Community> community = communityDao.findById(communityId);
         if(community.isEmpty())
-            //TODO corregir exception a la correcta
-            throw new IllegalArgumentException("Community not found");
+            throw new NoSuchCommunityException("Community " + communityId+ " not found");
         return community.get();
     }
 

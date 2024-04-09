@@ -1,5 +1,7 @@
 package ar.edu.itba.paw.webapp.controller;
 
+import ar.edu.itba.paw.exceptions.NoLoggedUserException;
+import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
 import ar.edu.itba.paw.models.Community;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.PostCategories;
@@ -42,7 +44,7 @@ public class CommunityController {
 
 
     @RequestMapping(path="/community/{communityName}", method = RequestMethod.GET)
-    public ModelAndView community(@PathVariable("communityName") final String communityName, @ModelAttribute("newPostForm") final NewPostForm newPostForm){
+    public ModelAndView community(@PathVariable("communityName") final String communityName, @ModelAttribute("newPostForm") final NewPostForm newPostForm) throws NoSuchCommunityException {
         ModelAndView mav = new ModelAndView("community/community");
         Community community = cs.findByName(communityName);
         List<Post> posts = ps.getPostsByCommunity(communityName);
@@ -75,7 +77,7 @@ public class CommunityController {
     }
 
     @RequestMapping(path="/community/{communityName}/new", method = RequestMethod.POST)
-    public ModelAndView newCommunityPost(@PathVariable("communityName") final String communityName,@ModelAttribute("newPostForm") final NewPostForm newPostForm,BindingResult errors) {
+    public ModelAndView newCommunityPost(@PathVariable("communityName") final String communityName,@ModelAttribute("newPostForm") final NewPostForm newPostForm,BindingResult errors) throws NoSuchCommunityException, NoLoggedUserException {
         System.out.println(newPostForm.getCategory());
         System.out.println(newPostForm.getBody());
         System.out.println(newPostForm.getTitle());
@@ -83,6 +85,7 @@ public class CommunityController {
         if(errors.hasErrors())
             return community(communityName,newPostForm);
         //chequeo de que exista la community
+            return community(communityName);
         Community community = cs.findByName(communityName);
         ps.createPost(newPostForm.getTitle(),newPostForm.getBody(),community.getName(),newPostForm.getCategory());
         return community(communityName,newPostForm);
