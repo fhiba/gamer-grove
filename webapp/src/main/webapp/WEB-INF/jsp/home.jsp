@@ -16,13 +16,13 @@
 <div class="container-fluid">
     <div class="row mt-4 mb-3">
         <%--COMMUNITY LIST--%>
-        <div class="col-2">
-            <div class="card border-light">
+        <div class="col-2 sidebar">
+            <div class="card sidebar-card">
                 <div class="card-body">
                     <c:forEach var="community" items="${communities}">
                         <c:url value="community/${community.name}" var="communityUrl"/>
                         <a href="${communityUrl}" class="card-link text-decoration-none">
-                            <div class="card-body d-flex align-items-center text-decoration-none">
+                            <div class="card-body-community d-flex align-items-center text-decoration-none">
                                 <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
                                      class="very-small-profile-pic mb-1" alt="Profile Picture">
                                 <div class="text-decoration-none">
