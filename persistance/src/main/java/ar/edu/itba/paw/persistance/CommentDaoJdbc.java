@@ -1,7 +1,6 @@
 package ar.edu.itba.paw.persistance;
 
 import ar.edu.itba.paw.models.Comment;
-import ar.edu.itba.paw.models.Post;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;

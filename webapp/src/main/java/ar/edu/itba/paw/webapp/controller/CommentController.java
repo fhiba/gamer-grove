@@ -3,7 +3,6 @@ package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.services.CommentService;
 import ar.edu.itba.paw.webapp.form.NewCommentForm;
-import ar.edu.itba.paw.webapp.form.NewPostForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
