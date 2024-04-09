@@ -55,7 +55,7 @@ public class CommunityController {
     }
 
     @RequestMapping(path="/community/{communityName}", method = RequestMethod.POST)
-    public ModelAndView createPostOnCommunity(@PathVariable("communityName") final String communityName, @ModelAttribute("newPostForm") final NewPostForm newPostForm,BindingResult errors) {
+    public ModelAndView createPostOnCommunity(@PathVariable("communityName") final String communityName, @ModelAttribute("newPostForm") final NewPostForm newPostForm,BindingResult errors) throws NoLoggedUserException, NoSuchCommunityException {
 
         if(errors.hasErrors())
             return community(communityName,newPostForm);
@@ -85,7 +85,6 @@ public class CommunityController {
         if(errors.hasErrors())
             return community(communityName,newPostForm);
         //chequeo de que exista la community
-            return community(communityName);
         Community community = cs.findByName(communityName);
         ps.createPost(newPostForm.getTitle(),newPostForm.getBody(),community.getName(),newPostForm.getCategory());
         return community(communityName,newPostForm);

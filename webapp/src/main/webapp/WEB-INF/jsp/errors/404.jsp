@@ -4,9 +4,10 @@
 <html>
 <head>
     <title><spring:message code="404"/></title>
-    <link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet"/>
-    <link href="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js" rel="stylesheet"/>
     <link rel="icon" href="${pageContext.request.contextPath}/images/favicon.ico" type="image/x-icon">
+    <link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="${pageContext.request.contextPath}/css/general-styling.css" rel="stylesheet"/>
+    <script src="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
 
