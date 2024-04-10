@@ -70,11 +70,24 @@ INSERT INTO post_categories (category) VALUES('News');
 ALTER TABLE post ADD COLUMN category TEXT DEFAULT 'Miscellaneous';
 ALTER TABLE post ADD FOREIGN KEY (category) REFERENCES post_categories(category);
 
-create table if not exists groovy_history(
+DROP TABLE IF EXISTS groovy_history;
+
+create table if not exists groovy_post_history(
                                              user_id INT not null,
                                              post_id int not null,
                                              groovy_type boolean not null,
                                              primary key(user_id, post_id),
                                              foreign key(user_id) references users(id),
                                              foreign key(post_id) references post(id)
+);
+
+create table if not exists groovy_comment_history(
+                                                  user_id INT not null,
+                                                  post_id int not null,
+                                                  comment_id int not null,
+                                                  groovy_type boolean not null,
+                                                  primary key(user_id, post_id,comment_id),
+                                                  foreign key(user_id) references users(id),
+                                                  foreign key(post_id) references post(id),
+                                                  foreign key(comment_id) references comment(id)
 );

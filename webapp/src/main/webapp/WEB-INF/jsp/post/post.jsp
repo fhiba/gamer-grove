@@ -7,22 +7,26 @@
     <link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="${pageContext.request.contextPath}/css/general-styling.css" rel="stylesheet"/>
     <script src="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
 <body>
 <%@ include file="/WEB-INF/jsp/components/header.jsp" %>
 <div class="container-fluid h-100">
-    <div class="row mt-4">
+    <div class="row">
         <%--COMMUNITY LIST--%>
-        <div class="col-3">
-            <div class="card  border-light">
+        <div class="col-2 sidebar">
+            <div class="card sidebar-card">
                 <div class="card-body">
                     <c:forEach var="community" items="${communities}">
-                        <c:url value="/community/${community.name}" var="communityUrl"/>
-                        <a href="${communityUrl}" class="text-decoration-none text-body-primary link-underline-light">
-                            <div class="card mb-3">
-                                <div class="card-body">
-                                    <h5 class="card-title">${community.name}</h5>
-                                    <p class="card-text">${community.description}</p>
+                        <c:url value="community/${community.name}" var="communityUrl"/>
+                        <a href="${communityUrl}" class="card-link text-decoration-none">
+                            <div class="card-body-community d-flex align-items-center text-decoration-none">
+                                <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
+                                     class="very-small-profile-pic mb-1" alt="Profile Picture">
+                                <div class="text-decoration-none">
+                                    <h5 class="fw-semibold card-subtitle community-name">
+                                        /${community.name}
+                                    </h5>
                                 </div>
                             </div>
                         </a>
@@ -30,10 +34,9 @@
                 </div>
             </div>
         </div>
-
         <%--POST DATA--%>
         <div class="col-6">
-            <div class="card border-light">
+            <div class="card border-0 bg-transparent">
                 <div class="card-body">
                     <p class="fw-semibold card-subtitle mb-1">
                         <c:url value="/community/${post.community_name}" var="communityUrl"/>
@@ -48,10 +51,88 @@
                     <p class="card-text"><small class="text-body-secondary">${post.date.format(format)}</small></p>
                 </div>
             </div>
+            <%--COMMENTS--%>
+            <div class="card bg-body-secondary">
+                <div class="card-body">
+                    <c:url var="commentUrl" value="/comment"/>
+                    <form:form action="${commentUrl}" method="post" modelAttribute="newCommentForm">
+                        <div class="form-outline form-white mb-4">
+                            <form:textarea path="body" class="w-100 rounded-3 pt-2 ps-2" rows="4"
+                                           placeholder="Join the discussion and leave a comment!"/>
+                            <form:errors path="body" cssStyle="color: red" cssClass="error"/>
+                        </div>
+                        <form:hidden path="postId" value="${post.id}"/>
+                        <button class="btn btn-primary" type="submit">
+                            <spring:message code="Post.Comment"/>
+                        </button>
+                        <form:errors cssStyle="color: red" cssClass="error"/>
+                    </form:form>
+                    <div class="d-none">
+                        <c:url value="/post/{postId}/+" var="upCommentUrl"/>
+                        <form:form action="${upCommentUrl}" method="post" id="upCommentForm"
+                                   modelAttribute="newCommentGroovyForm">
+                            <form:hidden path="commentId" id="commentId" />
+                            <form:hidden path="commentPostId" value="${post.id}"/>
+                            <form:hidden path="groovyType" id="groovyType" />
+                        </form:form>
+                    </div>
+
+                    <ul class="list-group">
+                        <c:forEach var="comment" items="${comments}">
+                            <li class="list-group-item d-flex justify-content-between align-items-start bg-body-secondary">
+                                <img src="${pageContext.request.contextPath}/images/default-avatar-icon.jpg"
+                                     height="50" width="50" class="rounded-5" alt="Profile Picture">
+                                <div class="ms-2 me-auto">
+                                    <div class="fw-bold"><c:out value="${comment.username}" escapeXml="true"/>
+                                    </div>
+                                    <p>
+                                        <c:out value="${comment.body}" escapeXml="true"/>
+                                    </p>
+                                    <p>
+                                        <small class="text-body-secondary">
+                                            <c:out value="${comment.date.format(format)}" escapeXml="true"/>
+                                        </small>
+                                    </p>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <span class="grooviness-count">${comment.grooviness}</span>
+                                    <div class="d-flex flex-column">
+                                        <c:if test="${upComments.contains(comment)}">
+                                            <button onclick="postGroovyUpdate(true, ${comment.id})" class="btn">
+                                                <i class="fas fa-arrow-up text-primary"></i>
+                                            </button>
+                                            <button onclick="postGroovyUpdate(false, ${comment.id})" class="btn">
+                                                <i class="fas fa-arrow-down"></i>
+                                            </button>
+                                        </c:if>
+                                        <c:if test="${downComments.contains(comment)}">
+                                            <button onclick="postGroovyUpdate(true, ${comment.id})" class="btn">
+                                                <i class="fas fa-arrow-up"></i>
+                                            </button>
+                                            <button onclick="postGroovyUpdate(false, ${comment.id})" class="btn">
+                                                <i class="fas fa-arrow-down text-danger"></i>
+                                            </button>
+                                        </c:if>
+                                        <c:if test="${!upComments.contains(comment) && !downComments.contains(comment)}">
+                                            <button onclick="postGroovyUpdate(true, ${comment.id})" class="btn">
+                                                <i class="fas fa-arrow-up"></i>
+                                            </button>
+
+                                            <button onclick="postGroovyUpdate(false, ${comment.id})" class="btn">
+                                                <i class="fas fa-arrow-down"></i>
+                                            </button>
+                                        </c:if>
+                                    </div>
+                                </div>
+                            </li>
+                        </c:forEach>
+                    </ul>
+                </div>
+            </div>
         </div>
         <%--POSTS LIST OF THE COMMUNITY--%>
         <div class="col-3">
-            <div class="card  border-light">
+            <div class="card  border-0 bg-transparent">
                 <div class="card-body">
                     <c:forEach items="${posts}" var="otherPost">
                     <c:url value="/post/${otherPost.id}" var="postUrl"/>
@@ -71,8 +152,8 @@
             </div>
         </div>
     </div>
+    <%@ include file="/WEB-INF/jsp/components/footer.jsp" %>
 </div>
-<%@ include file="/WEB-INF/jsp/components/footer.jsp" %>
 </body>
 </html>
 <script>
@@ -89,4 +170,14 @@
             otherPostTitle[i].innerText = otherPostTitle[i].innerText.substring(0, 30) + '...';
         }
     }
+
+
+    let postGroovyUpdate = (updateType, id) => {
+        let groovyType = document.getElementById('groovyType');
+        let commentId = document.getElementById('commentId');
+        groovyType.value = updateType;
+        commentId.value = id;
+        document.getElementById('upCommentForm').submit();
+    }
+
 </script>

@@ -31,7 +31,9 @@ body {
 }
 
 .navbar {
-    background-color: #1c1919;!important; /* Change to desired color for Navbar */
+    background-color: #1c1919;
+!important; /* Change to desired color for Navbar */
+    box-shadow: 5px 0px 10px rgba(0, 0, 0, 0.5);
 }
 
 .img-container {
@@ -101,4 +103,22 @@ body {
     border-radius: 50%; /* Makes the image round */
     margin-right: 10px; /* Adds some space between the image and the community name */
     object-fit: cover; /* Ensures the image covers the entire element, cropping if necessary */
+}
+
+.card-body-community {
+    margin-bottom: -10px;
+    background-color: #1c1919; /* Change to desired color for Sidebar */
+    border-color: #1c1919;
+}
+
+.sidebar-card{
+    background-color: #1c1919; /* Change to desired color for Sidebar */
+    border-color: #1c1919; /* Change to desired color for Sidebar border */
+    margin-left: 10px;
+    margin-top: 50px;
+}
+.sidebar{
+    background-color: #1c1919; /* Change to desired color for Sidebar */
+    border-color: #1c1919; /* Change to desired color for Sidebar border */
+    box-shadow: 5px 0px 10px rgba(0, 0, 0, 0.5); ;
 }

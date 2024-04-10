@@ -4,12 +4,17 @@ package ar.edu.itba.paw.webapp.controller;
 import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
 import ar.edu.itba.paw.exceptions.NoSuchPostException;
+import ar.edu.itba.paw.exceptions.UserNotFoundException;
+import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.PostCategories;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.services.CommentService;
 import ar.edu.itba.paw.services.CommunityService;
 import ar.edu.itba.paw.services.PostService;
 import ar.edu.itba.paw.services.UserService;
+import ar.edu.itba.paw.webapp.form.NewCommentForm;
+import ar.edu.itba.paw.webapp.form.NewCommentGroovyForm;
 import ar.edu.itba.paw.webapp.excpetion.PostNotFoundException;
 import ar.edu.itba.paw.webapp.form.NewPostForm;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +26,8 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.validation.Valid;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -32,6 +39,9 @@ public class PostController {
     private CommunityService cs;
     @Autowired
     private UserService us;
+
+    @Autowired
+    private CommentService commentService;
 
     @RequestMapping(path="/post", method = RequestMethod.POST)
     public ModelAndView newPost(@Valid @ModelAttribute("newPostForm") final NewPostForm newPostForm, final BindingResult errors) throws NoLoggedUserException, NoSuchCommunityException {
@@ -51,7 +61,7 @@ public class PostController {
         return new ModelAndView("redirect:/home");
     }
 
-    @RequestMapping(path="/post", method = RequestMethod.GET)
+    @RequestMapping(path = "/post", method = RequestMethod.GET)
     public ModelAndView getNewPost(@ModelAttribute("newPostForm") final NewPostForm newPostForm) {
         ModelAndView mav = new ModelAndView("post/newPost");
         //TODO: SHOULD BE THE ONES THAT ARE CURRENTLY BEING FOLLOWED BY USER OR A FEW RANDOMLY SELECTED
@@ -64,7 +74,7 @@ public class PostController {
     @RequestMapping(path = {"/home", "/"}, method = RequestMethod.GET)
     public ModelAndView getAllPosts(@RequestParam(value = "category", required = false) final String category) {
         ModelAndView mav = new ModelAndView("/home");
-        if(category != null && !category.isEmpty() && !category.equals("all")) {
+        if (category != null && !category.isEmpty() && !category.equals("all")) {
             mav.addObject("posts", ps.getByCategory(category));
         } else {
             mav.addObject("posts", ps.getAllPosts());
@@ -76,8 +86,8 @@ public class PostController {
         return mav;
     }
 
-    @RequestMapping(path="/post/{postId}", method = RequestMethod.GET)
-    public ModelAndView singlePost(@PathVariable("postId") final long postId) throws NoSuchPostException{
+    @RequestMapping(path = "/post/{postId}", method = RequestMethod.GET)
+    public ModelAndView singlePost(@PathVariable("postId") final long postId, @ModelAttribute("newCommentForm") final NewCommentForm newCommentForm, @ModelAttribute("newCommentGroovyForm") final NewCommentGroovyForm newCommentGroovyForm) throws UserNotFoundException, NoSuchPostException {
         ModelAndView mav = new ModelAndView("/post/post");
         mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
         Post post;
@@ -88,8 +98,21 @@ public class PostController {
             //TODO: Should log
             throw e;
         }
+
+        List<Comment> comments = commentService.getPostComments((postId));
+        List<Comment> grooviedComments = Collections.emptyList();
+        List<Comment> negativeGrooviedComments = Collections.emptyList();
+
+        if (us.getLoggedUser().isPresent()) {
+            grooviedComments = commentService.getUpGroovedComments(postId);
+            negativeGrooviedComments = commentService.getDownGroovedComments(postId);
+        }
+        mav.addObject("upComments", grooviedComments);
+        mav.addObject("downComments", negativeGrooviedComments);
+
+        mav.addObject("comments", comments);
         Optional<User> author = us.findById(post.getAuthor_id());
-        mav.addObject("author", author.isPresent()?author.get().getUsername():"[deleted]");
+        mav.addObject("author", author.isPresent() ? author.get().getUsername() : "[deleted]");
         //TODO: SHOULD BE THE ONES THAT ARE CURRENTLY BEING FOLLOWED BY USER OR A FEW RANDOMLY SELECTED
         mav.addObject("communities", cs.getAllCommunities());
         mav.addObject("posts", ps.getPostsByCommunity(post.getCommunity_name()));

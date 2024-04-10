@@ -27,7 +27,7 @@
             <c:if test="${not empty pageContext.request.userPrincipal}">
             <div class="col-3 d-flex justify-content-end align-items-center">
                 <c:url value="/logout" var="logoutUrl"/>
-                <a class="btn btn-outline-primary " href="${logoutUrl}"><spring:message code="Navbar.Login"/></a>
+                <a class="btn btn-outline-primary " href="${logoutUrl}"><spring:message code="Logout"/></a>
             </div>
             </c:if>
             <c:if test="${empty pageContext.request.userPrincipal}">
