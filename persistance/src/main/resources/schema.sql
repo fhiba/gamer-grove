@@ -1,4 +1,4 @@
-CREATE TABLE users(
+CREATE TABLE IF NOT EXISTS users(
                       id SERIAL PRIMARY KEY,
                       username VARCHAR(50) UNIQUE NOT NULL,
                       email VARCHAR(50) UNIQUE NOT NULL,
@@ -6,12 +6,12 @@ CREATE TABLE users(
                       owner boolean NOT null default false
 );
 
-CREATE TABLE media(
+CREATE TABLE IF NOT EXISTS media(
                       id SERIAL PRIMARY KEY,
                       bytes bytea NOT NULL
 );
 
-CREATE TABLE community(
+CREATE TABLE IF NOT EXISTS community(
                           id SERIAL PRIMARY KEY,
                           name VARCHAR(50) UNIQUE NOT NULL,
                           description TEXT NOT NULL,
@@ -19,7 +19,7 @@ CREATE TABLE community(
                           FOREIGN KEY (portrait_id) REFERENCES media(id)
 );
 
-CREATE TABLE post(
+CREATE TABLE IF NOT EXISTS post(
                      id SERIAL PRIMARY KEY,
                      title VARCHAR(50) NOT NULL,
                      body TEXT,
@@ -34,7 +34,7 @@ CREATE TABLE post(
                      FOREIGN KEY (media_id) REFERENCES media(id)
 );
 
-CREATE TABLE comment(
+CREATE TABLE IF NOT EXISTS comment(
                         id SERIAL PRIMARY KEY,
                         body VARCHAR(500) NOT NULL,
                         author_id INT NOT NULL,
@@ -48,7 +48,7 @@ CREATE TABLE comment(
 
 );
 
-CREATE TABLE community_user(
+CREATE TABLE IF NOT EXISTS community_user(
                                community_id INT NOT NULL,
                                user_id INT NOT NULL,
                                community_role INT NOT NULL,
