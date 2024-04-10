@@ -68,6 +68,7 @@
         <error-code>404</error-code>
         <location>/WEB-INF/jsp/errors/404.jsp</location>
     </error-page>
+
     <error-page>
         <error-code>500</error-code>
         <location>/WEB-INF/jsp/errors/500.jsp</location>

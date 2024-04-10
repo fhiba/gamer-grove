@@ -15,16 +15,22 @@
 <div class="container-fluid h-100">
     <div class="row mt-4">
         <%--COMMUNITY LIST--%>
-        <div class="col-3">
-            <div class="card  border-light">
+        <div class="col-2 sidebar">
+            <div class="card sidebar-card">
                 <div class="card-body">
                     <c:forEach var="community" items="${communities}">
-                        <div class="card mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title">${community.name}</h5>
-                                <p class="card-text">${community.description}</p>
+                        <c:url value="/community/${community.name}" var="communityUrl"/>
+                        <a href="${communityUrl}" class="card-link text-decoration-none ">
+                            <div class="card-body-community d-flex align-items-center text-decoration-none mb-3">
+                                <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
+                                     class="very-small-profile-pic mb-1" alt="Profile Picture">
+                                <div class="text-decoration-none">
+                                    <h5 class="fw-semibold card-subtitle community-name">
+                                        /<c:out value="${community.name}" escapeXml="true"/>
+                                    </h5>
+                                </div>
                             </div>
-                        </div>
+                        </a>
                     </c:forEach>
                 </div>
             </div>

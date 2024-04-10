@@ -11,4 +11,6 @@ public interface UserDao {
 
         Optional<User> findByUsername(final String username);
         User create(final String username, final String email, final String password);
+
+        Optional<Boolean> isAdmin(final long id);
 }

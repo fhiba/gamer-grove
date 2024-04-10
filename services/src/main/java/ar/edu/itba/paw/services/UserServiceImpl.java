@@ -44,4 +44,9 @@ public class UserServiceImpl implements UserService {
                 : Optional.empty();
     }
 
+    @Override
+    public Boolean isUserAdmin(long id) {
+        return userDao.isAdmin(id).orElse(false);
+    }
+
 }

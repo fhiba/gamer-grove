@@ -8,6 +8,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -42,4 +43,5 @@ public class ExceptionHandlerController {
         mav.addObject("error_message", messageSource.getMessage("401.message", null, Locale.getDefault()));
         return mav;
     }
+
 }

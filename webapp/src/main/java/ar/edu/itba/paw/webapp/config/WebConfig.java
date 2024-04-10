@@ -50,7 +50,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         dataSource.setDriverClass(org.postgresql.Driver.class);
         dataSource.setUrl("jdbc:postgresql://localhost:5432/");
         dataSource.setUsername("postgres");
-        dataSource.setPassword("root");
+        dataSource.setPassword("postgres");
         return dataSource;
     }
 

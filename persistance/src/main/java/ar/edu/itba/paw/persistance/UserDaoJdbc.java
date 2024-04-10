@@ -57,4 +57,9 @@ public class UserDaoJdbc implements UserDao{
         Number id = jdbcInsert.executeAndReturnKey(userData);
         return new User(id.longValue(), username, password, email);
     }
+
+    @Override
+    public Optional<Boolean> isAdmin(long id) {
+        return jdbcTemplate.query("SELECT owner FROM users WHERE id = ?", new Object[]{id}, (rs, rowNum) -> rs.getBoolean("owner")).stream().findFirst();
+    }
 }

@@ -13,4 +13,6 @@ public interface UserService {
     User create(String username, final String email, final String password);
 
     Optional<User> getLoggedUser();
+
+    Boolean isUserAdmin(final long id);
 }
