@@ -94,9 +94,6 @@ public class PostController {
             grooviedComments = commentService.getUpGroovedComments(postId);
             negativeGrooviedComments = commentService.getDownGroovedComments(postId);
         }
-        System.out.println(comments);
-        System.out.println(grooviedComments);
-        System.out.println(negativeGrooviedComments);
         mav.addObject("upComments", grooviedComments);
         mav.addObject("downComments", negativeGrooviedComments);
 
