@@ -2,7 +2,7 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
-    <title>${post.title}</title>
+    <title><c:out value="${post.title}" escapeXml="true"/></title>
     <link rel="icon" href="${pageContext.request.contextPath}/images/favicon.ico" type="image/x-icon">
     <link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="${pageContext.request.contextPath}/css/general-styling.css" rel="stylesheet"/>
@@ -18,14 +18,14 @@
             <div class="card sidebar-card">
                 <div class="card-body">
                     <c:forEach var="community" items="${communities}">
-                        <c:url value="community/${community.name}" var="communityUrl"/>
+                        <c:url value="/community/${community.name}" var="communityUrl"/>
                         <a href="${communityUrl}" class="card-link text-decoration-none">
-                            <div class="card-body-community d-flex align-items-center text-decoration-none">
+                            <div class="card-body-community d-flex align-items-center text-decoration-none mb-3">
                                 <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
                                      class="very-small-profile-pic mb-1" alt="Profile Picture">
                                 <div class="text-decoration-none">
                                     <h5 class="fw-semibold card-subtitle community-name">
-                                        /${community.name}
+                                        /<c:out value="${community.name}" escapeXml="true"/>
                                     </h5>
                                 </div>
                             </div>
@@ -41,13 +41,12 @@
                     <p class="fw-semibold card-subtitle mb-1">
                         <c:url value="/community/${post.community_name}" var="communityUrl"/>
                         <a href="${communityUrl}"
-                           class="text-decoration-none text-body-primary">c/${post.community_name}</a>
+                           class="text-decoration-none text-body-primary">c/<c:out value="${post.community_name}" escapeXml="true"/></a>
                         <span class="badge rounded-pill ${post.category}">${post.category}</span>
                     </p>
-                    <h4 class="card-title fw-bold mb-0">${post.title}</h4>
-                    <p class="card-subtitle mb-4">u/${author}</p>
-
-                    <p class="card-text">${post.body}</p>
+                    <h4 class="card-title fw-bold mb-0"><c:out value="${post.title}" escapeXml="true"/> </h4>
+                    <p class="card-subtitle mb-4">u/<c:out value="${author}" escapeXml="true"/></p>
+                    <p class="card-text"><c:out value="${post.body}" escapeXml="true"/> </p>
                     <p class="card-text"><small class="text-body-secondary">${post.date.format(format)}</small></p>
                 </div>
             </div>
@@ -140,10 +139,10 @@
                         <div class="card mb-3">
                             <div class="card-body">
 
-                                <h5 class="card-title other-post-title fw-bold mb-1">${otherPost.title}
+                                <h5 class="card-title other-post-title fw-bold mb-1"><c:out value="${otherPost.title}" escapeXml="true"/>
                                 </h5>
                                 <span class="badge rounded-pill ${otherPost.category} mb-1">${otherPost.category}</span>
-                                <p class="card-text post-body">${otherPost.body}</p>
+                                <p class="card-text post-body"><c:out value="${otherPost.body}" escapeXml="true"/></p>
                             </div>
                         </div>
                         </c:forEach>

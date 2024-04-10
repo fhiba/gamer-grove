@@ -20,14 +20,14 @@
             <div class="card sidebar-card">
                 <div class="card-body">
                     <c:forEach var="community" items="${communities}">
-                        <c:url value="community/${community.name}" var="communityUrl"/>
-                        <a href="${communityUrl}" class="card-link text-decoration-none">
-                            <div class="card-body-community d-flex align-items-center text-decoration-none">
+                        <c:url value="/community/${community.name}" var="communityUrl"/>
+                        <a href="${communityUrl}" class="card-link text-decoration-none ">
+                            <div class="card-body-community d-flex align-items-center text-decoration-none mb-3">
                                 <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
                                      class="very-small-profile-pic mb-1" alt="Profile Picture">
                                 <div class="text-decoration-none">
                                     <h5 class="fw-semibold card-subtitle community-name">
-                                        /${community.name}
+                                        /<c:out value="${community.name}" escapeXml="true"/>
                                     </h5>
                                 </div>
                             </div>
@@ -65,12 +65,12 @@
                                     <div class="title-container mb-2">
                                         <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
                                              class="small-profile-pic mb-1" alt="Profile Picture">
-                                        <p class="fw-semibold card-subtitle">/${post.community_name}</p>
+                                        <p class="fw-semibold card-subtitle">/<c:out value="${post.community_name}" escapeXml="true"/></p>
                                         <span class="badge rounded-pill ${post.category} mb-1">${post.category}</span>
                                     </div>
 
-                                    <h4 class="card-title fw-bold">${post.title}</h4>
-                                    <p class="card-text post-body">${post.body}</p>
+                                    <h4 class="card-title fw-bold"><c:out value="${post.title}" escapeXml="true"/></h4>
+                                    <p class="card-text post-body"><c:out value="${post.body}" escapeXml="true"/></p>
                                 </div>
                             </div>
                         </a>
@@ -81,7 +81,7 @@
         <div class="col-1"></div>
         <%--LISTA DE NEWS--%>
         <div class="col-2">
-            <div class="card  border-light">
+            <div class="card  bg-transparent border-0">
                 <div class="card-title news-title">
                     <h5><spring:message code="Home.News"/></h5>
                 </div>
@@ -89,8 +89,8 @@
                     <c:forEach var="a_new" items="${news}">
                         <div class="card mb-3">
                             <div class="card-body">
-                                <h5 class="card-title fw-bold">${a_new.title}</h5>
-                                <p class="card-text post-body">${a_new.body}</p>
+                                <h5 class="card-title fw-bold"><c:out value="${a_new.title}" escapeXml="true"/></h5>
+                                <p class="card-text post-body"><c:out value="${a_new.body}" escapeXml="true"/></p>
                             </div>
                         </div>
                     </c:forEach>

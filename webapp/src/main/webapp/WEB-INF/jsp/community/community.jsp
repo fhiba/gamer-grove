@@ -3,7 +3,7 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
-    <title>/${community.name}</title>
+    <title>/<c:out value="${community.name}" escapeXml="true"/></title>
     <script src="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js"></script>
     <link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="${pageContext.request.contextPath}/css/general-styling.css" rel="stylesheet"/>
@@ -72,7 +72,7 @@
                 <div class="d-flex align-items-center">
                     <img src="${pageContext.request.contextPath}/images/profile-picture.jpg" class="profile-pic"
                          alt="Profile Picture">
-                    <h1 class="card-title">/${community.name}</h1>
+                    <h1 class="card-title"><c:out value="/${community.name}" escapeXml="true"/></h1>
                 </div>
                 <!-- Button to trigger modal -->
                 <button type="button" class="btn btn-primary round-btn" data-bs-toggle="modal"
@@ -80,7 +80,7 @@
                     <i class="fa-solid fa-plus"></i>
                 </button>
             </div>
-            <h5 class="card-subtitle text-secondary mt-3 mb-1">${community.description}</h5>
+            <h5 class="card-subtitle text-secondary mt-3 mb-1"><c:out value="${community.description}" escapeXml="true"/></h5>
             <div class="card border-light">
                 <div class="card-body">
                     <c:forEach var="post" items="${posts}">
@@ -89,11 +89,11 @@
                             <div class="card mb-3">
                                 <div class="card-body">
                                     <p class="fw-semibold card-subtitle mb-1">
-                                        /${post.community_name}
+                                        <c:out value="/${post.community_name}" escapeXml="true"/>
                                         <span class="badge rounded-pill ${post.category}">${post.category}</span>
                                     </p>
-                                    <h4 class="card-title">${post.title}</h4>
-                                    <p class="card-text post-body text-secondary post-body">${post.body}</p>
+                                    <h4 class="card-title"><c:out value="${post.title}" escapeXml="true"/> </h4>
+                                    <p class="card-text post-body text-secondary post-body"><c:out value="${post.body}" escapeXml="true"/> </p>
                                 </div>
                             </div>
                         </a>
