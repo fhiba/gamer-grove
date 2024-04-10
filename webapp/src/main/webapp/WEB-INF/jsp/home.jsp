@@ -87,12 +87,15 @@
                 </div>
                 <div class="card-body">
                     <c:forEach var="a_new" items="${news}">
-                        <div class="card mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title fw-bold"><c:out value="${a_new.title}" escapeXml="true"/></h5>
-                                <p class="card-text post-body"><c:out value="${a_new.body}" escapeXml="true"/></p>
+                        <c:url value="/post/${a_new.id}" var="newsUrl"/>
+                        <a href="${newsUrl}" class="card-link text-decoration-none ">
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title fw-bold"><c:out value="${a_new.title}" escapeXml="true"/></h5>
+                                    <p class="card-text post-body"><c:out value="${a_new.body}" escapeXml="true"/></p>
+                                </div>
                             </div>
-                        </div>
+                        </a>
                     </c:forEach>
                 </div>
             </div>
