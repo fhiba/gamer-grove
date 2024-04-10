@@ -12,18 +12,21 @@
 <body>
 <%@ include file="/WEB-INF/jsp/components/header.jsp" %>
 <div class="container-fluid h-100">
-    <div class="row mt-4">
+    <div class="row">
         <%--COMMUNITY LIST--%>
-        <div class="col-3">
-            <div class="card  border-light">
+        <div class="col-2 sidebar">
+            <div class="card sidebar-card">
                 <div class="card-body">
                     <c:forEach var="community" items="${communities}">
-                        <c:url value="/community/${community.name}" var="communityUrl"/>
-                        <a href="${communityUrl}" class="text-decoration-none text-body-primary link-underline-light">
-                            <div class="card mb-3">
-                                <div class="card-body">
-                                    <h5 class="card-title">${community.name}</h5>
-                                    <p class="card-text">${community.description}</p>
+                        <c:url value="community/${community.name}" var="communityUrl"/>
+                        <a href="${communityUrl}" class="card-link text-decoration-none">
+                            <div class="card-body-community d-flex align-items-center text-decoration-none">
+                                <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
+                                     class="very-small-profile-pic mb-1" alt="Profile Picture">
+                                <div class="text-decoration-none">
+                                    <h5 class="fw-semibold card-subtitle community-name">
+                                        /${community.name}
+                                    </h5>
                                 </div>
                             </div>
                         </a>
@@ -31,10 +34,9 @@
                 </div>
             </div>
         </div>
-
         <%--POST DATA--%>
         <div class="col-6">
-            <div class="card border-light">
+            <div class="card border-0 bg-transparent">
                 <div class="card-body">
                     <p class="fw-semibold card-subtitle mb-1">
                         <c:url value="/community/${post.community_name}" var="communityUrl"/>
@@ -81,7 +83,8 @@
                                 <img src="${pageContext.request.contextPath}/images/default-avatar-icon.jpg"
                                      height="50" width="50" class="rounded-5" alt="Profile Picture">
                                 <div class="ms-2 me-auto">
-                                    <div class="fw-bold"><c:out value="${comment.username}" escapeXml="true"/></div>
+                                    <div class="fw-bold"><c:out value="${comment.username}" escapeXml="true"/>
+                                    </div>
                                     <p>
                                         <c:out value="${comment.body}" escapeXml="true"/>
                                     </p>
@@ -91,33 +94,35 @@
                                         </small>
                                     </p>
                                 </div>
-                                <div class="d-flex flex-column align-items-center">
+                                <div class="d-flex align-items-center">
                                     <span class="grooviness-count">${comment.grooviness}</span>
-                                    <c:if test="${upComments.contains(comment)}">
-                                        <button onclick="postGroovyUpdate(true, ${comment.id})" class="btn">
-                                            <i class="fas fa-arrow-up text-primary"></i>
-                                        </button>
-                                        <button onclick="postGroovyUpdate(false, ${comment.id})" class="btn">
-                                            <i class="fas fa-arrow-down"></i>
-                                        </button>
-                                    </c:if>
-                                    <c:if test="${downComments.contains(comment)}">
-                                        <button onclick="postGroovyUpdate(true, ${comment.id})" class="btn">
-                                            <i class="fas fa-arrow-up"></i>
-                                        </button>
-                                        <button onclick="postGroovyUpdate(false, ${comment.id})" class="btn">
-                                            <i class="fas fa-arrow-down text-danger"></i>
-                                        </button>
-                                    </c:if>
-                                    <c:if test="${!upComments.contains(comment) && !downComments.contains(comment)}">
-                                        <button onclick="postGroovyUpdate(true, ${comment.id})" class="btn">
-                                            <i class="fas fa-arrow-up"></i>
-                                        </button>
+                                    <div class="d-flex flex-column">
+                                        <c:if test="${upComments.contains(comment)}">
+                                            <button onclick="postGroovyUpdate(true, ${comment.id})" class="btn">
+                                                <i class="fas fa-arrow-up text-primary"></i>
+                                            </button>
+                                            <button onclick="postGroovyUpdate(false, ${comment.id})" class="btn">
+                                                <i class="fas fa-arrow-down"></i>
+                                            </button>
+                                        </c:if>
+                                        <c:if test="${downComments.contains(comment)}">
+                                            <button onclick="postGroovyUpdate(true, ${comment.id})" class="btn">
+                                                <i class="fas fa-arrow-up"></i>
+                                            </button>
+                                            <button onclick="postGroovyUpdate(false, ${comment.id})" class="btn">
+                                                <i class="fas fa-arrow-down text-danger"></i>
+                                            </button>
+                                        </c:if>
+                                        <c:if test="${!upComments.contains(comment) && !downComments.contains(comment)}">
+                                            <button onclick="postGroovyUpdate(true, ${comment.id})" class="btn">
+                                                <i class="fas fa-arrow-up"></i>
+                                            </button>
 
-                                        <button onclick="postGroovyUpdate(false, ${comment.id})" class="btn">
-                                            <i class="fas fa-arrow-down"></i>
-                                        </button>
-                                    </c:if>
+                                            <button onclick="postGroovyUpdate(false, ${comment.id})" class="btn">
+                                                <i class="fas fa-arrow-down"></i>
+                                            </button>
+                                        </c:if>
+                                    </div>
                                 </div>
                             </li>
                         </c:forEach>
@@ -127,7 +132,7 @@
         </div>
         <%--POSTS LIST OF THE COMMUNITY--%>
         <div class="col-3">
-            <div class="card  border-light">
+            <div class="card  border-0 bg-transparent">
                 <div class="card-body">
                     <c:forEach items="${posts}" var="otherPost">
                     <c:url value="/post/${otherPost.id}" var="postUrl"/>
@@ -147,8 +152,8 @@
             </div>
         </div>
     </div>
+    <%@ include file="/WEB-INF/jsp/components/footer.jsp" %>
 </div>
-<%@ include file="/WEB-INF/jsp/components/footer.jsp" %>
 </body>
 </html>
 <script>
