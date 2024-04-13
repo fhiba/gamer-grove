@@ -65,24 +65,25 @@
         <div class="col-3">
         </div>
         <div class="col-6">
-            <%--            <div class="img-container">--%>
-            <%--                <img src="${pageContext.request.contextPath}/images/test-image.jpg" class="img-fluid" alt="Community Image">--%>
-            <%--            </div>--%>
-            <div class="title-container d-flex justify-content-between">
-                <div class="d-flex align-items-center">
-                    <img src="${pageContext.request.contextPath}/images/profile-picture.jpg" class="profile-pic"
-                         alt="Profile Picture">
-                    <h1 class="card-title">/${community.name}</h1>
-                </div>
-                <!-- Button to trigger modal -->
-                <button type="button" class="btn btn-primary round-btn" data-bs-toggle="modal"
-                        data-bs-target="#createPostModal">
-                    <i class="fa-solid fa-plus"></i>
-                </button>
-            </div>
-            <h5 class="card-subtitle text-secondary mt-3 mb-1">${community.description}</h5>
             <div class="card border-light">
                 <div class="card-body">
+                    <div class="row w-100 mb-2">
+                        <div class="col-4">
+                            <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
+                                  class="w-100 rounded-1 img-thumbnail " alt="Profile Picture">
+                        </div>
+                        <div class="col-8">
+                            <h1 class="card-title">c/${community.name}</h1>
+                            <h5 class="card-subtitle text-secondary mt-3 mb-1">${community.description}</h5>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-end mb-3">
+                        <button type="button" class="btn btn-primary round-btn" data-bs-toggle="modal"
+                                data-bs-target="#createPostModal">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </div>
+
                     <c:forEach var="post" items="${posts}">
                         <c:url value="/post/${post.id}" var="postUrl"/>
                         <a href="${postUrl}" class="card-link link-underline-light">
