@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.webapp.controller;
 
 
+import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchCommentException;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.services.CommentService;
@@ -23,7 +24,7 @@ public class CommentController {
     private CommentService commentService;
 
     @RequestMapping(path="/comment", method = RequestMethod.POST)
-    public ModelAndView newComment(@Valid @ModelAttribute("newCommentForm") final NewCommentForm newCommentForm, final BindingResult errors) {
+    public ModelAndView newComment(@Valid @ModelAttribute("newCommentForm") final NewCommentForm newCommentForm, final BindingResult errors) throws NoLoggedUserException {
         if(errors.hasErrors()) {
             return new ModelAndView("redirect:/post/"+newCommentForm.getPostId());
         }
