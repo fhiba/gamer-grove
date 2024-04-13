@@ -1,5 +1,4 @@
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+
 <%@ page contentType="text/html;charset=UTF-8" %>
 <nav class="navbar">
     <div class="container-fluid">
@@ -8,9 +7,9 @@
                 <c:url value="/" var="homeUrl"/>
                 <a class="navbar-brand d-flex align-items-end" href="${homeUrl}">
                     <img width="50" height="50" alt="logo" src="${pageContext.request.contextPath}/images/favicon.ico"/>
-                    <span class="h2 text-light mb-1"><spring:message
-                            code="GamerGrove"/></span>
+                    <span class="h2 text-light mb-1">Gamer Grove</span>
                 </a>
+
             </div>
             <div class="col-6 d-flex align-items-center justify-content-center">
                 <c:url value="/communities" var="communitySearch"/>
