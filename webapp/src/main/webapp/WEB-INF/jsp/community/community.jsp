@@ -3,7 +3,7 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
-    <title>/<c:out value="${community.name}" escapeXml="true"/></title>
+    <title>/${community.name}</title>
     <script src="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js"></script>
     <link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="${pageContext.request.contextPath}/css/general-styling.css" rel="stylesheet"/>
@@ -65,35 +65,36 @@
         <div class="col-3">
         </div>
         <div class="col-6">
-            <%--            <div class="img-container">--%>
-            <%--                <img src="${pageContext.request.contextPath}/images/test-image.jpg" class="img-fluid" alt="Community Image">--%>
-            <%--            </div>--%>
-            <div class="title-container d-flex justify-content-between">
-                <div class="d-flex align-items-center">
-                    <img src="${pageContext.request.contextPath}/images/profile-picture.jpg" class="profile-pic"
-                         alt="Profile Picture">
-                    <h1 class="card-title"><c:out value="/${community.name}" escapeXml="true"/></h1>
-                </div>
-                <!-- Button to trigger modal -->
-                <button type="button" class="btn btn-primary round-btn" data-bs-toggle="modal"
-                        data-bs-target="#createPostModal">
-                    <i class="fa-solid fa-plus"></i>
-                </button>
-            </div>
-            <h5 class="card-subtitle text-secondary mt-3 mb-1"><c:out value="${community.description}" escapeXml="true"/></h5>
             <div class="card border-light">
                 <div class="card-body">
+                    <div class="row w-100 mb-2">
+                        <div class="col-4">
+                            <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
+                                  class="w-100 rounded-1 img-thumbnail " alt="Profile Picture">
+                        </div>
+                        <div class="col-8">
+                            <h1 class="card-title">c/${community.name}</h1>
+                            <h5 class="card-subtitle text-secondary mt-3 mb-1">${community.description}</h5>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-end mb-3">
+                        <button type="button" class="btn btn-primary round-btn" data-bs-toggle="modal"
+                                data-bs-target="#createPostModal">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </div>
+
                     <c:forEach var="post" items="${posts}">
                         <c:url value="/post/${post.id}" var="postUrl"/>
                         <a href="${postUrl}" class="card-link link-underline-light">
                             <div class="card mb-3">
                                 <div class="card-body">
                                     <p class="fw-semibold card-subtitle mb-1">
-                                        <c:out value="/${post.community_name}" escapeXml="true"/>
+                                        /${post.community_name}
                                         <span class="badge rounded-pill ${post.category}">${post.category}</span>
                                     </p>
-                                    <h4 class="card-title"><c:out value="${post.title}" escapeXml="true"/> </h4>
-                                    <p class="card-text post-body text-secondary post-body"><c:out value="${post.body}" escapeXml="true"/> </p>
+                                    <h4 class="card-title">${post.title}</h4>
+                                    <p class="card-text post-body text-secondary post-body">${post.body}</p>
                                 </div>
                             </div>
                         </a>
