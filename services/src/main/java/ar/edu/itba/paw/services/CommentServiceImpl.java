@@ -43,11 +43,12 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public void editGroovinessOnComment(long commentId, int grooviness, long postId) throws NoSuchCommentException, UserNotFoundException {
         Optional<Comment> comment = commentDao.getCommentById(commentId);
+        //TODO : USE NEW EXCEPTION
         User user = userService.getLoggedUser().orElseThrow(() -> new UserNotFoundException("User not found"));
 
         if(comment.isEmpty())
             throw new NoSuchCommentException("Comment not found");
-
+        //checks whether the user has already grooved the comment
         Optional<Boolean> isGroovy = commentDao.getGroovyTypeFromComment(commentId, user.getId(), postId);
         if(isGroovy.isEmpty()) {
             commentDao.insertGroovinessIntoComment(commentId, user.getId(), postId, (grooviness == 1));
@@ -55,18 +56,22 @@ public class CommentServiceImpl implements CommentService {
             return;
         }
 
+
         switch (grooviness){
             case 1:
-                if(!isGroovy.get())
-                    commentDao.editGrooviness(commentId,1);
-                else {
+                if(isGroovy.get()) {
                     commentDao.deleteGrooviness(commentId, user.getId(), postId);
-                    commentDao.editGrooviness(commentId,-1);
+                    commentDao.editGrooviness(commentId, -1);
+                } else {
+                    commentDao.editGrooviness(commentId,2);
+                    commentDao.updateGroovyHistory(commentId, user.getId(), postId, true);
                 }
                 break;
             case -1:
-                if(isGroovy.get())
-                    commentDao.editGrooviness(commentId,-1);
+                if(isGroovy.get()) {
+                    commentDao.editGrooviness(commentId,-2);
+                    commentDao.updateGroovyHistory(commentId, user.getId(), postId, false);
+                }
                 else {
                     commentDao.deleteGrooviness(commentId, user.getId(), postId);
                     commentDao.editGrooviness(commentId,1);

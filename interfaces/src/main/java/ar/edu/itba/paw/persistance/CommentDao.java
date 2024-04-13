@@ -22,6 +22,8 @@ public interface CommentDao {
 
     void deleteGrooviness(long commentId, long id, long postId);
 
+    void updateGroovyHistory(long commentId, long id, long postId, boolean grooviness);
+
     List<Comment> getGroovedComments(long postId, long id);
 
     List<Comment> getDownGroovedComments(long postId, long id);
