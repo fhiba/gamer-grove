@@ -73,8 +73,8 @@
                                   class="w-100 rounded-1 img-thumbnail " alt="Profile Picture">
                         </div>
                         <div class="col-8">
-                            <h1 class="card-title">c/${community.name}</h1>
-                            <h5 class="card-subtitle text-secondary mt-3 mb-1">${community.description}</h5>
+                            <h1 class="card-title"><c:out value="c/${community.name}" escapeXml="true"/></h1>
+                            <h5 class="card-subtitle text-secondary mt-3 mb-1"><c:out value="${community.description}" escapeXml="true"/></h5>
                         </div>
                     </div>
                     <div class="d-flex justify-content-end mb-3">
@@ -90,11 +90,11 @@
                             <div class="card mb-3">
                                 <div class="card-body">
                                     <p class="fw-semibold card-subtitle mb-1">
-                                        /${post.community_name}
+                                        <c:out value="c/${post.community_name}" escapeXml="true"/>
                                         <span class="badge rounded-pill ${post.category}">${post.category}</span>
                                     </p>
-                                    <h4 class="card-title">${post.title}</h4>
-                                    <p class="card-text post-body text-secondary post-body">${post.body}</p>
+                                    <h4 class="card-title fw-bold"><c:out value="${post.title}" escapeXml="true"/> </h4>
+                                    <p class="card-text post-body text-secondary post-body"><c:out value="${post.body}" escapeXml="true"/></p>
                                 </div>
                             </div>
                         </a>

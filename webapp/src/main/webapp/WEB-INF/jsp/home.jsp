@@ -14,7 +14,7 @@
 <body>
 <%@ include file="components/header.jsp" %>
 <div class="container-fluid">
-    <div class="row mt-4 mb-3">
+    <div class="row mb-3">
         <%--COMMUNITY LIST--%>
         <div class="col-2 sidebar">
             <div class="card sidebar-card">
