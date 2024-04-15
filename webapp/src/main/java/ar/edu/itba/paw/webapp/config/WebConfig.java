@@ -15,6 +15,7 @@ import org.springframework.web.servlet.view.JstlView;
 
 import javax.sql.DataSource;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.TimeUnit;
 
 @ComponentScan({"ar.edu.itba.paw.webapp.controller", "ar.edu.itba.paw.services","ar.edu.itba.paw.persistance"})
 @EnableWebMvc
@@ -60,7 +61,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         final ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
         messageSource.setBasename("classpath:i18n/messages");
         messageSource.setDefaultEncoding(StandardCharsets.UTF_8.displayName());
-        messageSource.setCacheSeconds(5);
+        messageSource.setCacheSeconds((int) TimeUnit.MINUTES.toSeconds(5));
         return messageSource;
     }
 
