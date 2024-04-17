@@ -91,3 +91,11 @@ create table if not exists groovy_comment_history(
                                                   foreign key(post_id) references post(id),
                                                   foreign key(comment_id) references comment(id)
 );
+
+create table if not exists modders(
+                                   user_id int not null,
+                                   community_id int not null,
+                                   primary key(user_id, community_id),
+                                   foreign key(user_id) references users(id),
+                                   foreign key(community_id) references community(id)
+);
