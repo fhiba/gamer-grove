@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchCommentException;
 import ar.edu.itba.paw.exceptions.NoSuchPostException;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
@@ -8,7 +9,7 @@ import ar.edu.itba.paw.models.Comment;
 import java.util.List;
 
 public interface CommentService {
-        Comment createComment(long postId, String body);
+        Comment createComment(long postId, String body) throws NoLoggedUserException;
         List<Comment> getPostComments(long postId);
         void editGroovinessOnComment(long commentId, int grooviness, long postId) throws NoSuchCommentException, UserNotFoundException;
 

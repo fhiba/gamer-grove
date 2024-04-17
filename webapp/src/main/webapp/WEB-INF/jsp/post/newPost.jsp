@@ -1,9 +1,10 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <html>
 <head>
-    <title>Title</title>
+    <title><spring:message code="Post.Create"/></title>
     <link rel="icon" href="${pageContext.request.contextPath}/images/favicon.ico" type="image/x-icon">
     <link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="${pageContext.request.contextPath}/css/general-styling.css" rel="stylesheet"/>
@@ -13,7 +14,7 @@
 
 <%@ include file="/WEB-INF/jsp/components/header.jsp" %>
 <div class="container-fluid h-100">
-    <div class="row mt-4">
+    <div class="row">
         <%--COMMUNITY LIST--%>
         <div class="col-2 sidebar">
             <div class="card sidebar-card">

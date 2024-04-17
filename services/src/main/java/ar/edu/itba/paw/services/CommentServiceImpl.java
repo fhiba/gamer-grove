@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchPostException;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.models.Comment;
@@ -26,10 +27,10 @@ public class CommentServiceImpl implements CommentService {
     private PostService postService;
 
     @Override
-    public Comment createComment(long postId, String body) {
+    public Comment createComment(long postId, String body) throws NoLoggedUserException{
         Optional<User> user = userService.getLoggedUser();
         if(user.isEmpty())
-            throw new IllegalArgumentException("User not found");
+            throw new NoLoggedUserException("User not logged");
         long userId = user.get().getId();
         String username = user.get().getUsername();
         return commentDao.createComment(postId,body,username,LocalDateTime.now(),userId);
