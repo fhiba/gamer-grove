@@ -1,9 +1,7 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.exceptions.NoLoggedUserException;
-import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
-import ar.edu.itba.paw.exceptions.NoSuchPostException;
-import ar.edu.itba.paw.exceptions.UserNotFoundException;
+import ar.edu.itba.paw.exceptions.*;
+import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.Community;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
@@ -67,24 +65,53 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    public void editGrooviness(long postId, int grooviness) throws NoSuchPostException, NoLoggedUserException {
-        User user = userService.getLoggedUser().orElseThrow(() -> new NoLoggedUserException("User not found"));
+    public void editGrooviness(int grooviness, long postId) throws UserNotFoundException, NoSuchPostException {
         Optional<Post> post = postDao.findById(postId);
-        if(post.isEmpty())
+        //TODO : USE NEW EXCEPTION
+        User user = userService.getLoggedUser().orElseThrow(() -> new UserNotFoundException("User not found"));
+        if(post.isEmpty()) {
             throw new NoSuchPostException("Post not found");
+        }
+        //checks whether the user has already grooved the comment
+        Optional<Boolean> isGroovy = postDao.checkGrooviness(postId, user.getId());
+        if(isGroovy.isEmpty()) {
+            postDao.insertIntoGroovyHistory(postId, user.getId(),(grooviness == 1));
+            postDao.editGrooviness(postId,grooviness);
+            return;
+        }
+
 
         switch (grooviness){
             case 1:
-                postDao.editGrooviness(postId,1);
-                postDao.addToGroovy(user.getId(),postId,true);
+                if(isGroovy.get()) {
+                    postDao.deleteGrooviness(postId, user.getId());
+                    postDao.editGrooviness(postId, -1);
+                } else {
+                    postDao.editGrooviness(postId,2);
+                    postDao.updateGroovyHistory(postId, user.getId(), true);
+                }
                 break;
             case -1:
-                postDao.editGrooviness(postId,-1);
-                postDao.addToGroovy(user.getId(),postId,false);
+                if(isGroovy.get()) {
+                    postDao.editGrooviness(postId,-2);
+                    postDao.updateGroovyHistory(postId, user.getId(), false);
+                }
+                else {
+                    postDao.deleteGrooviness(postId, user.getId());
+                    postDao.editGrooviness(postId,1);
+                }
                 break;
             default:
-                throw new IllegalArgumentException("Invalid grooviness");
+                throw new IllegalArgumentException("Invalid grooviness value");
         }
+    }
+
+    @Override
+    public int checkGrooviness(long postId) {
+        Optional<Boolean> maybeGroovy = postDao.checkGrooviness(postId, userService.getLoggedUser().get().getId());
+        if(maybeGroovy.isEmpty())
+            return 0;
+        return maybeGroovy.get()? 1: -1;
     }
 
 

@@ -20,5 +20,7 @@ public interface PostService {
     List<Post> getByCategory(final String category);
     Post getPostById(long postId) throws NoSuchPostException;
 
-    void editGrooviness(long postId, int grooviness) throws NoSuchPostException, NoLoggedUserException;
+    void editGrooviness(int grooviness, long postId) throws UserNotFoundException, NoSuchPostException;
+
+    int checkGrooviness(long postId);
 }

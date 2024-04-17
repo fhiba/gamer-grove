@@ -15,8 +15,8 @@ import ar.edu.itba.paw.services.PostService;
 import ar.edu.itba.paw.services.UserService;
 import ar.edu.itba.paw.webapp.form.NewCommentForm;
 import ar.edu.itba.paw.webapp.form.NewCommentGroovyForm;
-import ar.edu.itba.paw.webapp.excpetion.PostNotFoundException;
 import ar.edu.itba.paw.webapp.form.NewPostForm;
+import ar.edu.itba.paw.webapp.form.NewPostGroovyForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -43,10 +43,10 @@ public class PostController {
     @Autowired
     private CommentService commentService;
 
-    @RequestMapping(path="/post", method = RequestMethod.POST)
+    @RequestMapping(path = "/post", method = RequestMethod.POST)
     public ModelAndView newPost(@Valid @ModelAttribute("newPostForm") final NewPostForm newPostForm, final BindingResult errors) throws NoLoggedUserException, NoSuchCommunityException {
 
-        if(errors.hasErrors()) {
+        if (errors.hasErrors()) {
             return getNewPost(newPostForm);
         }
         try {
@@ -65,11 +65,25 @@ public class PostController {
     public ModelAndView getNewPost(@ModelAttribute("newPostForm") final NewPostForm newPostForm) {
         ModelAndView mav = new ModelAndView("post/newPost");
         //TODO: SHOULD BE THE ONES THAT ARE CURRENTLY BEING FOLLOWED BY USER OR A FEW RANDOMLY SELECTED
-        mav.addObject("communities",cs.getAllCommunities());
+        mav.addObject("communities", cs.getAllCommunities());
         mav.addObject("categories", Arrays.stream(PostCategories.values()).map(PostCategories::getCategory).toArray(String[]::new));
         mav.addObject("news", ps.getByCategory(PostCategories.NEWS.getCategory()));
+
         return mav;
     }
+
+    @RequestMapping(path = "/post/{postId}/up", method = RequestMethod.POST)
+    public ModelAndView groovyPost(@Valid @ModelAttribute("newPostGroovyForm") NewPostGroovyForm newPostGroovyForm, final BindingResult errors) throws NoSuchPostException, UserNotFoundException {
+        if (!errors.hasErrors())
+            ps.editGrooviness( newPostGroovyForm.isGroovyType()? 1 : -1,newPostGroovyForm.getPostId());
+        return new ModelAndView("redirect:/post/" + newPostGroovyForm.getPostId());
+    }
+
+//    @RequestMapping(path = "/post/{postId}/up", method = RequestMethod.GET)
+//    public ModelAndView testtest(){
+//        System.out.println("ENTRE");
+//        return new ModelAndView("redirect:/home");
+//    }
 
     @RequestMapping(path = {"/home", "/"}, method = RequestMethod.GET)
     public ModelAndView getAllPosts(@RequestParam(value = "category", required = false) final String category) {
@@ -87,7 +101,7 @@ public class PostController {
     }
 
     @RequestMapping(path = "/post/{postId}", method = RequestMethod.GET)
-    public ModelAndView singlePost(@PathVariable("postId") final long postId, @ModelAttribute("newCommentForm") final NewCommentForm newCommentForm, @ModelAttribute("newCommentGroovyForm") final NewCommentGroovyForm newCommentGroovyForm) throws UserNotFoundException, NoSuchPostException {
+    public ModelAndView singlePost(@PathVariable("postId") final long postId, @ModelAttribute("newPostGroovyForm") final NewPostGroovyForm newPostGroovyForm, @ModelAttribute("newCommentForm") final NewCommentForm newCommentForm, @ModelAttribute("newCommentGroovyForm") final NewCommentGroovyForm newCommentGroovyForm) throws UserNotFoundException, NoSuchPostException {
         ModelAndView mav = new ModelAndView("/post/post");
         mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
         Post post;
@@ -102,14 +116,18 @@ public class PostController {
         List<Comment> comments = commentService.getPostComments((postId));
         List<Comment> grooviedComments = Collections.emptyList();
         List<Comment> negativeGrooviedComments = Collections.emptyList();
-
+        int isGrooved = 0;
         if (us.getLoggedUser().isPresent()) {
             grooviedComments = commentService.getUpGroovedComments(postId);
             negativeGrooviedComments = commentService.getDownGroovedComments(postId);
+            isGrooved = ps.checkGrooviness(postId);
         }
+        mav.addObject("isGrooved", isGrooved);
+        mav.addObject("isGrooved", ps.checkGrooviness(postId));
+        mav.addObject("newPostGroovyForm", newPostGroovyForm);
         mav.addObject("upComments", grooviedComments);
         mav.addObject("downComments", negativeGrooviedComments);
-
+        mav.addObject("newCommentForm", newCommentForm);
         mav.addObject("comments", comments);
         Optional<User> author = us.findById(post.getAuthor_id());
         mav.addObject("author", author.isPresent() ? author.get().getUsername() : "[deleted]");
@@ -120,17 +138,17 @@ public class PostController {
         return mav;
     }
 
-    @RequestMapping(path="/post/{postId}/{grooviness}", method = RequestMethod.POST)
-    public ModelAndView moreGroovy(@PathVariable("postId") final long postId,@PathVariable("grooviness") final int grooviness) throws NoLoggedUserException, NoSuchPostException {
-        try {
-            ps.editGrooviness(postId,grooviness);
-        } catch (NoLoggedUserException e) {
-            //TODO: Log
-            throw e;
-        } catch (NoSuchPostException e) {
-            //TODO: Log
-            throw e;
-        }
-        return new ModelAndView("redirect:/post/" + postId);
-    }
+//    @RequestMapping(path = "/post/{postId}/{grooviness}", method = RequestMethod.POST)
+//    public ModelAndView moreGroovy(@PathVariable("postId") final long postId, @PathVariable("grooviness") final int grooviness) throws NoLoggedUserException, NoSuchPostException {
+//        try {
+//            ps.editGrooviness(postId, grooviness);
+//        } catch (NoLoggedUserException e) {
+//            //TODO: Log
+//            throw e;
+//        } catch (NoSuchPostException e) {
+//            //TODO: Log
+//            throw e;
+//        }
+//        return new ModelAndView("redirect:/post/" + postId);
+//    }
 }

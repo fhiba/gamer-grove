@@ -47,7 +47,45 @@
                     <h4 class="card-title fw-bold mb-0"><c:out value="${post.title}" escapeXml="true"/> </h4>
                     <p class="card-subtitle mb-4">u/<c:out value="${author}" escapeXml="true"/></p>
                     <p class="card-text"><c:out value="${post.body}" escapeXml="true"/> </p>
-                    <p class="card-text"><small class="text-body-secondary">${post.date.format(format)}</small></p>
+                    <div class="d-flex align-items-center">
+                        <p class="card-text mb-0"><small class="text-body-secondary">${post.date.format(format)}</small></p>
+                        <span class="grooviness-count" style="margin-left: 1rem;">${post.grooviness}</span>
+                        <div class="d-none">
+                            <c:url value="/post/${postId}/up" var="upPostUrl"/>
+                            <form:form action="${upPostUrl}" method="post" id="newPostGroovyForm"
+                                       modelAttribute="newPostGroovyForm">
+                                <form:hidden path="postId" value="${post.id}" />
+                                <form:hidden path="groovyType" id="postGroovyType" />
+                            </form:form>
+                        </div>
+                        <div class="d-flex flex-row mb-1">
+                            <c:if test="${isGrooved == 1}">
+                                <button onclick="postGroovyUpdate(true)" class="btn">
+                                    <i class="fas fa-arrow-up text-primary"></i>
+                                </button>
+                                <button onclick="postGroovyUpdate(false)" class="btn">
+                                    <i class="fas fa-arrow-down"></i>
+                                </button>
+                            </c:if>
+                            <c:if test="${isGrooved == -1}">
+                                <button onclick="postGroovyUpdate(true)" class="btn">
+                                    <i class="fas fa-arrow-up"></i>
+                                </button>
+                                <button onclick="postGroovyUpdate(false)" class="btn">
+                                    <i class="fas fa-arrow-down text-danger"></i>
+                                </button>
+                            </c:if>
+                            <c:if test="${isGrooved != 1 && isGrooved != -1}">
+                                <button onclick="postGroovyUpdate(true)" class="btn">
+                                    <i class="fas fa-arrow-up"></i>
+                                </button>
+
+                                <button onclick="postGroovyUpdate(false)" class="btn">
+                                    <i class="fas fa-arrow-down"></i>
+                                </button>
+                            </c:if>
+                        </div>
+                    </div>
                 </div>
             </div>
             <%--COMMENTS--%>
@@ -67,7 +105,7 @@
                         <form:errors cssStyle="color: red" cssClass="error"/>
                     </form:form>
                     <div class="d-none">
-                        <c:url value="/post/{postId}/+" var="upCommentUrl"/>
+                        <c:url value="/post/${postId}/+" var="upCommentUrl"/>
                         <form:form action="${upCommentUrl}" method="post" id="upCommentForm"
                                    modelAttribute="newCommentGroovyForm">
                             <form:hidden path="commentId" id="commentId" />
@@ -97,27 +135,27 @@
                                     <span class="grooviness-count">${comment.grooviness}</span>
                                     <div class="d-flex flex-column">
                                         <c:if test="${upComments.contains(comment)}">
-                                            <button onclick="postGroovyUpdate(true, ${comment.id})" class="btn">
+                                            <button onclick="commentGroovyUpdate(true, ${comment.id})" class="btn">
                                                 <i class="fas fa-arrow-up text-primary"></i>
                                             </button>
-                                            <button onclick="postGroovyUpdate(false, ${comment.id})" class="btn">
+                                            <button onclick="commentGroovyUpdate(false, ${comment.id})" class="btn">
                                                 <i class="fas fa-arrow-down"></i>
                                             </button>
                                         </c:if>
                                         <c:if test="${downComments.contains(comment)}">
-                                            <button onclick="postGroovyUpdate(true, ${comment.id})" class="btn">
+                                            <button onclick="commentGroovyUpdate(true, ${comment.id})" class="btn">
                                                 <i class="fas fa-arrow-up"></i>
                                             </button>
-                                            <button onclick="postGroovyUpdate(false, ${comment.id})" class="btn">
+                                            <button onclick="commentGroovyUpdate(false, ${comment.id})" class="btn">
                                                 <i class="fas fa-arrow-down text-danger"></i>
                                             </button>
                                         </c:if>
                                         <c:if test="${!upComments.contains(comment) && !downComments.contains(comment)}">
-                                            <button onclick="postGroovyUpdate(true, ${comment.id})" class="btn">
+                                            <button onclick="commentGroovyUpdate(true, ${comment.id})" class="btn">
                                                 <i class="fas fa-arrow-up"></i>
                                             </button>
 
-                                            <button onclick="postGroovyUpdate(false, ${comment.id})" class="btn">
+                                            <button onclick="commentGroovyUpdate(false, ${comment.id})" class="btn">
                                                 <i class="fas fa-arrow-down"></i>
                                             </button>
                                         </c:if>
@@ -170,12 +208,18 @@
     }
 
 
-    let postGroovyUpdate = (updateType, id) => {
+    let commentGroovyUpdate = (updateType, id) => {
         let groovyType = document.getElementById('groovyType');
         let commentId = document.getElementById('commentId');
         groovyType.value = updateType;
         commentId.value = id;
         document.getElementById('upCommentForm').submit();
+    }
+
+    let postGroovyUpdate = (updateType) => {
+        let postGroovyType = document.getElementById('postGroovyType');
+        postGroovyType.value = updateType;
+        document.getElementById('newPostGroovyForm').submit();
     }
 
 </script>

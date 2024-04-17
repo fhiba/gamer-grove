@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.persistance;
 
+import ar.edu.itba.paw.models.GroovyPostHistory;
 import ar.edu.itba.paw.models.Post;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -28,6 +29,10 @@ public class PostDaoJdbc implements PostDao{
             rs.getInt("grooviness"),
             rs.getString("category"));
 
+//    private static final RowMapper<GroovyPostHistory> ROW_MAPPER_HISTORY = (rs, rowNum) -> new GroovyPostHistory(rs.getInt("user_id"),
+//            rs.getInt("post_id"),
+//            rs.getBoolean("groovy_type"));
+
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
     private final SimpleJdbcInsert jdbcInsertGroovyHistory;
@@ -37,7 +42,7 @@ public class PostDaoJdbc implements PostDao{
     public PostDaoJdbc(final DataSource ds){
         jdbcTemplate = new JdbcTemplate(ds);
         jdbcInsert = new SimpleJdbcInsert(ds).usingGeneratedKeyColumns("id").withTableName("post");
-        jdbcInsertGroovyHistory = new SimpleJdbcInsert(ds).withTableName("groovy_history");
+        jdbcInsertGroovyHistory = new SimpleJdbcInsert(ds).withTableName("groovy_post_history");
     }
 
     @Override
@@ -90,6 +95,29 @@ public class PostDaoJdbc implements PostDao{
         jdbcInsertGroovyHistory.execute(values);
     }
 
+    @Override
+    public Optional<Boolean> checkGrooviness(long postId, long userId) {
+        return jdbcTemplate.query("SELECT groovy_type FROM groovy_post_history WHERE post_id = ? AND user_id = ?",new Object[]{postId,userId},(rs,rowNum) -> rs.getBoolean("groovy_type")).stream().findFirst();
+    }
+
+    @Override
+    public void insertIntoGroovyHistory(long postId, long id, boolean grooviness) {
+        Map<String,Object> values = new HashMap<>();
+        values.put("post_id",postId);
+        values.put("user_id",id);
+        values.put("groovy_type",grooviness);
+        jdbcInsertGroovyHistory.execute(values);
+    }
+
+    @Override
+    public void deleteGrooviness(long postId, long id) {
+        jdbcTemplate.update("DELETE FROM groovy_post_history WHERE post_id = ? AND user_id = ?",postId,id);
+    }
+
+    @Override
+    public void updateGroovyHistory(long postId, long id, boolean b) {
+        jdbcTemplate.update("UPDATE groovy_post_history SET groovy_type = ? WHERE post_id = ? AND user_id = ?",b,postId,id);
+    }
 
 
 }
