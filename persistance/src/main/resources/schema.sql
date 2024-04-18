@@ -101,3 +101,4 @@ create table if not exists modders(
 );
 
 ALTER TABLE post ADD COLUMN deleted boolean DEFAULT false NOT NULL;
+ALTER TABLE comment ADD COLUMN deleted boolean DEFAULT false NOT NULL;

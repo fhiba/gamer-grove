@@ -49,64 +49,67 @@
                     </p>
 
                     <c:if test="${post.deleted}">
-                        <h4 class="card-title fw-bold mb-0"><spring:message code="Post.Deleted" /></h4>
+                        <h4 class="card-title fw-bold mb-0"><spring:message code="Post.Deleted"/></h4>
                         <p class="card-subtitle mb-4">u/<spring:message code="Post.Anon"/></p>
                         <p>
                             <spring:message code="Post.Deleted"/>
                         </p>
                     </c:if>
                     <c:if test="${!post.deleted}">
-                    <h4 class="card-title fw-bold mb-0"><c:out value="${post.title}" escapeXml="true"/></h4>
-                    <p class="card-subtitle mb-4">u/<c:out value="${author}" escapeXml="true"/></p>
-                    <p class="card-text"><c:out value="${post.body}" escapeXml="true"/></p>
-                    <c:url value="/post/${postId}/delete" var="deletePostUrl"/>
-                    <form:form action="${deletePostUrl}" var="deletePostUrl" method="post"
-                               modelAttribute="postDeleteForm">
-                        <form:hidden path="postId" value="${post.id}"/>
-                        <button class="btn btn-danger" type="submit">
-                            <spring:message code="Post.DeleteButton"/>
-                        </button>
-                    </form:form>
-                    <div class="d-flex align-items-center">
-                        <p class="card-text mb-0"><small class="text-body-secondary">${post.date.format(format)}</small>
-                        </p>
-                        <span class="grooviness-count" style="margin-left: 1rem;">${post.grooviness}</span>
-                        <div class="d-none">
-                            <c:url value="/post/${postId}/up" var="upPostUrl"/>
-                            <form:form action="${upPostUrl}" method="post" modelA="newPostGroovyForm"
-                                       modelAttribute="newPostGroovyForm">
+                        <h4 class="card-title fw-bold mb-0"><c:out value="${post.title}" escapeXml="true"/></h4>
+                        <p class="card-subtitle mb-4">u/<c:out value="${author}" escapeXml="true"/></p>
+                        <p class="card-text"><c:out value="${post.body}" escapeXml="true"/></p>
+                        <c:url value="/post/${postId}/delete" var="deletePostUrl"/>
+                        <c:if test="${canDelete}">
+                            <form:form action="${deletePostUrl}" var="deletePostUrl" method="post"
+                                       modelAttribute="postDeleteForm">
                                 <form:hidden path="postId" value="${post.id}"/>
-                                <form:hidden path="groovyType" id="postGroovyType"/>
+                                <button class="btn btn-danger" type="submit">
+                                    <spring:message code="Post.DeleteButton"/>
+                                </button>
                             </form:form>
-                        </div>
-                        <div class="d-flex flex-row mb-1">
-                            <c:if test="${isGrooved == 1}">
-                                <button onclick="postGroovyUpdate(true)" class="btn">
-                                    <i class="fas fa-arrow-up text-primary"></i>
-                                </button>
-                                <button onclick="postGroovyUpdate(false)" class="btn">
-                                    <i class="fas fa-arrow-down"></i>
-                                </button>
-                            </c:if>
-                            <c:if test="${isGrooved == -1}">
-                                <button onclick="postGroovyUpdate(true)" class="btn">
-                                    <i class="fas fa-arrow-up"></i>
-                                </button>
-                                <button onclick="postGroovyUpdate(false)" class="btn">
-                                    <i class="fas fa-arrow-down text-danger"></i>
-                                </button>
-                            </c:if>
-                            <c:if test="${isGrooved != 1 && isGrooved != -1}">
-                                <button onclick="postGroovyUpdate(true)" class="btn">
-                                    <i class="fas fa-arrow-up"></i>
-                                </button>
+                        </c:if>
+                        <div class="d-flex align-items-center">
+                            <p class="card-text mb-0"><small
+                                    class="text-body-secondary">${post.date.format(format)}</small>
+                            </p>
+                            <span class="grooviness-count" style="margin-left: 1rem;">${post.grooviness}</span>
+                            <div class="d-none">
+                                <c:url value="/post/${postId}/up" var="upPostUrl"/>
+                                <form:form action="${upPostUrl}" method="post" modelA="newPostGroovyForm"
+                                           modelAttribute="newPostGroovyForm">
+                                    <form:hidden path="postId" value="${post.id}"/>
+                                    <form:hidden path="groovyType" id="postGroovyType"/>
+                                </form:form>
+                            </div>
+                            <div class="d-flex flex-row mb-1">
+                                <c:if test="${isGrooved == 1}">
+                                    <button onclick="postGroovyUpdate(true)" class="btn">
+                                        <i class="fas fa-arrow-up text-primary"></i>
+                                    </button>
+                                    <button onclick="postGroovyUpdate(false)" class="btn">
+                                        <i class="fas fa-arrow-down"></i>
+                                    </button>
+                                </c:if>
+                                <c:if test="${isGrooved == -1}">
+                                    <button onclick="postGroovyUpdate(true)" class="btn">
+                                        <i class="fas fa-arrow-up"></i>
+                                    </button>
+                                    <button onclick="postGroovyUpdate(false)" class="btn">
+                                        <i class="fas fa-arrow-down text-danger"></i>
+                                    </button>
+                                </c:if>
+                                <c:if test="${isGrooved != 1 && isGrooved != -1}">
+                                    <button onclick="postGroovyUpdate(true)" class="btn">
+                                        <i class="fas fa-arrow-up"></i>
+                                    </button>
 
-                                <button onclick="postGroovyUpdate(false)" class="btn">
-                                    <i class="fas fa-arrow-down"></i>
-                                </button>
-                            </c:if>
+                                    <button onclick="postGroovyUpdate(false)" class="btn">
+                                        <i class="fas fa-arrow-down"></i>
+                                    </button>
+                                </c:if>
+                            </div>
                         </div>
-                    </div>
                     </c:if>
                 </div>
 
@@ -139,52 +142,79 @@
 
                     <ul class="list-group">
                         <c:forEach var="comment" items="${comments}">
-                            <li class="list-group-item d-flex justify-content-between align-items-start bg-body-secondary">
-                                <img src="${pageContext.request.contextPath}/images/default-avatar-icon.jpg"
-                                     height="50" width="50" class="rounded-5" alt="Profile Picture">
-                                <div class="ms-2 me-auto">
-                                    <div class="fw-bold"><c:out value="${comment.username}" escapeXml="true"/>
+                            <c:if test="${!comment.deleted}">
+                                <li class="list-group-item d-flex justify-content-between align-items-start bg-body-secondary">
+                                    <img src="${pageContext.request.contextPath}/images/default-avatar-icon.jpg"
+                                         height="50" width="50" class="rounded-5" alt="Profile Picture">
+                                    <div class="ms-2 me-auto">
+                                        <div class="fw-bold"><c:out value="${comment.username}" escapeXml="true"/>
+                                        </div>
+                                        <p>
+                                            <c:out value="${comment.body}" escapeXml="true"/>
+                                        </p>
+                                        <p>
+                                            <small class="text-body-secondary">
+                                                <c:out value="${comment.date.format(format)}" escapeXml="true"/>
+                                            </small>
+                                        </p>
+                                        <c:url value="/comment/${postId}/delete" var="deleteCommentUrl"/>
+                                        <c:if test="${canDelete}">
+                                            <form:form action="${deleteCommentUrl}" var="deleteCommenttUrl"
+                                                       method="post"
+                                                       modelAttribute="commentDeleteForm">
+                                                <form:hidden path="commentId" value="${comment.id}"/>
+                                                <button class="btn btn-danger" type="submit">
+                                                    <spring:message code="Post.DeleteButton"/>
+                                                </button>
+                                            </form:form>
+                                        </c:if>
                                     </div>
-                                    <p>
-                                        <c:out value="${comment.body}" escapeXml="true"/>
-                                    </p>
-                                    <p>
-                                        <small class="text-body-secondary">
-                                            <c:out value="${comment.date.format(format)}" escapeXml="true"/>
-                                        </small>
-                                    </p>
-                                </div>
-                                <div class="d-flex align-items-center">
-                                    <span class="grooviness-count">${comment.grooviness}</span>
-                                    <div class="d-flex flex-column">
-                                        <c:if test="${upComments.contains(comment)}">
-                                            <button onclick="commentGroovyUpdate(true, ${comment.id})" class="btn">
-                                                <i class="fas fa-arrow-up text-primary"></i>
-                                            </button>
-                                            <button onclick="commentGroovyUpdate(false, ${comment.id})" class="btn">
-                                                <i class="fas fa-arrow-down"></i>
-                                            </button>
-                                        </c:if>
-                                        <c:if test="${downComments.contains(comment)}">
-                                            <button onclick="commentGroovyUpdate(true, ${comment.id})" class="btn">
-                                                <i class="fas fa-arrow-up"></i>
-                                            </button>
-                                            <button onclick="commentGroovyUpdate(false, ${comment.id})" class="btn">
-                                                <i class="fas fa-arrow-down text-danger"></i>
-                                            </button>
-                                        </c:if>
-                                        <c:if test="${!upComments.contains(comment) && !downComments.contains(comment)}">
-                                            <button onclick="commentGroovyUpdate(true, ${comment.id})" class="btn">
-                                                <i class="fas fa-arrow-up"></i>
-                                            </button>
+                                    <div class="d-flex align-items-center">
+                                        <span class="grooviness-count">${comment.grooviness}</span>
+                                        <div class="d-flex flex-column">
+                                            <c:if test="${upComments.contains(comment)}">
+                                                <button onclick="commentGroovyUpdate(true, ${comment.id})" class="btn">
+                                                    <i class="fas fa-arrow-up text-primary"></i>
+                                                </button>
+                                                <button onclick="commentGroovyUpdate(false, ${comment.id})" class="btn">
+                                                    <i class="fas fa-arrow-down"></i>
+                                                </button>
+                                            </c:if>
+                                            <c:if test="${downComments.contains(comment)}">
+                                                <button onclick="commentGroovyUpdate(true, ${comment.id})" class="btn">
+                                                    <i class="fas fa-arrow-up"></i>
+                                                </button>
+                                                <button onclick="commentGroovyUpdate(false, ${comment.id})" class="btn">
+                                                    <i class="fas fa-arrow-down text-danger"></i>
+                                                </button>
+                                            </c:if>
+                                            <c:if test="${!upComments.contains(comment) && !downComments.contains(comment)}">
+                                                <button onclick="commentGroovyUpdate(true, ${comment.id})" class="btn">
+                                                    <i class="fas fa-arrow-up"></i>
+                                                </button>
 
-                                            <button onclick="commentGroovyUpdate(false, ${comment.id})" class="btn">
-                                                <i class="fas fa-arrow-down"></i>
-                                            </button>
-                                        </c:if>
+                                                <button onclick="commentGroovyUpdate(false, ${comment.id})" class="btn">
+                                                    <i class="fas fa-arrow-down"></i>
+                                                </button>
+                                            </c:if>
+                                        </div>
                                     </div>
-                                </div>
-                            </li>
+                                </li>
+                            </c:if>
+                            <c:if test="${comment.deleted}">
+                                <li class="list-group-item d-flex justify-content-between align-items-start bg-body-secondary">
+                                    <div class="ms-2 me-auto">
+                                        <div class="fw-bold"><spring:message code="Post.Anon"/>
+                                        </div>
+                                        <p>
+                                            <spring:message code="Comment.Deleted"/>
+                                        </p>
+                                        <p>
+
+                                        </p>
+                                    </div>
+                                </li>
+                            </c:if>
                         </c:forEach>
                     </ul>
                 </div>
@@ -199,12 +229,22 @@
                     <a href="${postUrl}" class="text-decoration-none text-body-primary">
                         <div class="card mb-3">
                             <div class="card-body">
-
-                                <h5 class="card-title other-post-title fw-bold mb-1"><c:out value="${otherPost.title}"
-                                                                                            escapeXml="true"/>
-                                </h5>
-                                <span class="badge rounded-pill ${otherPost.category} mb-1">${otherPost.category}</span>
-                                <p class="card-text post-body"><c:out value="${otherPost.body}" escapeXml="true"/></p>
+                                <c:if test="${!otherPost.deleted}">
+                                    <h5 class="card-title card-title other-post-title fw-bold mb-1"><c:out
+                                            value="${otherPost.title}"
+                                            escapeXml="true"/>
+                                    </h5>
+                                    <span class="badge rounded-pill ${otherPost.category} mb-1">${otherPost.category}</span>
+                                    <p class="card-text post-body"><c:out value="${otherPost.body}"
+                                                                          escapeXml="true"/></p>
+                                </c:if>
+                                <c:if test="${otherPost.deleted}">
+                                    <h5 class="card-title
+                                 card-title other-post-title fw-bold mb-1"><spring:message code="Post.Deleted"/>
+                                    </h5>
+                                    <span class="badge rounded-pill ${otherPost.category} mb-1">${otherPost.category}</span>
+                                    <p class="card-text post-body"><spring:message code="Post.Deleted"/></p>
+                                </c:if>
                             </div>
                         </div>
                         </c:forEach>

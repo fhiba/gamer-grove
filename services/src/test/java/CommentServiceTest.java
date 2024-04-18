@@ -46,7 +46,7 @@ public class CommentServiceTest {
         LocalDateTime now = LocalDateTime.now();
         // Mocking commentDao's createComment method
         when(commentDao.createComment(anyLong(), anyString(), anyString(), any(LocalDateTime.class), anyLong()))
-                .thenReturn(new Comment(1L, 1L, "username", -1, COMMENT_BODY, now, 0));
+                .thenReturn(new Comment(1L, 1L, "username", -1, COMMENT_BODY, now, 0,false));
 
         // Call the method to be tested
         Comment createdComment = commentService.createComment(1, "Test comment");

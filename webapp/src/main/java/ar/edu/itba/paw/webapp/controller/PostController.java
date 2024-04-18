@@ -98,7 +98,7 @@ public class PostController {
     }
 
     @RequestMapping(path = "/post/{postId}", method = RequestMethod.GET)
-    public ModelAndView singlePost(@PathVariable("postId") final long postId, @ModelAttribute("newPostGroovyForm") final NewPostGroovyForm newPostGroovyForm, @ModelAttribute("newCommentForm") final NewCommentForm newCommentForm, @ModelAttribute("newCommentGroovyForm") final NewCommentGroovyForm newCommentGroovyForm,@ModelAttribute("postDeleteForm") final PostDeleteForm postDeleteForm) throws UserNotFoundException, NoSuchPostException {
+    public ModelAndView singlePost(@PathVariable("postId") final long postId, @ModelAttribute("newPostGroovyForm") final NewPostGroovyForm newPostGroovyForm, @ModelAttribute("newCommentForm") final NewCommentForm newCommentForm, @ModelAttribute("newCommentGroovyForm") final NewCommentGroovyForm newCommentGroovyForm,@ModelAttribute("postDeleteForm") final PostDeleteForm postDeleteForm, @ModelAttribute("commentDeleteForm") final CommentDeleteForm commentDeleteForm) throws UserNotFoundException, NoSuchPostException, NoSuchCommunityException {
         ModelAndView mav = new ModelAndView("/post/post");
         mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
         Post post;
@@ -113,14 +113,17 @@ public class PostController {
         List<Comment> comments = commentService.getPostComments((postId));
         List<Comment> grooviedComments = Collections.emptyList();
         List<Comment> negativeGrooviedComments = Collections.emptyList();
+        boolean canDelete = false;
         int isGrooved = 0;
-        if (us.getLoggedUser().isPresent()) {
+        Optional<User> possibleUser = us.getLoggedUser();
+        if (possibleUser.isPresent()) {
             grooviedComments = commentService.getUpGroovedComments(postId);
             negativeGrooviedComments = commentService.getDownGroovedComments(postId);
             isGrooved = ps.checkGrooviness(postId);
+            canDelete = ms.canRemovePost(us.getLoggedUser().get().getId(), postId);
         }
         mav.addObject("isGrooved", isGrooved);
-        mav.addObject("isGrooved", ps.checkGrooviness(postId));
+        //mav.addObject("isGrooved", ps.checkGrooviness(postId));
         mav.addObject("newPostGroovyForm", newPostGroovyForm);
         mav.addObject("upComments", grooviedComments);
         mav.addObject("downComments", negativeGrooviedComments);
@@ -131,6 +134,7 @@ public class PostController {
         //TODO: SHOULD BE THE ONES THAT ARE CURRENTLY BEING FOLLOWED BY USER OR A FEW RANDOMLY SELECTED
         mav.addObject("communities", cs.getAllCommunities());
         mav.addObject("posts", ps.getPostsByCommunity(post.getCommunity_name()));
+        mav.addObject("canDelete", canDelete);
 
         return mav;
     }
@@ -138,10 +142,10 @@ public class PostController {
     @RequestMapping(path = "/post/{postId}/delete", method = RequestMethod.POST)
     public ModelAndView deletePost(@Valid @ModelAttribute("postDeleteForm") final PostDeleteForm postDeleteForm,final BindingResult errors) throws NoSuchPostException, NoLoggedUserException {
         if (errors.hasErrors()) {
-            return new ModelAndView("redirect:/post" + postDeleteForm.getPostId());
+            return new ModelAndView("redirect:/post/" + postDeleteForm.getPostId());
         }
         ms.removePost(postDeleteForm.getPostId());
-        return new ModelAndView("redirect:/home");
+        return new ModelAndView("redirect:/post/" + postDeleteForm.getPostId());
     }
 
 

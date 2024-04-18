@@ -5,10 +5,12 @@ import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchCommentException;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.services.CommentService;
+import ar.edu.itba.paw.webapp.form.CommentDeleteForm;
 import ar.edu.itba.paw.webapp.form.NewCommentForm;
 import ar.edu.itba.paw.webapp.form.NewCommentGroovyForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,6 +43,16 @@ public class CommentController {
 
         commentService.editGroovinessOnComment(newCommentGroovyForm.getCommentId(), newCommentGroovyForm.isGroovyType() ? 1 : -1, newCommentGroovyForm.getCommentPostId());
         return new ModelAndView("redirect:/post/"+newCommentGroovyForm.getCommentPostId());
+    }
+
+    @RequestMapping(path="/comment/{postId}/delete", method = RequestMethod.POST)
+    public ModelAndView deleteComment(@Valid @ModelAttribute("commentDeleteForm") final CommentDeleteForm commentDeleteForm, final BindingResult errors) throws NoSuchCommentException {
+        if(errors.hasErrors()) {
+            return new ModelAndView("redirect:/post/{postId}");
+        }
+        //TODO:agregar un checkeo mas?
+        commentService.deleteComment(commentDeleteForm.getCommentId());
+        return new ModelAndView("redirect:/post/{postId}");
     }
 
 }

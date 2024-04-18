@@ -18,7 +18,7 @@
     <org.hsqldb.version>2.5.1</org.hsqldb.version>
     <javax.validation-api.version>2.0.1.Final</javax.validation-api.version>
     <org.hibernate.validator>6.2.4.Final</org.hibernate.validator>
-    <spring-security.version>5.5.1</spring-security.version>
+    <spring-security.version>5.8.11</spring-security.version>
   </properties>
   <groupId>ar.edu.itba.paw</groupId>
   <artifactId>gamergrove</artifactId>
