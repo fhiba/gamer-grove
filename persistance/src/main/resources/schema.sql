@@ -91,3 +91,10 @@ create table if not exists groovy_comment_history(
                                                   foreign key(post_id) references post(id),
                                                   foreign key(comment_id) references comment(id)
 );
+
+create table if not exists communities_categories(
+    community_id INT NOT NULL,
+    category VARCHAR(50) NOT NULL,
+    PRIMARY KEY (community_id, category),
+    FOREIGN KEY (community_id) REFERENCES community(id)
+);
