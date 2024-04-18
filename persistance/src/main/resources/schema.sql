@@ -99,3 +99,5 @@ create table if not exists modders(
                                    foreign key(user_id) references users(id),
                                    foreign key(community_id) references community(id)
 );
+
+ALTER TABLE post ADD COLUMN deleted boolean DEFAULT false NOT NULL;

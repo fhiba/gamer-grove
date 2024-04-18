@@ -67,9 +67,14 @@
                                         <p class="fw-semibold card-subtitle">/<c:out value="${post.community_name}" escapeXml="true"/></p>
                                         <span class="badge rounded-pill ${post.category} mb-1">${post.category}</span>
                                     </div>
-
+                                    <c:if test="${!post.deleted}">
                                     <h4 class="card-title fw-bold"><c:out value="${post.title}" escapeXml="true"/></h4>
                                     <p class="card-text post-body"><c:out value="${post.body}" escapeXml="true"/></p>
+                                    </c:if>
+                                    <c:if test="${post.deleted}">
+                                        <h4 class="card-title fw-bold"><spring:message code="Post.Deleted"/></h4>
+                                        <p class="card-text post-body"><<spring:message code="Post.Deleted"/>/></p>
+                                    </c:if>
                                 </div>
                             </div>
                         </a>

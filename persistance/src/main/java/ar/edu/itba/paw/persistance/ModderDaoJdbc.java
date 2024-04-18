@@ -23,7 +23,7 @@ public class ModderDaoJdbc implements ModderDao{
     }
 
     @Override
-    public int addModder(int userId, int communityId) {
+    public int addModder(long userId, long communityId) {
         Map<String, Object> args = new HashMap<>();
         args.put("user_id", userId);
         args.put("community_id", communityId);
@@ -31,12 +31,17 @@ public class ModderDaoJdbc implements ModderDao{
     }
 
     @Override
-    public boolean isModderOfCommunity(int userId, int communityId) {
+    public boolean isModderOfCommunity(long userId, long communityId) {
         return jdbcTemplate.query("SELECT * FROM modders WHERE user_id = ? AND community_id = ?", new Object[]{userId, communityId}, (rs, rowNum) -> rs.getInt("user_id")).stream().findFirst().isPresent();
     }
 
     @Override
-    public int removeModder(int userId, int communityId) {
+    public int removeModder(long userId, long communityId) {
         return jdbcTemplate.update("DELETE FROM modders WHERE user_id = ? AND community_id = ?", userId, communityId);
+    }
+
+    @Override
+    public int removePost(long postId) {
+        return jdbcTemplate.update("UPDATE post SET deleted=? where id=?", true,postId);
     }
 }

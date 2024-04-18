@@ -93,8 +93,14 @@
                                         <c:out value="c/${post.community_name}" escapeXml="true"/>
                                         <span class="badge rounded-pill ${post.category}">${post.category}</span>
                                     </p>
-                                    <h4 class="card-title fw-bold"><c:out value="${post.title}" escapeXml="true"/> </h4>
-                                    <p class="card-text post-body text-secondary post-body"><c:out value="${post.body}" escapeXml="true"/></p>
+                                    <c:if test="${!post.deleted}">
+                                        <h4 class="card-title fw-bold"><c:out value="${post.title}" escapeXml="true"/></h4>
+                                        <p class="card-text post-body"><c:out value="${post.body}" escapeXml="true"/></p>
+                                    </c:if>
+                                    <c:if test="${post.deleted}">
+                                        <h4 class="card-title fw-bold"><spring:message code="Post.Deleted"/></h4>
+                                        <p class="card-text post-body"><<spring:message code="Post.Deleted"/>/></p>
+                                    </c:if>
                                 </div>
                             </div>
                         </a>

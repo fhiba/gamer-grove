@@ -2,8 +2,10 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.exceptions.AlreadyModException;
 import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
+import ar.edu.itba.paw.exceptions.NoSuchPostException;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.models.Community;
+import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistance.ModderDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +22,11 @@ public class ModderServiceImpl implements ModderService{
     private ModderDao md;
     @Autowired
     private CommunityService cs;
+    @Autowired
+    private PostService ps;
+
     @Override
-    public int addModder(int userId, int communityId) throws UserNotFoundException, NoSuchCommunityException, AlreadyModException {
+    public int addModder(long userId, long communityId) throws UserNotFoundException, NoSuchCommunityException, AlreadyModException {
         Optional<User> newMod = us.findById(userId);
         if(newMod.isEmpty()){
             throw new UserNotFoundException("User with id "+userId+" not found");
@@ -36,12 +41,26 @@ public class ModderServiceImpl implements ModderService{
     }
 
     @Override
-    public boolean isModderOfCommunity(int userId, int communityId) {
+    public boolean isModderOfCommunity(long userId, long communityId) {
         return md.isModderOfCommunity(userId,communityId);
     }
 
     @Override
-    public int removeModder(int userId, int communityId) {
+    public int removeModder(long userId, long communityId) {
         return md.removeModder(userId,communityId);
     }
+
+    @Override
+    public int removePost(long postId) {
+        return md.removePost(postId);
+    }
+
+    @Override
+    public boolean canRemovePost(long userId, long postId) throws NoSuchPostException, NoSuchCommunityException {
+        Post toDelete = ps.getPostById(postId);
+        Community postFrom = cs.findByName(toDelete.getCommunity_name());
+
+        return md.isModderOfCommunity(userId, postFrom.getId());
+    }
+
 }

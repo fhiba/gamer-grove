@@ -43,21 +43,40 @@
                     <p class="fw-semibold card-subtitle mb-1">
                         <c:url value="/community/${post.community_name}" var="communityUrl"/>
                         <a href="${communityUrl}"
-                           class="text-decoration-none text-body-primary">c/<c:out value="${post.community_name}" escapeXml="true"/></a>
+                           class="text-decoration-none text-body-primary">c/<c:out value="${post.community_name}"
+                                                                                   escapeXml="true"/></a>
                         <span class="badge rounded-pill ${post.category}">${post.category}</span>
                     </p>
-                    <h4 class="card-title fw-bold mb-0"><c:out value="${post.title}" escapeXml="true"/> </h4>
+
+                    <c:if test="${post.deleted}">
+                        <h4 class="card-title fw-bold mb-0"><spring:message code="Post.Deleted" /></h4>
+                        <p class="card-subtitle mb-4">u/<spring:message code="Post.Anon"/></p>
+                        <p>
+                            <spring:message code="Post.Deleted"/>
+                        </p>
+                    </c:if>
+                    <c:if test="${!post.deleted}">
+                    <h4 class="card-title fw-bold mb-0"><c:out value="${post.title}" escapeXml="true"/></h4>
                     <p class="card-subtitle mb-4">u/<c:out value="${author}" escapeXml="true"/></p>
-                    <p class="card-text"><c:out value="${post.body}" escapeXml="true"/> </p>
+                    <p class="card-text"><c:out value="${post.body}" escapeXml="true"/></p>
+                    <c:url value="/post/${postId}/delete" var="deletePostUrl"/>
+                    <form:form action="${deletePostUrl}" var="deletePostUrl" method="post"
+                               modelAttribute="postDeleteForm">
+                        <form:hidden path="postId" value="${post.id}"/>
+                        <button class="btn btn-danger" type="submit">
+                            <spring:message code="Post.DeleteButton"/>
+                        </button>
+                    </form:form>
                     <div class="d-flex align-items-center">
-                        <p class="card-text mb-0"><small class="text-body-secondary">${post.date.format(format)}</small></p>
+                        <p class="card-text mb-0"><small class="text-body-secondary">${post.date.format(format)}</small>
+                        </p>
                         <span class="grooviness-count" style="margin-left: 1rem;">${post.grooviness}</span>
                         <div class="d-none">
                             <c:url value="/post/${postId}/up" var="upPostUrl"/>
-                            <form:form action="${upPostUrl}" method="post" id="newPostGroovyForm"
+                            <form:form action="${upPostUrl}" method="post" modelA="newPostGroovyForm"
                                        modelAttribute="newPostGroovyForm">
-                                <form:hidden path="postId" value="${post.id}" />
-                                <form:hidden path="groovyType" id="postGroovyType" />
+                                <form:hidden path="postId" value="${post.id}"/>
+                                <form:hidden path="groovyType" id="postGroovyType"/>
                             </form:form>
                         </div>
                         <div class="d-flex flex-row mb-1">
@@ -88,7 +107,9 @@
                             </c:if>
                         </div>
                     </div>
+                    </c:if>
                 </div>
+
             </div>
             <%--COMMENTS--%>
             <div class="card bg-body-secondary">
@@ -110,9 +131,9 @@
                         <c:url value="/post/${postId}/+" var="upCommentUrl"/>
                         <form:form action="${upCommentUrl}" method="post" id="upCommentForm"
                                    modelAttribute="newCommentGroovyForm">
-                            <form:hidden path="commentId" id="commentId" />
+                            <form:hidden path="commentId" id="commentId"/>
                             <form:hidden path="commentPostId" value="${post.id}"/>
-                            <form:hidden path="groovyType" id="groovyType" />
+                            <form:hidden path="groovyType" id="groovyType"/>
                         </form:form>
                     </div>
 
@@ -179,7 +200,8 @@
                         <div class="card mb-3">
                             <div class="card-body">
 
-                                <h5 class="card-title other-post-title fw-bold mb-1"><c:out value="${otherPost.title}" escapeXml="true"/>
+                                <h5 class="card-title other-post-title fw-bold mb-1"><c:out value="${otherPost.title}"
+                                                                                            escapeXml="true"/>
                                 </h5>
                                 <span class="badge rounded-pill ${otherPost.category} mb-1">${otherPost.category}</span>
                                 <p class="card-text post-body"><c:out value="${otherPost.body}" escapeXml="true"/></p>

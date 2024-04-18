@@ -4,9 +4,11 @@ import java.util.List;
 
 public interface ModderDao {
 
-    int addModder(final int userId,final int communityId);
+    int addModder(final long userId,final long communityId);
 
-    boolean isModderOfCommunity(final int userId, final int communityId);
+    boolean isModderOfCommunity(final long userId, final long communityId);
 
-    int removeModder(final int userId, final int communityId);
+    int removeModder(final long userId, final long communityId);
+
+    int removePost(long postId);
 }

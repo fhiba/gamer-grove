@@ -64,6 +64,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST,"/post").authenticated()
                 .antMatchers(HttpMethod.POST,"/comment").authenticated()
                 .antMatchers("/community/{communityName}/mod").access("@modderServiceImpl.isModderOfCommunity(@userServiceImpl.loggedUser.get().id,@communityServiceImpl.findByName(#communityName).getId()) or hasRole('ADMIN')")
+                .antMatchers("/post/{postId}/delete").access("@modderServiceImpl.canRemovePost(@userServiceImpl.loggedUser.get().id,#postId) or hasRole('ADMIN')")
                 .antMatchers("/new-community").hasRole("ADMIN")
                 .antMatchers("/**").permitAll()
             .and().formLogin()
