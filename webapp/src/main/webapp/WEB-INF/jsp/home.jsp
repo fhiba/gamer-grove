@@ -13,7 +13,7 @@
 <body>
 <%@ include file="components/header.jsp" %>
 <div class="container-fluid">
-    <div class="row mb-3">
+    <div class="row  min-vh-100">
         <%--COMMUNITY LIST--%>
         <div class="col-2 sidebar">
             <div class="card sidebar-card">
@@ -58,14 +58,15 @@
                     </div>
                     <c:forEach var="post" items="${posts}">
                         <c:url value="/post/${post.id}" var="postUrl"/>
-                        <a href="${postUrl}" class="card-link link-underline-light">
+                        <a href="${postUrl}" class="card-link text-decoration-none">
                             <div class="card mb-3">
                                 <div class="card-body">
                                     <div class="title-container mb-2">
                                         <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
                                              class="small-profile-pic mb-1" alt="Profile Picture">
                                         <p class="fw-semibold card-subtitle">/<c:out value="${post.community_name}" escapeXml="true"/></p>
-                                        <span class="badge rounded-pill ${post.category} mb-1">${post.category}</span>
+                                        <span class="badge rounded-pill mb-1 ${post.category}">${post.category}</span>
+
                                     </div>
 
                                     <h4 class="card-title fw-bold"><c:out value="${post.title}" escapeXml="true"/></h4>
@@ -100,7 +101,6 @@
             </div>
         </div>
     </div>
-    <%@ include file="/WEB-INF/jsp/components/footer.jsp" %>
 
 </div>
 

@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
@@ -61,7 +62,7 @@
     </div>
 </div>
 <div class=" container-fluid">
-    <div class="row mt-4">
+    <div class="row mt-4 min-vh-100">
         <div class="col-3">
         </div>
         <div class="col-6">

@@ -98,3 +98,11 @@ create table if not exists communities_categories(
     PRIMARY KEY (community_id, category),
     FOREIGN KEY (community_id) REFERENCES community(id)
 );
+
+UPDATE post_categories SET category = 'Miscellaneous' WHERE category = 'Discussion';
+
+INSERT INTO post_categories (category) VALUES ('Discussion');
+
+UPDATE post SET category = 'Discussion' WHERE category = 'Miscellaneous';
+
+DELETE FROM post_categories WHERE category = 'Miscellaneous';
