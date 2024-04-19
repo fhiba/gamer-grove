@@ -17,6 +17,8 @@
     <div>
         <h1><spring:message code="500"/></h1>
         <p><spring:message code="500.message"/> </p>
+        <c:url value="/" var="homeUrl"/>
+        <a href="${homeUrl}" class="btn btn-primary"><spring:message code="GoHomeButton"/></a>
     </div>
 </div>
 

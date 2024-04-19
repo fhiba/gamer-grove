@@ -21,20 +21,26 @@
 
         </div>
 
-            <%--LISTA DE COMMUNITIES--%>
-            <div class="col-6">
-                <div class="card  border-light">
-                    <div class="card-body">
-                        <c:if test="${empty communities}">
-                            <div><spring:message code="Communities.NoCommunitites"/></div>
-                        </c:if>
+        <%--LISTA DE COMMUNITIES--%>
+        <div class="col-6">
+            <div class="card  border-light">
+                <div class="card-body">
+                    <c:if test="${empty communities}">
+                        <div class="d-flex flex-column align-items-center">
+                            <h4 class="fw-semi-bold"><spring:message code="Communities.NoCommunitites"/></h4>
+                            <c:url value="/" var="homeUrl"/>
+                            <a href="${homeUrl}" class="btn btn-primary"><spring:message code="GoHomeButton"/></a>
+                        </div>
+                    </c:if>
+                    <c:if test="${not empty communities}">
                         <c:forEach var="community" items="${communities}">
                             <c:url value="/community/${community.name}" var="communityUrl"/>
                             <a href="${communityUrl}" class="card-link link-underline-light">
                                 <div class="card mb-3">
                                     <div class="card-body d-flex flex-row">
                                         <div class="flex-column">
-                                            <img src="${pageContext.request.contextPath}/images/profile-picture.jpg" class="medium-profile-pic" alt="Profile Picture">
+                                            <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
+                                                 class="medium-profile-pic" alt="Profile Picture">
                                         </div>
                                         <div class="flex-column overflow-auto w-100">
                                             <div class="d-flex justify-content-between">
@@ -42,9 +48,10 @@
                                                     /${community.name}
                                                 </h2>
                                                 <div class="justify-content-end">
-                                                <c:forEach var="communityCategories" items="${community.categories}">
-                                                    <span class="fs-6 cat-badge p-1 badge bg-dark">${communityCategories}</span>
-                                                </c:forEach>
+                                                    <c:forEach var="communityCategories"
+                                                               items="${community.categories}">
+                                                        <span class="fs-6 cat-badge p-1 badge bg-dark">${communityCategories}</span>
+                                                    </c:forEach>
                                                 </div>
                                             </div>
                                             <h6 class="card-title text-secondary">${community.description}</h6>
@@ -53,9 +60,11 @@
                                 </div>
                             </a>
                         </c:forEach>
-                    </div>
+                    </c:if>
                 </div>
             </div>
+        </div>
+
         <%--LISTA DE Filters--%>
         <div class="col-3">
             <div class="card  border-light">
@@ -96,7 +105,7 @@
     let addCategoryToBody = (category) => {
         let body = document.getElementById("categoriesBody");
         let button = document.createElement("button");
-        button.id = category+'Option';
+        button.id = category + 'Option';
         button.innerHTML = category;
         button.setAttribute("class", "btn btn-outline-dark m-1");
         button.onclick = () => {
@@ -117,7 +126,7 @@
     let createPill = (selected) => {
         let categoryPills = document.getElementById("categoryPills");
         let pill = document.createElement("div");
-        pill.id = selected+'Pill';
+        pill.id = selected + 'Pill';
         pill.setAttribute("class", "card flex-row align-items-center justify-content-center m-1");
         let innerDiv = document.createElement("div");
         innerDiv.setAttribute("class", "card-body d-flex flex-row p-2 align-items-center justify-content-center");
@@ -139,13 +148,13 @@
 
     let initializeArray = () => {
         <c:forEach var="category" items="${selectedCategories}">
-        if("${category}" !== null && "${category}" !== "") {
+        if ("${category}" !== null && "${category}" !== "") {
             applyFilterArray.push("${category}");
             createPill("${category}");
         }
         </c:forEach>
         <c:forEach var="category" items="${categories}">
-        if(!applyFilterArray.includes("${category}")){
+        if (!applyFilterArray.includes("${category}")) {
             selectArray.push("${category}");
             addCategoryToBody("${category}");
         }

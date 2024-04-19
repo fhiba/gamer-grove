@@ -6,6 +6,10 @@ body {
     font-family: 'Inter', sans-serif;
 }
 
+.background-of-views{
+    background-color: #1f1f1f;
+}
+
 
 .discussion{
     background-color: #FF5733; /* Change to desired color for Miscellaneous */
@@ -127,4 +131,12 @@ body {
 .cat-badge {
     max-height: min-content;
     text-underline: none;
+}
+
+.post-body-home {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* number of lines to show */
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
 }
