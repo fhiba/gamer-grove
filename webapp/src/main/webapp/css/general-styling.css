@@ -122,3 +122,8 @@ body {
     border-color: #1c1919; /* Change to desired color for Sidebar border */
     box-shadow: 5px 0px 10px rgba(0, 0, 0, 0.5); ;
 }
+
+.cat-badge {
+    max-height: min-content;
+    text-underline: none;
+}
