@@ -8,7 +8,7 @@ import java.util.List;
 
 
 public interface CommunityService {
-    void createCommunity(final String name,final String description);
+    void createCommunity(final String name,final String description, String categories) throws NoSuchCommunityException;
     List<Community> getAllCommunities();
 
     Community findByName(final String communityName) throws NoSuchCommunityException;
@@ -22,4 +22,14 @@ public interface CommunityService {
     Boolean checkIfUserFollowsCommunity(int communityId) throws NoLoggedUserException;
 
     List<Community> getFollowedCommunities();
+    List<Community> find(final String searchTerms, List<String> categories);
+
+    void addCategory(final long id, String category) throws NoSuchCommunityException;
+
+    void removeCategory(final long id, String category) throws NoSuchCommunityException;
+
+    void addCategories(final long id, List<String> categories) throws NoSuchCommunityException;
+
+    void removeCategories(final long id, List<String> categories) throws NoSuchCommunityException;
+
 }

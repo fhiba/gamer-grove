@@ -9,11 +9,19 @@ public interface CommunityDao {
 
     Optional<Community> findById(final long id);
 
-    void createCommunity(String name, String description);
+    Community createCommunity(String name, String description);
 
     List<Community> findAllCommunities();
 
     Optional<Community> findByName(String communityName);
+
+    List<Community> find(String searchTerms, List<String> categories);
+
+    Boolean addCategory(final long id, String category);
+
+    Boolean removeCategory(final long id, String category);
+
+    List<String> getCategoriesOfCommunity(final long id);
 
     List<Community> find(String searchTerms);
 

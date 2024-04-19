@@ -1,17 +1,20 @@
 package ar.edu.itba.paw.models;
 
+import java.util.List;
+
 public class Community {
 
     private final long id;
     private final String name;
     private final String description;
-    private final long portrait_id;
+    private long portrait_id = -1;
 
-    public Community(final long id, final String name, final long portrait_id, final String description) {
+    private List<String> categories = null;
+
+    public Community(final long id, final String name,  final String description) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.portrait_id = portrait_id;
     }
 
     public long getId() {
@@ -28,5 +31,17 @@ public class Community {
 
     public String getDescription() {
         return description;
+    }
+
+    public List<String> getCategories() {
+        return categories;
+    }
+
+    public void setPortrait_id(long portrait_id) {
+        this.portrait_id = portrait_id;
+    }
+
+    public void setCategories(List<String> categories) {
+        this.categories = categories;
     }
 }

@@ -63,7 +63,7 @@
     </div>
 </div>
 <div class=" container-fluid">
-    <div class="row mt-4">
+    <div class="row mt-4 min-vh-100">
         <div class="col-3">
         </div>
         <div class="col-6">

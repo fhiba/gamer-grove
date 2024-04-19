@@ -3,6 +3,7 @@ package ar.edu.itba.paw.webapp.controller;
 import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
 import ar.edu.itba.paw.models.Community;
+import ar.edu.itba.paw.models.CommunityCategories;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.PostCategories;
 import ar.edu.itba.paw.services.CommunityService;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.validation.Valid;
 import java.util.Arrays;
 import java.util.List;
 
@@ -33,14 +35,15 @@ public class CommunityController {
 
     @RequestMapping(path="/new-community", method = RequestMethod.GET)
     public ModelAndView newCommunity(@ModelAttribute("newCommunityForm") final NewCommunityForm newCommunityForm) {
-        return new ModelAndView("community/newCommunity");
+        return new ModelAndView("community/newCommunity").addObject("categories", Arrays.stream(CommunityCategories.values()).map(CommunityCategories::getCategory).toArray(String[]::new));
     }
 
     @RequestMapping(path="/new-community", method = RequestMethod.POST)
-    public ModelAndView createCommunity(@ModelAttribute("newCommunityForm") final NewCommunityForm newCommunityForm, BindingResult errors) {
+    public ModelAndView createCommunity(@Valid @ModelAttribute("newCommunityForm") final NewCommunityForm newCommunityForm, BindingResult errors) throws NoSuchCommunityException{
         if(errors.hasErrors())
             return new ModelAndView("community/newCommunity");
-        cs.createCommunity(newCommunityForm.getName(), newCommunityForm.getDescription());
+        System.out.println(newCommunityForm.getCategories());
+        cs.createCommunity(newCommunityForm.getName(), newCommunityForm.getDescription(), newCommunityForm.getCategories());
         return new ModelAndView("redirect:/");
     }
 
@@ -76,11 +79,13 @@ public class CommunityController {
 
 
     @RequestMapping(path="/communities", method = RequestMethod.GET)
-    public ModelAndView communities(@ModelAttribute("searchTerms") final String searchTerms) {
+    public ModelAndView communities(@ModelAttribute("searchTerms") final String searchTerms, @ModelAttribute("categories") final String categories) {
         ModelAndView mav = new ModelAndView("community/communities");
-        List<Community> communities = cs.find(searchTerms);
-        mav.addObject("categories", Arrays.stream(PostCategories.values()).map(PostCategories::getCategory).toArray(String[]::new));
-        mav.addObject("news", ps.getByCategory(PostCategories.NEWS.getCategory()));
+        List<String> selectedCategories = Arrays.asList(categories.split(","));
+        List<Community> communities = cs.find(searchTerms, selectedCategories);
+        mav.addObject("categories", Arrays.stream(CommunityCategories.values()).map(CommunityCategories::getCategory).toArray(String[]::new));
+        mav.addObject("selectedCategories", selectedCategories);
+        mav.addObject("searchTerms", searchTerms);
         mav.addObject("communities",communities);
         return mav;
     }

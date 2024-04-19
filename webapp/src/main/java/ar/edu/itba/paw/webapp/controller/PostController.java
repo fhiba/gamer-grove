@@ -90,6 +90,7 @@ public class PostController {
         }
         mav.addObject("posts",posts);
         //TODO: SHOULD BE THE ONES THAT ARE CURRENTLY BEING FOLLOWED BY USER OR A FEW RANDOMLY SELECTED
+        mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
         mav.addObject("communities", cs.getAllCommunities());
         mav.addObject("news", ps.getByCategory(PostCategories.NEWS.getCategory()));
         mav.addObject("categories", Arrays.stream(PostCategories.values()).map(PostCategories::getCategory).toArray(String[]::new));

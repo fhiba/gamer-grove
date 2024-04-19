@@ -20,8 +20,12 @@ public class CommunityServiceImpl implements CommunityService{
     private UserService userService;
 
     @Override
-    public void createCommunity(final String name, final String description) {
-        communityDao.createCommunity(name,description);
+    public void createCommunity(final String name, final String description, final String categories) throws NoSuchCommunityException {
+        Community community = communityDao.createCommunity(name,description);
+
+        if(categories != null && !categories.isEmpty()) {
+            addCategories(community.getId(), List.of(categories.split(",")));
+        }
     }
 
     @Override
@@ -42,15 +46,52 @@ public class CommunityServiceImpl implements CommunityService{
 
     @Override
     public Community findById(final long communityId) throws NoSuchCommunityException{
-        Optional<Community> community = communityDao.findById(communityId);
-        if(community.isEmpty())
+        Optional<Community> maybeCommunity = communityDao.findById(communityId);
+        if(maybeCommunity.isEmpty())
             throw new NoSuchCommunityException("Community " + communityId+ " not found");
-        return community.get();
+        return maybeCommunity.get();
+    }
+
+
+
+    @Override
+    public List<Community> find(final String searchTerms, List<String> categories) {
+
+        List<String> newList = null;
+        if(!categories.isEmpty() && !categories.getFirst().isEmpty()) {
+            newList = categories.stream().map(category -> category.replaceAll("([%_\\\\])", "\\\\$1")).toList();
+        }
+        return communityDao.find(searchTerms.replaceAll("([%_\\\\])", "\\\\$1"), newList == null? List.of(): newList);
     }
 
     @Override
-    public List<Community> find(final String searchTerms) {
-        return communityDao.find(searchTerms.replaceAll("([%_\\\\])", "\\\\$1"));
+    public void addCategory(long id, String category) throws NoSuchCommunityException {
+        Optional<Community> community = communityDao.findById(id);
+        if(community.isEmpty())
+            throw new NoSuchCommunityException("Community " + id+ " not found");
+        communityDao.addCategory(id,category);
+    }
+
+    @Override
+    public void removeCategory(long id, String category) throws NoSuchCommunityException {
+        Optional<Community> community = communityDao.findById(id);
+        if(community.isEmpty())
+            throw new NoSuchCommunityException("Community " + id+ " not found");
+        communityDao.removeCategory(id,category);
+    }
+
+    @Override
+    public void addCategories(long id, List<String> categories) throws NoSuchCommunityException {
+       for (String category: categories){
+           addCategory(id,category);
+       }
+    }
+
+    @Override
+    public void removeCategories(long id, List<String> categories) throws NoSuchCommunityException {
+        for (String category: categories){
+            removeCategory(id,category);
+        }
     }
 
     @Override

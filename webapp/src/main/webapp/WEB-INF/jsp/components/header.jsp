@@ -1,5 +1,7 @@
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <%@ page contentType="text/html;charset=UTF-8" %>
+<jsp:useBean id="searchTerms" scope="request" class="java.lang.String"/>
 <nav class="navbar">
     <div class="container-fluid">
         <div class="row w-100">
@@ -16,12 +18,17 @@
             <div class="col-6 d-flex align-items-center justify-content-center">
                 <c:url value="/communities" var="communitySearch"/>
                 <form class="d-flex align-items-center justify-content-center m-auto w-100 ms-3" role="search"
-                      action="${communitySearch}" method="get">
+                      action="${communitySearch}" method="get" id="searchForm">
                     <input class="form-control me-2" type="search" name="searchTerms"
                            placeholder="Search for communities"
                            id="searchTerms"
-                           aria-label="Search">
-                    <button class="btn btn-outline-success" type="submit"><spring:message
+                           aria-label="Search"
+                    <c:if test="${not empty searchTerms}">
+                        value="${searchTerms}"
+                    </c:if>
+                    >
+
+                    <button class="btn btn-outline-success" type="submit" id="searchButton"><spring:message
                             code="Navbar.Search"/></button>
                 </form>
             </div>

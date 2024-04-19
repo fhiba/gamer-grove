@@ -18,6 +18,8 @@
     <div>
         <h1 ><c:out value="${error_title}"/></h1>
         <p><c:out value="${error_message}"/> </p>
+        <c:url value="/" var="homeUrl"/>
+        <a href="${homeUrl}" class="btn btn-primary"><spring:message code="GoHomeButton"/></a>
     </div>
 </div>
 

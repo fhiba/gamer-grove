@@ -13,7 +13,7 @@
 <body>
 
 <%@ include file="/WEB-INF/jsp/components/header.jsp" %>
-<div class="container-fluid h-100">
+<div class="container-fluid min-vh-100">
     <div class="row">
         <%--COMMUNITY LIST--%>
         <div class="col-2 sidebar">
