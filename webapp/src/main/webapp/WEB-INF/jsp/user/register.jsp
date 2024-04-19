@@ -15,10 +15,10 @@
 <%@ include file="/WEB-INF/jsp/components/header.jsp" %>
 <div class="container-fluid h-100">
     <div class="row mt-4 justify-content-center">
-        <div class="col-6">
-            <div class="card mb-4">
-                <div class="card-body">
-                    <h2 class="fw-bold mb-2 text-uppercase"><spring:message code="Register.Title"/></h2>
+        <div class="col d-flex justify-content-center">
+            <div class="card mb-4 w-25">
+                <div class="card-body text-center">
+                    <h2 class="fw-bold mb-2"><spring:message code="Register.Title"/></h2>
                     <c:url var="registerUrl" value="/register"/>
                     <form:form action="${registerUrl}" method="post" modelAttribute="registerForm">
                         <div class="mb-3">
@@ -47,6 +47,11 @@
                         </button>
                         <form:errors cssStyle="color: red" cssClass="error"/>
                     </form:form>
+                    <p>Or</p>
+                    <c:url var="loginUrl" value="/login"/>
+                    <a href="${loginUrl}" >
+                        <spring:message code="Login.Title"/>
+                    </a>
                 </div>
             </div>
         </div>
