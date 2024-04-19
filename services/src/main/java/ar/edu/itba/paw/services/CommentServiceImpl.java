@@ -8,6 +8,7 @@ import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistance.CommentDao;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import ar.edu.itba.paw.exceptions.NoSuchCommentException;
 
@@ -24,6 +25,9 @@ public class CommentServiceImpl implements CommentService {
     private UserService userService;
 
     @Autowired
+    private MailingService mailingService;
+
+    @Autowired
     private PostService postService;
 
     @Override
@@ -33,8 +37,27 @@ public class CommentServiceImpl implements CommentService {
             throw new NoLoggedUserException("User not logged");
         long userId = user.get().getId();
         String username = user.get().getUsername();
-        return commentDao.createComment(postId,body,username,LocalDateTime.now(),userId);
+        LocalDateTime date = LocalDateTime.now();
+        Comment comment = commentDao.createComment(postId,body,username,date,userId);
+        sendMailToPostOwner(postId,date);
+        return comment;
     }
+    @Async
+    void sendMailToPostOwner(long postId, LocalDateTime date) {
+        Post post;
+
+        try{
+            post = postService.getPostById(postId);
+        } catch (NoSuchPostException e){
+            return;
+        }
+
+        Optional<User> user = userService.findById(post.getAuthor_id());
+        if(user.isEmpty())
+            return;
+        mailingService.sendNewCommentNotification(user.get(), post, date);
+    }
+
 
     @Override
     public List<Comment> getPostComments(long postId) {

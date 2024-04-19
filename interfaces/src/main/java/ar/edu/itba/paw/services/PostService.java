@@ -13,7 +13,7 @@ public interface PostService {
 
     List<Post> getAllPosts();
 
-    void createPost(final String title, final String content, final String communityName, final String category) throws NoLoggedUserException, NoSuchCommunityException;
+    Post createPost(final String title, final String content, final String communityName, final String category) throws NoLoggedUserException, NoSuchCommunityException;
 
     List<Post> getPostsByCommunity(final String communityName);
 

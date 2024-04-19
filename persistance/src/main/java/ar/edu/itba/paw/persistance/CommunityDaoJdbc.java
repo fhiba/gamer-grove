@@ -62,7 +62,7 @@ public class CommunityDaoJdbc implements CommunityDao{
 
     @Override
     public Optional<Community> findByName(String communityName) {
-        return jdbcTemplate.query("SELECT community.*, string_agg(cc.category, ',')" +
+        return jdbcTemplate.query("SELECT community.*, string_agg(cc.category, ',') as categories" +
                 " FROM community LEFT JOIN communities_categories as cc ON community.id = cc.community_id" +
                 " WHERE name = ?" +
                 " GROUP BY community.id, community.name, community.description, community.portrait_id" +
