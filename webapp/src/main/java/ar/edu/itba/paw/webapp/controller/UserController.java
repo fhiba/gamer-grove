@@ -1,13 +1,22 @@
 package ar.edu.itba.paw.webapp.controller;
 
+import ar.edu.itba.paw.exceptions.AlreadyModException;
+import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
+import ar.edu.itba.paw.exceptions.UserNotFoundException;
+import ar.edu.itba.paw.services.CommunityService;
+import ar.edu.itba.paw.services.ModderService;
 import ar.edu.itba.paw.services.UserService;
 import ar.edu.itba.paw.webapp.form.LogInForm;
+import ar.edu.itba.paw.webapp.form.NewModForm;
 import ar.edu.itba.paw.webapp.form.RegisterUserForm;
+import ar.edu.itba.paw.webapp.form.RemoveModForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.WebAttributes;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.validation.BindingResult;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @Controller
@@ -24,6 +34,10 @@ public class UserController {
     private UserService us;
     @Autowired
     private AuthenticationManager authenticationManager;
+    @Autowired
+    private ModderService md;
+    @Autowired
+    private CommunityService cs;
 
 
     @RequestMapping(path = "/login")
@@ -49,6 +63,47 @@ public class UserController {
         Authentication auth = authenticationManager.authenticate(authToken);
         SecurityContextHolder.getContext().setAuthentication(auth);
         return new ModelAndView("redirect:/");
+    }
+
+    @RequestMapping(path="/addMod", method = RequestMethod.GET)
+    public ModelAndView getAddMod(@ModelAttribute("newModForm") final NewModForm newModForm) {
+        ModelAndView mav =new ModelAndView("user/addMod");
+        mav.addObject("communities", cs.getAllCommunities());
+        return mav;
+    }
+
+    @RequestMapping(path="/addMod", method = RequestMethod.POST)
+    public ModelAndView postAddMod(@Valid @ModelAttribute("newModForm") final NewModForm newModForm, final BindingResult errors) throws UserNotFoundException, NoSuchCommunityException, AlreadyModException {
+        if(errors.hasErrors()) {
+            return getAddMod(newModForm);
+        }
+        md.addModder(newModForm.getUsername(), newModForm.getCommunityId());
+        return new ModelAndView("redirect:/");
+    }
+    @RequestMapping(path="/removeMod", method = RequestMethod.GET)
+    public ModelAndView getAddMod(@ModelAttribute("removeModForm") final RemoveModForm removeModForm) {
+        return new ModelAndView("user/removeMod");
+    }
+
+    @RequestMapping(path="/removeMod", method = RequestMethod.POST)
+    public ModelAndView postAddMod(@Valid @ModelAttribute("removeModForm") final RemoveModForm removeModForm, final BindingResult errors) throws UserNotFoundException, NoSuchCommunityException, AlreadyModException {
+        if(errors.hasErrors()) {
+            return getAddMod(removeModForm);
+        }
+        md.removeModder(removeModForm.getUsername(), removeModForm.getCommunityId());
+        return new ModelAndView("redirect:/");
+    }
+
+    @RequestMapping("/loginFailed")
+    public void loginFailed(HttpServletRequest request) {
+        AuthenticationException authenticationException = (AuthenticationException) request.getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
+        if (authenticationException != null) {
+            if(authenticationException.getCause() != null) {
+                throw (AuthenticationException) authenticationException.getCause();
+            } else {
+                throw authenticationException;
+            }
+        }
     }
 
 

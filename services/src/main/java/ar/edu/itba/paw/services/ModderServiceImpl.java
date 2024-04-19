@@ -26,18 +26,19 @@ public class ModderServiceImpl implements ModderService{
     private PostService ps;
 
     @Override
-    public int addModder(long userId, long communityId) throws UserNotFoundException, NoSuchCommunityException, AlreadyModException {
-        Optional<User> newMod = us.findById(userId);
-        if(newMod.isEmpty()){
-            throw new UserNotFoundException("User with id "+userId+" not found");
+    public int addModder(String username, long communityId) throws UserNotFoundException, NoSuchCommunityException, AlreadyModException {
+        Optional<User> possibleNewMod = us.findByUsername(username);
+        if(possibleNewMod.isEmpty()){
+            throw new UserNotFoundException("User with id "+username+" not found");
         }
+        User newMod = possibleNewMod.get();
         // Supuestamente el service me dice si existe o no la comunidad
         Community community = cs.findById(communityId);
         //Checkeo si existe el mod
-        if(md.isModderOfCommunity(userId,communityId)){
-            throw new AlreadyModException("User with id "+userId+" is already a mod of community with id "+communityId);
+        if(md.isModderOfCommunity(newMod.getId(), communityId)){
+            throw new AlreadyModException("User with id "+newMod.getId()+" is already a mod of community with id "+communityId);
         }
-        return md.addModder(userId,communityId);
+        return md.addModder(newMod.getId(), communityId);
     }
 
     @Override
@@ -46,8 +47,16 @@ public class ModderServiceImpl implements ModderService{
     }
 
     @Override
-    public int removeModder(long userId, long communityId) {
-        return md.removeModder(userId,communityId);
+    public int removeModder(String username, long communityId) throws UserNotFoundException {
+        Optional<User> possibleNewMod = us.findByUsername(username);
+        if(possibleNewMod.isEmpty()){
+            throw new UserNotFoundException("User with id "+username+" not found");
+        }
+        User newMod = possibleNewMod.get();
+        if(md.isModderOfCommunity(newMod.getId(), communityId)){
+            return md.removeModder(newMod.getId(), communityId);
+        }
+        return 0;
     }
 
     @Override
@@ -57,10 +66,34 @@ public class ModderServiceImpl implements ModderService{
 
     @Override
     public boolean canRemovePost(long userId, long postId) throws NoSuchPostException, NoSuchCommunityException {
+
         Post toDelete = ps.getPostById(postId);
         Community postFrom = cs.findByName(toDelete.getCommunity_name());
 
         return md.isModderOfCommunity(userId, postFrom.getId());
     }
+
+    @Override
+    public boolean canRemovePostAlternative(long postId) throws NoSuchPostException, NoSuchCommunityException, UserNotFoundException {
+        Post toDelete;
+        try {
+            toDelete = ps.getPostById(postId);
+        } catch (NoSuchPostException e) {
+            return false;
+        }
+        Community postFrom;
+        try {
+            postFrom = cs.findByName(toDelete.getCommunity_name());
+        } catch (NoSuchCommunityException e) {
+            return false;
+        }
+        Optional<User> possibleMod = us.getLoggedUser();
+        if (possibleMod.isEmpty()) {
+            return false;
+        }
+
+        return md.isModderOfCommunity(possibleMod.get().getId(), postFrom.getId());
+    }
+
 
 }

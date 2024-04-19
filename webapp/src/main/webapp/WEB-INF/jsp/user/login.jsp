@@ -27,6 +27,9 @@
                                 <input type="password" id="password" name="j_password" class="form-control form-control-lg" />
                                 <label class="form-label" for="password"><spring:message code="Login.Password"/></label>
                             </div>
+                            <div class="py-1 text-semibold text-danger w-full">
+                                ${error}
+                            </div>
                             <c:if test="${param.error}">
                                 <div><spring:message code="Login.Invalid"/></div>
                             </c:if>

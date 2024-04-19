@@ -25,6 +25,8 @@ public class ModderServiceTest {
     private static int USER_ID =1;
     private static int COMMUNITY_ID = 1;
 
+    private static final String USERNAME = "username";
+
     @Mock
     ModderDao mockModderDao;
     @Mock
@@ -37,14 +39,14 @@ public class ModderServiceTest {
     @Test
     public void testAddModder() throws NoSuchCommunityException, UserNotFoundException, AlreadyModException {
 
-        when(mockUserService.findById(USER_ID)).thenReturn(Optional.of(new User(USER_ID,"username", "password", "email")));
+        when(mockUserService.findByUsername(USERNAME)).thenReturn(Optional.of(new User(USER_ID,"username", "password", "email")));
         when(mockCommunityService.findById(Mockito.anyInt())).thenReturn(new Community(1, "name", 1,"description"));
         when(mockModderDao.isModderOfCommunity(Mockito.eq(USER_ID), Mockito.anyInt())).thenReturn(false);
         when(mockModderDao.addModder(Mockito.eq(USER_ID), Mockito.anyInt())).thenReturn(1);
 
 
         // 2. "ejercito" la class under test
-        int result = modderService.addModder(USER_ID, COMMUNITY_ID);
+        int result = modderService.addModder(USERNAME, COMMUNITY_ID);
 
         // 3. Asserts!
         assertEquals(1, result);
@@ -52,17 +54,17 @@ public class ModderServiceTest {
 
     @Test(expected = UserNotFoundException.class)
     public void testAddNonExistingUser() throws NoSuchCommunityException, UserNotFoundException, AlreadyModException {
-        when(mockUserService.findById(USER_ID)).thenReturn(Optional.empty());
-        modderService.addModder(USER_ID, COMMUNITY_ID);
+        when(mockUserService.findByUsername(USERNAME)).thenReturn(Optional.empty());
+        modderService.addModder(USERNAME, COMMUNITY_ID);
     }
 
     @Test(expected = AlreadyModException.class)
     public void testAddAlreadyMod() throws NoSuchCommunityException, UserNotFoundException, AlreadyModException {
-        when(mockUserService.findById(USER_ID)).thenReturn(Optional.of(new User(USER_ID, "username", "password", "email")));
+        when(mockUserService.findByUsername(USERNAME)).thenReturn(Optional.of(new User(USER_ID, "username", "password", "email")));
         when(mockCommunityService.findById(Mockito.anyInt())).thenReturn(new Community(1, "name", 1, "description"));
         when(mockModderDao.isModderOfCommunity(Mockito.eq(USER_ID), Mockito.anyInt())).thenReturn(true);
 
-        int result = modderService.addModder(USER_ID, COMMUNITY_ID);
+        int result = modderService.addModder(USERNAME, COMMUNITY_ID);
     }
 
 

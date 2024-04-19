@@ -39,6 +39,13 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
     }
+    @Bean
+    public AuthenticationFailureHandler authenticationFailureHandler() {
+        SimpleUrlAuthenticationFailureHandler simpleUrlAuthenticationFailureHandler = new SimpleUrlAuthenticationFailureHandler("/loginFailed");
+        simpleUrlAuthenticationFailureHandler.setUseForward(true);
+        return simpleUrlAuthenticationFailureHandler;
+    }
+
 
     @Bean
     public AuthenticationManager authenticationManager() throws Exception{
@@ -64,14 +71,15 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST,"/post").authenticated()
                 .antMatchers(HttpMethod.POST,"/comment").authenticated()
                 //.antMatchers("/community/{communityName}/mod").access("@modderServiceImpl.isModderOfCommunity(@userServiceImpl.loggedUser.get().id,@communityServiceImpl.findByName(#communityName).getId()) or hasRole('ADMIN')")
-                .antMatchers("/post/{postId}/delete","/comment/{postId}/delete").access("@modderServiceImpl.canRemovePost(@userServiceImpl.loggedUser.get().id,#postId) or hasRole('ADMIN')")
-                .antMatchers("/new-community").hasRole("ADMIN")
+                .antMatchers("/post/{postId}/delete","/comment/{postId}/delete").access("@modderServiceImpl.canRemovePostAlternative(#postId) or hasRole('ADMIN')")
+                .antMatchers("/new-community","/addMod").hasRole("ADMIN")
                 .antMatchers("/**").permitAll()
             .and().formLogin()
                 .usernameParameter("j_username")
                 .passwordParameter("j_password")
                 .defaultSuccessUrl("/",	false)
                 .loginPage("/login")
+                .failureHandler(authenticationFailureHandler())
             .and().rememberMe()
                 .rememberMeParameter("j_rememberme")
                 .userDetailsService(userDetailsService)
