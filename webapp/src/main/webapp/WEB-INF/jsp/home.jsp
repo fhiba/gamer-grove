@@ -18,6 +18,17 @@
         <div class="col-2 sidebar">
             <div class="card sidebar-card">
                 <div class="card-body">
+
+
+                    <c:url value="/home" var="homeUrl"/>
+                    <a href="${homeUrl}" class="text-decoration-none">
+                        <h5><spring:message code="Navbar.Home"/></h5>
+                    </a>
+
+                    <c:url value="/all" var="allUrl"/>
+                    <a href="${allUrl}" class="text-decoration-none">
+                        <h5><spring:message code="All"/></h5>
+                    </a>
                     <c:forEach var="community" items="${communities}">
                         <c:url value="/community/${community.name}" var="communityUrl"/>
                         <a href="${communityUrl}" class="card-link text-decoration-none ">
@@ -64,7 +75,8 @@
                                     <div class="title-container mb-2">
                                         <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
                                              class="small-profile-pic mb-1" alt="Profile Picture">
-                                        <p class="fw-semibold card-subtitle">/<c:out value="${post.community_name}" escapeXml="true"/></p>
+                                        <p class="fw-semibold card-subtitle">/<c:out value="${post.community_name}"
+                                                                                     escapeXml="true"/></p>
                                         <span class="badge rounded-pill ${post.category} mb-1">${post.category}</span>
                                     </div>
 

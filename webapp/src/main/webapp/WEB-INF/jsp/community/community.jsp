@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
@@ -8,6 +9,7 @@
     <link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="${pageContext.request.contextPath}/css/general-styling.css" rel="stylesheet"/>
     <link rel="icon" href="${pageContext.request.contextPath}/images/favicon.ico" type="image/x-icon">
+<%--suppress JSUnresolvedLibraryURL --%>
     <script src="https://kit.fontawesome.com/002da5939d.js" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -73,7 +75,22 @@
                                   class="w-100 rounded-1 img-thumbnail " alt="Profile Picture">
                         </div>
                         <div class="col-8">
-                            <h1 class="card-title"><c:out value="c/${community.name}" escapeXml="true"/></h1>
+                            <div class="d-flex row-cols-2">
+                                <h1 class="card-title"><c:out value="c/${community.name}" escapeXml="true"/></h1>
+                                <div class="d-none">
+                                    <c:url var="followUrl" value="/community/${community.name}/follow"/>
+                                    <form:form modelAttribute="followCommunityForm" action="${followUrl}" method="post" id="followForm">
+                                        <form:hidden path="communityName" value="${community.name}"/>
+                                        <form:hidden path="communityId" value="${community.id}"/>
+                                    </form:form>
+                                </div>
+                                <c:if test="${isFollowing}">
+                                    <button onClick="follow()" class="rounded-pill  btn-outline-danger follow-button" id="followButton">Following</button>
+                                </c:if>
+                                <c:if test="${!isFollowing}">
+                                    <button onClick="follow()" class="rounded-pill   btn-outline-danger  follow-button" id="followButton">Follow</button>
+                                </c:if>
+                            </div>
                             <h5 class="card-subtitle text-secondary mt-3 mb-1"><c:out value="${community.description}" escapeXml="true"/></h5>
                         </div>
                     </div>
@@ -120,5 +137,9 @@
 
     let submit = () => {
         document.getElementById('postForm').submit();
+    }
+
+    let follow = () => {
+        document.getElementById('followForm').submit();
     }
 </script>

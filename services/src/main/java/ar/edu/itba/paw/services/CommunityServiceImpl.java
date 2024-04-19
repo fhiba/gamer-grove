@@ -1,7 +1,9 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
 import ar.edu.itba.paw.models.Community;
+import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistance.CommunityDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,8 @@ import java.util.Optional;
 public class CommunityServiceImpl implements CommunityService{
     @Autowired
     private CommunityDao communityDao;
+    @Autowired
+    private UserService userService;
 
     @Override
     public void createCommunity(final String name, final String description) {
@@ -47,5 +51,32 @@ public class CommunityServiceImpl implements CommunityService{
     @Override
     public List<Community> find(final String searchTerms) {
         return communityDao.find(searchTerms.replaceAll("([%_\\\\])", "\\\\$1"));
+    }
+
+    @Override
+    public void modifyUserOnCommunity(int communityId,String communityName) throws NoLoggedUserException {
+        Boolean followsCommunity = checkIfUserFollowsCommunity(communityId);
+        User user = userService.getLoggedUser().get();
+        if(followsCommunity){
+            communityDao.unfollowCommunity(user.getId(), communityId);
+        }
+        else{
+            communityDao.followCommunity(user.getId(), communityId,communityName);
+        }
+
+    }
+
+    @Override
+    public Boolean checkIfUserFollowsCommunity(int communityId) throws NoLoggedUserException {
+        Optional<User> maybeUser = userService.getLoggedUser();
+        if(maybeUser.isEmpty())
+            throw new NoLoggedUserException("No logged user");
+        User user = maybeUser.get();
+        return communityDao.checkIfUserFollowsCommunity(user.getId(),communityId);
+    }
+
+    @Override
+    public List<Community> getFollowedCommunities() {
+        return List.of();
     }
 }

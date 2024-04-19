@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.persistance;
 
-import ar.edu.itba.paw.models.GroovyPostHistory;
+
 import ar.edu.itba.paw.models.Post;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -117,6 +117,17 @@ public class PostDaoJdbc implements PostDao{
     @Override
     public void updateGroovyHistory(long postId, long id, boolean b) {
         jdbcTemplate.update("UPDATE groovy_post_history SET groovy_type = ? WHERE post_id = ? AND user_id = ?",b,postId,id);
+    }
+
+    @Override
+    public List<Post> getMyFollowedPosts(long userId) {
+        return jdbcTemplate.query("SELECT * FROM post WHERE community_name IN (SELECT community_name FROM community_user WHERE user_id = ?) ORDER BY post_date DESC",new Object[]{userId},ROW_MAPPER);
+    }
+
+    @Override
+    public List<Post> getMyFollowedPostsByCategory(String category, long userId) {
+        return jdbcTemplate.query("SELECT * FROM post WHERE community_name IN (SELECT community_name FROM community_user WHERE user_id = ?) AND category = ? ORDER BY post_date DESC",new Object[]{userId,category},ROW_MAPPER);
+
     }
 
 

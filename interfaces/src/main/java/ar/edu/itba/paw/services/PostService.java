@@ -5,6 +5,7 @@ import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
 import ar.edu.itba.paw.exceptions.NoSuchPostException;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.models.Post;
+import ar.edu.itba.paw.models.User;
 
 import java.util.List;
 
@@ -23,4 +24,8 @@ public interface PostService {
     void editGrooviness(int grooviness, long postId) throws UserNotFoundException, NoSuchPostException;
 
     int checkGrooviness(long postId);
+
+    List<Post> getMyFollowedPosts(User user) throws NoLoggedUserException;
+
+    List<Post> getMyFollowedPostsByCategory(String category, User user) throws NoLoggedUserException;
 }

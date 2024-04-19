@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.persistance;
 
 import ar.edu.itba.paw.models.Community;
+import ar.edu.itba.paw.models.CommunityUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -21,15 +22,21 @@ public class CommunityDaoJdbc implements CommunityDao{
             rs.getLong("portrait_id"),
             rs.getString("description"));
 
+    private static final RowMapper<CommunityUser> ROW_MAPPER_USER = (rs, rowNum) -> new CommunityUser(rs.getInt("user_id"),
+            rs.getInt("community_id"),
+            rs.getInt("community_role"),
+            rs.getString("community_name"));
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
+    private final SimpleJdbcInsert jdbcInsertUser;
 
 
     @Autowired
     public CommunityDaoJdbc(final DataSource ds){
         jdbcTemplate = new JdbcTemplate(ds);
         jdbcInsert = new SimpleJdbcInsert(ds).usingGeneratedKeyColumns("id").withTableName("community");
+        jdbcInsertUser = new SimpleJdbcInsert(ds).withTableName("community_user");
     }
 
     @Override
@@ -62,4 +69,26 @@ public class CommunityDaoJdbc implements CommunityDao{
     public List<Community> find(String searchTerms) {
         return jdbcTemplate.query("SELECT * FROM community WHERE name ILIKE ?", new Object[]{"%" + searchTerms + "%"}, ROW_MAPPER);
     }
+
+    @Override
+    public Boolean checkIfUserFollowsCommunity(long userId, int communityId) {
+        return !jdbcTemplate.query("SELECT * FROM community_user WHERE user_id = ? AND community_id = ?", new Object[]{userId, communityId}, ROW_MAPPER_USER).isEmpty();
+    }
+
+    @Override
+    public void unfollowCommunity(long id, int communityId) {
+        jdbcTemplate.update("DELETE FROM community_user WHERE user_id = ? AND community_id = ?", id, communityId);
+    }
+
+    @Override
+    public void followCommunity(long id, int communityId,String communityName) {
+        Map<String, Object> args = new HashMap<>();
+        args.put("user_id", id);
+        args.put("community_id", communityId);
+        args.put("community_role", 0);
+        args.put("community_name",communityName);
+        jdbcInsertUser.execute(args);
+    }
+
+
 }

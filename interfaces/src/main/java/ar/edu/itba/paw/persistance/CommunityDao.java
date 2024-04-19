@@ -16,4 +16,10 @@ public interface CommunityDao {
     Optional<Community> findByName(String communityName);
 
     List<Community> find(String searchTerms);
+
+    Boolean checkIfUserFollowsCommunity(long userId, int communityId);
+
+    void unfollowCommunity(long id, int communityId);
+
+    void followCommunity(long id, int communityId,String communityName);
 }

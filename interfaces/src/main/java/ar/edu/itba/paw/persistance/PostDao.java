@@ -28,4 +28,8 @@ public interface PostDao {
     void deleteGrooviness(long postId, long id);
 
     void updateGroovyHistory(long postId, long id, boolean b);
+
+    List<Post> getMyFollowedPosts(long userId);
+
+    List<Post> getMyFollowedPostsByCategory(String category, long userId);
 }

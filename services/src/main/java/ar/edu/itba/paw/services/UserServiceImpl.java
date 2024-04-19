@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistance.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public Boolean isUserAdmin(long id) {
         return userDao.isAdmin(id).orElse(false);
+    }
+
+    @Override
+    public User getLoggedUserChecked() throws NoLoggedUserException {
+        Optional<User> maybeUser = getLoggedUser();
+        if(maybeUser.isEmpty())
+            throw new NoLoggedUserException("User not logged");
+        return maybeUser.get();
     }
 
 }

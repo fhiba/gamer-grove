@@ -6,8 +6,10 @@
             <div class="col-3">
                 <c:url value="/" var="homeUrl"/>
                 <a class="navbar-brand d-flex align-items-end" href="${homeUrl}">
+
+<%--suppress CheckImageSize --%>
                     <img width="50" height="50" alt="logo" src="${pageContext.request.contextPath}/images/favicon.ico"/>
-                    <span class="h2 text-light mb-1">Gamer Grove</span>
+                    <span class="h3 text-light mb-1">Gamer Grove</span>
                 </a>
 
             </div>
@@ -25,6 +27,7 @@
             </div>
             <c:if test="${not empty pageContext.request.userPrincipal}">
             <div class="col-3 d-flex justify-content-end align-items-center">
+<%--suppress XmlPathReference --%>
                 <c:url value="/logout" var="logoutUrl"/>
                 <a class="btn btn-outline-danger " href="${logoutUrl}"><spring:message code="Logout"/></a>
             </div>

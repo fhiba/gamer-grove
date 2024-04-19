@@ -33,7 +33,7 @@ body {
 .navbar {
     background-color: #1c1919;
 !important; /* Change to desired color for Navbar */
-    box-shadow: 5px 0px 10px rgba(0, 0, 0, 0.5);
+    box-shadow: 5px 0 10px rgba(0, 0, 0, 0.5);
 }
 
 .img-container {
@@ -120,5 +120,12 @@ body {
 .sidebar{
     background-color: #1c1919; /* Change to desired color for Sidebar */
     border-color: #1c1919; /* Change to desired color for Sidebar border */
-    box-shadow: 5px 0px 10px rgba(0, 0, 0, 0.5); ;
+    box-shadow: 5px 0 10px rgba(0, 0, 0, 0.5); ;
+}
+
+.follow-button {
+    font-size: 20px; /* Adjust as needed */
+    padding: 5px 10px; /* Adjust as needed */
+    max-height: 2.5rem;
+    max-width: 6rem;
 }

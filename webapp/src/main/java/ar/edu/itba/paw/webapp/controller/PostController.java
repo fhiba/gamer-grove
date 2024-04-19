@@ -5,10 +5,7 @@ import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
 import ar.edu.itba.paw.exceptions.NoSuchPostException;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
-import ar.edu.itba.paw.models.Comment;
-import ar.edu.itba.paw.models.Post;
-import ar.edu.itba.paw.models.PostCategories;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.services.CommentService;
 import ar.edu.itba.paw.services.CommunityService;
 import ar.edu.itba.paw.services.PostService;
@@ -51,10 +48,7 @@ public class PostController {
         }
         try {
             ps.createPost(newPostForm.getTitle(), newPostForm.getBody(), newPostForm.getCommunity(), newPostForm.getCategory());
-        } catch (NoLoggedUserException e) {
-            //TODO: log later
-            throw e;
-        } catch (NoSuchCommunityException e) {
+        } catch (NoLoggedUserException | NoSuchCommunityException e) {
             //TODO: log later
             throw e;
         }
@@ -85,15 +79,44 @@ public class PostController {
 //        return new ModelAndView("redirect:/home");
 //    }
 
-    @RequestMapping(path = {"/home", "/"}, method = RequestMethod.GET)
-    public ModelAndView getAllPosts(@RequestParam(value = "category", required = false) final String category) {
+    @RequestMapping(path = {"/all", "/"}, method = RequestMethod.GET)
+    public ModelAndView getHomePosts(@RequestParam(value = "category", required = false) final String category) {
         ModelAndView mav = new ModelAndView("/home");
+        List<Post> posts;
         if (category != null && !category.isEmpty() && !category.equals("all")) {
-            mav.addObject("posts", ps.getByCategory(category));
+            posts = ps.getByCategory(category);
         } else {
-            mav.addObject("posts", ps.getAllPosts());
+            posts = ps.getAllPosts();
         }
+        mav.addObject("posts",posts);
         //TODO: SHOULD BE THE ONES THAT ARE CURRENTLY BEING FOLLOWED BY USER OR A FEW RANDOMLY SELECTED
+        mav.addObject("communities", cs.getAllCommunities());
+        mav.addObject("news", ps.getByCategory(PostCategories.NEWS.getCategory()));
+        mav.addObject("categories", Arrays.stream(PostCategories.values()).map(PostCategories::getCategory).toArray(String[]::new));
+        return mav;
+    }
+
+    @RequestMapping(path = {"/home"}, method = RequestMethod.GET)
+    public ModelAndView getAllPosts(@RequestParam(value = "category", required = false) final String category) throws NoLoggedUserException {
+        ModelAndView mav = new ModelAndView("/home");
+        List<Post> posts = ps.getAllPosts();
+        User user = null;
+        List<Community> followedCommunities = Collections.emptyList();
+        try{
+            user = us.getLoggedUserChecked();
+        }catch (Exception ignored){
+
+        }
+        if(user != null) {
+            followedCommunities = cs.getFollowedCommunities();
+            if (category != null && !category.isEmpty() && !category.equals("all")) {
+                posts = ps.getMyFollowedPostsByCategory(category,user);
+            } else {
+                posts = ps.getMyFollowedPosts(user);
+            }
+        }
+        mav.addObject("myFollowedCommunities",followedCommunities);
+        mav.addObject("posts",posts);
         mav.addObject("communities", cs.getAllCommunities());
         mav.addObject("news", ps.getByCategory(PostCategories.NEWS.getCategory()));
         mav.addObject("categories", Arrays.stream(PostCategories.values()).map(PostCategories::getCategory).toArray(String[]::new));
