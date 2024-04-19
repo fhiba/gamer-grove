@@ -66,32 +66,36 @@ public class UserController {
     }
 
     @RequestMapping(path="/addMod", method = RequestMethod.GET)
-    public ModelAndView getAddMod(@ModelAttribute("newModForm") final NewModForm newModForm) {
+    public ModelAndView getAddMod(@ModelAttribute("newModForm") final NewModForm newModForm,@ModelAttribute("removeModForm") final RemoveModForm removeModForm) {
         ModelAndView mav =new ModelAndView("user/addMod");
         mav.addObject("communities", cs.getAllCommunities());
         return mav;
     }
 
     @RequestMapping(path="/addMod", method = RequestMethod.POST)
-    public ModelAndView postAddMod(@Valid @ModelAttribute("newModForm") final NewModForm newModForm, final BindingResult errors) throws UserNotFoundException, NoSuchCommunityException, AlreadyModException {
+    public ModelAndView postAddMod(@Valid @ModelAttribute("newModForm") final NewModForm newModForm,@ModelAttribute("removeModForm") final RemoveModForm removeModForm, final BindingResult errors) throws UserNotFoundException, NoSuchCommunityException {
         if(errors.hasErrors()) {
-            return getAddMod(newModForm);
+            return getAddMod(newModForm, removeModForm);
         }
-        md.addModder(newModForm.getUsername(), newModForm.getCommunityId());
-        return new ModelAndView("redirect:/");
-    }
-    @RequestMapping(path="/removeMod", method = RequestMethod.GET)
-    public ModelAndView getAddMod(@ModelAttribute("removeModForm") final RemoveModForm removeModForm) {
-        return new ModelAndView("user/removeMod");
+        try {
+            md.addModder(newModForm.getUsername(), newModForm.getCommunityId());
+        }catch (AlreadyModException e) {
+            return getAddMod(newModForm,removeModForm).addObject("isAlreadyMod", true);
+        }
+        return new ModelAndView("redirect:/addMod");
     }
 
     @RequestMapping(path="/removeMod", method = RequestMethod.POST)
-    public ModelAndView postAddMod(@Valid @ModelAttribute("removeModForm") final RemoveModForm removeModForm, final BindingResult errors) throws UserNotFoundException, NoSuchCommunityException, AlreadyModException {
+    public ModelAndView postRemoveMod(@Valid @ModelAttribute("removeModForm") final RemoveModForm removeModForm,@ModelAttribute("newModForm") final NewModForm newModForm, final BindingResult errors) throws UserNotFoundException {
+
         if(errors.hasErrors()) {
-            return getAddMod(removeModForm);
+            return getAddMod(newModForm,removeModForm);
         }
-        md.removeModder(removeModForm.getUsername(), removeModForm.getCommunityId());
-        return new ModelAndView("redirect:/");
+        int mod = md.removeModder(removeModForm.getRemoveUsername(), removeModForm.getFromCommunityId());
+        if(mod == 0) {
+            return getAddMod(newModForm,removeModForm).addObject("notAMod", true);
+        }
+        return new ModelAndView("redirect:/addMod");
     }
 
     @RequestMapping("/loginFailed")

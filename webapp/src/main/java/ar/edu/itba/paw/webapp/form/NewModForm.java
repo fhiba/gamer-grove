@@ -11,6 +11,9 @@ public class NewModForm {
     @NotBlank
     @Email
     private String email;
+    @NotNull
+    private Long communityId;
+
     public String getEmail() {
         return email;
     }
@@ -22,9 +25,6 @@ public class NewModForm {
     public void setCommunityId(Long communityId) {
         this.communityId = communityId;
     }
-
-    @NotNull
-    private Long communityId;
 
     public void setEmail(String email) {
         this.email = email;

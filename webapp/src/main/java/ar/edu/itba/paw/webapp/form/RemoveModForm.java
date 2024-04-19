@@ -1,33 +1,27 @@
 package ar.edu.itba.paw.webapp.form;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 
 public class RemoveModForm {
-    @NotBlank
+    @NotEmpty
     @Size(min = 4, max = 50)
-    private String username;
+    private String removeUsername;
+    @NotNull
+    private Long fromCommunityId;
 
-
-    @Min(1)
-    private long communityId;
-
-
-    public String getUsername() {
-        return username;
+    public String getRemoveUsername() {
+        return removeUsername;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setRemoveUsername(String removeUsername) {
+        this.removeUsername = removeUsername;
     }
 
-    public long getCommunityId() {
-        return communityId;
+    public Long getFromCommunityId() {
+        return fromCommunityId;
     }
 
-    public void setCommunityId(long communityId) {
-        this.communityId = communityId;
+    public void setFromCommunityId(Long fromCommunityId) {
+        this.fromCommunityId = fromCommunityId;
     }
 }
