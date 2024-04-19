@@ -124,7 +124,7 @@ public class PostController {
             isGrooved = ps.checkGrooviness(postId);
         }
         mav.addObject("isGrooved", isGrooved);
-        mav.addObject("isGrooved", ps.checkGrooviness(postId));
+       // mav.addObject("isGrooved", ps.checkGrooviness(postId));
         mav.addObject("newPostGroovyForm", newPostGroovyForm);
         mav.addObject("upComments", grooviedComments);
         mav.addObject("downComments", negativeGrooviedComments);

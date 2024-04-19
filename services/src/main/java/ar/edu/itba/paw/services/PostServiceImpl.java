@@ -1,12 +1,12 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.exceptions.*;
-import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.Community;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistance.PostDao;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -25,6 +25,9 @@ public class PostServiceImpl implements PostService{
     @Autowired
     private CommunityService communityService;
 
+    @Autowired
+    private MailingService mailingService;
+
     @Override
     public List<Post> getAllPosts() {
         List<Post> posts = postDao.findAllPosts();
@@ -34,13 +37,24 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    public void createPost(final String title, final String body, final String communityName, final String category) throws NoLoggedUserException, NoSuchCommunityException {
+    public Post createPost(final String title, final String body, final String communityName, final String category) throws NoLoggedUserException, NoSuchCommunityException {
         Optional<User> user = userService.getLoggedUser();
         if(user.isEmpty())
             throw new NoLoggedUserException("User not logged");
         long userId = user.get().getId();
         Community community = communityService.findByName(communityName);
-        postDao.createPost(title,body,(int)userId,community.getName(),false, LocalDateTime.now(), category);
+        Post post = postDao.createPost(title,body,(int)userId,community.getName(),false, LocalDateTime.now(), category);
+        notifyUsers(post, user.get());
+
+        return post;
+    }
+    @Async
+    void notifyUsers(Post post, User user) {
+        // TODO: BRING USERS FROM COMMUNITY
+        System.out.println("notifying");
+        //List<User> users = userService.getUsersByCommunity(post.getCommunity_name());
+        List<User> users = userService.findAll();
+        mailingService.sendNewPostNotifications(users, post, user);
     }
 
     @Override

@@ -62,4 +62,15 @@ public class UserDaoJdbc implements UserDao{
     public Optional<Boolean> isAdmin(long id) {
         return jdbcTemplate.query("SELECT owner FROM users WHERE id = ?", new Object[]{id}, (rs, rowNum) -> rs.getBoolean("owner")).stream().findFirst();
     }
+
+    @Override
+    public List<User> findByCommunity(String communityName) {
+        //return jdbcTemplate.query("SELECT * FROM users WHERE id IN (SELECT user_id FROM community_user WHERE community_name = ?)", new Object[]{communityName}, ROW_MAPPER);
+        return List.of();
+    }
+
+    @Override
+    public List<User> findAll() {
+        return jdbcTemplate.query("SELECT * FROM users", ROW_MAPPER);
+    }
 }
