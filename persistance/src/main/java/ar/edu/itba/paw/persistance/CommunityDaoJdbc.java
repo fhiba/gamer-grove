@@ -18,6 +18,8 @@ public class CommunityDaoJdbc implements CommunityDao{
             rs.getString("name"),
             rs.getString("description"));
             community.setPortrait_id(rs.getLong("portrait_id"));
+            if(rs.getString("categories") != null)
+                community.setCategories(Arrays.stream(rs.getString("categories").split(",")).toList());
             return community;
     };
 
@@ -35,7 +37,7 @@ public class CommunityDaoJdbc implements CommunityDao{
 
     @Override
     public Optional<Community> findById(long id) {
-        final String query = "SELECT * FROM community WHERE id = ?";
+        final String query = "SELECT community.*, string_agg(cc.category, ',') as categories FROM community LEFT JOIN communities_categories as cc ON community.id = cc.community_id WHERE id = ? GROUP BY community.id, community.name, community.description, community.portrait_id ORDER BY community.name";
         final Object[] args = {id};
         final List<Community> list = jdbcTemplate.query(query, args, ROW_MAPPER);
         return list.stream().findFirst();
@@ -52,12 +54,20 @@ public class CommunityDaoJdbc implements CommunityDao{
 
     @Override
     public List<Community> findAllCommunities() {
-          return jdbcTemplate.query("SELECT * FROM community", ROW_MAPPER);
+          return jdbcTemplate.query("SELECT community.*, string_agg(cc.category, ',') as categories" +
+                  " FROM community LEFT JOIN communities_categories as cc ON community.id = cc.community_id" +
+                  " GROUP BY community.id, community.name, community.description, community.portrait_id" +
+                  " ORDER BY community.name", ROW_MAPPER);
     }
 
     @Override
     public Optional<Community> findByName(String communityName) {
-        return jdbcTemplate.query("SELECT * FROM community WHERE name = ?", new Object[]{communityName}, ROW_MAPPER).stream().findFirst();
+        return jdbcTemplate.query("SELECT community.*, string_agg(cc.category, ',')" +
+                " FROM community LEFT JOIN communities_categories as cc ON community.id = cc.community_id" +
+                " WHERE name = ?" +
+                " GROUP BY community.id, community.name, community.description, community.portrait_id" +
+                " ORDER BY community.name"
+                , new Object[]{communityName}, ROW_MAPPER).stream().findFirst();
     }
 
     @Override
@@ -88,14 +98,14 @@ public class CommunityDaoJdbc implements CommunityDao{
 
 
     private class QueryBuilder {
-        private final static String SELECT = "SELECT * FROM community";
+        private final static String SELECT = "SELECT community.*, string_agg(cc.category, ',') as categories FROM community LEFT JOIN communities_categories as cc ON community.id = cc.community_id";
         private final static String COUNT_SELECT = "SELECT COUNT(*) FROM community";
         private final static String SEARCH_TERM = " WHERE name ILIKE ?";
         private final static String CATEGORY = " AND community.id IN (SELECT cc.community_id FROM communities_categories as cc";
         private final static String CATEGORY_CONDITION = " WHERE cc.category LIKE ?";
         private final static String SECONDARY_CATEGORY_CONDITION = " OR cc.category LIKE ?";
         private final static String CATEGORY_END = " GROUP BY cc.community_id HAVING COUNT(cc.community_id) = ?)";
-        private final static String END = " ORDER BY community.name";
+        private final static String END = " GROUP BY community.id, community.name, community.description, community.portrait_id ORDER BY community.name";
         private final List<String> categories = new ArrayList<>();
         private String searchTerm = "";
         private int categoriesCount = 0;

@@ -71,8 +71,11 @@
                                         Add Category
                                     </button>
                                 </h2>
-                                <div id="flush-collapseOne" class="accordion-collapse collapse border border-top-dark" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
-                                    <div id="categoriesBody" class="accordion-body"></div>
+                                <div id="flush-collapseOne" class="accordion-collapse collapse border border-top-dark justify-content-evenly" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+                                    <div id="categoriesBody" class="accordion-body">
+
+                                        <p class="text-dark-emphasis m-1" hidden="hidden" id="emptyCatText">No more categories to apply.</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -109,14 +112,6 @@
     }
 
 
-    let showSelect = () => {
-        let selectDiv = document.getElementById("selectDiv");
-
-        let addCategoryButton = document.getElementById("addCategoryButton");
-        addCategoryButton.setAttribute("class", selectDiv.hidden ? buttonToHideString : buttonToShowString);
-        addCategoryButton.innerHTML = selectDiv.hidden ? "cancel" : "add category";
-        selectDiv.hidden = !selectDiv.hidden;
-    };
 
 
     let createPill = (selected) => {
@@ -155,6 +150,9 @@
             addCategoryToBody("${category}");
         }
         </c:forEach>
+        if (selectArray.length === 0) {
+            document.getElementById("emptyCatText").hidden = false;
+        }
     }
     initializeArray();
 
