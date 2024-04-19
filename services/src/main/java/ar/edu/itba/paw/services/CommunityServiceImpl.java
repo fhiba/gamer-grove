@@ -30,6 +30,7 @@ public class CommunityServiceImpl implements CommunityService{
         List<Community> communities = communityDao.findAllCommunities();
         if(communities.isEmpty())
             return Collections.emptyList();
+        communities.forEach(community -> community.setCategories(communityDao.getCategoriesOfCommunity(community.getId())));
         return communities;
     }
 
@@ -38,15 +39,19 @@ public class CommunityServiceImpl implements CommunityService{
         Optional<Community> possibleCommunity = communityDao.findByName(communityName);
         if(possibleCommunity.isEmpty())
             throw new NoSuchCommunityException("Community " + communityName+ " not found");
-        return possibleCommunity.get();
+        Community community = possibleCommunity.get();
+        community.setCategories(communityDao.getCategoriesOfCommunity(community.getId()));
+        return community;
     }
 
     @Override
     public Community findById(final long communityId) throws NoSuchCommunityException{
-        Optional<Community> community = communityDao.findById(communityId);
-        if(community.isEmpty())
+        Optional<Community> maybeCommunity = communityDao.findById(communityId);
+        if(maybeCommunity.isEmpty())
             throw new NoSuchCommunityException("Community " + communityId+ " not found");
-        return community.get();
+        Community community = maybeCommunity.get();
+        community.setCategories(communityDao.getCategoriesOfCommunity(community.getId()));
+        return community;
     }
 
 
@@ -58,7 +63,9 @@ public class CommunityServiceImpl implements CommunityService{
         if(!categories.isEmpty() && !categories.getFirst().isEmpty()) {
             newList = categories.stream().map(category -> category.replaceAll("([%_\\\\])", "\\\\$1")).toList();
         }
-        return communityDao.find(searchTerms.replaceAll("([%_\\\\])", "\\\\$1"), newList == null? List.of(): newList);
+        List<Community> communities = communityDao.find(searchTerms.replaceAll("([%_\\\\])", "\\\\$1"), newList == null? List.of(): newList);
+        communities.forEach(community -> community.setCategories(communityDao.getCategoriesOfCommunity(community.getId())));
+        return communities;
     }
 
     @Override

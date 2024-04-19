@@ -107,10 +107,16 @@ public class CommunityDaoJdbc implements CommunityDao{
             return this;
         }
         public QueryBuilder withSearchTerm(String searchTerm) {
+            if(searchTerm == null || searchTerm.isEmpty())
+                return this;
+
             this.searchTerm = searchTerm;
             return this;
         }
         public QueryBuilder withCategories(List<String> categories) {
+            if(categories == null || categories.isEmpty()) {
+                return this;
+            }
             this.categories.addAll(categories);
             categoriesCount = categories.size();
             return this;

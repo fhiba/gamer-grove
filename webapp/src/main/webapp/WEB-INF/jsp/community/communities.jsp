@@ -21,32 +21,41 @@
 
         </div>
 
-        <%--LISTA DE COMMUNITIES--%>
-        <div class="col-6">
-            <div class="card  border-light">
-                <div class="card-body">
-                    <c:if test="${empty communities}">
-                        <div><spring:message code="Communities.NoCommunitites"/></div>
-                    </c:if>
-                    <c:forEach var="community" items="${communities}">
-                        <c:url value="/community/${community.name}" var="communityUrl"/>
-                        <a href="${communityUrl}" class="card-link link-underline-light">
-                            <div class="card mb-3">
-                                <div class="card-body d-flex">
-                                    <img src="${pageContext.request.contextPath}/images/profile-picture.jpg" class="medium-profile-pic" alt="Profile Picture">
-                                    <div class="overflow-auto">
-                                        <h2 class="fw-semibold card-subtitle mb-1">
-                                            /${community.name}
-                                        </h2>
-                                        <h6 class="card-title text-secondary">${community.description}</h6>
+            <%--LISTA DE COMMUNITIES--%>
+            <div class="col-6">
+                <div class="card  border-light">
+                    <div class="card-body">
+                        <c:if test="${empty communities}">
+                            <div><spring:message code="Communities.NoCommunitites"/></div>
+                        </c:if>
+                        <c:forEach var="community" items="${communities}">
+                            <c:url value="/community/${community.name}" var="communityUrl"/>
+                            <a href="${communityUrl}" class="card-link link-underline-light">
+                                <div class="card mb-3">
+                                    <div class="card-body d-flex flex-row">
+                                        <div class="flex-column">
+                                            <img src="${pageContext.request.contextPath}/images/profile-picture.jpg" class="medium-profile-pic" alt="Profile Picture">
+                                        </div>
+                                        <div class="flex-column overflow-auto w-100">
+                                            <div class="d-flex justify-content-between">
+                                                <h2 class="fw-semibold card-subtitle mb-1">
+                                                    /${community.name}
+                                                </h2>
+                                                <div class="justify-content-end">
+                                                <c:forEach var="communityCategories" items="${community.categories}">
+                                                    <span class="fs-6 cat-badge p-1 badge bg-dark">${communityCategories}</span>
+                                                </c:forEach>
+                                                </div>
+                                            </div>
+                                            <h6 class="card-title text-secondary">${community.description}</h6>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </a>
-                    </c:forEach>
+                            </a>
+                        </c:forEach>
+                    </div>
                 </div>
             </div>
-        </div>
         <%--LISTA DE Filters--%>
         <div class="col-3">
             <div class="card  border-light">
