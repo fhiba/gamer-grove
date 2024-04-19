@@ -16,8 +16,10 @@
     <div class="row  min-vh-100">
         <%--COMMUNITY LIST--%>
         <div class="col-2 sidebar">
-            <div class="card sidebar-card">
+            <div class="card sidebar-card m-auto">
                 <div class="card-body">
+                    <div class="card-title text-light mb-3">Communities</div>
+
                     <c:forEach var="community" items="${communities}">
                         <c:url value="/community/${community.name}" var="communityUrl"/>
                         <a href="${communityUrl}" class="text-light text-decoration-none">
@@ -25,7 +27,7 @@
                                 <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
                                      class="very-small-profile-pic mb-1" alt="Profile Picture">
                                 <div class="text-decoration-none">
-                                    <h5 class="fw-semibold card-subtitle community-name ">
+                                    <h5 class="fw-semibold card-subtitle ">
                                         /<c:out value="${community.name}" escapeXml="true"/>
                                     </h5>
                                 </div>
@@ -65,12 +67,10 @@
                                              class="small-profile-pic mb-1" alt="Profile Picture">
                                         <p class="fw-semibold card-subtitle">/<c:out value="${post.community_name}" escapeXml="true"/></p>
                                         <span class="badge rounded-pill mb-1 ${post.category}">${post.category}</span>
-
-
                                     </div>
 
                                     <h4 class="card-title fw-bold"><c:out value="${post.title}" escapeXml="true"/></h4>
-                                        <p class="card-text post-body"><c:out value="${post.body}" escapeXml="true"/></p>
+                                        <p class="card-text post-body-home"><c:out value="${post.body}" escapeXml="true"/></p>
                                     <p class="m-auto">
                                         <small class="text-body-secondary">
                                             <c:out value="${post.date.format(format)}" escapeXml="true"/>
