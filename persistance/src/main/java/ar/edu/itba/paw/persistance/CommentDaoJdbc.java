@@ -25,7 +25,8 @@ public class CommentDaoJdbc implements CommentDao{
             rs.getLong("parent_id"),
             rs.getString("body"),
             rs.getTimestamp("comment_date").toLocalDateTime(),
-            rs.getInt("grooviness")
+            rs.getInt("grooviness"),
+            rs.getBoolean("deleted")
     );
 
     private static final RowMapper<GroovyCommentHistory> ROW_MAPPER_HISTORY = (rs, rowNum) -> new GroovyCommentHistory(
@@ -54,8 +55,9 @@ public class CommentDaoJdbc implements CommentDao{
         values.put("comment_date",dateTime);
         values.put("author_id",userId);
         values.put("grooviness",0);
+        values.put("deleted",false);
         Number id = jdbcInsert.executeAndReturnKey(values);
-        return new Comment(id.longValue(),postId,username,-1,body,dateTime,0);
+        return new Comment(id.longValue(),postId,username,-1,body,dateTime,0,false);
     }
 
     @Override
@@ -108,5 +110,10 @@ public class CommentDaoJdbc implements CommentDao{
     @Override
     public List<Comment> getDownGroovedComments(long postId, long id) {
         return jdbcTemplate.query("SELECT comment.*,u.username FROM comment JOIN users u on u.id = comment.author_id JOIN groovy_comment_history ON comment.id = groovy_comment_history.comment_id WHERE comment.post_id = ? AND groovy_comment_history.user_id = ? AND groovy_type = false", new Object[]{postId, id}, ROW_MAPPER);
+    }
+
+    @Override
+    public int deleteComment(long commentId) {
+        return jdbcTemplate.update("UPDATE comment SET deleted = true WHERE id = ?",commentId);
     }
 }

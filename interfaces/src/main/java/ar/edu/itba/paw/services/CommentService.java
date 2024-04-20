@@ -16,4 +16,6 @@ public interface CommentService {
         List<Comment> getUpGroovedComments(long postId) throws NoSuchPostException, UserNotFoundException;
 
         List<Comment> getDownGroovedComments(long postId) throws UserNotFoundException;
+
+        public int deleteComment(long commentId) throws NoSuchCommentException;
 }

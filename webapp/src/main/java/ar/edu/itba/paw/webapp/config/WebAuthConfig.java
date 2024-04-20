@@ -8,6 +8,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -38,6 +39,18 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
     }
+    @Bean
+    public AuthenticationFailureHandler authenticationFailureHandler() {
+        SimpleUrlAuthenticationFailureHandler simpleUrlAuthenticationFailureHandler = new SimpleUrlAuthenticationFailureHandler("/loginFailed");
+        simpleUrlAuthenticationFailureHandler.setUseForward(true);
+        return simpleUrlAuthenticationFailureHandler;
+    }
+
+
+    @Bean
+    public AuthenticationManager authenticationManager() throws Exception{
+        return super.authenticationManager();
+    }
     @Override
     public void configure(WebSecurity web) throws Exception {
         web.ignoring().
@@ -57,13 +70,16 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST,"/post/{postId}/+").authenticated()
                 .antMatchers(HttpMethod.POST,"/post").authenticated()
                 .antMatchers(HttpMethod.POST,"/comment").authenticated()
-                .antMatchers("/new-community").hasRole("ADMIN")
+                //.antMatchers("/community/{communityName}/mod").access("@modderServiceImpl.isModderOfCommunity(@userServiceImpl.loggedUser.get().id,@communityServiceImpl.findByName(#communityName).getId()) or hasRole('ADMIN')")
+                .antMatchers("/post/{postId}/delete","/comment/{postId}/delete").access("@modderServiceImpl.canRemovePostAlternative(#postId) or hasRole('ADMIN')")
+                .antMatchers("/new-community","/addMod").hasRole("ADMIN")
                 .antMatchers("/**").permitAll()
             .and().formLogin()
                 .usernameParameter("username")
                 .passwordParameter("password")
                 .defaultSuccessUrl("/",	false)
                 .loginPage("/login")
+                .failureHandler(authenticationFailureHandler())
             .and().rememberMe()
                 .rememberMeParameter("j_rememberme")
                 .userDetailsService(userDetailsService)

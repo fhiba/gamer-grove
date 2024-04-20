@@ -13,6 +13,7 @@ public class Post {
     private final long media_id;
     private final LocalDateTime date;
     private final int grooviness;
+    private final boolean deleted;
 
     private final String category;
 
@@ -55,7 +56,7 @@ public class Post {
     public String getCategory() {
         return category;
     }
-    public Post(final long id, final String title, final String body, final long author_id, final String community_name, final boolean media, final long media_id, final LocalDateTime date, final int grooviness, final String category) {
+    public Post(final long id, final String title, final String body, final long author_id, final String community_name, final boolean media, final long media_id, final LocalDateTime date, final int grooviness, boolean deleted, final String category) {
         this.id = id;
         this.title = title;
         this.body = body;
@@ -65,6 +66,11 @@ public class Post {
         this.media_id = media_id;
         this.date = date;
         this.grooviness = grooviness;
+        this.deleted = deleted;
         this.category = category;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
     }
 }

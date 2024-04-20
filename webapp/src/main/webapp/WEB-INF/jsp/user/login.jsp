@@ -34,7 +34,7 @@
                         <button class="btn btn-primary" type="submit" value="Register">
                             <spring:message code="Login.Title"/>
                         </button>
-
+                        ${error}
                         <form:errors cssStyle="color: red" cssClass="error"/>
                     </form:form>
                     <p>Or</p>

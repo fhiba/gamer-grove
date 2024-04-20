@@ -9,14 +9,8 @@ import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.PostCategories;
 import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.services.CommentService;
-import ar.edu.itba.paw.services.CommunityService;
-import ar.edu.itba.paw.services.PostService;
-import ar.edu.itba.paw.services.UserService;
-import ar.edu.itba.paw.webapp.form.NewCommentForm;
-import ar.edu.itba.paw.webapp.form.NewCommentGroovyForm;
-import ar.edu.itba.paw.webapp.form.NewPostForm;
-import ar.edu.itba.paw.webapp.form.NewPostGroovyForm;
+import ar.edu.itba.paw.services.*;
+import ar.edu.itba.paw.webapp.form.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -42,6 +36,9 @@ public class PostController {
 
     @Autowired
     private CommentService commentService;
+
+    @Autowired
+    private ModderService ms;
 
     @RequestMapping(path = "/post", method = RequestMethod.POST)
     public ModelAndView newPost(@Valid @ModelAttribute("newPostForm") final NewPostForm newPostForm, final BindingResult errors) throws NoLoggedUserException, NoSuchCommunityException {
@@ -102,7 +99,7 @@ public class PostController {
     }
 
     @RequestMapping(path = "/post/{postId}", method = RequestMethod.GET)
-    public ModelAndView singlePost(@PathVariable("postId") final long postId, @ModelAttribute("newPostGroovyForm") final NewPostGroovyForm newPostGroovyForm, @ModelAttribute("newCommentForm") final NewCommentForm newCommentForm, @ModelAttribute("newCommentGroovyForm") final NewCommentGroovyForm newCommentGroovyForm) throws UserNotFoundException, NoSuchPostException {
+    public ModelAndView singlePost(@PathVariable("postId") final long postId, @ModelAttribute("newPostGroovyForm") final NewPostGroovyForm newPostGroovyForm, @ModelAttribute("newCommentForm") final NewCommentForm newCommentForm, @ModelAttribute("newCommentGroovyForm") final NewCommentGroovyForm newCommentGroovyForm,@ModelAttribute("postDeleteForm") final PostDeleteForm postDeleteForm, @ModelAttribute("commentDeleteForm") final CommentDeleteForm commentDeleteForm) throws UserNotFoundException, NoSuchPostException, NoSuchCommunityException {
         ModelAndView mav = new ModelAndView("/post/post");
         mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
         Post post;
@@ -117,11 +114,14 @@ public class PostController {
         List<Comment> comments = commentService.getPostComments((postId));
         List<Comment> grooviedComments = Collections.emptyList();
         List<Comment> negativeGrooviedComments = Collections.emptyList();
+        boolean canDelete = false;
         int isGrooved = 0;
-        if (us.getLoggedUser().isPresent()) {
+        Optional<User> possibleUser = us.getLoggedUser();
+        if (possibleUser.isPresent()) {
             grooviedComments = commentService.getUpGroovedComments(postId);
             negativeGrooviedComments = commentService.getDownGroovedComments(postId);
             isGrooved = ps.checkGrooviness(postId);
+            canDelete = ms.canRemovePost(us.getLoggedUser().get().getId(), postId);
         }
         mav.addObject("isGrooved", isGrooved);
        // mav.addObject("isGrooved", ps.checkGrooviness(postId));
@@ -135,9 +135,22 @@ public class PostController {
         //TODO: SHOULD BE THE ONES THAT ARE CURRENTLY BEING FOLLOWED BY USER OR A FEW RANDOMLY SELECTED
         mav.addObject("communities", cs.getAllCommunities());
         mav.addObject("posts", ps.getPostsByCommunity(post.getCommunity_name()));
+        mav.addObject("canDelete", canDelete);
 
         return mav;
     }
+
+    @RequestMapping(path = "/post/{postId}/delete", method = RequestMethod.POST)
+    public ModelAndView deletePost(@Valid @ModelAttribute("postDeleteForm") final PostDeleteForm postDeleteForm,final BindingResult errors) throws NoSuchPostException, NoLoggedUserException {
+        if (errors.hasErrors()) {
+            return new ModelAndView("redirect:/post/" + postDeleteForm.getPostId());
+        }
+        ms.removePost(postDeleteForm.getPostId());
+        return new ModelAndView("redirect:/post/" + postDeleteForm.getPostId());
+    }
+
+
+
 
 //    @RequestMapping(path = "/post/{postId}/{grooviness}", method = RequestMethod.POST)
 //    public ModelAndView moreGroovy(@PathVariable("postId") final long postId, @PathVariable("grooviness") final int grooviness) throws NoLoggedUserException, NoSuchPostException {

@@ -30,6 +30,9 @@ public class CommentServiceImpl implements CommentService {
     @Autowired
     private PostService postService;
 
+    @Autowired
+    private ModderService modderService;
+
     @Override
     public Comment createComment(long postId, String body) throws NoLoggedUserException{
         Optional<User> user = userService.getLoggedUser();
@@ -124,5 +127,13 @@ public class CommentServiceImpl implements CommentService {
             throw new UserNotFoundException("User not found");
         User user = possibleUser.get();
         return commentDao.getDownGroovedComments(postId,user.getId());
+    }
+
+    @Override
+    public int deleteComment(long commentId) throws NoSuchCommentException {
+        Optional<Comment> comment = commentDao.getCommentById(commentId);
+        if(comment.isEmpty())
+            throw new NoSuchCommentException("Comment not found");
+        return commentDao.deleteComment(commentId);
     }
 }

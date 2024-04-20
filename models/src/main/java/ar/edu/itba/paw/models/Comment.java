@@ -16,8 +16,11 @@ public class Comment {
     private final int grooviness;
 
 
+    private final boolean deleted;
 
-    public Comment(long id, long postId, String username, long parentId, String body, LocalDateTime date, int grooviness) {
+
+
+    public Comment(long id, long postId, String username, long parentId, String body, LocalDateTime date, int grooviness, boolean deleted) {
         this.id = id;
         this.postId = postId;
         this.username = username;
@@ -25,13 +28,15 @@ public class Comment {
         this.body = body;
         this.date = date;
         this.grooviness = grooviness;
+        this.deleted = deleted;
     }
 
-    public Comment(long id, long postId, String username, String body, LocalDateTime date, int grooviness) {
+    public Comment(long id, long postId, String username, String body, LocalDateTime date, int grooviness, boolean deleted) {
         this.id = id;
         this.postId = postId;
         this.username = username;
         this.grooviness = grooviness;
+        this.deleted = deleted;
         this.parentId = -1;
         this.body = body;
         this.date = date;
@@ -78,4 +83,8 @@ public class Comment {
     public int getGrooviness() {
         return grooviness;
     }
+    public boolean isDeleted() {
+        return deleted;
+    }
+
 }

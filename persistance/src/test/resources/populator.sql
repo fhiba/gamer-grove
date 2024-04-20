@@ -1,4 +1,5 @@
 INSERT INTO users(username, password, email, owner) VALUES ('Pedro', 'curti', 'pedro@curti.com', false);
+INSERT INTO users(username, password, email, owner) VALUES ('notMod', 'curti','notmod@hotmail.com',false);
 INSERT INTO community(name, description, portrait_id) VALUES ('test', 'This is a test community', null);
 INSERT INTO community(name, description, portrait_id) VALUES ('other', 'This is a test community', null);
 INSERT INTO community(name, description, portrait_id) VALUES ('test2', 'This is a test community', null);
@@ -10,3 +11,4 @@ INSERT INTO communities_categories(community_id, category) VALUES (3, 'Action');
 INSERT INTO communities_categories(community_id, category) VALUES (1, 'Shooter');
 INSERT INTO communities_categories(community_id, category) VALUES (1, 'RPG');
 INSERT INTO communities_categories(community_id, category) VALUES (2, 'RPG');
+INSERT INTO modders(user_id, community_id) VALUES (1, 1);

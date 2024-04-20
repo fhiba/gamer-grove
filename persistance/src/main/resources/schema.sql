@@ -106,3 +106,15 @@ INSERT INTO post_categories (category) VALUES ('Discussion');
 UPDATE post SET category = 'Discussion' WHERE category = 'Miscellaneous';
 
 DELETE FROM post_categories WHERE category = 'Miscellaneous';
+
+
+create table if not exists modders(
+                                   user_id int not null,
+                                   community_id int not null,
+                                   primary key(user_id, community_id),
+                                   foreign key(user_id) references users(id),
+                                   foreign key(community_id) references community(id)
+);
+
+ALTER TABLE post ADD COLUMN deleted boolean DEFAULT false NOT NULL;
+ALTER TABLE comment ADD COLUMN deleted boolean DEFAULT false NOT NULL;

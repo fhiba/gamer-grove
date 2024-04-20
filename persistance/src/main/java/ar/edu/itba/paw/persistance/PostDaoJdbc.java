@@ -27,7 +27,9 @@ public class PostDaoJdbc implements PostDao{
             rs.getLong("media_id"),
             rs.getTimestamp("post_date").toLocalDateTime(),
             rs.getInt("grooviness"),
-            rs.getString("category"));
+            rs.getBoolean("deleted"),
+            rs.getString("category")
+            );
 
 //    private static final RowMapper<GroovyPostHistory> ROW_MAPPER_HISTORY = (rs, rowNum) -> new GroovyPostHistory(rs.getInt("user_id"),
 //            rs.getInt("post_id"),
@@ -67,8 +69,9 @@ public class PostDaoJdbc implements PostDao{
         values.put("post_date",now);
         values.put("grooviness",0);
         values.put("category", category);
+        values.put("deleted",false);
         Number id = jdbcInsert.executeAndReturnKey(values);
-        return new Post(id.longValue(), title, body, author_id, community_name, media, 0, now, 0, category);
+        return new Post(id.longValue(), title, body, author_id, community_name, media, 0, now, 0,false, category);
     }
 
     @Override
