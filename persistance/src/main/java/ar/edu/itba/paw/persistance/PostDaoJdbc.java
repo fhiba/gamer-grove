@@ -119,5 +119,15 @@ public class PostDaoJdbc implements PostDao{
         jdbcTemplate.update("UPDATE groovy_post_history SET groovy_type = ? WHERE post_id = ? AND user_id = ?",b,postId,id);
     }
 
+    @Override
+    public List<Post> findPostsByUser(long id) {
+        return jdbcTemplate.query("SELECT * FROM post WHERE author_id = ? ORDER BY post_date DESC",new Object[]{id},ROW_MAPPER);
+    }
+
+    @Override
+    public List<Post> findPostsLikedByUser(long id) {
+        return jdbcTemplate.query("SELECT * FROM post WHERE id IN(SELECT post_id FROM groovy_post_history WHERE user_id=?) ORDER BY post_date DESC",new Object[]{id},ROW_MAPPER);
+    }
+
 
 }

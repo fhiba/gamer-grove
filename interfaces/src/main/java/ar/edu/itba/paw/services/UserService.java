@@ -15,4 +15,6 @@ public interface UserService {
     Optional<User> getLoggedUser();
 
     Boolean isUserAdmin(final long id);
+
+    Boolean updateProfile(String username);
 }

@@ -13,4 +13,6 @@ public interface UserDao {
         User create(final String username, final String email, final String password);
 
         Optional<Boolean> isAdmin(final long id);
+
+    Boolean updateUsername(long id, String username);
 }

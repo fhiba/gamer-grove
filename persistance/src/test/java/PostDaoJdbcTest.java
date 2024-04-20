@@ -14,6 +14,7 @@ import org.springframework.test.jdbc.JdbcTestUtils;
 
 import javax.sql.DataSource;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
@@ -59,6 +60,17 @@ public class PostDaoJdbcTest {
         Assert.assertEquals(category, post.getCategory());
 
     }
+
+    @Test
+    public void testFindPostsByUser(long id) {
+        //TODO: Implement test
+    }
+
+    @Test
+    public void testFindPostsLikedByUser(long id) {
+        //TODO: Implement test
+    }
+
 
 
 }

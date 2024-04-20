@@ -62,4 +62,9 @@ public class UserDaoJdbc implements UserDao{
     public Optional<Boolean> isAdmin(long id) {
         return jdbcTemplate.query("SELECT owner FROM users WHERE id = ?", new Object[]{id}, (rs, rowNum) -> rs.getBoolean("owner")).stream().findFirst();
     }
+
+    @Override
+    public Boolean updateUsername(long id, String username) {
+        return jdbcTemplate.update("UPDATE users SET username = ? WHERE id = ?", username, id) == 1;
+    }
 }

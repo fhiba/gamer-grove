@@ -22,7 +22,7 @@
                            id="searchTerms"
                            aria-label="Search"
                     <c:if test="${not empty searchTerms}">
-                        value="${searchTerms}"
+                           value="${searchTerms}"
                     </c:if>
                     >
 
@@ -31,10 +31,24 @@
                 </form>
             </div>
             <c:if test="${not empty pageContext.request.userPrincipal}">
-            <div class="col-3 d-flex justify-content-end align-items-center">
-                <c:url value="/logout" var="logoutUrl"/>
-                <a class="btn btn-outline-danger " href="${logoutUrl}"><spring:message code="Logout"/></a>
-            </div>
+                <div class="col-3 d-flex justify-content-end align-items-center">
+                    <p class="text-light m-0 me-1">Hi, <c:out value="${pageContext.request.userPrincipal.name}" escapeXml="true" /> </p>
+                    <div class="dropdown">
+                        <button class="btn btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                            <i class="fa fa-user" aria-hidden="true"></i>
+                        </button>
+                        <ul class="dropdown-menu-header dropdown-menu dropdown-menu-dark">
+                            <li>
+                                <c:url value="/profile" var="profileUrl"/>
+                                <a class="dropdown-item" href="${profileUrl}"><spring:message code="User.Profile"/></a></li>
+                            <li>
+                                <c:url value="/logout" var="logoutUrl"/>
+                                <a class="dropdown-item" href="${logoutUrl}"><spring:message code="Logout"/></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </c:if>
             <c:if test="${empty pageContext.request.userPrincipal}">
                 <div class="col-3 d-flex justify-content-end align-items-center">

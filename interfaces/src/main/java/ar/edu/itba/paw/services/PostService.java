@@ -23,4 +23,8 @@ public interface PostService {
     void editGrooviness(int grooviness, long postId) throws UserNotFoundException, NoSuchPostException;
 
     int checkGrooviness(long postId);
+
+    List<Post> getPostsByUser(long id);
+
+    List<Post> getUserLikedPosts(long id);
 }

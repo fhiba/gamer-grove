@@ -28,4 +28,8 @@ public interface PostDao {
     void deleteGrooviness(long postId, long id);
 
     void updateGroovyHistory(long postId, long id, boolean b);
+
+    List<Post> findPostsByUser(long id);
+
+    List<Post> findPostsLikedByUser(long id);
 }

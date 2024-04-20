@@ -1,6 +1,7 @@
 import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
 import ar.edu.itba.paw.models.Community;
+import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.services.CommunityService;
 import ar.edu.itba.paw.services.PostServiceImpl;
@@ -13,6 +14,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.Mockito.when;
@@ -73,4 +76,14 @@ public class PostServiceTest {
         postService.createPost(TITLE, BODY, COMMUNITY_NAME, CATEGORY);
 
     }
+    @Test
+    public void testGetPostsByUser(long id) {
+       //TODO: Implement test
+    }
+
+    @Test
+    public void testGetUserLikedPosts(long id) {
+        //TODO: Implement test
+    }
+
 }

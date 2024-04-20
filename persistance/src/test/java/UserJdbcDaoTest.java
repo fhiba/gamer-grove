@@ -40,4 +40,10 @@ public class UserJdbcDaoTest {
         assertEquals(PASSWORD, user.getPassword());
         assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, "users"));
     }
+
+
+    @Test
+    public void testUpdateUsername(long id, String username) {
+       //TODO Implement test
+    }
 }

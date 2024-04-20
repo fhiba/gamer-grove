@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistance.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public Boolean isUserAdmin(long id) {
         return userDao.isAdmin(id).orElse(false);
+    }
+
+    @Override
+    public Boolean updateProfile(String username) {
+        return userDao.updateUsername(getLoggedUser().orElseThrow().getId(),username);
     }
 
 }
