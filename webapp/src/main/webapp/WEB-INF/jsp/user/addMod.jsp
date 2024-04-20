@@ -40,45 +40,47 @@
                 </div>
             </div>
         </div>
-        <div class="col-6">
-            <div class="card border-0 bg-transparent">
-                <div class="card-body">
-                    <p class="fw-semibold card-subtitle mb-1">
-                        <spring:message code="Mod.New"/>
-                    </p>
-                    <c:url var="addModUrl" value="/addMod"/>
-                    <form:form action="${addModUrl}" method="post" modelAttribute="newModForm">
-                        <table>
-                            <tr>
-                                <td>Username:</td>
-                                <td><form:input path="username" class="form-control" id="titleInput"/></td>
-                                <td><form:errors path="username" cssStyle="color: red" cssClass="error"/></td>
-                            </tr>
-                            <tr>
-                                <td>Mail:</td>
-                                <td><form:input path="email" class="form-control" id="titleInput"/></td>
-                                <td><form:errors path="email" cssStyle="color: red" cssClass="error"/></td>
-                            </tr>
-                            <tr>
-                                <td>Community:</td>
-                                <td>
-                                    <form:select path="communityId" id="addModSelect">
-                                        <c:forEach var="community" items="${communities}">
-                                            <form:option value="${community.id}" label="${community.name}"/>
-                                        </c:forEach>
-                                    </form:select>
-                                </td>
-                                <td><form:errors path="communityId" cssStyle="color: red" cssClass="error"/></td>
-                            </tr>
-                            <tr>
-                                <td><input type="submit" value="Create!"/></td>
-                            </tr>
-                        </table>
-                        <form:errors cssStyle="color: red" cssClass="error"/>
-                    </form:form>
+        <div class="col-6 mt-3">
+            <div>
+                <div class="card border-dark-subtle bg-dark-subtle d-inline-flex col">
+                    <div class="card-body ">
+                        <p class="fw-semibold card-subtitle mb-1">
+                            <spring:message code="Mod.New"/>
+                        </p>
+                        <c:url var="addModUrl" value="/addMod"/>
+                        <form:form action="${addModUrl}" method="post" modelAttribute="newModForm">
+                            <table>
+                                <tr>
+                                    <td><spring:message code="Mod.Username"/></td>
+                                    <td><form:input path="username" class="form-control" id="titleInput"/></td>
+                                    <td><form:errors path="username" cssStyle="color: red" cssClass="error"/></td>
+                                </tr>
+                                <tr>
+                                    <td><spring:message code="Mod.Email"/></td>
+                                    <td><form:input path="email" class="form-control" id="titleInput"/></td>
+                                    <td><form:errors path="email" cssStyle="color: red" cssClass="error"/></td>
+                                </tr>
+                                <tr>
+                                    <td><spring:message code="Mod.Communnity"/></td>
+                                    <td>
+                                        <form:select path="communityId" id="addModSelect">
+                                            <c:forEach var="community" items="${communities}">
+                                                <form:option value="${community.id}" label="${community.name}"/>
+                                            </c:forEach>
+                                        </form:select>
+                                    </td>
+                                    <td><form:errors path="communityId" cssStyle="color: red" cssClass="error"/></td>
+                                </tr>
+                                <tr>
+                                    <td><input type="submit" value=<spring:message code="Mod.Add"/>/></td>
+                                </tr>
+                            </table>
+                            <form:errors cssStyle="color: red" cssClass="error"/>
+                        </form:form>
+                    </div>
                 </div>
             </div>
-            <div class="card border-0 bg-transparent">
+            <div class="card border-dark-subtle bg-dark-subtle mt-3 d-inline-flex col">
                 <div class="card-body">
                     <p class="fw-semibold card-subtitle mb-1">
                         <spring:message code="Mod.Remove"/>
@@ -87,12 +89,12 @@
                     <form:form action="${removeModUrl}" method="post" modelAttribute="removeModForm">
                         <table>
                             <tr>
-                                <td>Username:</td>
+                                <td><spring:message code="Mod.Username"/></td>
                                 <td><form:input path="removeUsername" class="form-control" id="titleInput"/></td>
                                 <td><form:errors path="removeUsername" cssStyle="color: red" cssClass="error"/></td>
                             </tr>
                             <tr>
-                                <td>Community:</td>
+                                <td><spring:message code="Mod.Communnity"/>:</td>
                                 <td>
                                     <form:select path="fromCommunityId" id="removeModSelect">
                                         <c:forEach var="community" items="${communities}">
@@ -103,7 +105,7 @@
                                 <td><form:errors path="fromCommunityId" cssStyle="color: red" cssClass="error"/></td>
                             </tr>
                             <tr>
-                                <td><input type="submit" value="Create!"/></td>
+                                <td><input type="submit" value=<spring:message code="Mod.Remove"/>/></td>
                             </tr>
                         </table>
                         <form:errors cssStyle="color: red" cssClass="error"/>

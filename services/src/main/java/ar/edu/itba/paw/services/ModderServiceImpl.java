@@ -29,6 +29,7 @@ public class ModderServiceImpl implements ModderService{
     public int addModder(String username, long communityId) throws UserNotFoundException, NoSuchCommunityException, AlreadyModException {
         Optional<User> possibleNewMod = us.findByUsername(username);
         if(possibleNewMod.isEmpty()){
+
             throw new UserNotFoundException("User with id "+username+" not found");
         }
         User newMod = possibleNewMod.get();
@@ -36,6 +37,7 @@ public class ModderServiceImpl implements ModderService{
         Community community = cs.findById(communityId);
         //Checkeo si existe el mod
         if(md.isModderOfCommunity(newMod.getId(), communityId)){
+
             throw new AlreadyModException("User with id "+newMod.getId()+" is already a mod of community with id "+communityId);
         }
         return md.addModder(newMod.getId(), communityId);

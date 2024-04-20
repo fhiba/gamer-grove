@@ -73,10 +73,13 @@ public class UserController {
     }
 
     @RequestMapping(path="/addMod", method = RequestMethod.POST)
-    public ModelAndView postAddMod(@Valid @ModelAttribute("newModForm") final NewModForm newModForm,@ModelAttribute("removeModForm") final RemoveModForm removeModForm, final BindingResult errors) throws UserNotFoundException, NoSuchCommunityException {
+    public ModelAndView postAddMod(@ModelAttribute("removeModForm") final RemoveModForm removeModForm,@Valid @ModelAttribute("newModForm") final NewModForm newModForm, final BindingResult errors) throws UserNotFoundException, NoSuchCommunityException {
+
         if(errors.hasErrors()) {
-            return getAddMod(newModForm, removeModForm);
+
+            return  getAddMod(newModForm,removeModForm);
         }
+
         try {
             md.addModder(newModForm.getUsername(), newModForm.getCommunityId());
         }catch (AlreadyModException e) {
@@ -86,7 +89,7 @@ public class UserController {
     }
 
     @RequestMapping(path="/removeMod", method = RequestMethod.POST)
-    public ModelAndView postRemoveMod(@Valid @ModelAttribute("removeModForm") final RemoveModForm removeModForm,@ModelAttribute("newModForm") final NewModForm newModForm, final BindingResult errors) throws UserNotFoundException {
+    public ModelAndView postRemoveMod(@ModelAttribute("newModForm") final NewModForm newModForm,@Valid @ModelAttribute("removeModForm") final RemoveModForm removeModForm, final BindingResult errors) throws UserNotFoundException {
 
         if(errors.hasErrors()) {
             return getAddMod(newModForm,removeModForm);
