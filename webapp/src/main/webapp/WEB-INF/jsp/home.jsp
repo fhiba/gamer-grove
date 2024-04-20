@@ -76,7 +76,7 @@
                                         <h4 class="card-title fw-bold"><spring:message code="Post.Deleted"/></h4>
                                         <p class="card-text post-body"><<spring:message code="Post.Deleted"/>/></p>
                                     </c:if>
-                                        <p class="card-text post-body-home"><c:out value="${post.body}" escapeXml="true"/></p>
+
                                     <p class="m-auto">
                                         <small class="text-body-secondary">
                                             <c:out value="${post.date.format(format)}" escapeXml="true"/>
