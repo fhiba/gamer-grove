@@ -83,15 +83,31 @@ public class PostController {
     public ModelAndView getHomePosts(@RequestParam(value = "category", required = false) final String category) {
         ModelAndView mav = new ModelAndView("/home");
         List<Post> posts;
+        User user = null;
+        List<Community> communities = null;
+        try{
+            user = us.getLoggedUserChecked();
+        }catch (Exception ignored){
+
+        }
+
+        if(user != null)
+            communities = cs.getFollowedCommunities(user);
+        else{
+            communities = cs.getAllCommunities();
+        }
+
         if (category != null && !category.isEmpty() && !category.equals("all")) {
             posts = ps.getByCategory(category);
         } else {
             posts = ps.getAllPosts();
         }
+
+        mav.addObject("isLogged", user != null);
         mav.addObject("posts",posts);
         //TODO: SHOULD BE THE ONES THAT ARE CURRENTLY BEING FOLLOWED BY USER OR A FEW RANDOMLY SELECTED
         mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
-        mav.addObject("communities", cs.getAllCommunities());
+        mav.addObject("communities", communities);
         mav.addObject("news", ps.getByCategory(PostCategories.NEWS.getCategory()));
         mav.addObject("categories", Arrays.stream(PostCategories.values()).map(PostCategories::getCategory).toArray(String[]::new));
         return mav;
@@ -101,24 +117,28 @@ public class PostController {
     public ModelAndView getAllPosts(@RequestParam(value = "category", required = false) final String category) throws NoLoggedUserException {
         ModelAndView mav = new ModelAndView("/home");
         List<Post> posts = ps.getAllPosts();
+        List<Community> communities = null;
         User user = null;
-        List<Community> followedCommunities = Collections.emptyList();
         try{
             user = us.getLoggedUserChecked();
         }catch (Exception ignored){
 
         }
         if(user != null) {
-            followedCommunities = cs.getFollowedCommunities();
+            communities = cs.getFollowedCommunities(user);
             if (category != null && !category.isEmpty() && !category.equals("all")) {
                 posts = ps.getMyFollowedPostsByCategory(category,user);
             } else {
                 posts = ps.getMyFollowedPosts(user);
             }
         }
-        mav.addObject("myFollowedCommunities",followedCommunities);
+        else{
+            communities = cs.getAllCommunities();
+        }
+        mav.addObject("isLogged", user != null);
+        mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
         mav.addObject("posts",posts);
-        mav.addObject("communities", cs.getAllCommunities());
+        mav.addObject("communities", communities);
         mav.addObject("news", ps.getByCategory(PostCategories.NEWS.getCategory()));
         mav.addObject("categories", Arrays.stream(PostCategories.values()).map(PostCategories::getCategory).toArray(String[]::new));
         return mav;
@@ -129,6 +149,25 @@ public class PostController {
         ModelAndView mav = new ModelAndView("/post/post");
         mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
         Post post;
+        List<Community> communities = null;
+        User user = null;
+        List<Comment> comments = commentService.getPostComments((postId));
+        List<Comment> grooviedComments = Collections.emptyList();
+        List<Comment> negativeGrooviedComments = Collections.emptyList();
+        int isGrooved = 0;
+        try{
+            user = us.getLoggedUserChecked();
+        }catch (Exception ignored){
+
+        }
+        if(user != null) {
+            communities = cs.getFollowedCommunities(user);
+            grooviedComments = commentService.getUpGroovedComments(postId);
+            negativeGrooviedComments = commentService.getDownGroovedComments(postId);
+            isGrooved = ps.checkGrooviness(postId);
+        } else {
+            communities = cs.getAllCommunities();
+        }
         try {
             post = ps.getPostById(postId);
             mav.addObject("post", post);
@@ -137,17 +176,8 @@ public class PostController {
             throw e;
         }
 
-        List<Comment> comments = commentService.getPostComments((postId));
-        List<Comment> grooviedComments = Collections.emptyList();
-        List<Comment> negativeGrooviedComments = Collections.emptyList();
-        int isGrooved = 0;
-        if (us.getLoggedUser().isPresent()) {
-            grooviedComments = commentService.getUpGroovedComments(postId);
-            negativeGrooviedComments = commentService.getDownGroovedComments(postId);
-            isGrooved = ps.checkGrooviness(postId);
-        }
+        mav.addObject("isLogged", user != null);
         mav.addObject("isGrooved", isGrooved);
-        mav.addObject("isGrooved", ps.checkGrooviness(postId));
         mav.addObject("newPostGroovyForm", newPostGroovyForm);
         mav.addObject("upComments", grooviedComments);
         mav.addObject("downComments", negativeGrooviedComments);
@@ -156,7 +186,7 @@ public class PostController {
         Optional<User> author = us.findById(post.getAuthor_id());
         mav.addObject("author", author.isPresent() ? author.get().getUsername() : "[deleted]");
         //TODO: SHOULD BE THE ONES THAT ARE CURRENTLY BEING FOLLOWED BY USER OR A FEW RANDOMLY SELECTED
-        mav.addObject("communities", cs.getAllCommunities());
+        mav.addObject("communities", communities);
         mav.addObject("posts", ps.getPostsByCommunity(post.getCommunity_name()));
 
         return mav;

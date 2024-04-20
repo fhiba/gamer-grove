@@ -2,12 +2,10 @@ package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
-import ar.edu.itba.paw.models.Community;
-import ar.edu.itba.paw.models.CommunityCategories;
-import ar.edu.itba.paw.models.Post;
-import ar.edu.itba.paw.models.PostCategories;
+import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.services.CommunityService;
 import ar.edu.itba.paw.services.PostService;
+import ar.edu.itba.paw.services.UserService;
 import ar.edu.itba.paw.webapp.form.FollowCommunityForm;
 import ar.edu.itba.paw.webapp.form.NewCommunityForm;
 import ar.edu.itba.paw.webapp.form.NewPostForm;
@@ -31,6 +29,8 @@ public class CommunityController {
     private CommunityService cs;
     @Autowired
     private PostService ps;
+    @Autowired
+    private UserService us;
 
 
     @RequestMapping(path="/new-community", method = RequestMethod.GET)
@@ -59,6 +59,21 @@ public class CommunityController {
         } catch (NoLoggedUserException e) {
             //do nothing
         }
+        User user = null;
+        List<Community> communities = null;
+        try{
+            user = us.getLoggedUserChecked();
+        }catch (Exception ignored){
+
+        }
+
+        if(user != null)
+            communities = cs.getFollowedCommunities(user);
+        else {
+            communities = cs.getAllCommunities();
+        }
+        mav.addObject("isLogged", user != null);
+        mav.addObject("communities", communities);
         mav.addObject("isFollowing",isFollowing);
         mav.addObject("categories", Arrays.stream(PostCategories.values()).map(PostCategories::getCategory).toArray(String[]::new));
         mav.addObject("community",community);

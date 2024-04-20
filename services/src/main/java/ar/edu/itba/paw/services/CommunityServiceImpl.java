@@ -28,6 +28,7 @@ public class CommunityServiceImpl implements CommunityService{
         }
     }
 
+
     @Override
     public List<Community> getAllCommunities() {
         List<Community> communities = communityDao.findAllCommunities();
@@ -117,7 +118,10 @@ public class CommunityServiceImpl implements CommunityService{
     }
 
     @Override
-    public List<Community> getFollowedCommunities() {
-        return List.of();
+    public List<Community> getFollowedCommunities(User user) {
+        List<Community> followedCommunities = communityDao.getFollowedCommunities(user.getId());
+        if(followedCommunities.isEmpty())
+            return Collections.emptyList();
+        return followedCommunities;
     }
 }

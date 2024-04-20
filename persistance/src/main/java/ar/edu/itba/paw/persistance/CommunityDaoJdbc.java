@@ -19,9 +19,17 @@ public class CommunityDaoJdbc implements CommunityDao{
             rs.getString("name"),
             rs.getString("description"));
             community.setPortrait_id(rs.getLong("portrait_id"));
-            if(rs.getString("categories") != null)
-                community.setCategories(Arrays.stream(rs.getString("categories").split(",")).toList());
             return community;
+    };
+
+    private static final RowMapper<Community> ROW_MAPPER_CATEGORIES = (rs, rowNum) -> {
+        Community community = new  Community(rs.getLong("id"),
+                rs.getString("name"),
+                rs.getString("description"));
+        community.setPortrait_id(rs.getLong("portrait_id"));
+        if(rs.getString("categories") != null)
+            community.setCategories(Arrays.stream(rs.getString("categories").split(",")).toList());
+        return community;
     };
 
     private static final RowMapper<CommunityUser> ROW_MAPPER_USER = (rs, rowNum) -> new CommunityUser(rs.getInt("user_id"),
@@ -47,7 +55,7 @@ public class CommunityDaoJdbc implements CommunityDao{
     public Optional<Community> findById(long id) {
         final String query = "SELECT community.*, string_agg(cc.category, ',') as categories FROM community LEFT JOIN communities_categories as cc ON community.id = cc.community_id WHERE id = ? GROUP BY community.id, community.name, community.description, community.portrait_id ORDER BY community.name";
         final Object[] args = {id};
-        final List<Community> list = jdbcTemplate.query(query, args, ROW_MAPPER);
+        final List<Community> list = jdbcTemplate.query(query, args, ROW_MAPPER_CATEGORIES);
         return list.stream().findFirst();
     }
 
@@ -65,17 +73,17 @@ public class CommunityDaoJdbc implements CommunityDao{
           return jdbcTemplate.query("SELECT community.*, string_agg(cc.category, ',') as categories" +
                   " FROM community LEFT JOIN communities_categories as cc ON community.id = cc.community_id" +
                   " GROUP BY community.id, community.name, community.description, community.portrait_id" +
-                  " ORDER BY community.name", ROW_MAPPER);
+                  " ORDER BY community.name", ROW_MAPPER_CATEGORIES);
     }
 
     @Override
     public Optional<Community> findByName(String communityName) {
-        return jdbcTemplate.query("SELECT community.*, string_agg(cc.category, ',')" +
+        return jdbcTemplate.query("SELECT community.*, string_agg(cc.category, ',') as categories" +
                 " FROM community LEFT JOIN communities_categories as cc ON community.id = cc.community_id" +
                 " WHERE name = ?" +
                 " GROUP BY community.id, community.name, community.description, community.portrait_id" +
                 " ORDER BY community.name"
-                , new Object[]{communityName}, ROW_MAPPER).stream().findFirst();
+                , new Object[]{communityName}, ROW_MAPPER_CATEGORIES).stream().findFirst();
     }
 
     @Override
@@ -159,7 +167,7 @@ public class CommunityDaoJdbc implements CommunityDao{
             }
             sb.append(END);
             String query = sb.toString();
-            return jdbcTemplate.query(query, objects.toArray(), ROW_MAPPER);
+            return jdbcTemplate.query(query, objects.toArray(), ROW_MAPPER_CATEGORIES);
         }
     }
 
@@ -183,5 +191,8 @@ public class CommunityDaoJdbc implements CommunityDao{
         jdbcInsertUser.execute(args);
     }
 
-
+    @Override
+    public List<Community> getFollowedCommunities(long userId) {
+        return jdbcTemplate.query("SELECT * FROM community WHERE id IN (SELECT community_id FROM community_user WHERE user_id = ?)", new Object[]{userId}, ROW_MAPPER);
+    }
 }

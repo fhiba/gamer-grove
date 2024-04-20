@@ -18,39 +18,56 @@
         <div class="col-2 sidebar">
             <div class="card sidebar-card m-auto">
                 <div class="card-body">
-
-
                     <c:url value="/home" var="homeUrl"/>
-                    <a href="${homeUrl}" class="text-decoration-none">
+                    <a href="${homeUrl}" class="text-decoration-none card-title text-light mb-3">
                         <h5><spring:message code="Navbar.Home"/></h5>
                     </a>
-
                     <c:url value="/all" var="allUrl"/>
-                    <a href="${allUrl}" class="text-decoration-none">
+                    <a href="${allUrl}" class="text-decoration-none card-title text-light mb-3">
                         <h5><spring:message code="All"/></h5>
                     </a>
-                    <div class="card-title text-light mb-3">Communities</div>
-
-                    <c:forEach var="community" items="${communities}">
-                        <c:url value="/community/${community.name}" var="communityUrl"/>
-                        <a href="${communityUrl}" class="text-light text-decoration-none">
-                            <div class="card-body-community d-flex align-items-center text-decoration-none mb-3">
-                                <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
-                                     class="very-small-profile-pic mb-1" alt="Profile Picture">
-                                <div class="text-decoration-none">
-                                    <h5 class="fw-semibold card-subtitle ">
-                                        /<c:out value="${community.name}" escapeXml="true"/>
-                                    </h5>
+                    <c:if test="${myFollowedCommunities == null}">
+                        <div class="h5 card-title text-light mb-3">Communities</div>
+                        <c:forEach var="community" items="${communities}">
+                            <c:url value="/community/${community.name}" var="communityUrl"/>
+                            <a href="${communityUrl}" class="text-light text-decoration-none">
+                                <div class="card-body-community d-flex align-items-center text-decoration-none mb-3">
+                                    <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
+                                         class="very-small-profile-pic mb-1" alt="Profile Picture">
+                                    <div class="text-decoration-none">
+                                        <h5 class="fw-semibold card-subtitle ">
+                                            /<c:out value="${community.name}" escapeXml="true"/>
+                                        </h5>
+                                    </div>
                                 </div>
-                            </div>
-                        </a>
-                    </c:forEach>
+                            </a>
+                        </c:forEach>
+                    </c:if>
+                    <c:if test="${myFollowedCommunities != null}">
+                        <div class="card-title text-light mb-3">My Communities</div>
+
+                        <c:forEach var="community" items="${myFollowedCommunities}">
+                            <c:url value="/community/${community.name}" var="communityUrl"/>
+                            <a href="${communityUrl}" class="text-light text-decoration-none">
+                                <div class="card-body-community d-flex align-items-center text-decoration-none mb-3">
+                                    <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
+                                         class="very-small-profile-pic mb-1" alt="Profile Picture">
+                                    <div class="text-decoration-none">
+                                        <h5 class="fw-semibold card-subtitle ">
+                                            /<c:out value="${community.name}" escapeXml="true"/>
+                                        </h5>
+                                    </div>
+                                </div>
+                            </a>
+                        </c:forEach>
+                    </c:if>
                 </div>
             </div>
         </div>
+            <div class="col-1"></div>
         <%--LISTA DE POSTS--%>
-        <div class="col-10 ">
-            <div class="card  border-light">
+        <div class="col-5 ">
+            <div class="card border-0">
                 <div class="card-body">
                     <div class="d-flex justify-content-between ">
                         <div class="form-floating w-25 mb-3">
@@ -76,12 +93,14 @@
                                     <div class="title-container">
                                         <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
                                              class="small-profile-pic mb-1" alt="Profile Picture">
-                                        <p class="fw-semibold card-subtitle">/<c:out value="${post.community_name}" escapeXml="true"/></p>
+                                        <p class="fw-semibold card-subtitle">/<c:out value="${post.community_name}"
+                                                                                     escapeXml="true"/></p>
                                         <span class="badge rounded-pill mb-1 ${post.category}">${post.category}</span>
                                     </div>
 
                                     <h4 class="card-title fw-bold"><c:out value="${post.title}" escapeXml="true"/></h4>
-                                        <p class="card-text post-body-home"><c:out value="${post.body}" escapeXml="true"/></p>
+                                    <p class="card-text post-body-home"><c:out value="${post.body}"
+                                                                               escapeXml="true"/></p>
                                     <p class="m-auto">
                                         <small class="text-body-secondary">
                                             <c:out value="${post.date.format(format)}" escapeXml="true"/>
@@ -96,7 +115,7 @@
         </div>
         <div class="col-1"></div>
         <%--LISTA DE NEWS--%>
-        <div class="col-2">
+        <div class="col-3">
             <div class="card  bg-transparent border-0">
                 <div class="card-title news-title">
                     <h5><spring:message code="Home.News"/></h5>

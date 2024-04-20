@@ -1,3 +1,4 @@
+<%--suppress ELSpecValidationInJSP --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
@@ -9,6 +10,7 @@
     <link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="${pageContext.request.contextPath}/css/general-styling.css" rel="stylesheet"/>
     <script src="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js"></script>
+<%--suppress JSUnresolvedLibraryURL --%>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
 <body>
@@ -16,48 +18,68 @@
 <div class="container-fluid">
     <div class="row min-vh-100">
         <%--COMMUNITY LIST--%>
-        <div class="col-2 sidebar">
-            <div class="card sidebar-card">
-                <div class="card-body">
-                    <c:forEach var="community" items="${communities}">
-                        <c:url value="/community/${community.name}" var="communityUrl"/>
-                        <a href="${communityUrl}" class="card-link text-decoration-none">
-                            <div class="card-body-community d-flex align-items-center text-decoration-none mb-3">
-                                <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
-                                     class="very-small-profile-pic mb-1" alt="Profile Picture">
-                                <div class="text-decoration-none">
-                                    <h5 class="fw-semibold card-subtitle community-name">
-                                        /<c:out value="${community.name}" escapeXml="true"/>
-                                    </h5>
-                                </div>
-                            </div>
+            <div class="col-2 sidebar">
+                <div class="card sidebar-card m-auto">
+                    <div class="card-body">
+                        <c:url value="/home" var="homeUrl"/>
+                        <a href="${homeUrl}" class="text-decoration-none card-title text-light mb-3">
+                            <h5><spring:message code="Navbar.Home"/></h5>
                         </a>
-                    </c:forEach>
+                        <c:url value="/all" var="allUrl"/>
+                        <a href="${allUrl}" class="text-decoration-none card-title text-light mb-3">
+                            <h5><spring:message code="All"/></h5>
+                        </a>
+                        <c:if test="${isLogged == null}">
+                            <div class="h5 card-title text-light mb-3">Communities</div>
+                        </c:if>
+                        <c:if test="${isLogged != null}">
+                            <div class="card-title text-light mb-3">My Communities</div>
+                        </c:if>
+                        <c:forEach var="community" items="${communities}">
+                            <c:url value="/community/${community.name}" var="communityUrl"/>
+                            <a href="${communityUrl}" class="text-light text-decoration-none">
+                                <div class="card-body-community d-flex align-items-center text-decoration-none mb-3">
+                                    <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
+                                         class="very-small-profile-pic mb-1" alt="Profile Picture">
+                                    <div class="text-decoration-none">
+                                        <h5 class="fw-semibold card-subtitle ">
+                                            /<c:out value="${community.name}" escapeXml="true"/>
+                                        </h5>
+                                    </div>
+                                </div>
+                            </a>
+                        </c:forEach>
+                    </div>
                 </div>
             </div>
+        <div class="col-1">
         </div>
         <%--POST DATA--%>
-        <div class="col-6">
+        <div class="col-5">
             <div class="card border-0 bg-transparent">
                 <div class="card-body">
                     <p class="fw-semibold card-subtitle mb-1">
                         <c:url value="/community/${post.community_name}" var="communityUrl"/>
                         <a href="${communityUrl}"
-                           class="text-decoration-none text-body-primary">c/<c:out value="${post.community_name}" escapeXml="true"/></a>
+                           class="text-decoration-none text-body-primary">c/<c:out value="${post.community_name}"
+                                                                                   escapeXml="true"/></a>
                         <span class="badge rounded-pill ${post.category}">${post.category}</span>
                     </p>
-                    <h4 class="card-title fw-bold mb-0"><c:out value="${post.title}" escapeXml="true"/> </h4>
+                    <h4 class="card-title fw-bold mb-0"><c:out value="${post.title}" escapeXml="true"/></h4>
                     <p class="card-subtitle mb-4">u/<c:out value="${author}" escapeXml="true"/></p>
-                    <p class="card-text"><c:out value="${post.body}" escapeXml="true"/> </p>
+                    <p class="card-text"><c:out value="${post.body}" escapeXml="true"/></p>
                     <div class="d-flex align-items-center">
-                        <p class="card-text mb-0"><small class="text-body-secondary">${post.date.format(format)}</small></p>
+                        <p class="card-text mb-0"><small class="text-body-secondary">${post.date.format(format)}</small>
+                        </p>
                         <span class="grooviness-count" style="margin-left: 1rem;">${post.grooviness}</span>
                         <div class="d-none">
                             <c:url value="/post/${postId}/up" var="upPostUrl"/>
                             <form:form action="${upPostUrl}" method="post" id="newPostGroovyForm"
                                        modelAttribute="newPostGroovyForm">
-                                <form:hidden path="postId" value="${post.id}" />
-                                <form:hidden path="groovyType" id="postGroovyType" />
+<%--suppress XmlDuplicatedId --%>
+                                <form:hidden path="postId" value="${post.id}"/>
+<%--suppress XmlDuplicatedId --%>
+                                <form:hidden path="groovyType" id="postGroovyType"/>
                             </form:form>
                         </div>
                         <div class="d-flex flex-row mb-1">
@@ -100,6 +122,7 @@
                                            placeholder="Join the discussion and leave a comment!"/>
                             <form:errors path="body" cssStyle="color: red" cssClass="error"/>
                         </div>
+<%--suppress XmlDuplicatedId --%>
                         <form:hidden path="postId" value="${post.id}"/>
                         <button class="btn btn-primary" type="submit">
                             <spring:message code="Post.Comment"/>
@@ -110,15 +133,17 @@
                         <c:url value="/post/${postId}/+" var="upCommentUrl"/>
                         <form:form action="${upCommentUrl}" method="post" id="upCommentForm"
                                    modelAttribute="newCommentGroovyForm">
-                            <form:hidden path="commentId" id="commentId" />
+                            <form:hidden path="commentId" id="commentId"/>
                             <form:hidden path="commentPostId" value="${post.id}"/>
-                            <form:hidden path="groovyType" id="groovyType" />
+<%--suppress XmlDuplicatedId --%>
+                            <form:hidden path="groovyType" id="groovyType"/>
                         </form:form>
                     </div>
 
                     <ul class="list-group">
                         <c:forEach var="comment" items="${comments}">
                             <li class="list-group-item d-flex justify-content-between align-items-start bg-body-secondary">
+<%--suppress CheckImageSize --%>
                                 <img src="${pageContext.request.contextPath}/images/default-avatar-icon.jpg"
                                      height="50" width="50" class="rounded-5" alt="Profile Picture">
                                 <div class="ms-2 me-auto">
@@ -169,6 +194,9 @@
                 </div>
             </div>
         </div>
+        <div class="col-1">
+
+        </div>
         <%--POSTS LIST OF THE COMMUNITY--%>
         <div class="col-3">
             <div class="card  border-0 bg-transparent">
@@ -179,7 +207,8 @@
                         <div class="card mb-3">
                             <div class="card-body">
 
-                                <h5 class="card-title other-post-title fw-bold mb-1"><c:out value="${otherPost.title}" escapeXml="true"/>
+                                <h5 class="card-title other-post-title fw-bold mb-1"><c:out value="${otherPost.title}"
+                                                                                            escapeXml="true"/>
                                 </h5>
                                 <span class="badge rounded-pill ${otherPost.category} mb-1">${otherPost.category}</span>
                                 <p class="card-text post-body"><c:out value="${otherPost.body}" escapeXml="true"/></p>

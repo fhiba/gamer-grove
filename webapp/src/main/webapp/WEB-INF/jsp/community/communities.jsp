@@ -23,7 +23,7 @@
 
         <%--LISTA DE COMMUNITIES--%>
         <div class="col-6">
-            <div class="card  border-light">
+            <div class="card border-0 text-decoration-none">
                 <div class="card-body">
                     <c:if test="${empty communities}">
                         <div class="d-flex flex-column align-items-center">
@@ -35,7 +35,7 @@
                     <c:if test="${not empty communities}">
                         <c:forEach var="community" items="${communities}">
                             <c:url value="/community/${community.name}" var="communityUrl"/>
-                            <a href="${communityUrl}" class="card-link link-underline-light">
+                            <a href="${communityUrl}" class="card-link text-decoration-none">
                                 <div class="card mb-3">
                                     <div class="card-body d-flex flex-row">
                                         <div class="flex-column">
@@ -67,7 +67,7 @@
 
         <%--LISTA DE Filters--%>
         <div class="col-3">
-            <div class="card  border-light">
+            <div class="card border-0 text-decoration-none">
                 <div class="card-body">
                     <h5><spring:message code="Home.FilterCategory"/> </h5>
                     <div id="categoryPills" class="d-flex flex-row flex-wrap">
