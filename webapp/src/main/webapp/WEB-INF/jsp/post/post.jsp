@@ -64,7 +64,7 @@
                             <form:form action="${deletePostUrl}" var="deletePostUrl" method="post"
                                        modelAttribute="postDeleteForm">
                                 <form:hidden path="postId" value="${post.id}"/>
-                                <button class="btn btn-danger" type="submit">
+                                <button class="btn btn-danger btn-sm" type="submit">
                                     <spring:message code="Post.DeleteButton"/>
                                 </button>
                             </form:form>
@@ -157,17 +157,7 @@
                                                 <c:out value="${comment.date.format(format)}" escapeXml="true"/>
                                             </small>
                                         </p>
-                                        <c:url value="/comment/${postId}/delete" var="deleteCommentUrl"/>
-                                        <c:if test="${canDelete}">
-                                            <form:form action="${deleteCommentUrl}" var="deleteCommenttUrl"
-                                                       method="post"
-                                                       modelAttribute="commentDeleteForm">
-                                                <form:hidden path="commentId" value="${comment.id}"/>
-                                                <button class="btn btn-danger" type="submit">
-                                                    <spring:message code="Post.DeleteButton"/>
-                                                </button>
-                                            </form:form>
-                                        </c:if>
+
                                     </div>
                                     <div class="d-flex align-items-center">
                                         <span class="grooviness-count">${comment.grooviness}</span>
@@ -198,6 +188,17 @@
                                                 </button>
                                             </c:if>
                                         </div>
+                                        <c:url value="/comment/${postId}/delete" var="deleteCommentUrl"/>
+                                        <c:if test="${canDelete}">
+                                            <form:form action="${deleteCommentUrl}" var="deleteCommenttUrl"
+                                                       method="post"
+                                                       modelAttribute="commentDeleteForm">
+                                                <form:hidden path="commentId" value="${comment.id}"/>
+                                                <button class="btn btn-danger btn-sm align-content-center"  type="submit">
+                                                    X
+                                                </button>
+                                            </form:form>
+                                        </c:if>
                                     </div>
                                 </li>
                             </c:if>
