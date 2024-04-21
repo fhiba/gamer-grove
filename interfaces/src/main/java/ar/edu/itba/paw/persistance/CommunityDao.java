@@ -23,4 +23,5 @@ public interface CommunityDao {
 
     List<String> getCategoriesOfCommunity(final long id);
 
+    void updateCommunityImageId(long id, long imageId);
 }

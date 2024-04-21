@@ -91,5 +91,10 @@ public class CommunityServiceImpl implements CommunityService{
         }
     }
 
+    @Override
+    public void updateCommunityImageId(long id, long imageId) {
+        communityDao.updateCommunityImageId(id,imageId);
+    }
+
 
 }

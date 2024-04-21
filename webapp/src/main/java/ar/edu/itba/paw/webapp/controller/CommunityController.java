@@ -2,21 +2,18 @@ package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
-import ar.edu.itba.paw.models.Community;
-import ar.edu.itba.paw.models.CommunityCategories;
-import ar.edu.itba.paw.models.Post;
-import ar.edu.itba.paw.models.PostCategories;
+import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.services.CommunityService;
+import ar.edu.itba.paw.services.FileService;
 import ar.edu.itba.paw.services.PostService;
+import ar.edu.itba.paw.webapp.form.FileForm;
 import ar.edu.itba.paw.webapp.form.NewCommunityForm;
 import ar.edu.itba.paw.webapp.form.NewPostForm;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
@@ -30,6 +27,8 @@ public class CommunityController {
     private CommunityService cs;
     @Autowired
     private PostService ps;
+    @Autowired
+    private FileService fs;
 
     @RequestMapping(path="/new-community", method = RequestMethod.GET)
     public ModelAndView newCommunity(@ModelAttribute("newCommunityForm") final NewCommunityForm newCommunityForm) {
@@ -93,6 +92,37 @@ public class CommunityController {
         Community community = cs.findByName(communityName);
         ps.createPost(newPostForm.getTitle(),newPostForm.getBody(),community.getName(),newPostForm.getCategory());
         return community(communityName,newPostForm);
+    }
+
+    @RequestMapping(path="/community/{communityName}/image", method = RequestMethod.GET)
+    public ModelAndView communityImage(@PathVariable("communityName") final String communityName, @ModelAttribute("newCommunityImage") final FileForm newCommunityImage) throws NoSuchCommunityException {
+        ModelAndView mav = new ModelAndView("community/communityImage");
+        Community community = cs.findByName(communityName);
+        mav.addObject("community",community);
+        return mav;
+    }
+
+    @RequestMapping(path="/community/{communityName}/image", method = RequestMethod.POST)
+    public ModelAndView uploadCommunityImage(@PathVariable("communityName") final String communityName, @Valid @ModelAttribute("newCommunityImage") final FileForm newCommunityImage, BindingResult errors) throws NoSuchCommunityException {
+        if(errors.hasErrors())
+            return communityImage(communityName,newCommunityImage);
+        fs.uploadCommunityImage(communityName,newCommunityImage.getFile());
+        return new ModelAndView("redirect:/community/"+communityName);
+    }
+
+    @RequestMapping(path="/seeImages/{imageId}", method = RequestMethod.GET)
+    public ModelAndView getImage(@PathVariable("imageId") final long imageId) {
+        ModelAndView mav = new ModelAndView("image");
+//        mav.addObject("image",fs.getFile(imageId).get());
+        return mav;
+    }
+
+    @RequestMapping(value = "/image/{imageId}", method = RequestMethod.GET,
+            produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_GIF_VALUE})
+    @ResponseBody
+    public byte[] getImage(@PathVariable Integer imageId) {
+        //File image = fs.getFile(doctorId).orElse(null);
+        return fs.getFile(imageId).map(File::getFile).orElse(null);
     }
 
 }

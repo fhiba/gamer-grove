@@ -76,6 +76,11 @@ public class CommunityDaoJdbc implements CommunityDao{
     }
 
     @Override
+    public void updateCommunityImageId(long id, long imageId) {
+        jdbcTemplate.update("UPDATE community SET portrait_id = ? WHERE id = ?", imageId, id);
+    }
+
+    @Override
     public List<Community> find(String searchTerms, List<String> categories) {
         QueryBuilder builder = new QueryBuilder().withSearchTerm(searchTerms).withCategories(categories);
         return builder.build();

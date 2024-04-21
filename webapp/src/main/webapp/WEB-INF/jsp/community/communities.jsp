@@ -39,8 +39,14 @@
                                 <div class="card mb-3">
                                     <div class="card-body d-flex flex-row">
                                         <div class="flex-column">
-                                            <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
-                                                 class="medium-profile-pic" alt="Profile Picture">
+                                            <c:if test="${community.portrait_id == 0}">
+                                                <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
+                                                     class="very-small-profile-pic mb-1" alt="Profile Picture">
+                                            </c:if>
+                                            <c:if test="${community.portrait_id != 0}">
+                                                <img src="<c:url value='/image/${community.portrait_id}'/>"
+                                                     class="very-small-profile-pic mb-1" alt="Profile Picture">
+                                            </c:if>
                                         </div>
                                         <div class="flex-column overflow-auto w-100">
                                             <div class="d-flex justify-content-between">

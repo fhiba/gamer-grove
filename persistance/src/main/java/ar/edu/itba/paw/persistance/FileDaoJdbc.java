@@ -17,7 +17,7 @@ public class FileDaoJdbc implements FileDao{
 
     private static final RowMapper<File> FILE_ROW_MAPPER = (rs, rowNum) -> new File(
             rs.getLong("id"),
-            rs.getBytes("file")
+            rs.getBytes("bytes")
     );
 
     private final JdbcTemplate jdbcTemplate;
@@ -39,6 +39,7 @@ public class FileDaoJdbc implements FileDao{
         Map<String,Object> values = new HashMap<>();
         values.put("bytes",file);
         Number image_id = jdbcInsert.executeAndReturnKey(values);
+        System.out.println(image_id.longValue());
         return Optional.of(new File(image_id.longValue(),file));
     }
 

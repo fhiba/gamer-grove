@@ -70,8 +70,15 @@
                 <div class="card-body">
                     <div class="row w-100 mb-2">
                         <div class="col-4">
-                            <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
-                                  class="w-100 rounded-1 img-thumbnail " alt="Profile Picture">
+                            <c:if test="${community.portrait_id == 0}">
+                                <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
+                                     class="w-100 rounded-1 img-thumbnail " alt="Profile Picture">
+                            </c:if>
+                            <c:if test="${community.portrait_id != 0}">
+                                <img src="<c:url value='/image/${community.portrait_id}'/>"
+                                     class="w-100 rounded-1 img-thumbnail" alt="Profile Picture">
+                            </c:if>
+
                         </div>
                         <div class="col-8">
                             <h1 class="card-title"><c:out value="c/${community.name}" escapeXml="true"/></h1>
