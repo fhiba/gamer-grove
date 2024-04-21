@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.persistance;
 
 import ar.edu.itba.paw.models.Community;
+import ar.edu.itba.paw.models.CommunityUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -18,20 +19,35 @@ public class CommunityDaoJdbc implements CommunityDao{
             rs.getString("name"),
             rs.getString("description"));
             community.setPortrait_id(rs.getLong("portrait_id"));
-            if(rs.getString("categories") != null)
-                community.setCategories(Arrays.stream(rs.getString("categories").split(",")).toList());
             return community;
     };
 
+    private static final RowMapper<Community> ROW_MAPPER_CATEGORIES = (rs, rowNum) -> {
+        Community community = new  Community(rs.getLong("id"),
+                rs.getString("name"),
+                rs.getString("description"));
+        community.setPortrait_id(rs.getLong("portrait_id"));
+        if(rs.getString("categories") != null)
+            community.setCategories(Arrays.stream(rs.getString("categories").split(",")).toList());
+        return community;
+    };
+
+    private static final RowMapper<CommunityUser> ROW_MAPPER_USER = (rs, rowNum) -> new CommunityUser(rs.getInt("user_id"),
+            rs.getInt("community_id"),
+            rs.getInt("community_role"),
+            rs.getString("community_name"));
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
     private final SimpleJdbcInsert jdbcInsertCategory;
+    private final SimpleJdbcInsert jdbcInsertUser;
+
 
     @Autowired
     public CommunityDaoJdbc(final DataSource ds){
         jdbcTemplate = new JdbcTemplate(ds);
         jdbcInsert = new SimpleJdbcInsert(ds).usingGeneratedKeyColumns("id").withTableName("community");
+        jdbcInsertUser = new SimpleJdbcInsert(ds).withTableName("community_user");
         jdbcInsertCategory =  new SimpleJdbcInsert(ds).withTableName("communities_categories");
     }
 
@@ -39,7 +55,7 @@ public class CommunityDaoJdbc implements CommunityDao{
     public Optional<Community> findById(long id) {
         final String query = "SELECT community.*, string_agg(cc.category, ',') as categories FROM community LEFT JOIN communities_categories as cc ON community.id = cc.community_id WHERE id = ? GROUP BY community.id, community.name, community.description, community.portrait_id ORDER BY community.name";
         final Object[] args = {id};
-        final List<Community> list = jdbcTemplate.query(query, args, ROW_MAPPER);
+        final List<Community> list = jdbcTemplate.query(query, args, ROW_MAPPER_CATEGORIES);
         return list.stream().findFirst();
     }
 
@@ -57,7 +73,7 @@ public class CommunityDaoJdbc implements CommunityDao{
           return jdbcTemplate.query("SELECT community.*, string_agg(cc.category, ',') as categories" +
                   " FROM community LEFT JOIN communities_categories as cc ON community.id = cc.community_id" +
                   " GROUP BY community.id, community.name, community.description, community.portrait_id" +
-                  " ORDER BY community.name", ROW_MAPPER);
+                  " ORDER BY community.name", ROW_MAPPER_CATEGORIES);
     }
 
     @Override
@@ -67,7 +83,7 @@ public class CommunityDaoJdbc implements CommunityDao{
                 " WHERE name = ?" +
                 " GROUP BY community.id, community.name, community.description, community.portrait_id" +
                 " ORDER BY community.name"
-                , new Object[]{communityName}, ROW_MAPPER).stream().findFirst();
+                , new Object[]{communityName}, ROW_MAPPER_CATEGORIES).stream().findFirst();
     }
 
     @Override
@@ -151,7 +167,32 @@ public class CommunityDaoJdbc implements CommunityDao{
             }
             sb.append(END);
             String query = sb.toString();
-            return jdbcTemplate.query(query, objects.toArray(), ROW_MAPPER);
+            return jdbcTemplate.query(query, objects.toArray(), ROW_MAPPER_CATEGORIES);
         }
+    }
+
+    @Override
+    public Boolean checkIfUserFollowsCommunity(long userId, int communityId) {
+        return !jdbcTemplate.query("SELECT * FROM community_user WHERE user_id = ? AND community_id = ?", new Object[]{userId, communityId}, ROW_MAPPER_USER).isEmpty();
+    }
+
+    @Override
+    public void unfollowCommunity(long id, int communityId) {
+        jdbcTemplate.update("DELETE FROM community_user WHERE user_id = ? AND community_id = ?", id, communityId);
+    }
+
+    @Override
+    public void followCommunity(long id, int communityId,String communityName) {
+        Map<String, Object> args = new HashMap<>();
+        args.put("user_id", id);
+        args.put("community_id", communityId);
+        args.put("community_role", 0);
+        args.put("community_name",communityName);
+        jdbcInsertUser.execute(args);
+    }
+
+    @Override
+    public List<Community> getFollowedCommunities(long userId) {
+        return jdbcTemplate.query("SELECT * FROM community WHERE id IN (SELECT community_id FROM community_user WHERE user_id = ?)", new Object[]{userId}, ROW_MAPPER);
     }
 }

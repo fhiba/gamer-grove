@@ -123,9 +123,23 @@ public class PostServiceImpl implements PostService{
     @Override
     public int checkGrooviness(long postId) {
         Optional<Boolean> maybeGroovy = postDao.checkGrooviness(postId, userService.getLoggedUser().get().getId());
-        if(maybeGroovy.isEmpty())
-            return 0;
-        return maybeGroovy.get()? 1: -1;
+        return maybeGroovy.map(aBoolean -> aBoolean ? 1 : -1).orElse(0);
+    }
+
+    @Override
+    public List<Post> getMyFollowedPosts(User user) {
+        List<Post> posts = postDao.getMyFollowedPosts(user.getId());
+        if(posts.isEmpty())
+            return Collections.emptyList();
+        return posts;
+    }
+
+    @Override
+    public List<Post> getMyFollowedPostsByCategory(String category, User user) {
+        List<Post> posts = postDao.getMyFollowedPostsByCategory(category,user.getId());
+        if(posts.isEmpty())
+            return Collections.emptyList();
+        return posts;
     }
 
 

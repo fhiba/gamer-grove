@@ -8,7 +8,6 @@ public class Community {
     private final String name;
     private final String description;
     private long portrait_id = -1;
-
     private List<String> categories = null;
 
     public Community(final long id, final String name,  final String description) {
@@ -16,7 +15,12 @@ public class Community {
         this.name = name;
         this.description = description;
     }
-
+    public Community(final long id, final String name,  final String description, List<String> categories) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.categories = categories;
+    }
     public long getId() {
         return id;
     }

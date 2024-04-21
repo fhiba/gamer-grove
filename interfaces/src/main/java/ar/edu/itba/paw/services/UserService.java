@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.models.User;
 
 import java.util.Optional;
@@ -15,6 +16,8 @@ public interface UserService {
     Optional<User> getLoggedUser();
 
     Boolean isUserAdmin(final long id);
+
+    User getLoggedUserChecked() throws NoLoggedUserException;
 
     List<User> findAll();
 }
