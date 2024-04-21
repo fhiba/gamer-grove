@@ -15,19 +15,23 @@
 <div class="container-fluid">
     <div class="row  min-vh-100">
         <%--COMMUNITY LIST--%>
-        <div class="col-2 sidebar">
-            <div class="card sidebar-card m-auto">
-                <div class="card-body">
-                    <c:url value="/home" var="homeUrl"/>
-                    <a href="${homeUrl}" class="text-decoration-none card-title text-light mb-3">
-                        <h5><spring:message code="Navbar.Home"/></h5>
-                    </a>
-                    <c:url value="/all" var="allUrl"/>
-                    <a href="${allUrl}" class="text-decoration-none card-title text-light mb-3">
-                        <h5><spring:message code="All"/></h5>
-                    </a>
-                    <c:if test="${myFollowedCommunities == null}">
-                        <div class="h5 card-title text-light mb-3">Communities</div>
+            <div class="col-2 sidebar">
+                <div class="card sidebar-card m-auto">
+                    <div class="card-body">
+                        <c:url value="/home" var="homeUrl"/>
+                        <a href="${homeUrl}" class="text-decoration-none card-title text-light mb-3">
+                            <h5><spring:message code="Navbar.Home"/></h5>
+                        </a>
+                        <c:url value="/all" var="allUrl"/>
+                        <a href="${allUrl}" class="text-decoration-none card-title text-light mb-3">
+                            <h5><spring:message code="All"/></h5>
+                        </a>
+                        <c:if test="${isLogged == null}">
+                            <div class="h5 card-title text-light mb-3">Communities</div>
+                        </c:if>
+                        <c:if test="${isLogged != null}">
+                            <div class="card-title text-light mb-3">My Communities</div>
+                        </c:if>
                         <c:forEach var="community" items="${communities}">
                             <c:url value="/community/${community.name}" var="communityUrl"/>
                             <a href="${communityUrl}" class="text-light text-decoration-none">
@@ -42,28 +46,9 @@
                                 </div>
                             </a>
                         </c:forEach>
-                    </c:if>
-                    <c:if test="${myFollowedCommunities != null}">
-                        <div class="card-title text-light mb-3">My Communities</div>
-
-                        <c:forEach var="community" items="${myFollowedCommunities}">
-                            <c:url value="/community/${community.name}" var="communityUrl"/>
-                            <a href="${communityUrl}" class="text-light text-decoration-none">
-                                <div class="card-body-community d-flex align-items-center text-decoration-none mb-3">
-                                    <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
-                                         class="very-small-profile-pic mb-1" alt="Profile Picture">
-                                    <div class="text-decoration-none">
-                                        <h5 class="fw-semibold card-subtitle ">
-                                            /<c:out value="${community.name}" escapeXml="true"/>
-                                        </h5>
-                                    </div>
-                                </div>
-                            </a>
-                        </c:forEach>
-                    </c:if>
+                    </div>
                 </div>
             </div>
-        </div>
             <div class="col-1"></div>
         <%--LISTA DE POSTS--%>
         <div class="col-5 ">
