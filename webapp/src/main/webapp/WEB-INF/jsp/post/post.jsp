@@ -162,6 +162,7 @@
 
                     <ul class="list-group">
                         <c:forEach var="comment" items="${comments}">
+                            <c:if test="${!comment.deleted}">
                             <li class="list-group-item d-flex justify-content-between align-items-start bg-body-secondary">
 <%--suppress CheckImageSize --%>
                                 <img src="${pageContext.request.contextPath}/images/default-avatar-icon.jpg"

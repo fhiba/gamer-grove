@@ -5,19 +5,13 @@ import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
 import ar.edu.itba.paw.exceptions.NoSuchPostException;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
-import ar.edu.itba.paw.models.Comment;
-import ar.edu.itba.paw.models.Post;
-import ar.edu.itba.paw.models.PostCategories;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.services.*;
 import ar.edu.itba.paw.services.CommentService;
 import ar.edu.itba.paw.services.CommunityService;
 import ar.edu.itba.paw.services.PostService;
 import ar.edu.itba.paw.services.UserService;
-import ar.edu.itba.paw.webapp.form.NewCommentForm;
-import ar.edu.itba.paw.webapp.form.NewCommentGroovyForm;
-import ar.edu.itba.paw.webapp.form.NewPostForm;
-import ar.edu.itba.paw.webapp.form.NewPostGroovyForm;
+import ar.edu.itba.paw.webapp.form.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -91,7 +85,7 @@ public class PostController {
         ModelAndView mav = new ModelAndView("/home");
         List<Post> posts;
         User user = null;
-        List<Community> communities = null;
+        List<Community> communities;
         try{
             user = us.getLoggedUserChecked();
         }catch (Exception ignored){
@@ -124,7 +118,7 @@ public class PostController {
     public ModelAndView getAllPosts(@RequestParam(value = "category", required = false) final String category) throws NoLoggedUserException {
         ModelAndView mav = new ModelAndView("/home");
         List<Post> posts = ps.getAllPosts();
-        List<Community> communities = null;
+        List<Community> communities;
         User user = null;
         try{
             user = us.getLoggedUserChecked();
@@ -152,11 +146,11 @@ public class PostController {
     }
 
     @RequestMapping(path = "/post/{postId}", method = RequestMethod.GET)
-    public ModelAndView singlePost(@PathVariable("postId") final long postId, @ModelAttribute("newPostGroovyForm") final NewPostGroovyForm newPostGroovyForm, @ModelAttribute("newCommentForm") final NewCommentForm newCommentForm, @ModelAttribute("newCommentGroovyForm") final NewCommentGroovyForm newCommentGroovyForm,@ModelAttribute("postDeleteForm") final PostDeleteForm postDeleteForm, @ModelAttribute("commentDeleteForm") final CommentDeleteForm commentDeleteForm) throws UserNotFoundException, NoSuchPostException, NoSuchCommunityException {
+    public ModelAndView singlePost(@PathVariable("postId") final long postId, @ModelAttribute("newPostGroovyForm") final NewPostGroovyForm newPostGroovyForm, @ModelAttribute("newCommentForm") final NewCommentForm newCommentForm, @ModelAttribute("newCommentGroovyForm") final NewCommentGroovyForm newCommentGroovyForm, @ModelAttribute("postDeleteForm") final PostDeleteForm postDeleteForm, @ModelAttribute("commentDeleteForm") final CommentDeleteForm commentDeleteForm) throws UserNotFoundException, NoSuchPostException, NoSuchCommunityException {
         ModelAndView mav = new ModelAndView("/post/post");
         mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
         Post post;
-        List<Community> communities = null;
+        List<Community> communities;
         User user = null;
         List<Comment> comments = commentService.getPostComments((postId));
         List<Comment> grooviedComments = Collections.emptyList();
