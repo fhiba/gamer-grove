@@ -8,7 +8,7 @@ import javax.validation.constraints.*;
 
 public class FileForm {
 
-    @NotNull
+
     @FileMustBeImageConstraint
     private MultipartFile file;
 

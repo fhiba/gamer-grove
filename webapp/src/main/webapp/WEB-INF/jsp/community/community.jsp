@@ -19,7 +19,8 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <c:url var="postUrl" value="/community/${community.name}"/>
-            <form:form action="${postUrl}" method="post" modelAttribute="newPostForm" enctype="multipart/form-data" id="postForm">
+            <form:form action="${postUrl}" method="post" modelAttribute="newPostForm" enctype="multipart/form-data"
+                       id="postForm">
                 <div class="modal-header">
                     <h5 class="modal-title" id="createPostModalLabel"><spring:message code="Post.Create"/></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -49,11 +50,11 @@
                             </form:select>
                             <form:hidden path="community" value="${community.name}"/>
                         </div>
-                        <div class="item-upload" >
+                        <div class="item-upload">
                             <spring:message code="Post.Image"/>
                             <div class="input-group mb-3 mt-2">
                                 <label class="input-group-text" for="files"><i class="fa-solid fa-file"></i></label>
-                                <form:input type="file" class="form-control"  name="files" path="files" multiple="true"/>
+                                <form:input type="file" class="form-control" name="files" path="files" multiple="true"/>
                             </div>
                             <div id="photo-upload__preview" class="upload-preview"></div>
                             <form:errors path="files" cssStyle="color: red"/>
@@ -91,10 +92,18 @@
                         </div>
                         <div class="col-8">
                             <h1 class="card-title"><c:out value="c/${community.name}" escapeXml="true"/></h1>
-                            <h5 class="card-subtitle text-secondary mt-3 mb-1"><c:out value="${community.description}" escapeXml="true"/></h5>
+                            <h5 class="card-subtitle text-secondary mt-3 mb-1"><c:out value="${community.description}"
+                                                                                      escapeXml="true"/></h5>
                         </div>
                     </div>
-                    <div class="d-flex justify-content-end mb-3">
+                    <div class="d-flex <c:if test="${canEdit}"> justify-content-between </c:if> <c:if test="${!canEdit}"> justify-content-end </c:if>  mb-3 ">
+                        <c:if test="${canEdit}">
+                            <a href="<c:url value="/community/${communityName}/image"/>">
+                                <button type="button" class="btn btn-primary ">
+                                    <spring:message code="Community.Edit"/>
+                                </button>
+                            </a>
+                        </c:if>
                         <button type="button" class="btn btn-primary round-btn" data-bs-toggle="modal"
                                 data-bs-target="#createPostModal">
                             <i class="fa-solid fa-plus"></i>
@@ -111,8 +120,10 @@
                                         <span class="badge rounded-pill ${post.category}">${post.category}</span>
                                     </p>
                                     <c:if test="${!post.deleted}">
-                                        <h4 class="card-title fw-bold"><c:out value="${post.title}" escapeXml="true"/></h4>
-                                        <p class="card-text post-body"><c:out value="${post.body}" escapeXml="true"/></p>
+                                        <h4 class="card-title fw-bold"><c:out value="${post.title}"
+                                                                              escapeXml="true"/></h4>
+                                        <p class="card-text post-body"><c:out value="${post.body}"
+                                                                              escapeXml="true"/></p>
                                     </c:if>
                                     <c:if test="${post.deleted}">
                                         <h4 class="card-title fw-bold"><spring:message code="Post.Deleted"/></h4>

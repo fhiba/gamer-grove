@@ -3,9 +3,7 @@ package ar.edu.itba.paw.webapp.controller;
 import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
 import ar.edu.itba.paw.models.*;
-import ar.edu.itba.paw.services.CommunityService;
-import ar.edu.itba.paw.services.FileService;
-import ar.edu.itba.paw.services.PostService;
+import ar.edu.itba.paw.services.*;
 import ar.edu.itba.paw.webapp.form.FileForm;
 import ar.edu.itba.paw.webapp.form.NewCommunityForm;
 import ar.edu.itba.paw.webapp.form.NewPostForm;
@@ -20,6 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.validation.Valid;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class CommunityController {
@@ -30,6 +29,10 @@ public class CommunityController {
     private PostService ps;
     @Autowired
     private FileService fs;
+    @Autowired
+    private ModderService ms;
+    @Autowired
+    private UserService us;
 
     @RequestMapping(path="/new-community", method = RequestMethod.GET)
     public ModelAndView newCommunity(@ModelAttribute("newCommunityForm") final NewCommunityForm newCommunityForm) {
@@ -54,6 +57,12 @@ public class CommunityController {
         mav.addObject("categories", Arrays.stream(PostCategories.values()).map(PostCategories::getCategory).toArray(String[]::new));
         mav.addObject("community",community);
         mav.addObject("posts",posts);
+        Optional<User> possiblyUser = us.getLoggedUser();
+        boolean canEdit = false;
+        if(possiblyUser.isPresent()){
+            canEdit = ms.isModderOfCommunity(possiblyUser.get().getId(),community.getId());
+        }
+        mav.addObject("canEdit",canEdit);
         return mav;
     }
 
@@ -83,10 +92,6 @@ public class CommunityController {
 
     @RequestMapping(path="/community/{communityName}/new", method = RequestMethod.POST)
     public ModelAndView newCommunityPost(@PathVariable("communityName") final String communityName,@ModelAttribute("newPostForm") final NewPostForm newPostForm,BindingResult errors) throws NoSuchCommunityException, NoLoggedUserException {
-        System.out.println(newPostForm.getCategory());
-        System.out.println(newPostForm.getBody());
-        System.out.println(newPostForm.getTitle());
-        System.out.println(newPostForm.getCommunity());
         if(errors.hasErrors())
             return community(communityName,newPostForm);
         //chequeo de que exista la community
@@ -100,6 +105,7 @@ public class CommunityController {
         ModelAndView mav = new ModelAndView("community/communityImage");
         Community community = cs.findByName(communityName);
         mav.addObject("community",community);
+        mav.addObject("communities",cs.getAllCommunities());
         return mav;
     }
 

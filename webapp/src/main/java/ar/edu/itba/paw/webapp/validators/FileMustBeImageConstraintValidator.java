@@ -15,6 +15,6 @@ public class FileMustBeImageConstraintValidator implements ConstraintValidator<F
 
     @Override
     public boolean isValid(MultipartFile m, ConstraintValidatorContext constraintValidatorContext) {
-        return m.isEmpty()  || (m.getContentType().equals(MediaType.IMAGE_JPEG_VALUE) || m.getContentType().equals(MediaType.IMAGE_PNG_VALUE) || m.getContentType().equals(MediaType.IMAGE_GIF_VALUE));
+        return !m.isEmpty()  || (m.getContentType().equals(MediaType.IMAGE_JPEG_VALUE) || m.getContentType().equals(MediaType.IMAGE_PNG_VALUE) || m.getContentType().equals(MediaType.IMAGE_GIF_VALUE));
     }
 }

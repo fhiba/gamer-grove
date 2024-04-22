@@ -42,7 +42,6 @@ public class FileDaoJdbc implements FileDao{
         Map<String,Object> values = new HashMap<>();
         values.put("bytes",file);
         Number image_id = jdbcInsert.executeAndReturnKey(values);
-        System.out.println(image_id.longValue());
         return Optional.of(new File(image_id.longValue(),file));
     }
 
