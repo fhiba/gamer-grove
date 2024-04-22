@@ -37,9 +37,9 @@
             </div>
         </div>
 
-        <%--CREATE POST FORM--%>
+        <%--PROFILE--%>
         <div class="col-8">
-            <div class="card border-light">
+            <div class="card border-light border-0">
                 <div class="card-body">
                     <div class="mb-3 row">
                         <div class="col-2">
@@ -64,16 +64,16 @@
 
                             </div>
                             <div>
-                                <label class="form-label fw-semibold">Update profile picture</label>
+                                <label class="form-label fw-semibold"><spring:message code="Profile.UpdateProfilePicture"/></label>
                                 <input class="form-control w-50" placeholder="Update profile picture" type="file" id="formFile"
                                        onchange="document.getElementById('imgFile').src = window.URL.createObjectURL(this.files[0])">
                             </div>
 
                         </div>
                     </div>
-                    <h2 class="text-center mt-4">Your posts</h2>
+                    <h2 class="text-center mt-4"><spring:message code="Profile.UserPosts"/></h2>
                     <c:if test="${empty posts}">
-                        <h4>You don't have posts yet</h4>
+                        <h4><spring:message code="Profile.NoUserPosts"/></h4>
                         <c:url value="/" var="homeUrl"/>
                         <a href="${homeUrl}" class="btn btn-primary"><spring:message code="Post.Create"/></a>
                     </c:if>
@@ -109,9 +109,9 @@
         <div class="col-2">
             <div class="card  border-0">
                 <div class="card-body">
-                    <h3 class="card-title text-center mb-3">Liked posts</h3>
+                    <h3 class="card-title text-center mb-3"><spring:message code="Profile.LikedPost"/></h3>
                     <c:if test="${empty likedPosts}">
-                        <h5 class="text-center mt-4">You haven't liked any post yet</h5>
+                        <h5 class="text-center mt-4"><spring:message code="Profile.NoLikedPosts"/></h5>
                     </c:if>
                     <c:forEach var="post" items="${likedPosts}">
                         <c:url value="/post/${post.id}" var="postUrl"/>
@@ -143,7 +143,6 @@
         </div>
     </div>
 </div>
-<%@ include file="/WEB-INF/jsp/components/footer.jsp" %>
 
 </body>
 </html>

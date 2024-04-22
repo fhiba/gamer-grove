@@ -88,7 +88,7 @@ public class PostServiceTest {
     public void testGetPostsByUser() {
         // Mock data
         long userId = 1L;
-        List<Post> mockPosts = List.of(new Post(1, TITLE, BODY, 1, COMMUNITY_NAME, false, 0, LocalDateTime.now(), 0, CATEGORY));
+        List<Post> mockPosts = List.of(new Post(1, TITLE, BODY, 1, COMMUNITY_NAME, false, 0, LocalDateTime.now(), 0,false, CATEGORY));
 
         // Mock behavior
         when(postDao.findPostsByUser(userId)).thenReturn(mockPosts);
@@ -104,7 +104,7 @@ public class PostServiceTest {
     public void testGetUserLikedPosts() {
         // Mock data
         long userId = 1L;
-        List<Post> mockPosts = List.of(new Post(1, TITLE, BODY, 1, COMMUNITY_NAME, false, 0, LocalDateTime.now(), 0, CATEGORY));
+        List<Post> mockPosts = List.of(new Post(1, TITLE, BODY, 1, COMMUNITY_NAME, false, 0, LocalDateTime.now(), 0,false, CATEGORY));
 
         // Mock behavior
         when(postDao.findPostsByUser(userId)).thenReturn(mockPosts);
