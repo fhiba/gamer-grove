@@ -178,3 +178,18 @@ body {
 .fa-arrow-up{
     color: lightslategrey;
 }
+
+.dropdown-menu-header[data-bs-popper] {
+    top: 100%;
+    right: 0;
+    left: auto!important;
+    margin-top: var(--bs-dropdown-spacer);
+}
+
+.ellipsis {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+    overflow: hidden;
+    width: 5em;
+}

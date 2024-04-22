@@ -28,4 +28,8 @@ public interface PostService {
     List<Post> getMyFollowedPosts(User user) throws NoLoggedUserException;
 
     List<Post> getMyFollowedPostsByCategory(String category, User user) throws NoLoggedUserException;
+
+    List<Post> getPostsByUser(long id);
+
+    List<Post> getUserLikedPosts(long id);
 }

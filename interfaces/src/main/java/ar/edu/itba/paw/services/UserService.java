@@ -20,4 +20,5 @@ public interface UserService {
     User getLoggedUserChecked() throws NoLoggedUserException;
 
     List<User> findAll();
+
 }

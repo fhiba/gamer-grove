@@ -32,4 +32,8 @@ public interface PostDao {
     List<Post> getMyFollowedPosts(long userId);
 
     List<Post> getMyFollowedPostsByCategory(String category, long userId);
+
+    List<Post> findPostsByUser(long id);
+
+    List<Post> findPostsLikedByUser(long id);
 }

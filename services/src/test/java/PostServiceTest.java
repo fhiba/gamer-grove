@@ -1,7 +1,10 @@
 import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
 import ar.edu.itba.paw.models.Community;
+import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.persistance.CommunityDao;
+import ar.edu.itba.paw.persistance.PostDao;
 import ar.edu.itba.paw.services.CommunityService;
 import ar.edu.itba.paw.services.PostServiceImpl;
 import ar.edu.itba.paw.services.UserService;
@@ -13,8 +16,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -29,6 +36,9 @@ public class PostServiceTest {
     public UserService mockUserService;
 
     @Mock
+    public PostDao postDao;
+
+    @Mock
     public CommunityService mockCommunityService;
 
     @InjectMocks
@@ -39,7 +49,7 @@ public class PostServiceTest {
         //	1.	Setup!
         Community mockCommunity = new Community(1, COMMUNITY_NAME, "description");
         mockCommunity.setPortrait_id(0);
-        when(mockUserService.getLoggedUser()).thenReturn(Optional.of(new User(1,"username", "password", "email")));
+        when(mockUserService.getLoggedUser()).thenReturn(Optional.of(new User(1, "username", "password", "email")));
         when(mockCommunityService.findByName(COMMUNITY_NAME)).thenReturn(mockCommunity);
 
         // 	2.	"ejercito"	la	class	under	test
@@ -65,7 +75,7 @@ public class PostServiceTest {
     @Test(expected = NoSuchCommunityException.class)
     public void testFailedCreateWithNoCommunity() throws NoSuchCommunityException, NoLoggedUserException {
         //	1.	Setup!
-        when(mockUserService.getLoggedUser()).thenReturn(Optional.of(new User(1,"username", "password", "email")));
+        when(mockUserService.getLoggedUser()).thenReturn(Optional.of(new User(1, "username", "password", "email")));
         when(mockCommunityService.findByName(COMMUNITY_NAME)).thenReturn(null);
 
         // 	2.	"ejercito"	la	class	under	test
@@ -73,4 +83,37 @@ public class PostServiceTest {
         postService.createPost(TITLE, BODY, COMMUNITY_NAME, CATEGORY);
 
     }
+
+    @Test
+    public void testGetPostsByUser() {
+        // Mock data
+        long userId = 1L;
+        List<Post> mockPosts = List.of(new Post(1, TITLE, BODY, 1, COMMUNITY_NAME, false, 0, LocalDateTime.now(), 0, CATEGORY));
+
+        // Mock behavior
+        when(postDao.findPostsByUser(userId)).thenReturn(mockPosts);
+
+        // Call the method under test
+        List<Post> result = postService.getPostsByUser(userId);
+
+        // Verify the result
+        assertEquals(mockPosts, result);
+    }
+
+    @Test
+    public void testGetUserLikedPosts() {
+        // Mock data
+        long userId = 1L;
+        List<Post> mockPosts = List.of(new Post(1, TITLE, BODY, 1, COMMUNITY_NAME, false, 0, LocalDateTime.now(), 0, CATEGORY));
+
+        // Mock behavior
+        when(postDao.findPostsByUser(userId)).thenReturn(mockPosts);
+
+        // Call the method under test
+        List<Post> result = postService.getPostsByUser(userId);
+
+        // Verify the result
+        assertEquals(mockPosts, result);
+    }
+
 }

@@ -142,5 +142,17 @@ public class PostServiceImpl implements PostService{
         return posts;
     }
 
+    @Override
+    public List<Post> getPostsByUser(long id) {
+        List<Post> posts = postDao.findPostsByUser(id);
+        return posts.isEmpty()? Collections.emptyList(): posts;
+    }
+
+    @Override
+    public List<Post> getUserLikedPosts(long id) {
+        List<Post> posts = postDao.findPostsLikedByUser(id);
+        return posts.isEmpty()? Collections.emptyList(): posts;
+    }
+
 
 }
