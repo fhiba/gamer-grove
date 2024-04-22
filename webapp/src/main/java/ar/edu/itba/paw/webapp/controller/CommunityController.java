@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
@@ -62,7 +63,7 @@ public class CommunityController {
         if(errors.hasErrors())
             return community(communityName,newPostForm);
 
-        ps.createPost(newPostForm.getTitle(),newPostForm.getBody(),communityName,newPostForm.getCategory());
+        ps.createPost(newPostForm.getTitle(),newPostForm.getBody(),communityName,newPostForm.getCategory(),newPostForm.getFiles());
         return new ModelAndView("redirect:/community/"+communityName);
     }
 
@@ -90,7 +91,7 @@ public class CommunityController {
             return community(communityName,newPostForm);
         //chequeo de que exista la community
         Community community = cs.findByName(communityName);
-        ps.createPost(newPostForm.getTitle(),newPostForm.getBody(),community.getName(),newPostForm.getCategory());
+        ps.createPost(newPostForm.getTitle(),newPostForm.getBody(),community.getName(),newPostForm.getCategory(),newPostForm.getFiles());
         return community(communityName,newPostForm);
     }
 

@@ -43,7 +43,7 @@ public class PostServiceTest {
         when(mockCommunityService.findByName(COMMUNITY_NAME)).thenReturn(mockCommunity);
 
         // 	2.	"ejercito"	la	class	under	test
-        postService.createPost(TITLE, BODY, COMMUNITY_NAME, CATEGORY);
+        postService.createPost(TITLE, BODY, COMMUNITY_NAME, CATEGORY,null);
         // 	3.	Asserts!
         //no devulve nada todavia
     }
@@ -58,7 +58,7 @@ public class PostServiceTest {
         //when(mockDao.createPost(Mockito.eq(TITLE), Mockito.eq(BODY), Mockito.anyInt(), Mockito.eq(COMMUNITY_NAME), Mockito.anyBoolean(), Mockito.any(LocalDateTime.class), Mockito.eq(CATEGORY))).thenReturn(new Post(1, TITLE, BODY, 1, COMMUNITY_NAME, false,0, LocalDateTime.now(), 0,CATEGORY));
         // 	2.	"ejercito"	la	class	under	test
 
-        postService.createPost(TITLE, BODY, COMMUNITY_NAME, CATEGORY);
+        postService.createPost(TITLE, BODY, COMMUNITY_NAME, CATEGORY,null);
 
     }
 
@@ -70,7 +70,7 @@ public class PostServiceTest {
 
         // 	2.	"ejercito"	la	class	under	test
 
-        postService.createPost(TITLE, BODY, COMMUNITY_NAME, CATEGORY);
+        postService.createPost(TITLE, BODY, COMMUNITY_NAME, CATEGORY,null);
 
     }
 }

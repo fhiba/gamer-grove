@@ -42,6 +42,7 @@
                 </div>
             </div>
         </div>
+
         <%--POST DATA--%>
         <div class="col-6">
             <div class="card border-0 bg-transparent">
@@ -65,6 +66,31 @@
                         <h4 class="card-title fw-bold mb-0"><c:out value="${post.title}" escapeXml="true"/></h4>
                         <p class="card-subtitle mb-4">u/<c:out value="${author}" escapeXml="true"/></p>
                         <p class="card-text"><c:out value="${post.body}" escapeXml="true"/></p>
+                        <c:if test="${post.images.size() > 0}">
+
+                            <div id="carouselExample" class="carousel slide ">
+                                <div class="carousel-inner bg-dark">
+                                    <c:forEach var="image" items="${post.images}" varStatus="loop">
+                                        <div class="carousel-item  <c:if test="${loop.index == 0}"> active</c:if>" >
+                                            <img src="<c:url value='/image/${image}'/>" class="d-block m-auto " style="height: 500px;width: 500px" alt="...">
+                                        </div>
+                                    </c:forEach>
+                                </div>
+                                <button class="carousel-control-prev" type="button"
+                                        data-bs-target="#carouselExample"
+                                        data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Previous</span>
+                                </button>
+                                <button class="carousel-control-next" type="button"
+                                        data-bs-target="#carouselExample"
+                                        data-bs-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Next</span>
+                                </button>
+                            </div>
+
+                        </c:if>
                         <c:url value="/post/${postId}/delete" var="deletePostUrl"/>
                         <c:if test="${canDelete}">
                             <form:form action="${deletePostUrl}" var="deletePostUrl" method="post"
@@ -117,6 +143,7 @@
                             </div>
                         </div>
                     </c:if>
+
                 </div>
 
             </div>
@@ -200,7 +227,8 @@
                                                        method="post"
                                                        modelAttribute="commentDeleteForm">
                                                 <form:hidden path="commentId" value="${comment.id}"/>
-                                                <button class="btn btn-danger btn-sm align-content-center"  type="submit">
+                                                <button class="btn btn-danger btn-sm align-content-center"
+                                                        type="submit">
                                                     X
                                                 </button>
                                             </form:form>

@@ -8,11 +8,12 @@ public interface FileDao {
 
     Optional<File> getFile(long imageId);
 
-    Optional<File> uploadCommunityImage(long communityId, byte[] file);
+    Optional<File> uploadImage(byte[] file);
 
     Optional<File> uploadUserImage(long userId, byte[] file);
 
     Optional<File> updateCommunityImage(long portraidId, byte[] file);
 
 
+    void uploadPostImage(long postId, long imageId);
 }

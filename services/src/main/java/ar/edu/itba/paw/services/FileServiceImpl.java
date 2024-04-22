@@ -36,7 +36,7 @@ public class FileServiceImpl implements FileService{
         Optional<File> image;
         if (UpdateProfileImage.getPortrait_id() == 0) {
             try {
-                image = fd.uploadCommunityImage(UpdateProfileImage.getId(), file.getBytes());
+                image = fd.uploadImage(file.getBytes());
                 if(image.isPresent())
                     cs.updateCommunityImageId(UpdateProfileImage.getId(),image.get().getImageId());
             } catch (IOException e) {
@@ -78,5 +78,16 @@ public class FileServiceImpl implements FileService{
 //        }
 
         return image;
+    }
+
+    @Override
+    public void uploadPostImage(MultipartFile file, long id) {
+        try {
+            Optional<File> postImage = fd.uploadImage(file.getBytes());
+            if(postImage.isPresent())
+                fd.uploadPostImage(id, postImage.get().getImageId());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

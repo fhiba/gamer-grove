@@ -2,6 +2,8 @@ package ar.edu.itba.paw.webapp.form;
 
 import ar.edu.itba.paw.webapp.validators.interfaces.ValidPostCategoryConstraint;
 import ar.edu.itba.paw.webapp.validators.interfaces.ValidCommunityConstraint;
+import org.springframework.web.multipart.MultipartFile;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
@@ -23,6 +25,8 @@ public class NewPostForm {
     @NotBlank
     @ValidPostCategoryConstraint
     private String category;
+    private MultipartFile[] files;
+
 
     public String getTitle() {
         return title;
@@ -54,5 +58,13 @@ public class NewPostForm {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public MultipartFile[] getFiles() {
+        return files;
+    }
+
+    public void setFiles(MultipartFile[] files) {
+        this.files = files;
     }
 }

@@ -23,10 +23,13 @@ public class FileDaoJdbc implements FileDao{
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
+    private SimpleJdbcInsert jdbcInsertPostImage;
+
     @Autowired
     public FileDaoJdbc(final DataSource ds) {
         this.jdbcTemplate = new JdbcTemplate(ds);
         this.jdbcInsert = new SimpleJdbcInsert(ds).usingGeneratedKeyColumns("id").withTableName("media");
+        this.jdbcInsertPostImage = new SimpleJdbcInsert(ds).withTableName("post_images");
     }
 
     @Override
@@ -35,7 +38,7 @@ public class FileDaoJdbc implements FileDao{
     }
 
     @Override
-    public Optional<File> uploadCommunityImage(long communityId, byte[] file) {
+    public Optional<File> uploadImage(byte[] file) {
         Map<String,Object> values = new HashMap<>();
         values.put("bytes",file);
         Number image_id = jdbcInsert.executeAndReturnKey(values);
@@ -51,5 +54,14 @@ public class FileDaoJdbc implements FileDao{
     @Override
     public Optional<File> updateCommunityImage(long portraidId, byte[] file) {
         return jdbcTemplate.update("UPDATE media SET bytes = ? WHERE id = ?",file,portraidId) == 1 ? Optional.of(new File(portraidId,file)) : Optional.empty();
+    }
+
+    @Override
+    public void uploadPostImage(long postId, long imageId) {
+        Map<String,Object> values = new HashMap<>();
+        values.put("post_id",postId);
+        values.put("image_id",imageId);
+        jdbcInsertPostImage.execute(values);
+
     }
 }

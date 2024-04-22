@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.persistance;
 
 import ar.edu.itba.paw.models.Post;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,4 +29,7 @@ public interface PostDao {
     void deleteGrooviness(long postId, long id);
 
     void updateGroovyHistory(long postId, long id, boolean b);
+
+    public Optional<Post> findByIdWithImage(final long id);
+
 }

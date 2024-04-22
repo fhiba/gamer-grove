@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.models;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class Post {
 
@@ -16,6 +17,8 @@ public class Post {
     private final boolean deleted;
 
     private final String category;
+
+    private List<Integer> images = null;
 
 
     public long getId() {
@@ -72,5 +75,14 @@ public class Post {
 
     public boolean isDeleted() {
         return deleted;
+    }
+
+
+    public List<Integer> getImages() {
+        return images;
+    }
+
+    public void setImages(List<Integer> images) {
+        this.images = images;
     }
 }

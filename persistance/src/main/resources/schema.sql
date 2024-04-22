@@ -118,3 +118,11 @@ create table if not exists modders(
 
 ALTER TABLE post ADD COLUMN deleted boolean DEFAULT false NOT NULL;
 ALTER TABLE comment ADD COLUMN deleted boolean DEFAULT false NOT NULL;
+
+CREATE TABLE IF NOT EXISTS post_images (
+                                           post_id INT NOT NULL ,
+                                           image_id INT NOT NULL ,
+                                           PRIMARY KEY (post_id, image_id),
+                                           FOREIGN KEY (post_id) REFERENCES post(id),
+                                           FOREIGN KEY (image_id) REFERENCES media(id)
+);

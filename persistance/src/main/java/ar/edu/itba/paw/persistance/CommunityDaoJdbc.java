@@ -24,6 +24,8 @@ public class CommunityDaoJdbc implements CommunityDao{
     };
 
 
+
+
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
     private final SimpleJdbcInsert jdbcInsertCategory;

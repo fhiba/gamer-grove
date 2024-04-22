@@ -47,7 +47,7 @@ public class PostController {
             return getNewPost(newPostForm);
         }
         try {
-            ps.createPost(newPostForm.getTitle(), newPostForm.getBody(), newPostForm.getCommunity(), newPostForm.getCategory());
+            ps.createPost(newPostForm.getTitle(), newPostForm.getBody(), newPostForm.getCommunity(), newPostForm.getCategory(),newPostForm.getFiles());
         } catch (NoLoggedUserException e) {
             //TODO: log later
             throw e;
@@ -104,7 +104,7 @@ public class PostController {
         mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
         Post post;
         try {
-            post = ps.getPostById(postId);
+            post = ps.getPostByIdWithImage(postId);
             mav.addObject("post", post);
         } catch (NoSuchPostException e) {
             //TODO: Should log

@@ -15,4 +15,5 @@ public interface FileService {
 
     Optional<File> uploadUserImage(long userId, MultipartFile file) throws NoLoggedUserException;
 
+    void uploadPostImage(MultipartFile file, long id);
 }
