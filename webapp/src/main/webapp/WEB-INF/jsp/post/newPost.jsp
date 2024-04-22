@@ -154,7 +154,7 @@
     document.getElementById('files').addEventListener('change', (e) => {
         let selectedFiles = e.target.files;
         const photoPreviewContainer = document.querySelector('#photo-upload__preview');
-        console.log(photoPreviewContainer)
+        photoPreviewContainer.childNodes.forEach(child => child.remove());
         const elemContainer = previewImage(e, selectedFiles, item_images);
         photoPreviewContainer.appendChild(elemContainer);
     });
