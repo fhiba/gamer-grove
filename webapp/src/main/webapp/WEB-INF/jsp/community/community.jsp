@@ -9,7 +9,7 @@
     <link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="${pageContext.request.contextPath}/css/general-styling.css" rel="stylesheet"/>
     <link rel="icon" href="${pageContext.request.contextPath}/images/favicon.ico" type="image/x-icon">
-<%--suppress JSUnresolvedLibraryURL --%>
+    <%--suppress JSUnresolvedLibraryURL --%>
     <script src="https://kit.fontawesome.com/002da5939d.js" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -82,51 +82,80 @@
                     <c:if test="${isLogged != null}">
                         <div class="card-title text-light mb-3">My Communities</div>
                     </c:if>
-                        <c:forEach var="community" items="${communities}">
-                            <c:url value="/community/${community.name}" var="communityUrl"/>
-                            <a href="${communityUrl}" class="text-light text-decoration-none">
-                                <div class="card-body-community d-flex align-items-center text-decoration-none mb-3">
-                                    <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
-                                         class="very-small-profile-pic mb-1" alt="Profile Picture">
-                                    <div class="text-decoration-none">
-                                        <h5 class="fw-semibold card-subtitle ">
-                                            /<c:out value="${community.name}" escapeXml="true"/>
-                                        </h5>
-                                    </div>
+                    <c:forEach var="community" items="${communities}">
+                        <c:url value="/community/${community.name}" var="communityUrl"/>
+                        <a href="${communityUrl}" class="text-light text-decoration-none">
+                            <div class="card-body-community d-flex align-items-center text-decoration-none mb-3">
+                                <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
+                                     class="very-small-profile-pic mb-1" alt="Profile Picture">
+                                <div class="text-decoration-none">
+                                    <h5 class="fw-semibold card-subtitle ">
+                                        /<c:out value="${community.name}" escapeXml="true"/>
+                                    </h5>
                                 </div>
-                            </a>
-                        </c:forEach>
+                            </div>
+                        </a>
+                    </c:forEach>
                 </div>
             </div>
         </div>
-            <div class="col-1">
-            </div>
+        <div class="col-1">
+        </div>
         <div class="col-6">
             <div class="card border-0">
                 <div class="card-body">
                     <div class="row w-100 mb-2">
                         <div class="col-4">
                             <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
-                                  class="w-100 rounded-1 img-thumbnail " alt="Profile Picture">
+                                 class="w-100 rounded-1 img-thumbnail " alt="Profile Picture">
                         </div>
                         <div class="col-8">
                             <div class="d-flex row-cols-2 justify-content-between">
-                                <h1 class="card-title"><c:out value="c/${community.name}" escapeXml="true"/></h1>
+                                <h1 class="card-title fw-bold"><c:out value="c/${community.name}"
+                                                                      escapeXml="true"/></h1>
                                 <div class="d-none">
                                     <c:url var="followUrl" value="/community/${community.name}/follow"/>
-                                    <form:form modelAttribute="followCommunityForm" action="${followUrl}" method="post" id="followForm">
+                                    <form:form modelAttribute="followCommunityForm" action="${followUrl}" method="post"
+                                               id="followForm">
                                         <form:hidden path="communityName" value="${community.name}"/>
                                         <form:hidden path="communityId" value="${community.id}"/>
                                     </form:form>
                                 </div>
                                 <c:if test="${isFollowing}">
-                                    <button onClick="follow()" class="rounded-pill  btn-outline-danger follow-button" id="followButton">Following</button>
+                                    <button onClick="follow()"
+                                            class="rounded-pill  btn-outline-danger follow-button fw-bold"
+                                            id="followButton">Following
+                                    </button>
                                 </c:if>
                                 <c:if test="${!isFollowing}">
-                                    <button onClick="follow()" class="rounded-pill   btn-outline-danger  follow-button" id="followButton">Follow</button>
+                                    <button onClick="follow()"
+                                            class="rounded-pill   btn-outline-danger  follow-button fw-bold"
+                                            id="followButton">Follow
+                                    </button>
                                 </c:if>
                             </div>
-                            <h5 class="card-subtitle text-secondary mt-3 mb-1"><c:out value="${community.description}" escapeXml="true"/></h5>
+                            <c:forEach var="category" items="${community.categories}">
+                                <span class="fs-6 cat-badge p-1 badge">${category}</span>
+                            </c:forEach>
+                            <div class="accordion accordion-flush justify-content-end">
+
+                                    <h2 class="accordion-header justify-content-end">
+                                        <button class="expand-btn" type="button"
+                                                data-bs-toggle="collapse" data-bs-target="#flush-collapseOne"
+                                                aria-expanded="false" aria-controls="flush-collapseOne"><i class="fa-solid fa-caret-down expand-btn"></i>
+                                        </button>
+                                    </h2>
+                                    <div id="flush-collapseOne" class="accordion-collapse collapse"
+                                         data-bs-parent="#accordionFlushExample">
+                                        <h6 class="fw-bold">Developer: ${community.developer}</h6>
+                                        <h6 class="fw-bold">Publisher: ${community.publisher}</h6>
+                                        <h6 class="fw-bold">Release Date: ${community.releaseDate}</h6>
+
+                                    </div>
+
+                            </div>
+                            <h5 class="card-subtitle text-secondary mt-3 mb-1"><c:out value="${community.description}"
+                                                                                      escapeXml="true"/></h5>
                         </div>
                     </div>
                     <div class="d-flex justify-content-end mb-3">
@@ -146,8 +175,10 @@
                                         <span class="badge rounded-pill ${post.category}">${post.category}</span>
                                     </p>
                                     <c:if test="${!post.deleted}">
-                                        <h4 class="card-title fw-bold"><c:out value="${post.title}" escapeXml="true"/></h4>
-                                        <p class="card-text post-body"><c:out value="${post.body}" escapeXml="true"/></p>
+                                        <h4 class="card-title fw-bold"><c:out value="${post.title}"
+                                                                              escapeXml="true"/></h4>
+                                        <p class="card-text post-body"><c:out value="${post.body}"
+                                                                              escapeXml="true"/></p>
                                     </c:if>
                                     <c:if test="${post.deleted}">
                                         <h4 class="card-title fw-bold"><spring:message code="Post.Deleted"/></h4>

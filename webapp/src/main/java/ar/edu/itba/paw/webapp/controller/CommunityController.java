@@ -35,6 +35,21 @@ public class CommunityController {
 
     @RequestMapping(path="/new-community", method = RequestMethod.GET)
     public ModelAndView newCommunity(@ModelAttribute("newCommunityForm") final NewCommunityForm newCommunityForm) {
+        ModelAndView mav = new ModelAndView("community/newCommunity");
+        User user = null;
+        List<Community> communities;
+        try{
+            user = us.getLoggedUserChecked();
+        }catch (Exception ignored){
+
+        }
+        if(user != null)
+            communities = cs.getFollowedCommunities(user);
+        else{
+            communities = cs.getAllCommunitiesNoCat();
+        }
+        mav.addObject("isLogged", user != null);
+        mav.addObject("communities",communities);
         return new ModelAndView("community/newCommunity").addObject("categories", Arrays.stream(CommunityCategories.values()).map(CommunityCategories::getCategory).toArray(String[]::new));
     }
 
@@ -43,7 +58,7 @@ public class CommunityController {
         if(errors.hasErrors())
             return new ModelAndView("community/newCommunity");
         System.out.println(newCommunityForm.getCategories());
-        cs.createCommunity(newCommunityForm.getName(), newCommunityForm.getDescription(), newCommunityForm.getCategories());
+        cs.createCommunity(newCommunityForm.getName(), newCommunityForm.getDescription(), newCommunityForm.getCategories(), newCommunityForm.getDeveloper(),newCommunityForm.getPublisher(),newCommunityForm.getReleaseDate());
         return new ModelAndView("redirect:/");
     }
 
@@ -70,7 +85,7 @@ public class CommunityController {
         if(user != null)
             communities = cs.getFollowedCommunities(user);
         else {
-            communities = cs.getAllCommunities();
+            communities = cs.getAllCommunitiesNoCat();
         }
         mav.addObject("isLogged", user != null);
         mav.addObject("communities", communities);

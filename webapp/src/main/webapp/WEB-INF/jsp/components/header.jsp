@@ -9,7 +9,7 @@
                 <c:url value="/" var="homeUrl"/>
                 <a class="navbar-brand d-flex align-items-end" href="${homeUrl}">
                     <img width="50" height="50" alt="logo" src="${pageContext.request.contextPath}/images/favicon.ico"/>
-                    <span class="h3 text-light mb-1">Gamer Grove</span>
+                    <span class="h4 text-light mb-2 fw-bold">Gamer Grove</span>
                 </a>
 
             </div>

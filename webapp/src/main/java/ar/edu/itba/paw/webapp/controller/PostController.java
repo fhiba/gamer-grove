@@ -59,8 +59,21 @@ public class PostController {
     @RequestMapping(path = "/post", method = RequestMethod.GET)
     public ModelAndView getNewPost(@ModelAttribute("newPostForm") final NewPostForm newPostForm) {
         ModelAndView mav = new ModelAndView("post/newPost");
+        User user = null;
+        List<Community> communities = null;
+        try{
+            user = us.getLoggedUserChecked();
+        }catch (Exception ignored){
+
+        }
+        if(user != null)
+            communities = cs.getFollowedCommunities(user);
+        else{
+            communities = cs.getAllCommunitiesNoCat();
+        }
+        mav.addObject("isLogged", user != null);
         //TODO: SHOULD BE THE ONES THAT ARE CURRENTLY BEING FOLLOWED BY USER OR A FEW RANDOMLY SELECTED
-        mav.addObject("communities", cs.getAllCommunities());
+        mav.addObject("communities", communities);
         mav.addObject("categories", Arrays.stream(PostCategories.values()).map(PostCategories::getCategory).toArray(String[]::new));
         mav.addObject("news", ps.getByCategory(PostCategories.NEWS.getCategory()));
 
@@ -95,7 +108,7 @@ public class PostController {
         if(user != null)
             communities = cs.getFollowedCommunities(user);
         else{
-            communities = cs.getAllCommunities();
+            communities = cs.getAllCommunitiesNoCat();
         }
 
         if (category != null && !category.isEmpty() && !category.equals("all")) {
@@ -134,7 +147,7 @@ public class PostController {
             }
         }
         else{
-            communities = cs.getAllCommunities();
+            communities = cs.getAllCommunitiesNoCat();
         }
         mav.addObject("isLogged", user != null);
         mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
@@ -169,7 +182,7 @@ public class PostController {
             isGrooved = ps.checkGrooviness(postId);
             canDelete = ms.canRemovePost(us.getLoggedUser().get().getId(), postId);
         } else {
-            communities = cs.getAllCommunities();
+            communities = cs.getAllCommunitiesNoCat();
         }
         try {
             post = ps.getPostById(postId);

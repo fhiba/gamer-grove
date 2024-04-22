@@ -3,6 +3,7 @@ package ar.edu.itba.paw.webapp.form;
 import ar.edu.itba.paw.webapp.validators.interfaces.ValidCommunityCategoriesConstraint;
 
 import javax.validation.constraints.NotBlank;
+import java.time.LocalDateTime;
 
 
 public class NewCommunityForm {
@@ -14,6 +15,9 @@ public class NewCommunityForm {
 
     @ValidCommunityCategoriesConstraint
     private String categories;
+    private String publisher;
+    private String developer;
+    private LocalDateTime releaseDate;
 
     public String getName() {
         return name;
@@ -40,4 +44,27 @@ public class NewCommunityForm {
     }
 
 
+    public String getPublisher() {
+        return publisher;
+    }
+
+    public void setPublisher(String publisher) {
+        this.publisher = publisher;
+    }
+
+    public String getDeveloper() {
+        return developer;
+    }
+
+    public void setDeveloper(String developer) {
+        this.developer = developer;
+    }
+
+    public LocalDateTime getReleaseDate() {
+        return releaseDate;
+    }
+
+    public void setReleaseDate(LocalDateTime releaseDate) {
+        this.releaseDate = releaseDate;
+    }
 }

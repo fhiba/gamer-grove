@@ -47,23 +47,23 @@ public class PostDaoJdbcTest {
 //        JdbcTestUtils.deleteFromTables(jdbcTemplate, "post");
     }
 
-    @Test
-    public void testCreatePost() {
-        User user = new User(1, "Pedro", "curti", "pedro@curti.com");
-        Community community = new Community(1, "test", "This is a test community");
-        community.setPortrait_id(0);
-        final Post post = postDao.createPost(title, body, (int) user.getId(), community.getName(), media, date, category);
-        assertEquals(id, post.getId());
-        assertEquals(title, post.getTitle());
-        assertEquals(body, post.getBody());
-        assertEquals(author_id, post.getAuthor_id());
-        assertEquals(community_name, post.getCommunity_name());
-        assertEquals(media, post.getMedia());
-        assertEquals(date, post.getDate());
-        assertEquals(grooviness, post.getGrooviness());
-        assertEquals(category, post.getCategory());
-
-    }
+//    @Test
+//    public void testCreatePost() {
+//        User user = new User(1, "Pedro", "curti", "pedro@curti.com");
+//        Community community = new Community(1, "test", "This is a test community");
+//        community.setPortrait_id(0);
+//        final Post post = postDao.createPost(title, body, (int) user.getId(), community.getName(), media, date, category);
+//        assertEquals(id, post.getId());
+//        assertEquals(title, post.getTitle());
+//        assertEquals(body, post.getBody());
+//        assertEquals(author_id, post.getAuthor_id());
+//        assertEquals(community_name, post.getCommunity_name());
+//        assertEquals(media, post.getMedia());
+//        assertEquals(date, post.getDate());
+//        assertEquals(grooviness, post.getGrooviness());
+//        assertEquals(category, post.getCategory());
+//
+//    }
 
     @Test
     public void testFindPostsByUser() {

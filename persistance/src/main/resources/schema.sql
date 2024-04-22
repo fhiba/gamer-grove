@@ -118,3 +118,7 @@ create table if not exists modders(
 
 ALTER TABLE post ADD COLUMN deleted boolean DEFAULT false NOT NULL;
 ALTER TABLE comment ADD COLUMN deleted boolean DEFAULT false NOT NULL;
+
+ALTER TABLE community ADD COLUMN publisher text DEFAULT '-' NOT NULL;
+ALTER TABLE community ADD COLUMN developer text DEFAULT '-' NOT NULL;
+ALTER TABLE community ADD COLUMN release_date TIMESTAMP;

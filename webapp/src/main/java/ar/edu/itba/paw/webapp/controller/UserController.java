@@ -14,7 +14,7 @@ import ar.edu.itba.paw.services.CommentService;
 import ar.edu.itba.paw.services.CommunityService;
 import ar.edu.itba.paw.services.PostService;
 import ar.edu.itba.paw.services.UserService;
-import ar.edu.itba.paw.webapp.form.EditProfileForm;
+//import ar.edu.itba.paw.webapp.form.EditProfileForm;
 import ar.edu.itba.paw.webapp.form.LogInForm;
 import ar.edu.itba.paw.webapp.form.NewModForm;
 import ar.edu.itba.paw.webapp.form.NewPostForm;
@@ -133,17 +133,17 @@ public class UserController {
     }
 
 
-    @RequestMapping(path = "/profile", method = RequestMethod.GET)
-    public ModelAndView getProfile(@ModelAttribute("editProfileForm") final EditProfileForm editProfileForm) {
-        ModelAndView mav = new ModelAndView("user/profile");
-        User user = us.getLoggedUser().orElseThrow();
-        mav.addObject("user",user);
-        mav.addObject("posts",ps.getPostsByUser(user.getId()));
-        mav.addObject("likedPosts",ps.getUserLikedPosts(user.getId()));
-        mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
-        mav.addObject("communities",cs.getAllCommunities());
-        return mav;
-    }
+//    @RequestMapping(path = "/profile", method = RequestMethod.GET)
+//    public ModelAndView getProfile(@ModelAttribute("editProfileForm") final EditProfileForm editProfileForm) {
+//        ModelAndView mav = new ModelAndView("user/profile");
+//        User user = us.getLoggedUser().orElseThrow();
+//        mav.addObject("user",user);
+//        mav.addObject("posts",ps.getPostsByUser(user.getId()));
+//        mav.addObject("likedPosts",ps.getUserLikedPosts(user.getId()));
+//        mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+//        mav.addObject("communities",cs.getAllCommunities());
+//        return mav;
+//    }
 
 
 

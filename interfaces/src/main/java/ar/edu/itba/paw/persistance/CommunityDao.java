@@ -2,6 +2,7 @@ package ar.edu.itba.paw.persistance;
 
 import ar.edu.itba.paw.models.Community;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -9,7 +10,7 @@ public interface CommunityDao {
 
     Optional<Community> findById(final long id);
 
-    Community createCommunity(String name, String description);
+    Community createCommunity(String name, String description, String developer, String publisher, LocalDateTime releaseDate);
 
     List<Community> findAllCommunities();
 
@@ -30,4 +31,6 @@ public interface CommunityDao {
     void followCommunity(long id, int communityId,String communityName);
 
     List<Community> getFollowedCommunities(long userId);
+
+    List<Community> getAllCommunitiesNoCat();
 }

@@ -5,11 +5,12 @@ import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
 import ar.edu.itba.paw.models.Community;
 import ar.edu.itba.paw.models.User;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
 public interface CommunityService {
-    void createCommunity(final String name,final String description, String categories) throws NoSuchCommunityException;
+    void createCommunity(final String name, final String description, String categories, String developer, String publisher, LocalDateTime releaseDate) throws NoSuchCommunityException;
 
     List<Community> getAllCommunities();
 
@@ -33,4 +34,5 @@ public interface CommunityService {
 
     void removeCategories(final long id, List<String> categories) throws NoSuchCommunityException;
 
+    List<Community> getAllCommunitiesNoCat();
 }

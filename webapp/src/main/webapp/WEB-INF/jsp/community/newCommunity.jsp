@@ -1,47 +1,106 @@
-<%@ page contentType="text/html;charset=UTF-8"%>
+<%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <html>
 <head>
-    <title><spring:message code="Communities.Create"/></title>
+    <title><spring:message code="Post.Create"/></title>
     <link rel="icon" href="${pageContext.request.contextPath}/images/favicon.ico" type="image/x-icon">
     <link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="${pageContext.request.contextPath}/css/general-styling.css" rel="stylesheet"/>
     <script src="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js"></script>
-
 </head>
 <body>
 <%@ include file="/WEB-INF/jsp/components/header.jsp" %>
-<h1>NEW COMMUNITY:</h1>
-<c:url var="communityUrl" value="/new-community" />
-<form:form action="${communityUrl}" method="post" modelAttribute="newCommunityForm" id="myForm" onsubmit="addCategoriesToForm()">
-    <table>
-        <tr>
-            <td>Name:</td>
-            <td><form:input path="name" /></td>
-            <td><form:errors path="name" cssStyle="color: red" cssClass="error" /></td>
-        </tr>
-        <tr>
-            <td>Description:</td>
-            <td><form:input path="description" /></td>
-            <td><form:errors path="description" cssStyle="color: red" cssClass="error" /></td>
-        </tr>
-        <tr>
-            <td><input type="submit" value="Create!" /></td>
-            <td>
-                <div id="categoryPills" class="d-flex flex-row">
+<div class="container-fluid">
+    <div class="row min-vh-100">
+        <%--COMMUNITY LIST--%>
+        <div class="col-2 sidebar">
+            <div class="card sidebar-card m-auto">
+                <div class="card-body">
+                    <c:url value="/home" var="homeUrl"/>
+                    <a href="${homeUrl}" class="text-decoration-none card-title text-light mb-3">
+                        <h5><spring:message code="Navbar.Home"/></h5>
+                    </a>
+                    <c:url value="/all" var="allUrl"/>
+                    <a href="${allUrl}" class="text-decoration-none card-title text-light mb-3">
+                        <h5><spring:message code="All"/></h5>
+                    </a>
+                    <c:if test="${isLogged == null}">
+                        <div class="h5 card-title text-light mb-3">Communities</div>
+                    </c:if>
+                    <c:if test="${isLogged != null}">
+                        <div class="card-title text-light mb-3">My Communities</div>
+                    </c:if>
+                    <c:forEach var="community" items="${communities}">
+                        <c:url value="/community/${community.name}" var="communityUrl"/>
+                        <a href="${communityUrl}" class="text-light text-decoration-none">
+                            <div class="card-body-community d-flex align-items-center text-decoration-none mb-3">
+                                <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
+                                     class="very-small-profile-pic mb-1" alt="Profile Picture">
+                                <div class="text-decoration-none">
+                                    <h5 class="fw-semibold card-subtitle ">
+                                        /<c:out value="${community.name}" escapeXml="true"/>
+                                    </h5>
+                                </div>
+                            </div>
+                        </a>
+                    </c:forEach>
                 </div>
-                <div class="d-flex">
-                    <button type="button" onclick="showSelect()">add category</button>
-                    <div id="selectDiv" hidden="hidden">
-                        <label for="select"></label>
-                    </div>
-                </div>
-            </td>
-        </tr>
-    </table>
-    <form:errors cssStyle="color: red" cssClass="error" />
-    <form:errors cssStyle="color: red" cssClass="error" path="categories" />
-</form:form>
+            </div>
+        </div>
+        <div class="col-1">
+        </div>
+        <%--NEW COMMUNITY FORM--%>
+        <div class="col-5">
+            <h1>NEW COMMUNITY:</h1>
+            <c:url var="communityUrl" value="/new-community"/>
+            <form:form action="${communityUrl}" method="post" modelAttribute="newCommunityForm" id="myForm"
+                       onsubmit="addCategoriesToForm()">
+                <table>
+                    <tr>
+                        <td>Name:</td>
+                        <td><form:input path="name"/></td>
+                        <td><form:errors path="name" cssStyle="color: red" cssClass="error"/></td>
+                    </tr>
+                    <tr>
+                        <td>Description:</td>
+                        <td><form:input path="description"/></td>
+                        <td><form:errors path="description" cssStyle="color: red" cssClass="error"/></td>
+                    </tr>
+                    <tr>
+                        <td>Developer:</td>
+                        <td><form:input path="developer"/></td>
+                        <td><form:errors path="developer" cssStyle="color: red" cssClass="error"/></td>
+                    </tr>
+                    <tr>
+                        <td>Publisher:</td>
+                        <td><form:input path="publisher"/></td>
+                        <td><form:errors path="publisher" cssStyle="color: red" cssClass="error"/></td>
+                    </tr>
+                    <form:hidden path="releaseDate" value="1/1/1900"/>
+<%--                    TODO:PONER EL DATEPICKER PARA EL RELEASE DATE--%>
+                    <tr>
+                        <td><input type="submit" value="Create!"/></td>
+                        <td>
+                            <div id="categoryPills" class="d-flex flex-row">
+                            </div>
+                            <div class="d-flex">
+                                <button type="button" onclick="showSelect()">add category</button>
+                                <div id="selectDiv" hidden="hidden">
+                                    <label for="select"></label>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <form:errors cssStyle="color: red" cssClass="error"/>
+                <form:errors cssStyle="color: red" cssClass="error" path="categories"/>
+            </form:form>
+        </div>
+
+    </div>
+</div>
 </body>
 </html>
 <script language="JavaScript">
@@ -50,7 +109,7 @@
     let addOptionToSelect = (category) => {
         let select = document.getElementById("select");
         let option = document.createElement("option");
-        option.id = category+'Option';
+        option.id = category + 'Option';
         option.text = category;
         option.value = category;
         select.add(option);
@@ -64,7 +123,7 @@
         selectArray = selectArray.filter(category => category !== selected);
 
         //remove selected option from select
-        let selectedOption = document.getElementById(selected+'Option');
+        let selectedOption = document.getElementById(selected + 'Option');
         selectedOption.remove();
 
         //create pill
@@ -80,7 +139,7 @@
     createSelect = () => {
         console.log("create select")
         let select = document.getElementById("select");
-        if(select){
+        if (select) {
             console.log("select removed")
             select.remove();
         }
@@ -94,8 +153,8 @@
         defaultOption.selected = true;
         defaultOption.text = "Categories";
         select.appendChild(defaultOption);
-        selectArray.sort((a,b) => a.localeCompare(b));
-        for(category of selectArray){
+        selectArray.sort((a, b) => a.localeCompare(b));
+        for (category of selectArray) {
             addOptionToSelect(category);
         }
     }
@@ -118,7 +177,7 @@
     let createPill = (selected) => {
         let categoryPills = document.getElementById("categoryPills");
         let pill = document.createElement("div");
-        pill.id = selected+'Pill';
+        pill.id = selected + 'Pill';
         pill.setAttribute("class", " d-flex flex-col");
         let p = document.createElement("h5");
         let span = document.createElement("span");
@@ -138,7 +197,6 @@
     }
 
 
-
     let removeCategory = (category) => {
         //update arrays
         selectArray.push(category);
@@ -147,7 +205,7 @@
         createSelect();
         //remove pill
 
-        let pill = document.getElementById(category+'Pill');
+        let pill = document.getElementById(category + 'Pill');
         pill.remove();
     }
 

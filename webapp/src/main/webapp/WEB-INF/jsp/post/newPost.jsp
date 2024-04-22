@@ -14,19 +14,33 @@
 
 <%@ include file="/WEB-INF/jsp/components/header.jsp" %>
 <div class="container-fluid min-vh-100">
-    <div class="row">
+    <div class="row min-vh-100 justify-content-between">
         <%--COMMUNITY LIST--%>
         <div class="col-2 sidebar">
-            <div class="card sidebar-card">
+            <div class="card sidebar-card m-auto">
                 <div class="card-body">
+                    <c:url value="/home" var="homeUrl"/>
+                    <a href="${homeUrl}" class="text-decoration-none card-title text-light mb-3">
+                        <h5><spring:message code="Navbar.Home"/></h5>
+                    </a>
+                    <c:url value="/all" var="allUrl"/>
+                    <a href="${allUrl}" class="text-decoration-none card-title text-light mb-3">
+                        <h5><spring:message code="All"/></h5>
+                    </a>
+                    <c:if test="${isLogged == null}">
+                        <div class="h5 card-title text-light mb-3">Communities</div>
+                    </c:if>
+                    <c:if test="${isLogged != null}">
+                        <div class="card-title text-light mb-3">My Communities</div>
+                    </c:if>
                     <c:forEach var="community" items="${communities}">
                         <c:url value="/community/${community.name}" var="communityUrl"/>
-                        <a href="${communityUrl}" class="card-link text-decoration-none ">
+                        <a href="${communityUrl}" class="text-light text-decoration-none">
                             <div class="card-body-community d-flex align-items-center text-decoration-none mb-3">
                                 <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
                                      class="very-small-profile-pic mb-1" alt="Profile Picture">
                                 <div class="text-decoration-none">
-                                    <h5 class="fw-semibold card-subtitle community-name">
+                                    <h5 class="fw-semibold card-subtitle ">
                                         /<c:out value="${community.name}" escapeXml="true"/>
                                     </h5>
                                 </div>
@@ -36,12 +50,13 @@
                 </div>
             </div>
         </div>
-
+        <div class="col-1">
+        </div>
         <%--CREATE POST FORM--%>
-        <div class="col-6">
-            <div class="card border-light">
+        <div class="col-5">
+            <div class="card border-0">
                 <div class="card-body">
-                    <h1 class="card-title"><spring:message code="Post.Create"/> </h1>
+                    <h1 class="card-title fw-bold"><spring:message code="Post.Create"/></h1>
                     <c:url var="postUrl" value="/post"/>
                     <form:form action="${postUrl}" method="post" modelAttribute="newPostForm">
                         <div class="mb-3">
@@ -55,58 +70,81 @@
                             <form:errors path="title" cssStyle="color: red" cssClass="error"/>
                         </div>
                         <div class="mb-3 d-flex">
-                        <div class="me-4">
-                            <label for="bodyInput" class="form-label"><spring:message code="Post.Community"/></label>
-                            <form:select  name="community" path="community"
-                                         class="form-select" id="specialtiesSelect">
-                                <option disabled selected hidden><spring:message code="Post.ChooseCommunity"/></option>
-                                <c:forEach var="community" items="${communities}">
-                                    <option value="<c:out value="${community.name}" escapeXml="true" />">
-                                        <c:out value="${community.name}" escapeXml="true"/>
-                                    </option>
-                                </c:forEach>
-                            </form:select>
-                            <form:errors path="community" cssStyle="color: red" cssClass="error"/>
+                            <div class="me-4">
+                                <label for="bodyInput" class="form-label"><spring:message
+                                        code="Post.Community"/></label>
+                                <form:select name="community" path="community"
+                                             class="form-select" id="specialtiesSelect">
+                                    <option disabled selected hidden><spring:message
+                                            code="Post.ChooseCommunity"/></option>
+                                    <c:forEach var="community" items="${communities}">
+                                        <option value="<c:out value="${community.name}" escapeXml="true" />">
+                                            <c:out value="${community.name}" escapeXml="true"/>
+                                        </option>
+                                    </c:forEach>
+                                </form:select>
+                                <form:errors path="community" cssStyle="color: red" cssClass="error"/>
+                            </div>
+                            <div>
+                                <label for="bodyInput" class="form-label"><spring:message code="Post.Category"/></label>
+                                <form:select name="category" path="category"
+                                             class="form-select" id="specialtiesSelect">
+                                    <option disabled selected hidden><spring:message
+                                            code="Post.ChooseCategory"/></option>
+                                    <c:forEach var="category" items="${categories}">--%>
+                                        <option value="<c:out value="${category}" escapeXml="true" />">
+                                            <c:out value="${category}" escapeXml="true"/>
+                                        </option>
+                                    </c:forEach>
+                                </form:select>
+                                <form:errors path="category" cssStyle="color: red" cssClass="error"/>
+                            </div>
                         </div>
-                        <div >
-                            <label for="bodyInput" class="form-label"><spring:message code="Post.Category"/></label>
-                            <form:select  name="category" path="category"
-                                         class="form-select" id="specialtiesSelect">
-                                <option disabled selected hidden><spring:message code="Post.ChooseCategory"/></option>
-                                <c:forEach var="category" items="${categories}">--%>
-                                    <option value="<c:out value="${category}" escapeXml="true" />">
-                                        <c:out value="${category}" escapeXml="true"/>
-                                    </option>
-                                </c:forEach>
-                            </form:select>
-                            <form:errors path="category" cssStyle="color: red" cssClass="error"/>
-                        </div>
-                        </div>
-                        <button type="submit" class="btn btn-primary"><spring:message code="Post.CreateButton"/></button>
+                        <button type="submit" class="btn btn-primary"><spring:message
+                                code="Post.CreateButton"/></button>
                         <form:errors cssStyle="color: red" cssClass="error"/>
                     </form:form>
                 </div>
             </div>
         </div>
+<div class="col-1">
+
+</div>
         <%--POSTS LIST OF THE COMMUNITY--%>
-        <div class="col-3">
-            <div class="card  border-light">
-                <div class="card-body">
-                    <c:forEach items="${news}" var="a_new">
-                        <div class="card mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title">${a_new.title}</h5>
-                                <p class="card-text">${a_new.body}</p>
+            <div class="col-2">
+                <div class="card  border-0 bg-transparent">
+                    <div class="card-body">
+                        <c:forEach items="${news}" var="otherPost">
+                        <c:url value="/post/${otherPost.id}" var="postUrl"/>
+                        <a href="${postUrl}" class="text-decoration-none text-body-primary">
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <c:if test="${!otherPost.deleted}">
+                                        <h5 class="card-title card-title other-post-title fw-bold mb-1"><c:out
+                                                value="${otherPost.title}"
+                                                escapeXml="true"/>
+                                        </h5>
+                                        <span class="badge rounded-pill ${otherPost.category} mb-1">${otherPost.category}</span>
+                                        <p class="card-text post-body"><c:out value="${otherPost.body}"
+                                                                              escapeXml="true"/></p>
+                                    </c:if>
+                                    <c:if test="${otherPost.deleted}">
+                                        <h5 class="card-title
+                                 card-title other-post-title fw-bold mb-1"><spring:message code="Post.Deleted"/>
+                                        </h5>
+                                        <span class="badge rounded-pill ${otherPost.category} mb-1">${otherPost.category}</span>
+                                        <p class="card-text post-body"><spring:message code="Post.Deleted"/></p>
+                                    </c:if>
+                                </div>
                             </div>
-                        </div>
-                    </c:forEach>
+                            </c:forEach>
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
+
     </div>
 </div>
-<%@ include file="/WEB-INF/jsp/components/footer.jsp" %>
-
 </body>
 </html>
 <script lang="javascript">
