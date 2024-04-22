@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.form;
 
+import ar.edu.itba.paw.webapp.validators.interfaces.FilesMustBeImagesConstraint;
 import ar.edu.itba.paw.webapp.validators.interfaces.ValidPostCategoryConstraint;
 import ar.edu.itba.paw.webapp.validators.interfaces.ValidCommunityConstraint;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,6 +26,7 @@ public class NewPostForm {
     @NotBlank
     @ValidPostCategoryConstraint
     private String category;
+    @FilesMustBeImagesConstraint
     private MultipartFile[] files;
 
 
