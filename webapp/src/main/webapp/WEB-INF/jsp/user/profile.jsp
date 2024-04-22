@@ -16,35 +16,63 @@
 <div class="container-fluid min-vh-100">
     <div class="row">
         <%--COMMUNITY LIST--%>
-        <div class="col-2 sidebar">
-            <div class="card sidebar-card">
-                <div class="card-body">
-                    <c:forEach var="community" items="${communities}">
-                        <c:url value="/community/${community.name}" var="communityUrl"/>
-                        <a href="${communityUrl}" class="card-link text-decoration-none ">
-                            <div class="card-body-community d-flex align-items-center text-decoration-none mb-3">
-                                <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
-                                     class="very-small-profile-pic mb-1" alt="Profile Picture">
-                                <div class="text-decoration-none">
-                                    <h5 class="fw-semibold card-subtitle community-name">
-                                        /<c:out value="${community.name}" escapeXml="true"/>
-                                    </h5>
-                                </div>
-                            </div>
+            <div class="col-2 sidebar">
+                <div class="card sidebar-card m-auto">
+                    <div class="card-body">
+                        <c:url value="/home" var="homeUrl"/>
+                        <a href="${homeUrl}" class="text-decoration-none card-title text-light mb-3">
+                            <h5><spring:message code="Navbar.Home"/></h5>
                         </a>
-                    </c:forEach>
+                        <c:url value="/all" var="allUrl"/>
+                        <a href="${allUrl}" class="text-decoration-none card-title text-light mb-3">
+                            <h5><spring:message code="All"/></h5>
+                        </a>
+                        <c:if test="${isLogged == null}">
+                            <div class="h5 card-title text-light mb-3">Communities</div>
+                        </c:if>
+                        <c:if test="${isLogged != null}">
+                            <div class="card-title text-light mb-3">My Communities</div>
+                        </c:if>
+                        <c:forEach var="community" items="${communities}">
+                            <c:url value="/community/${community.name}" var="communityUrl"/>
+                            <a href="${communityUrl}" class="text-light text-decoration-none">
+                                <div class="card-body-community d-flex align-items-center text-decoration-none mb-3">
+                                    <c:if test="${community.portrait_id == 0}">
+                                        <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
+                                             class="very-small-profile-pic mb-1" alt="Profile Picture">
+                                    </c:if>
+                                    <c:if test="${community.portrait_id != 0}">
+                                        <img src="<c:url value='/image/${community.portrait_id}'/>"
+                                             class="very-small-profile-pic mb-1" alt="Profile Picture">
+                                    </c:if>
+                                    <div class="text-decoration-none">
+                                        <h5 class="fw-semibold card-subtitle ">
+                                            /<c:out value="${community.name}" escapeXml="true"/>
+                                        </h5>
+                                    </div>
+                                </div>
+                            </a>
+                        </c:forEach>
+                    </div>
                 </div>
             </div>
-        </div>
 
         <%--PROFILE--%>
         <div class="col-8">
             <div class="card border-light border-0">
                 <div class="card-body">
                     <div class="mb-3 row">
-                        <div class="col-2">
-                            <img src="${pageContext.request.contextPath}/images/default-avatar-icon.jpg"
-                                 class="w-100 h-100 rounded-1" id="imgFile" alt="Profile Picture">
+                        <div class="col-3">
+                            <c:if test="${user.portraid_id == 0}">
+
+                                <img src="${pageContext.request.contextPath}/images/default-avatar-icon.jpg"
+                                     class="w-100 h-100 rounded-1" id="imgFile" alt="Profile Picture">
+                            </c:if>
+                            <c:if test="${user.portraid_id != 0}">
+
+                                <img src="<c:url value='/image/${user.portraid_id}'/>"
+                                     class="w-100 h-100 rounded-1" id="imgFile" alt="Profile Picture">
+                            </c:if>
 
                         </div>
                         <div class="col-8">
@@ -64,9 +92,18 @@
 
                             </div>
                             <div>
-                                <label class="form-label fw-semibold"><spring:message code="Profile.UpdateProfilePicture"/></label>
-                                <input class="form-control w-50" placeholder="Update profile picture" type="file" id="formFile"
-                                       onchange="document.getElementById('imgFile').src = window.URL.createObjectURL(this.files[0])">
+                                <c:url value="/user/update" var="userUpdateUrl"/>
+                                <form:form method="POST" action="${userUpdateUrl}" enctype="multipart/form-data"
+                                           modelAttribute="userPfpForm">
+                                    <label class="form-label fw-semibold"><spring:message
+                                            code="Profile.UpdateProfilePicture"/></label>
+                                    <form:input path="file" class="form-control w-50"
+                                                placeholder="Update profile picture" type="file"
+                                                id="formFile"
+                                                onchange="document.getElementById('imgFile').src = window.URL.createObjectURL(this.files[0])"/>
+                                    <button type="submit" class="btn btn-primary mt-3"><spring:message
+                                            code="Update"/></button>
+                                </form:form>
                             </div>
 
                         </div>
@@ -83,8 +120,6 @@
                             <div class="card mb-3">
                                 <div class="card-body">
                                     <div class="title-container">
-                                        <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
-                                             class="small-profile-pic mb-1" alt="Profile Picture">
                                         <p class="fw-semibold card-subtitle">/<c:out value="${post.community_name}"
                                                                                      escapeXml="true"/></p>
                                         <span class="badge rounded-pill mb-1 ${post.category}">${post.category}</span>
@@ -107,7 +142,7 @@
         </div>
         <%--POSTS LIST OF THE COMMUNITY--%>
         <div class="col-2">
-            <div class="card  border-0">
+            <div class="card border-0">
                 <div class="card-body">
                     <h3 class="card-title text-center mb-3"><spring:message code="Profile.LikedPost"/></h3>
                     <c:if test="${empty likedPosts}">
@@ -119,8 +154,7 @@
                             <div class="card mb-3">
                                 <div class="card-body">
                                     <div class="title-container">
-                                        <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
-                                             class="small-profile-pic mb-1" alt="Profile Picture">
+
                                         <p class="fw-semibold card-subtitle">/<c:out value="${post.community_name}"
                                                                                      escapeXml="true"/></p>
                                         <span class="badge rounded-pill mb-1 ${post.category}">${post.category}</span>

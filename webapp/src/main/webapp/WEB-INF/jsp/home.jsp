@@ -84,8 +84,6 @@
                             <div class="card mb-3">
                                 <div class="card-body">
                                     <div class="title-container">
-                                        <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
-                                             class="small-profile-pic mb-1" alt="Profile Picture">
                                         <p class="fw-semibold card-subtitle">/<c:out value="${post.community_name}"
                                                                                      escapeXml="true"/></p>
                                         <span class="badge rounded-pill mb-1 ${post.category}">${post.category}</span>

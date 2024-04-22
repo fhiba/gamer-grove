@@ -149,22 +149,22 @@ public class UserController {
             return updateUser(newUserPhoto);
         }
         fs.uploadUserImage(newUserPhoto.getFile());
-        return new ModelAndView("redirect:/");
+        return new ModelAndView("redirect:/profile");
     }
 
 
 
-//    @RequestMapping(path = "/profile", method = RequestMethod.GET)
-//    public ModelAndView getProfile(@ModelAttribute("editProfileForm") final EditProfileForm editProfileForm) {
-//        ModelAndView mav = new ModelAndView("user/profile");
-//        User user = us.getLoggedUser().orElseThrow();
-//        mav.addObject("user",user);
-//        mav.addObject("posts",ps.getPostsByUser(user.getId()));
-//        mav.addObject("likedPosts",ps.getUserLikedPosts(user.getId()));
-//        mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
-//        mav.addObject("communities",cs.getAllCommunities());
-//        return mav;
-//    }
+    @RequestMapping(path = "/profile", method = RequestMethod.GET)
+    public ModelAndView getProfile(@ModelAttribute("userPfpForm") final UserPfpForm userPfpForm) {
+        ModelAndView mav = new ModelAndView("user/profile");
+        User user = us.getLoggedUser().orElseThrow();
+        mav.addObject("user",user);
+        mav.addObject("posts",ps.getPostsByUser(user.getId()));
+        mav.addObject("likedPosts",ps.getUserLikedPosts(user.getId()));
+        mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+        mav.addObject("communities",cs.getFollowedCommunities(user));
+        return mav;
+    }
 
 
 
