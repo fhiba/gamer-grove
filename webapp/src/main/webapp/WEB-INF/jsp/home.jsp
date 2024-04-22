@@ -38,8 +38,14 @@
                             <c:url value="/community/${community.name}" var="communityUrl"/>
                             <a href="${communityUrl}" class="text-light text-decoration-none">
                                 <div class="card-body-community d-flex align-items-center text-decoration-none mb-3">
-                                    <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
-                                         class="very-small-profile-pic mb-1" alt="Profile Picture">
+                                    <c:if test="${community.portrait_id == 0}">
+                                        <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
+                                             class="very-small-profile-pic mb-1" alt="Profile Picture">
+                                    </c:if>
+                                    <c:if test="${community.portrait_id != 0}">
+                                        <img src="<c:url value='/image/${community.portrait_id}'/>"
+                                             class="very-small-profile-pic mb-1" alt="Profile Picture">
+                                    </c:if>
                                     <div class="text-decoration-none">
                                         <h5 class="fw-semibold card-subtitle ">
                                             /<c:out value="${community.name}" escapeXml="true"/>

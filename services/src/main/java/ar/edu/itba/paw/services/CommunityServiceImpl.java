@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+
 @Service
 public class CommunityServiceImpl implements CommunityService{
     @Autowired
@@ -27,7 +28,6 @@ public class CommunityServiceImpl implements CommunityService{
             addCategories(community.getId(), List.of(categories.split(",")));
         }
     }
-
 
     @Override
     public List<Community> getAllCommunities() {
@@ -103,10 +103,16 @@ public class CommunityServiceImpl implements CommunityService{
             communityDao.unfollowCommunity(user.getId(), communityId);
         }
         else{
+            System.out.println(user.getId());
             communityDao.followCommunity(user.getId(), communityId,communityName);
         }
 
     }
+    @Override
+    public void updateCommunityImageId(long id, long imageId) {
+        communityDao.updateCommunityImageId(id,imageId);
+    }
+
 
     @Override
     public Boolean checkIfUserFollowsCommunity(int communityId) throws NoLoggedUserException {

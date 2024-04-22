@@ -48,8 +48,11 @@ public class PostController {
             return getNewPost(newPostForm);
         }
         try {
-            ps.createPost(newPostForm.getTitle(), newPostForm.getBody(), newPostForm.getCommunity(), newPostForm.getCategory());
-        } catch (NoLoggedUserException | NoSuchCommunityException e) {
+            ps.createPost(newPostForm.getTitle(), newPostForm.getBody(), newPostForm.getCommunity(), newPostForm.getCategory(),newPostForm.getFiles());
+        } catch (NoLoggedUserException e) {
+            //TODO: log later
+            throw e;
+        } catch ( NoSuchCommunityException e) {
             //TODO: log later
             throw e;
         }
@@ -150,6 +153,14 @@ public class PostController {
         ModelAndView mav = new ModelAndView("/post/post");
         mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
         Post post;
+        try {
+            post = ps.getPostByIdWithImage(postId);
+            mav.addObject("post", post);
+        } catch (NoSuchPostException e) {
+            //TODO: Should log
+            throw e;
+        }
+
         List<Community> communities;
         User user = null;
         List<Comment> comments = commentService.getPostComments((postId));
@@ -170,13 +181,6 @@ public class PostController {
             canDelete = ms.canRemovePost(us.getLoggedUser().get().getId(), postId);
         } else {
             communities = cs.getAllCommunities();
-        }
-        try {
-            post = ps.getPostById(postId);
-            mav.addObject("post", post);
-        } catch (NoSuchPostException e) {
-            //TODO: Should log
-            throw e;
         }
 
         mav.addObject("isLogged", user != null);

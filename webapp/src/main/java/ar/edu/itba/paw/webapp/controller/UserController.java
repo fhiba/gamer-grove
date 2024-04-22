@@ -1,9 +1,12 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.exceptions.AlreadyModException;
+import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
+import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.services.CommunityService;
+import ar.edu.itba.paw.services.FileService;
 import ar.edu.itba.paw.services.ModderService;
 import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
@@ -14,12 +17,13 @@ import ar.edu.itba.paw.services.CommentService;
 import ar.edu.itba.paw.services.CommunityService;
 import ar.edu.itba.paw.services.PostService;
 import ar.edu.itba.paw.services.UserService;
-import ar.edu.itba.paw.webapp.form.EditProfileForm;
+//import ar.edu.itba.paw.webapp.form.EditProfileForm;
 import ar.edu.itba.paw.webapp.form.LogInForm;
 import ar.edu.itba.paw.webapp.form.NewModForm;
 import ar.edu.itba.paw.webapp.form.NewPostForm;
 import ar.edu.itba.paw.webapp.form.RegisterUserForm;
 import ar.edu.itba.paw.webapp.form.RemoveModForm;
+import ar.edu.itba.paw.webapp.form.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -50,6 +54,8 @@ public class UserController {
     private ModderService md;
     @Autowired
     private CommunityService cs;
+    @Autowired
+    private FileService fs;
 
 
     @Autowired
@@ -131,19 +137,34 @@ public class UserController {
             }
         }
     }
+    @RequestMapping(path = "/user/update", method = RequestMethod.GET)
+    public ModelAndView updateUser(@ModelAttribute("newUserPhoto") final UserPfpForm newUserPhoto) {
 
-
-    @RequestMapping(path = "/profile", method = RequestMethod.GET)
-    public ModelAndView getProfile(@ModelAttribute("editProfileForm") final EditProfileForm editProfileForm) {
-        ModelAndView mav = new ModelAndView("user/profile");
-        User user = us.getLoggedUser().orElseThrow();
-        mav.addObject("user",user);
-        mav.addObject("posts",ps.getPostsByUser(user.getId()));
-        mav.addObject("likedPosts",ps.getUserLikedPosts(user.getId()));
-        mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
-        mav.addObject("communities",cs.getAllCommunities());
-        return mav;
+        return new ModelAndView("image");
     }
+
+    @RequestMapping(path = "/user/update", method = RequestMethod.POST)
+    public ModelAndView updateUser(@Valid @ModelAttribute("newUserPhoto") final UserPfpForm newUserPhoto, final BindingResult errors) throws NoLoggedUserException {
+        if(errors.hasErrors()) {
+            return updateUser(newUserPhoto);
+        }
+        fs.uploadUserImage(newUserPhoto.getFile());
+        return new ModelAndView("redirect:/");
+    }
+
+
+
+//    @RequestMapping(path = "/profile", method = RequestMethod.GET)
+//    public ModelAndView getProfile(@ModelAttribute("editProfileForm") final EditProfileForm editProfileForm) {
+//        ModelAndView mav = new ModelAndView("user/profile");
+//        User user = us.getLoggedUser().orElseThrow();
+//        mav.addObject("user",user);
+//        mav.addObject("posts",ps.getPostsByUser(user.getId()));
+//        mav.addObject("likedPosts",ps.getUserLikedPosts(user.getId()));
+//        mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+//        mav.addObject("communities",cs.getAllCommunities());
+//        return mav;
+//    }
 
 
 

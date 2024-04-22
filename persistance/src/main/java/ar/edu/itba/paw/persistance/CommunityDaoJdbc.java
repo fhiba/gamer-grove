@@ -37,6 +37,8 @@ public class CommunityDaoJdbc implements CommunityDao{
             rs.getInt("community_role"),
             rs.getString("community_name"));
 
+
+
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
     private final SimpleJdbcInsert jdbcInsertCategory;
@@ -89,6 +91,11 @@ public class CommunityDaoJdbc implements CommunityDao{
     @Override
     public List<String> getCategoriesOfCommunity(long id) {
        return jdbcTemplate.query("SELECT category FROM communities_categories WHERE community_id = ?", new Object[]{id}, (rs, rowNum) -> rs.getString("category"));
+    }
+
+    @Override
+    public void updateCommunityImageId(long id, long imageId) {
+        jdbcTemplate.update("UPDATE community SET portrait_id = ? WHERE id = ?", imageId, id);
     }
 
     @Override
@@ -184,8 +191,8 @@ public class CommunityDaoJdbc implements CommunityDao{
     @Override
     public void followCommunity(long id, int communityId,String communityName) {
         Map<String, Object> args = new HashMap<>();
-        args.put("user_id", id);
         args.put("community_id", communityId);
+        args.put("user_id", id);
         args.put("community_role", 0);
         args.put("community_name",communityName);
         jdbcInsertUser.execute(args);

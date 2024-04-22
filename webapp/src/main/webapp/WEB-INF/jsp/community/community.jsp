@@ -20,7 +20,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <c:url var="postUrl" value="/community/${community.name}"/>
-            <form:form action="${postUrl}" method="post" modelAttribute="newPostForm" id="postForm">
+            <form:form action="${postUrl}" method="post" modelAttribute="newPostForm" id="postForm" enctype="multipart/form-data">
                 <div class="modal-header">
                     <h5 class="modal-title" id="createPostModalLabel"><spring:message code="Post.Create"/></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -49,6 +49,15 @@
                                 </c:forEach>
                             </form:select>
                             <form:hidden path="community" value="${community.name}"/>
+                        </div>
+                        <div class="item-upload">
+                            <spring:message code="Post.Image"/>
+                            <div class="input-group mb-3 mt-2">
+                                <label class="input-group-text" for="files"><i class="fa-solid fa-file"></i></label>
+                                <form:input type="file" class="form-control" name="files" path="files" multiple="true"/>
+                            </div>
+                            <div id="photo-upload__preview" class="upload-preview"></div>
+                            <form:errors path="files" cssStyle="color: red"/>
                         </div>
                     </form>
                 </div>
@@ -106,8 +115,15 @@
                 <div class="card-body">
                     <div class="row w-100 mb-2">
                         <div class="col-4">
-                            <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
-                                  class="w-100 rounded-1 img-thumbnail " alt="Profile Picture">
+                            <c:if test="${community.portrait_id == 0}">
+                                <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
+                                     class="w-100 rounded-1 img-thumbnail " alt="Profile Picture">
+                            </c:if>
+                            <c:if test="${community.portrait_id != 0}">
+                                <img src="<c:url value='/image/${community.portrait_id}'/>"
+                                     class="w-100 rounded-1 img-thumbnail" alt="Profile Picture">
+                            </c:if>
+
                         </div>
                         <div class="col-8">
                             <div class="d-flex row-cols-2 justify-content-between">
@@ -129,7 +145,14 @@
                             <h5 class="card-subtitle text-secondary mt-3 mb-1"><c:out value="${community.description}" escapeXml="true"/></h5>
                         </div>
                     </div>
-                    <div class="d-flex justify-content-end mb-3">
+                    <div class="d-flex <c:if test="${canEdit}"> justify-content-between </c:if> <c:if test="${!canEdit}"> justify-content-end </c:if>  mb-3 ">
+                        <c:if test="${canEdit}">
+                            <a href="<c:url value="/community/${communityName}/image"/>">
+                                <button type="button" class="btn btn-primary ">
+                                    <spring:message code="Community.Edit"/>
+                                </button>
+                            </a>
+                        </c:if>
                         <button type="button" class="btn btn-primary round-btn" data-bs-toggle="modal"
                                 data-bs-target="#createPostModal">
                             <i class="fa-solid fa-plus"></i>
@@ -146,8 +169,10 @@
                                         <span class="badge rounded-pill ${post.category}">${post.category}</span>
                                     </p>
                                     <c:if test="${!post.deleted}">
-                                        <h4 class="card-title fw-bold"><c:out value="${post.title}" escapeXml="true"/></h4>
-                                        <p class="card-text post-body"><c:out value="${post.body}" escapeXml="true"/></p>
+                                        <h4 class="card-title fw-bold"><c:out value="${post.title}"
+                                                                              escapeXml="true"/></h4>
+                                        <p class="card-text post-body"><c:out value="${post.body}"
+                                                                              escapeXml="true"/></p>
                                     </c:if>
                                     <c:if test="${post.deleted}">
                                         <h4 class="card-title fw-bold"><spring:message code="Post.Deleted"/></h4>
@@ -179,6 +204,47 @@
     let submit = () => {
         document.getElementById('postForm').submit();
     }
+
+    function previewImage(e, selectedFiles, imagesArray) {
+        const elemContainer = document.createElement('div');
+        elemContainer.setAttribute('class', 'item-images');
+        for (let i = 0; i < selectedFiles.length; i++) {
+            imagesArray.push(selectedFiles[i]);
+            const imageContainer = document.createElement('div');
+            const elem = document.createElement('img');
+            elem.setAttribute('src', URL.createObjectURL(selectedFiles[i]));
+            elem.setAttribute('class', 'photo-upload__preview')
+            elem.setAttribute('style', 'width: 100px; height: 100px; object-fit: cover;')
+            const removeButton = document.createElement('button');
+            removeButton.setAttribute('type', 'button');
+            removeButton.setAttribute('class', 'btn-close delete');
+            removeButton.classList.add('delete');
+            removeButton.dataset.filename = selectedFiles[i].name,
+                // removeButton.innerHTML = '<span>&times;</span>'
+                imageContainer.appendChild(elem);
+            imageContainer.appendChild(removeButton);
+            elemContainer.appendChild(imageContainer);
+        }
+        return elemContainer;
+    }
+
+    let item_images = [];
+    document.getElementById('files').addEventListener('change', (e) => {
+        let selectedFiles = e.target.files;
+        const photoPreviewContainer = document.querySelector('#photo-upload__preview');
+        photoPreviewContainer.childNodes.forEach(child => child.remove());
+        const elemContainer = previewImage(e, selectedFiles, item_images);
+        photoPreviewContainer.appendChild(elemContainer);
+    });
+
+    document.getElementById('photo-upload__preview').addEventListener('click', (e) => {
+        const tgt = e.target.closest('button');
+        if (tgt.classList.contains('delete')) {
+            tgt.closest('div').remove();
+            const fileName = tgt.dataset.filename
+            item_images = item_images.filter(img => img.name != fileName)
+        }
+    })
 
     let follow = () => {
         document.getElementById('followForm').submit();

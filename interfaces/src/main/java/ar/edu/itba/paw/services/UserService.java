@@ -21,4 +21,5 @@ public interface UserService {
 
     List<User> findAll();
 
+    void updateImageId(long id, long imageId);
 }

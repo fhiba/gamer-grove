@@ -7,20 +7,23 @@ import ar.edu.itba.paw.services.CommunityService;
 import ar.edu.itba.paw.services.PostService;
 import ar.edu.itba.paw.services.UserService;
 import ar.edu.itba.paw.webapp.form.FollowCommunityForm;
+import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.services.*;
+import ar.edu.itba.paw.webapp.form.FileForm;
 import ar.edu.itba.paw.webapp.form.NewCommunityForm;
 import ar.edu.itba.paw.webapp.form.NewPostForm;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class CommunityController {
@@ -30,8 +33,11 @@ public class CommunityController {
     @Autowired
     private PostService ps;
     @Autowired
+    private FileService fs;
+    @Autowired
+    private ModderService ms;
+    @Autowired
     private UserService us;
-
 
     @RequestMapping(path="/new-community", method = RequestMethod.GET)
     public ModelAndView newCommunity(@ModelAttribute("newCommunityForm") final NewCommunityForm newCommunityForm) {
@@ -78,6 +84,12 @@ public class CommunityController {
         mav.addObject("categories", Arrays.stream(PostCategories.values()).map(PostCategories::getCategory).toArray(String[]::new));
         mav.addObject("community",community);
         mav.addObject("posts",posts);
+        Optional<User> possiblyUser = us.getLoggedUser();
+        boolean canEdit = false;
+        if(possiblyUser.isPresent()){
+            canEdit = ms.isModderOfCommunity(possiblyUser.get().getId(),community.getId());
+        }
+        mav.addObject("canEdit",canEdit);
         return mav;
     }
 
@@ -87,7 +99,7 @@ public class CommunityController {
         if(errors.hasErrors())
             return community(communityName,newPostForm,followCommunityForm);
 
-        ps.createPost(newPostForm.getTitle(),newPostForm.getBody(),communityName,newPostForm.getCategory());
+        ps.createPost(newPostForm.getTitle(),newPostForm.getBody(),communityName,newPostForm.getCategory(),newPostForm.getFiles());
         return new ModelAndView("redirect:/community/"+communityName);
     }
 
@@ -107,16 +119,44 @@ public class CommunityController {
 
     @RequestMapping(path="/community/{communityName}/new", method = RequestMethod.POST)
     public ModelAndView newCommunityPost(@PathVariable("communityName") final String communityName,@ModelAttribute("followCommunityForm") final FollowCommunityForm followCommunityForm,@ModelAttribute("newPostForm") final NewPostForm newPostForm,BindingResult errors) throws NoSuchCommunityException, NoLoggedUserException {
-        System.out.println(newPostForm.getCategory());
-        System.out.println(newPostForm.getBody());
-        System.out.println(newPostForm.getTitle());
-        System.out.println(newPostForm.getCommunity());
         if(errors.hasErrors())
             return community(communityName,newPostForm,followCommunityForm);
         //chequeo de que exista la community
         Community community = cs.findByName(communityName);
-        ps.createPost(newPostForm.getTitle(),newPostForm.getBody(),community.getName(),newPostForm.getCategory());
+        ps.createPost(newPostForm.getTitle(),newPostForm.getBody(),community.getName(),newPostForm.getCategory(),newPostForm.getFiles());
         return community(communityName,newPostForm,followCommunityForm);
+    }
+
+    @RequestMapping(path="/community/{communityName}/image", method = RequestMethod.GET)
+    public ModelAndView communityImage(@PathVariable("communityName") final String communityName, @ModelAttribute("newCommunityImage") final FileForm newCommunityImage) throws NoSuchCommunityException {
+        ModelAndView mav = new ModelAndView("community/communityImage");
+        Community community = cs.findByName(communityName);
+        mav.addObject("community",community);
+        mav.addObject("communities",cs.getAllCommunities());
+        return mav;
+    }
+
+    @RequestMapping(path="/community/{communityName}/image", method = RequestMethod.POST)
+    public ModelAndView uploadCommunityImage(@PathVariable("communityName") final String communityName, @Valid @ModelAttribute("newCommunityImage") final FileForm newCommunityImage, BindingResult errors) throws NoSuchCommunityException {
+        if(errors.hasErrors())
+            return communityImage(communityName,newCommunityImage);
+        fs.uploadCommunityImage(communityName,newCommunityImage.getFile());
+        return new ModelAndView("redirect:/community/"+communityName);
+    }
+
+    @RequestMapping(path="/seeImages/{imageId}", method = RequestMethod.GET)
+    public ModelAndView getImage(@PathVariable("imageId") final long imageId) {
+        ModelAndView mav = new ModelAndView("image");
+//        mav.addObject("image",fs.getFile(imageId).get());
+        return mav;
+    }
+
+    @RequestMapping(value = "/image/{imageId}", method = RequestMethod.GET,
+            produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_GIF_VALUE})
+    @ResponseBody
+    public byte[] getImage(@PathVariable Integer imageId) {
+        //File image = fs.getFile(doctorId).orElse(null);
+        return fs.getFile(imageId).map(File::getFile).orElse(null);
     }
 
     @RequestMapping(path = "/community/{communityName}/follow", method = RequestMethod.POST)

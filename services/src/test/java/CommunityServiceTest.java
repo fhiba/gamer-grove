@@ -68,7 +68,6 @@ public class CommunityServiceTest {
     }
 
     @Test(expected = NoSuchCommunityException.class)
-
     public void testFailedFindById() throws NoSuchCommunityException {
         // Setup
         Mockito.when(mockDao.findById(Mockito.eq(ID))).thenReturn(Optional.empty());

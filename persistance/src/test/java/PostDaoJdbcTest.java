@@ -48,9 +48,9 @@ public class PostDaoJdbcTest {
     }
 
     @Test
-    public void testCreatePost() {
-        User user = new User(1, "Pedro", "curti", "pedro@curti.com");
-        Community community = new Community(1, "test", "This is a test community");
+    public void testCreatePost(){
+        User user = new User(1,"Pedro", "curti", "pedro@curti.com",0);
+        Community community = new Community(1, "test",  "This is a test community");
         community.setPortrait_id(0);
         final Post post = postDao.createPost(title, body, (int) user.getId(), community.getName(), media, date, category);
         assertEquals(id, post.getId());

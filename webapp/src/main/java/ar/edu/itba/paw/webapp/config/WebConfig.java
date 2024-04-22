@@ -6,6 +6,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -21,6 +22,9 @@ import java.util.concurrent.TimeUnit;
 @EnableWebMvc
 @Configuration
 public class WebConfig extends WebMvcConfigurerAdapter {
+
+    private final static Long MAX_FILE_SIZE = (long) 10*1000*1000;
+
 
     @Bean
     public ViewResolver viewResolver() {
@@ -63,6 +67,13 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         messageSource.setDefaultEncoding(StandardCharsets.UTF_8.displayName());
         messageSource.setCacheSeconds((int) TimeUnit.MINUTES.toSeconds(5));
         return messageSource;
+    }
+
+    @Bean(name = "multipartResolver")
+    public CommonsMultipartResolver multipartResolver() {
+        CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
+        multipartResolver.setMaxUploadSize(MAX_FILE_SIZE);
+        return multipartResolver;
     }
 
 }

@@ -57,6 +57,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void updateImageId(long id, long imageId) {
+        userDao.updateImageId(id, imageId);
+    }
+
+    @Override
     public User getLoggedUserChecked() throws NoLoggedUserException {
         Optional<User> maybeUser = getLoggedUser();
         if(maybeUser.isEmpty())

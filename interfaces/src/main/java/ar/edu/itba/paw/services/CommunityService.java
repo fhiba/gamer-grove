@@ -33,4 +33,5 @@ public interface CommunityService {
 
     void removeCategories(final long id, List<String> categories) throws NoSuchCommunityException;
 
+    void updateCommunityImageId(long id, long imageId);
 }

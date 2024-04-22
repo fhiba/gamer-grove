@@ -9,6 +9,7 @@
     <link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="${pageContext.request.contextPath}/css/general-styling.css" rel="stylesheet"/>
     <script src="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js"></script>
+    <script src="https://kit.fontawesome.com/002da5939d.js" crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -41,9 +42,9 @@
         <div class="col-6">
             <div class="card border-light">
                 <div class="card-body">
-                    <h1 class="card-title"><spring:message code="Post.Create"/> </h1>
+                    <h1 class="card-title"><spring:message code="Post.Create"/></h1>
                     <c:url var="postUrl" value="/post"/>
-                    <form:form action="${postUrl}" method="post" modelAttribute="newPostForm">
+                    <form:form action="${postUrl}" method="post" modelAttribute="newPostForm" enctype="multipart/form-data">
                         <div class="mb-3">
                             <label for="titleInput" class="form-label"><spring:message code="Post.Title"/></label>
                             <form:input path="title" class="form-control" id="titleInput"/>
@@ -54,40 +55,54 @@
                             <form:textarea path="body" class="form-control" id="bodyInput"/>
                             <form:errors path="title" cssStyle="color: red" cssClass="error"/>
                         </div>
-                        <div class="mb-3 d-flex">
-                        <div class="me-4">
-                            <label for="bodyInput" class="form-label"><spring:message code="Post.Community"/></label>
-                            <form:select  name="community" path="community"
-                                         class="form-select" id="specialtiesSelect">
-                                <option disabled selected hidden><spring:message code="Post.ChooseCommunity"/></option>
-                                <c:forEach var="community" items="${communities}">
-                                    <option value="<c:out value="${community.name}" escapeXml="true" />">
-                                        <c:out value="${community.name}" escapeXml="true"/>
-                                    </option>
-                                </c:forEach>
-                            </form:select>
-                            <form:errors path="community" cssStyle="color: red" cssClass="error"/>
+                        <div class="mb-3 d-flex justify-content-between">
+                            <div>
+                                <label for="bodyInput" class="form-label"><spring:message
+                                        code="Post.Community"/></label>
+                                <form:select name="community" path="community"
+                                             class="form-select" id="specialtiesSelect">
+                                    <option disabled selected hidden><spring:message
+                                            code="Post.ChooseCommunity"/></option>
+                                    <c:forEach var="community" items="${communities}">
+                                        <option value="<c:out value="${community.name}" escapeXml="true" />">
+                                            <c:out value="${community.name}" escapeXml="true"/>
+                                        </option>
+                                    </c:forEach>
+                                </form:select>
+                                <form:errors path="community" cssStyle="color: red" cssClass="error"/>
+                            </div>
+                            <div>
+                                <label for="bodyInput" class="form-label"><spring:message code="Post.Category"/></label>
+                                <form:select name="category" path="category"
+                                             class="form-select" id="specialtiesSelect">
+                                    <option disabled selected hidden><spring:message
+                                            code="Post.ChooseCategory"/></option>
+                                    <c:forEach var="category" items="${categories}">--%>
+                                        <option value="<c:out value="${category}" escapeXml="true" />">
+                                            <c:out value="${category}" escapeXml="true"/>
+                                        </option>
+                                    </c:forEach>
+                                </form:select>
+                                <form:errors path="category" cssStyle="color: red" cssClass="error"/>
+                            </div>
+                            <div class="item-upload" >
+                                <spring:message code="Post.Image"/>
+                                <div class="input-group mb-3 mt-2">
+                                    <label class="input-group-text" for="files"><i class="fa-solid fa-file"></i></label>
+                                    <form:input type="file" class="form-control"  name="files" path="files" multiple="true"/>
+                                </div>
+                                <div id="photo-upload__preview" class="upload-preview"></div>
+                                <form:errors path="files" cssStyle="color: red"/>
+                            </div>
                         </div>
-                        <div >
-                            <label for="bodyInput" class="form-label"><spring:message code="Post.Category"/></label>
-                            <form:select  name="category" path="category"
-                                         class="form-select" id="specialtiesSelect">
-                                <option disabled selected hidden><spring:message code="Post.ChooseCategory"/></option>
-                                <c:forEach var="category" items="${categories}">--%>
-                                    <option value="<c:out value="${category}" escapeXml="true" />">
-                                        <c:out value="${category}" escapeXml="true"/>
-                                    </option>
-                                </c:forEach>
-                            </form:select>
-                            <form:errors path="category" cssStyle="color: red" cssClass="error"/>
-                        </div>
-                        </div>
-                        <button type="submit" class="btn btn-primary"><spring:message code="Post.CreateButton"/></button>
+                        <button type="submit" class="btn btn-primary"><spring:message
+                                code="Post.CreateButton"/></button>
                         <form:errors cssStyle="color: red" cssClass="error"/>
                     </form:form>
                 </div>
             </div>
         </div>
+
         <%--POSTS LIST OF THE COMMUNITY--%>
         <div class="col-3">
             <div class="card  border-light">
@@ -110,7 +125,48 @@
 </body>
 </html>
 <script lang="javascript">
-    $('.dropdown-toggle').dropdown();
+    // $('.dropdown-toggle').dropdown();
+
+    function previewImage(e, selectedFiles, imagesArray) {
+        const elemContainer = document.createElement('div');
+        elemContainer.setAttribute('class', 'item-images');
+        for (let i = 0; i < selectedFiles.length; i++) {
+            imagesArray.push(selectedFiles[i]);
+            const imageContainer = document.createElement('div');
+            const elem = document.createElement('img');
+            elem.setAttribute('src', URL.createObjectURL(selectedFiles[i]));
+            elem.setAttribute('class', 'photo-upload__preview')
+            elem.setAttribute('style', 'width: 100px; height: 100px; object-fit: cover;')
+            const removeButton = document.createElement('button');
+            removeButton.setAttribute('type', 'button');
+            removeButton.setAttribute('class', 'btn-close delete');
+            removeButton.classList.add('delete');
+            removeButton.dataset.filename = selectedFiles[i].name,
+                // removeButton.innerHTML = '<span>&times;</span>'
+            imageContainer.appendChild(elem);
+            imageContainer.appendChild(removeButton);
+            elemContainer.appendChild(imageContainer);
+        }
+        return elemContainer;
+    }
+
+    let item_images = [];
+    document.getElementById('files').addEventListener('change', (e) => {
+        let selectedFiles = e.target.files;
+        const photoPreviewContainer = document.querySelector('#photo-upload__preview');
+        photoPreviewContainer.childNodes.forEach(child => child.remove());
+        const elemContainer = previewImage(e, selectedFiles, item_images);
+        photoPreviewContainer.appendChild(elemContainer);
+    });
+
+    document.getElementById('photo-upload__preview').addEventListener('click', (e) => {
+        const tgt = e.target.closest('button');
+        if (tgt.classList.contains('delete')) {
+            tgt.closest('div').remove();
+            const fileName = tgt.dataset.filename
+            item_images = item_images.filter(img => img.name != fileName)
+        }
+    })
 
 </script>
 

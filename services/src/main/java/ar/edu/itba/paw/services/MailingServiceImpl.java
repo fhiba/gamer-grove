@@ -79,8 +79,8 @@ public class MailingServiceImpl implements MailingService {
             Transport.send(helper.getMimeMessage());
 
         }catch (MessagingException e) {
-            System.out.println("Error sending email");
-            System.out.println(e.getMessage());
+//            System.out.println("Error sending email");
+//            System.out.println(e.getMessage());
         }
     }
 

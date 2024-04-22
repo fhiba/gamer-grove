@@ -30,4 +30,5 @@ public interface CommunityDao {
     void followCommunity(long id, int communityId,String communityName);
 
     List<Community> getFollowedCommunities(long userId);
+    void updateCommunityImageId(long id, long imageId);
 }

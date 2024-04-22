@@ -8,6 +8,7 @@ import ar.edu.itba.paw.persistance.PostDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -27,6 +28,8 @@ public class PostServiceImpl implements PostService{
 
     @Autowired
     private MailingService mailingService;
+    @Autowired
+    private FileService fs;
 
     @Override
     public List<Post> getAllPosts() {
@@ -37,7 +40,7 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    public Post createPost(final String title, final String body, final String communityName, final String category) throws NoLoggedUserException, NoSuchCommunityException {
+    public Post createPost(final String title, final String body, final String communityName, final String category, final MultipartFile[] files) throws NoLoggedUserException, NoSuchCommunityException {
         Optional<User> user = userService.getLoggedUser();
         if(user.isEmpty())
             throw new NoLoggedUserException("User not logged");
@@ -45,6 +48,12 @@ public class PostServiceImpl implements PostService{
         Community community = communityService.findByName(communityName);
         Post post = postDao.createPost(title,body,(int)userId,community.getName(),false, LocalDateTime.now(), category);
         notifyUsers(post, user.get());
+        if(files.length > 0){
+            for (MultipartFile file : files) {
+                fs.uploadPostImage(file, post.getId());
+            }
+
+        }
 
         return post;
     }
@@ -73,6 +82,13 @@ public class PostServiceImpl implements PostService{
     @Override
     public Post getPostById(long postId) throws NoSuchPostException{
         Optional<Post> post = postDao.findById(postId);
+        if(post.isEmpty())
+            throw new NoSuchPostException("Post with id:" + postId+ " not found");
+        return post.get();
+    }
+    @Override
+    public Post getPostByIdWithImage(long postId) throws NoSuchPostException{
+        Optional<Post> post = postDao.findByIdWithImage(postId);
         if(post.isEmpty())
             throw new NoSuchPostException("Post with id:" + postId+ " not found");
         return post.get();
