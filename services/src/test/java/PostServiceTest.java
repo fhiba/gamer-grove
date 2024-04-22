@@ -3,7 +3,6 @@ import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
 import ar.edu.itba.paw.models.Community;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.persistance.CommunityDao;
 import ar.edu.itba.paw.persistance.PostDao;
 import ar.edu.itba.paw.services.CommunityService;
 import ar.edu.itba.paw.services.PostServiceImpl;
@@ -17,7 +16,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
