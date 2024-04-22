@@ -137,18 +137,13 @@ public class UserController {
             }
         }
     }
-    @RequestMapping(path = "/user/update", method = RequestMethod.GET)
-    public ModelAndView updateUser(@ModelAttribute("newUserPhoto") final UserPfpForm newUserPhoto) {
-
-        return new ModelAndView("image");
-    }
 
     @RequestMapping(path = "/user/update", method = RequestMethod.POST)
-    public ModelAndView updateUser(@Valid @ModelAttribute("newUserPhoto") final UserPfpForm newUserPhoto, final BindingResult errors) throws NoLoggedUserException {
+    public ModelAndView updateUser(@Valid @ModelAttribute("userPfpForm") final UserPfpForm userPfpForm, final BindingResult errors) throws NoLoggedUserException {
         if(errors.hasErrors()) {
-            return updateUser(newUserPhoto);
+            return getProfile(userPfpForm);
         }
-        fs.uploadUserImage(newUserPhoto.getFile());
+        fs.uploadUserImage(userPfpForm.getFile());
         return new ModelAndView("redirect:/profile");
     }
 
