@@ -39,7 +39,7 @@ public class PostServiceTest {
         //	1.	Setup!
         Community mockCommunity = new Community(1, COMMUNITY_NAME, "description");
         mockCommunity.setPortrait_id(0);
-        when(mockUserService.getLoggedUser()).thenReturn(Optional.of(new User(1,"username", "password", "email")));
+        when(mockUserService.getLoggedUser()).thenReturn(Optional.of(new User(1,"username", "password", "email",0)));
         when(mockCommunityService.findByName(COMMUNITY_NAME)).thenReturn(mockCommunity);
 
         // 	2.	"ejercito"	la	class	under	test
@@ -65,7 +65,7 @@ public class PostServiceTest {
     @Test(expected = NoSuchCommunityException.class)
     public void testFailedCreateWithNoCommunity() throws NoSuchCommunityException, NoLoggedUserException {
         //	1.	Setup!
-        when(mockUserService.getLoggedUser()).thenReturn(Optional.of(new User(1,"username", "password", "email")));
+        when(mockUserService.getLoggedUser()).thenReturn(Optional.of(new User(1,"username", "password", "email",0)));
         when(mockCommunityService.findByName(COMMUNITY_NAME)).thenReturn(null);
 
         // 	2.	"ejercito"	la	class	under	test

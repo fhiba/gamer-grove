@@ -17,4 +17,6 @@ public interface UserDao {
         List<User> findByCommunity(String communityName);
 
         List<User> findAll();
+
+        void updateImageId(long id, long imageId);
 }

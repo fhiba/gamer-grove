@@ -41,7 +41,7 @@ public class CommentServiceTest {
     @Test
     public void testCreateComment() throws NoLoggedUserException {
         // Mocking user service to return a dummy user
-        when(mockUserService.getLoggedUser()).thenReturn(Optional.of(new User(1,"username", "password", "email")));
+        when(mockUserService.getLoggedUser()).thenReturn(Optional.of(new User(1,"username", "password", "email",0)));
 
         LocalDateTime now = LocalDateTime.now();
         // Mocking commentDao's createComment method

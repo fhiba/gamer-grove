@@ -16,4 +16,6 @@ public interface FileDao {
 
 
     void uploadPostImage(long postId, long imageId);
+
+    Optional<File> updateUserImage(long userId, byte[] image);
 }

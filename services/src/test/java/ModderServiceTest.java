@@ -39,7 +39,7 @@ public class ModderServiceTest {
     @Test
     public void testAddModder() throws NoSuchCommunityException, UserNotFoundException, AlreadyModException {
 
-        when(mockUserService.findByUsername(USERNAME)).thenReturn(Optional.of(new User(USER_ID,"username", "password", "email")));
+        when(mockUserService.findByUsername(USERNAME)).thenReturn(Optional.of(new User(USER_ID,"username", "password", "email",0)));
         when(mockCommunityService.findById(Mockito.anyLong())).thenReturn(new Community(1, "name", "description"));
         when(mockModderDao.isModderOfCommunity(Mockito.eq(USER_ID), Mockito.anyInt())).thenReturn(false);
         when(mockModderDao.addModder(Mockito.eq(USER_ID), Mockito.anyInt())).thenReturn(1);
@@ -60,7 +60,7 @@ public class ModderServiceTest {
 
     @Test(expected = AlreadyModException.class)
     public void testAddAlreadyMod() throws NoSuchCommunityException, UserNotFoundException, AlreadyModException {
-        when(mockUserService.findByUsername(USERNAME)).thenReturn(Optional.of(new User(USER_ID, "username", "password", "email")));
+        when(mockUserService.findByUsername(USERNAME)).thenReturn(Optional.of(new User(USER_ID, "username", "password", "email",0)));
         when(mockCommunityService.findById(Mockito.anyLong())).thenReturn(new Community(1, "name", "description"));
         when(mockModderDao.isModderOfCommunity(Mockito.eq(USER_ID), Mockito.anyInt())).thenReturn(true);
 

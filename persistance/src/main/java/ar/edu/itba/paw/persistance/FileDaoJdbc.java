@@ -64,4 +64,10 @@ public class FileDaoJdbc implements FileDao{
         jdbcInsertPostImage.execute(values);
 
     }
+
+    @Override
+    public Optional<File> updateUserImage(long userIdImage, byte[] imageId) {
+        return jdbcTemplate.update("UPDATE media SET bytes = ? WHERE id = ?",imageId,userIdImage) == 1? Optional.of(new File(userIdImage,imageId)) : Optional.empty();
+
+    }
 }

@@ -53,12 +53,6 @@ public class MailingServiceImpl implements MailingService {
         properties.put("mail.smtp.port", MAIL_PORT);// port
         properties.put("mail.smtp.auth", MAIL_HAS_AUTH);// auth
         properties.put("mail.smtp.starttls.enable",MAIL_STARTTLS_ENABLE ); //TLS
-        System.out.println(MAIL_HOST);
-        System.out.println(MAIL_PORT);
-        System.out.println(MAIL_HAS_AUTH);
-        System.out.println(MAIL_STARTTLS_ENABLE);
-        System.out.println(MAIL_USERNAME);
-        System.out.println(MAIL_PASSWORD);
 
         return properties;
     }
@@ -85,8 +79,8 @@ public class MailingServiceImpl implements MailingService {
             Transport.send(helper.getMimeMessage());
 
         }catch (MessagingException e) {
-            System.out.println("Error sending email");
-            System.out.println(e.getMessage());
+//            System.out.println("Error sending email");
+//            System.out.println(e.getMessage());
         }
     }
 

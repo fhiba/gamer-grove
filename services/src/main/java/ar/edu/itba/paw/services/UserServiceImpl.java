@@ -55,4 +55,9 @@ public class UserServiceImpl implements UserService {
         return userDao.findAll();
     }
 
+    @Override
+    public void updateImageId(long id, long imageId) {
+        userDao.updateImageId(id, imageId);
+    }
+
 }

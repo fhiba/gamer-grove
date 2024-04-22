@@ -67,7 +67,6 @@
                         <p class="card-subtitle mb-4">u/<c:out value="${author}" escapeXml="true"/></p>
                         <p class="card-text"><c:out value="${post.body}" escapeXml="true"/></p>
                         <c:if test="${post.images.size() > 0}">
-
                             <div id="carouselExample" class="carousel slide ">
                                 <div class="carousel-inner bg-dark">
                                     <c:forEach var="image" items="${post.images}" varStatus="loop">
@@ -89,7 +88,6 @@
                                     <span class="visually-hidden">Next</span>
                                 </button>
                             </div>
-
                         </c:if>
                         <c:url value="/post/${postId}/delete" var="deletePostUrl"/>
                         <c:if test="${canDelete}">

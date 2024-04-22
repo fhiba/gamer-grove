@@ -17,4 +17,6 @@ public interface UserService {
     Boolean isUserAdmin(final long id);
 
     List<User> findAll();
+
+    void updateImageId(long id, long imageId);
 }

@@ -126,3 +126,7 @@ CREATE TABLE IF NOT EXISTS post_images (
                                            FOREIGN KEY (post_id) REFERENCES post(id),
                                            FOREIGN KEY (image_id) REFERENCES media(id)
 );
+
+ALTER TABLE users ADD COLUMN portrait_id int DEFAULT null;
+
+ALTER TABLE users ADD CONSTRAINT fk_users_portrait_id FOREIGN KEY (portrait_id) REFERENCES media(id);

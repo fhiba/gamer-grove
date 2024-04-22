@@ -55,27 +55,28 @@ public class FileServiceImpl implements FileService{
     }
 
     @Override
-    public Optional<File> uploadUserImage(long userId,MultipartFile file) throws NoLoggedUserException {
-        Optional<User> UpdateProfileImage = us.getLoggedUser();
-        if(UpdateProfileImage.isEmpty() ){
+    public Optional<File> uploadUserImage(MultipartFile file) throws NoLoggedUserException {
+        Optional<User> UpdateProfileImageMaybe = us.getLoggedUser();
+        if(UpdateProfileImageMaybe.isEmpty() ){
             throw new NoLoggedUserException("No user logged in");
         }
+        User UpdateProfileImage = UpdateProfileImageMaybe.get();
         Optional<File> image= Optional.empty();
-//        if (UpdateProfileImage.getPortrait_id() == 0) {
-//            try {
-//                image = fd.uploadUserImage(UpdateProfileImage.getId(), file.getBytes());
-//                if(image.isPresent())
-//                    us.updateImageId(UpdateProfileImage.get().getId(),image.get().getId());
-//            } catch (IOException e) {
-//                throw new RuntimeException(e);
-//            }
-//        } else {
-//            try {
-//                image = fd.updateUserImage(UpdateProfileImage.getPortrait_id(), file.getBytes());
-//            } catch (IOException e) {
-//                throw new RuntimeException(e);
-//            }
-//        }
+        if (UpdateProfileImage.getPortraid_id() == 0) {
+            try {
+                image = fd.uploadImage(file.getBytes());
+                if(image.isPresent())
+                    us.updateImageId(UpdateProfileImage.getId(),image.get().getImageId());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            try {
+                image = fd.updateUserImage(UpdateProfileImage.getPortraid_id(), file.getBytes());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
         return image;
     }
