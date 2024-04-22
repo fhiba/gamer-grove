@@ -14,5 +14,4 @@ public interface UserDao {
 
         Optional<Boolean> isAdmin(final long id);
 
-    Boolean updateUsername(long id, String username);
 }

@@ -50,9 +50,5 @@ public class UserServiceImpl implements UserService {
         return userDao.isAdmin(id).orElse(false);
     }
 
-    @Override
-    public Boolean updateProfile(String username) {
-        return userDao.updateUsername(getLoggedUser().orElseThrow().getId(),username);
-    }
 
 }

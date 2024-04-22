@@ -42,8 +42,5 @@ public class UserJdbcDaoTest {
     }
 
 
-    @Test
-    public void testUpdateUsername(long id, String username) {
-       //TODO Implement test
-    }
+
 }

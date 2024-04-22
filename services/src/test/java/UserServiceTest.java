@@ -43,10 +43,6 @@ public class UserServiceTest {
         Assert.assertEquals(EMAIL, maybeUser.getEmail());
     }
 
-    @Test
-    public void testUpdateProfile(String username) {
-        //TODO Implement test
-    }
 
 
 }

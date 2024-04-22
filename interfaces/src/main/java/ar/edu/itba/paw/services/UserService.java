@@ -16,5 +16,4 @@ public interface UserService {
 
     Boolean isUserAdmin(final long id);
 
-    Boolean updateProfile(String username);
 }
