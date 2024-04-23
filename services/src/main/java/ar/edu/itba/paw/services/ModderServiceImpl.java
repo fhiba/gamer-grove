@@ -29,14 +29,13 @@ public class ModderServiceImpl implements ModderService{
     public int addModder(String username, long communityId) throws UserNotFoundException, NoSuchCommunityException, AlreadyModException {
         Optional<User> possibleNewMod = us.findByUsername(username);
         if(possibleNewMod.isEmpty()){
-
-            throw new UserNotFoundException("User with id "+username+" not found");
+            throw new UserNotFoundException("User with username "+username+" not found");
         }
         User newMod = possibleNewMod.get();
         // Supuestamente el service me dice si existe o no la comunidad
         Community community = cs.findById(communityId);
         //Checkeo si existe el mod
-        if(md.isModderOfCommunity(newMod.getId(), communityId)){
+        if(isModderOfCommunity(newMod.getId(), communityId)){
 
             throw new AlreadyModException("User with id "+newMod.getId()+" is already a mod of community with id "+communityId);
         }
@@ -45,7 +44,7 @@ public class ModderServiceImpl implements ModderService{
 
     @Override
     public boolean isModderOfCommunity(long userId, long communityId) {
-        return md.isModderOfCommunity(userId,communityId);
+        return md.isModderOfCommunity(userId,communityId) || us.isUserAdmin(userId);
     }
 
     @Override
@@ -72,7 +71,7 @@ public class ModderServiceImpl implements ModderService{
         Post toDelete = ps.getPostById(postId);
         Community postFrom = cs.findByName(toDelete.getCommunity_name());
 
-        return md.isModderOfCommunity(userId, postFrom.getId());
+        return isModderOfCommunity(userId, postFrom.getId());
     }
 
     @Override
@@ -94,7 +93,7 @@ public class ModderServiceImpl implements ModderService{
             return false;
         }
 
-        return md.isModderOfCommunity(possibleMod.get().getId(), postFrom.getId());
+        return isModderOfCommunity(possibleMod.get().getId(), postFrom.getId());
     }
 
 

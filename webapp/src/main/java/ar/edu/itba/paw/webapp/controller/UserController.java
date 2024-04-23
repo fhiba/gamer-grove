@@ -92,8 +92,10 @@ public class UserController {
 
     @RequestMapping(path="/addMod", method = RequestMethod.GET)
     public ModelAndView getAddMod(@ModelAttribute("newModForm") final NewModForm newModForm,@ModelAttribute("removeModForm") final RemoveModForm removeModForm) {
-        ModelAndView mav =new ModelAndView("user/addMod");
+        ModelAndView mav = new ModelAndView("user/addMod");
+        mav.addObject("sidebarcommunities", cs.getFollowedCommunities(us.getLoggedUser().get()));
         mav.addObject("communities", cs.getAllCommunities());
+        mav.addObject("isLogged",true);
         return mav;
     }
 
@@ -101,7 +103,6 @@ public class UserController {
     public ModelAndView postAddMod(@ModelAttribute("removeModForm") final RemoveModForm removeModForm,@Valid @ModelAttribute("newModForm") final NewModForm newModForm, final BindingResult errors) throws UserNotFoundException, NoSuchCommunityException {
 
         if(errors.hasErrors()) {
-
             return  getAddMod(newModForm,removeModForm);
         }
 
