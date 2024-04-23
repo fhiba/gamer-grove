@@ -20,14 +20,18 @@
             <div class="col-2 sidebar">
                 <div class="card sidebar-card m-auto">
                     <div class="card-body">
+                        <hr>
                         <c:url value="/home" var="homeUrl"/>
                         <a href="${homeUrl}" class="text-decoration-none card-title text-light mb-3">
                             <h5><spring:message code="Navbar.Home"/></h5>
                         </a>
+                        <hr>
+
                         <c:url value="/all" var="allUrl"/>
                         <a href="${allUrl}" class="text-decoration-none card-title text-light mb-3">
                             <h5><spring:message code="All"/></h5>
                         </a>
+                        <hr>
                         <c:if test="${isLogged == null}">
                             <div class="h5 card-title text-light mb-3">Communities</div>
                         </c:if>
@@ -53,7 +57,7 @@
             </div>
             <div class="col-1"></div>
         <%--LISTA DE POSTS--%>
-        <div class="col-5 ">
+        <div class="col-5">
             <div class="card border-0">
                 <div class="card-body">
                     <div class="d-flex justify-content-between ">
@@ -80,7 +84,7 @@
                                     <div class="title-container">
                                         <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
                                              class="small-profile-pic mb-1" alt="Profile Picture">
-                                        <p class="fw-semibold card-subtitle">/<c:out value="${post.community_name}"
+                                        <p class="fw-semibold card-subtitle">/<c:out value="${post.communityName}"
                                                                                      escapeXml="true"/></p>
                                         <span class="badge rounded-pill mb-1 ${post.category}">${post.category}</span>
                                     </div>
@@ -107,7 +111,7 @@
         </div>
         <div class="col-1"></div>
         <%--LISTA DE NEWS--%>
-        <div class="col-3">
+        <div class="col-3 mt-5">
             <div class="card  bg-transparent border-0">
                 <div class="card-title news-title">
                     <h5><spring:message code="Home.News"/></h5>

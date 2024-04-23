@@ -56,7 +56,7 @@ public class CommunityController {
     @RequestMapping(path="/new-community", method = RequestMethod.POST)
     public ModelAndView createCommunity(@Valid @ModelAttribute("newCommunityForm") final NewCommunityForm newCommunityForm, BindingResult errors) throws NoSuchCommunityException{
         if(errors.hasErrors())
-            return new ModelAndView("community/newCommunity");
+            return newCommunity(newCommunityForm);
         System.out.println(newCommunityForm.getCategories());
         cs.createCommunity(newCommunityForm.getName(), newCommunityForm.getDescription(), newCommunityForm.getCategories(), newCommunityForm.getDeveloper(),newCommunityForm.getPublisher(),newCommunityForm.getReleaseDate());
         return new ModelAndView("redirect:/");
@@ -113,10 +113,26 @@ public class CommunityController {
         ModelAndView mav = new ModelAndView("community/communities");
         List<String> selectedCategories = Arrays.asList(categories.split(","));
         List<Community> communities = cs.find(searchTerms, selectedCategories);
+
+        User user = null;
+        List<Community> followedCommunities = null;
+        try{
+            user = us.getLoggedUserChecked();
+        }catch (Exception ignored){
+
+        }
+
+        if(user != null)
+            followedCommunities = cs.getFollowedCommunities(user);
+        else {
+            followedCommunities = cs.getAllCommunitiesNoCat();
+        }
+
         mav.addObject("categories", Arrays.stream(CommunityCategories.values()).map(CommunityCategories::getCategory).toArray(String[]::new));
         mav.addObject("selectedCategories", selectedCategories);
         mav.addObject("searchTerms", searchTerms);
         mav.addObject("communities",communities);
+        mav.addObject("followedCommunities",followedCommunities);
         return mav;
     }
 

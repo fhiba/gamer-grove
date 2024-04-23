@@ -101,7 +101,7 @@
         </div>
         <div class="col-1">
         </div>
-        <div class="col-6">
+        <div class="col-6 mt-5">
             <div class="card border-0">
                 <div class="card-body">
                     <div class="row w-100 mb-2">
@@ -171,7 +171,7 @@
                             <div class="card mb-3">
                                 <div class="card-body">
                                     <p class="fw-semibold card-subtitle mb-1">
-                                        <c:out value="c/${post.community_name}" escapeXml="true"/>
+                                        <c:out value="c/${post.communityName}" escapeXml="true"/>
                                         <span class="badge rounded-pill ${post.category}">${post.category}</span>
                                     </p>
                                     <c:if test="${!post.deleted}">
@@ -195,7 +195,6 @@
         </div>
     </div>
 </div>
-<%@ include file="/WEB-INF/jsp/components/footer.jsp" %>
 </body>
 </html>
 <script>

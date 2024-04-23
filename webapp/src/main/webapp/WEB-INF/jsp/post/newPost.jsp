@@ -33,7 +33,7 @@
                     <c:if test="${isLogged != null}">
                         <div class="card-title text-light mb-3">My Communities</div>
                     </c:if>
-                    <c:forEach var="community" items="${communities}">
+                    <c:forEach var="community" items="${followedCommunities}">
                         <c:url value="/community/${community.name}" var="communityUrl"/>
                         <a href="${communityUrl}" class="text-light text-decoration-none">
                             <div class="card-body-community d-flex align-items-center text-decoration-none mb-3">
