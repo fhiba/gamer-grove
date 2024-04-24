@@ -8,10 +8,10 @@ public class Post {
     private final long id;
     private final String title;
     private final String body;
-    private final long author_id;
-    private final String community_name;
+    private final long authorId;
+    private final String communityName;
     private final boolean media;
-    private final long media_id;
+    private final long mediaId;
     private final LocalDateTime date;
     private final int grooviness;
     private final boolean deleted;
@@ -33,20 +33,20 @@ public class Post {
         return body;
     }
 
-    public long getAuthor_id() {
-        return author_id;
+    public long getAuthorId() {
+        return authorId;
     }
 
-    public String getCommunity_name() {
-        return community_name;
+    public String getCommunityName() {
+        return communityName;
     }
 
     public boolean getMedia() {
         return media;
     }
 
-    public long getMedia_id() {
-        return media_id;
+    public long getMediaId() {
+        return mediaId;
     }
 
     public LocalDateTime getDate() {
@@ -63,10 +63,10 @@ public class Post {
         this.id = id;
         this.title = title;
         this.body = body;
-        this.author_id = author_id;
-        this.community_name = community_name;
+        this.authorId = author_id;
+        this.communityName = community_name;
         this.media = media;
-        this.media_id = media_id;
+        this.mediaId = media_id;
         this.date = date;
         this.grooviness = grooviness;
         this.deleted = deleted;

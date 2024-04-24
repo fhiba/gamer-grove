@@ -8,7 +8,7 @@
                 <c:url value="/" var="homeUrl"/>
                 <a class="navbar-brand d-flex align-items-end" href="${homeUrl}">
                     <img width="50" height="50" alt="logo" src="${pageContext.request.contextPath}/images/favicon.ico"/>
-                    <span class="h3 text-light mb-1">Gamer Grove</span>
+                    <span class="h4 text-light mb-2 fw-bold">Gamer Grove</span>
                 </a>
 
             </div>
@@ -31,7 +31,7 @@
             </div>
             <c:if test="${not empty pageContext.request.userPrincipal}">
                 <div class="col-3 d-flex justify-content-end align-items-center">
-                    <p class="text-light m-0 me-1">Hi, <c:out value="${pageContext.request.userPrincipal.name}" escapeXml="true" /> </p>
+                    <p class="text-light m-0 me-3">Hi, <c:out value="${pageContext.request.userPrincipal.name}" escapeXml="true" /> </p>
                     <div class="dropdown">
                         <button class="btn btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown"
                                 aria-expanded="false">

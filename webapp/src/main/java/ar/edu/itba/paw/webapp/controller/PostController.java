@@ -62,6 +62,21 @@ public class PostController {
     @RequestMapping(path = "/post", method = RequestMethod.GET)
     public ModelAndView getNewPost(@ModelAttribute("newPostForm") final NewPostForm newPostForm) {
         ModelAndView mav = new ModelAndView("post/newPost");
+        User user = null;
+        List<Community> communities = null;
+        List<Community> followedCommunities = null;
+        try{
+            user = us.getLoggedUserChecked();
+        }catch (Exception ignored){
+
+        }
+        if(user != null)
+            followedCommunities = cs.getFollowedCommunities(user);
+        else{
+            followedCommunities = cs.getAllCommunitiesNoCat();
+        }
+        mav.addObject("followedCommunities",followedCommunities);
+        mav.addObject("isLogged", user != null);
         //TODO: SHOULD BE THE ONES THAT ARE CURRENTLY BEING FOLLOWED BY USER OR A FEW RANDOMLY SELECTED
         mav.addObject("communities", cs.getAllCommunities());
         mav.addObject("categories", Arrays.stream(PostCategories.values()).map(PostCategories::getCategory).toArray(String[]::new));
@@ -98,7 +113,7 @@ public class PostController {
         if(user != null)
             communities = cs.getFollowedCommunities(user);
         else{
-            communities = cs.getAllCommunities();
+            communities = cs.getAllCommunitiesNoCat();
         }
 
         if (category != null && !category.isEmpty() && !category.equals("all")) {
@@ -137,7 +152,7 @@ public class PostController {
             }
         }
         else{
-            communities = cs.getAllCommunities();
+            communities = cs.getAllCommunitiesNoCat();
         }
         mav.addObject("isLogged", user != null);
         mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
@@ -149,23 +164,17 @@ public class PostController {
     }
 
     @RequestMapping(path = "/post/{postId}", method = RequestMethod.GET)
-    public ModelAndView singlePost(@PathVariable("postId") final long postId, @ModelAttribute("newPostGroovyForm") final NewPostGroovyForm newPostGroovyForm, @ModelAttribute("newCommentForm") final NewCommentForm newCommentForm, @ModelAttribute("newCommentGroovyForm") final NewCommentGroovyForm newCommentGroovyForm, @ModelAttribute("postDeleteForm") final PostDeleteForm postDeleteForm, @ModelAttribute("commentDeleteForm") final CommentDeleteForm commentDeleteForm) throws UserNotFoundException, NoSuchPostException, NoSuchCommunityException {
+    public ModelAndView singlePost(@PathVariable("postId") final long postId, @ModelAttribute("newPostGroovyForm") final NewPostGroovyForm newPostGroovyForm, @ModelAttribute("newCommentForm") final NewCommentForm newCommentForm, @ModelAttribute("newCommentGroovyForm") final NewCommentGroovyForm newCommentGroovyForm, @ModelAttribute("postDeleteForm") final PostDeleteForm postDeleteForm, @ModelAttribute("commentDeleteForm") final CommentDeleteForm commentDeleteForm,@ModelAttribute("followCommunityForm") final FollowCommunityForm followCommunityForm) throws UserNotFoundException, NoSuchPostException, NoSuchCommunityException, NoLoggedUserException {
         ModelAndView mav = new ModelAndView("/post/post");
         mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
         Post post;
-        try {
-            post = ps.getPostByIdWithImage(postId);
-            mav.addObject("post", post);
-        } catch (NoSuchPostException e) {
-            //TODO: Should log
-            throw e;
-        }
-
+        Community community;
         List<Community> communities;
         User user = null;
         List<Comment> comments = commentService.getPostComments((postId));
         List<Comment> grooviedComments = Collections.emptyList();
         List<Comment> negativeGrooviedComments = Collections.emptyList();
+        Boolean isFollowing = false;
         boolean canDelete = false;
         int isGrooved = 0;
         try{
@@ -180,9 +189,19 @@ public class PostController {
             isGrooved = ps.checkGrooviness(postId);
             canDelete = ms.canRemovePost(us.getLoggedUser().get().getId(), postId);
         } else {
-            communities = cs.getAllCommunities();
+            communities = cs.getAllCommunitiesNoCat();
         }
-
+        try {
+            post = ps.getPostByIdWithImage(postId);
+            mav.addObject("post", post);
+            community = cs.findByName(post.getCommunityName());
+            isFollowing = cs.checkIfUserFollowsCommunity((int)community.getId());
+        } catch (NoSuchPostException | NoLoggedUserException e) {
+            //TODO: Should log
+            throw e;
+        }
+        mav.addObject("isFollowing",isFollowing);
+        mav.addObject("community",community);
         mav.addObject("isLogged", user != null);
         mav.addObject("isGrooved", isGrooved);
         mav.addObject("newPostGroovyForm", newPostGroovyForm);
@@ -190,11 +209,11 @@ public class PostController {
         mav.addObject("downComments", negativeGrooviedComments);
         mav.addObject("newCommentForm", newCommentForm);
         mav.addObject("comments", comments);
-        Optional<User> author = us.findById(post.getAuthor_id());
+        Optional<User> author = us.findById(post.getAuthorId());
         mav.addObject("author", author.isPresent() ? author.get().getUsername() : "[deleted]");
         //TODO: SHOULD BE THE ONES THAT ARE CURRENTLY BEING FOLLOWED BY USER OR A FEW RANDOMLY SELECTED
         mav.addObject("communities", communities);
-        mav.addObject("posts", ps.getPostsByCommunity(post.getCommunity_name()));
+        mav.addObject("posts", ps.getPostsByCommunity(post.getCommunityName()));
         mav.addObject("canDelete", canDelete);
 
         return mav;

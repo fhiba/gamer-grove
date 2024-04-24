@@ -8,6 +8,7 @@ import ar.edu.itba.paw.persistance.CommunityDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -21,8 +22,9 @@ public class CommunityServiceImpl implements CommunityService{
     private UserService userService;
 
     @Override
-    public void createCommunity(final String name, final String description, final String categories) throws NoSuchCommunityException {
-        Community community = communityDao.createCommunity(name,description);
+    public void createCommunity(final String name, final String description, final String categories, String developer, String publisher, LocalDateTime releaseDate) throws NoSuchCommunityException {
+        System.out.println("entre al service");
+        Community community = communityDao.createCommunity(name,description,developer,publisher,releaseDate);
 
         if(categories != null && !categories.isEmpty()) {
             addCategories(community.getId(), List.of(categories.split(",")));
@@ -93,6 +95,14 @@ public class CommunityServiceImpl implements CommunityService{
         for (String category: categories){
             removeCategory(id,category);
         }
+    }
+
+    @Override
+    public List<Community> getAllCommunitiesNoCat() {
+        List<Community> communities = communityDao.getAllCommunitiesNoCat();
+        if(communities.isEmpty())
+            return Collections.emptyList();
+        return communities;
     }
 
     @Override

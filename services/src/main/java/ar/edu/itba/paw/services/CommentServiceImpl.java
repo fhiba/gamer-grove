@@ -55,7 +55,7 @@ public class CommentServiceImpl implements CommentService {
             return;
         }
 
-        Optional<User> user = userService.findById(post.getAuthor_id());
+        Optional<User> user = userService.findById(post.getAuthorId());
         if(user.isEmpty())
             return;
         mailingService.sendNewCommentNotification(user.get(), post, date);

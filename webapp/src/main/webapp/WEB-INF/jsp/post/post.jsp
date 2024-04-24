@@ -58,15 +58,16 @@
                 </div>
             </div>
         </div>
-
+            <div class="col-1">
+            </div>
         <%--POST DATA--%>
-        <div class="col-6">
+        <div class="col-5">
             <div class="card border-0 bg-transparent">
                 <div class="card-body">
                     <p class="fw-semibold card-subtitle mb-1">
-                        <c:url value="/community/${post.community_name}" var="communityUrl"/>
+                        <c:url value="/community/${post.communityName}" var="communityUrl"/>
                         <a href="${communityUrl}"
-                           class="text-decoration-none text-body-primary">c/<c:out value="${post.community_name}"
+                           class="text-decoration-none text-light text-body-primary">c/<c:out value="${post.communityName}"
                                                                                    escapeXml="true"/></a>
                         <span class="badge rounded-pill ${post.category}">${post.category}</span>
                     </p>
@@ -171,6 +172,7 @@
                                            placeholder="Join the discussion and leave a comment!"/>
                             <form:errors path="body" cssStyle="color: red" cssClass="error"/>
                         </div>
+                        <%--suppress XmlDuplicatedId --%>
                         <form:hidden path="postId" value="${post.id}"/>
                         <button class="btn btn-primary" type="submit">
                             <spring:message code="Post.Comment"/>
@@ -270,35 +272,45 @@
                 </div>
             </div>
         </div>
-        <%--POSTS LIST OF THE COMMUNITY--%>
-        <div class="col-3">
-            <div class="card  border-0 bg-transparent">
+        <div class="col-1">
+
+        </div>
+        <%--COMMUNITY INFO--%>
+        <div class="col-3 mt-3">
+            <div class="card  border-black bg-transparent">
                 <div class="card-body">
-                    <c:forEach items="${posts}" var="otherPost">
-                    <c:url value="/post/${otherPost.id}" var="postUrl"/>
-                    <a href="${postUrl}" class="text-decoration-none text-body-primary">
-                        <div class="card mb-3">
-                            <div class="card-body">
-                                <c:if test="${!otherPost.deleted}">
-                                    <h5 class="card-title card-title other-post-title fw-bold mb-1"><c:out
-                                            value="${otherPost.title}"
-                                            escapeXml="true"/>
-                                    </h5>
-                                    <span class="badge rounded-pill ${otherPost.category} mb-1">${otherPost.category}</span>
-                                    <p class="card-text post-body"><c:out value="${otherPost.body}"
-                                                                          escapeXml="true"/></p>
-                                </c:if>
-                                <c:if test="${otherPost.deleted}">
-                                    <h5 class="card-title
-                                 card-title other-post-title fw-bold mb-1"><spring:message code="Post.Deleted"/>
-                                    </h5>
-                                    <span class="badge rounded-pill ${otherPost.category} mb-1">${otherPost.category}</span>
-                                    <p class="card-text post-body"><spring:message code="Post.Deleted"/></p>
-                                </c:if>
-                            </div>
+                    <div class="card-title d-flex row-cols-2 justify-content-between">
+                        <c:url value="/community/${community.name}" var="communityUrl"/>
+                        <a href="${communityUrl}" class="text-decoration-none">
+                            <h5 class="card-title text-light fw-bold">${community.name}</h5>
+                        </a>
+                        <div class="d-none">
+                            <c:url var="followUrl" value="/community/${community.name}/follow"/>
+                            <form:form modelAttribute="followCommunityForm" action="${followUrl}" method="post"
+                                       id="followForm">
+                                <form:hidden path="communityName" value="${community.name}"/>
+                                <form:hidden path="communityId" value="${community.id}"/>
+                            </form:form>
                         </div>
-                        </c:forEach>
-                    </a>
+                        <c:if test="${isFollowing}">
+                            <button onClick="follow()"
+                                    class="rounded-pill  btn-outline-danger follow-button fw-bold"
+                                    id="followButton">Following
+                            </button>
+                        </c:if>
+                        <c:if test="${!isFollowing}">
+                            <button onClick="follow()"
+                                    class="rounded-pill   btn-outline-danger  follow-button fw-bold"
+                                    id="followButton">Follow
+                            </button>
+                        </c:if>
+                    </div>
+                    <c:forEach var="category" items="${community.categories}">
+                        <span class="cat-badge badge">${category}</span>
+                    </c:forEach>
+                    <div class="card-subtitle text-body-secondary mt-3">
+                        ${community.description}
+                    </div>
                 </div>
             </div>
         </div>
@@ -335,6 +347,10 @@
         let postGroovyType = document.getElementById('postGroovyType');
         postGroovyType.value = updateType;
         document.getElementById('newPostGroovyForm').submit();
+    }
+
+    let follow = () => {
+        document.getElementById('followForm').submit();
     }
 
 </script>

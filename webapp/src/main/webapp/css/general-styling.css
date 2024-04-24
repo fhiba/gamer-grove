@@ -5,7 +5,7 @@
 body {
     font-family: 'Inter', sans-serif;
     background-color: #1f1f1f;
-    color:#ffffff;
+    color:#ffffff!important;
 }
 
 .text-body-secondary{
@@ -153,14 +153,31 @@ body {
 }
 
 .follow-button {
+    background-color:transparent;
+    color: #ff0000;
+    border-color: #ff0000;
     font-size: 20px; /* Adjust as needed */
     max-height: 2.5rem;
     max-width: min-content;
+    padding: 0 1rem; /* Adjust as needed */
 }
 
 .cat-badge {
     max-height: min-content;
     text-underline: none;
+    background-color: lightslategrey;
+    margin-bottom: 0.5rem;
+}
+
+.community-accordion{
+    color: transparent;
+}
+
+.expand-btn{
+    justify-content: end;
+    background-color: transparent;
+    border:none;
+    color: white;
 }
 
 .post-body-home {
@@ -192,4 +209,8 @@ body {
     display: inline-block;
     overflow: hidden;
     width: 5em;
+}
+
+.input-group-append {
+    cursor: pointer;
 }

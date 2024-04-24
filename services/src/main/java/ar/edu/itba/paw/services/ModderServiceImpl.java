@@ -69,7 +69,7 @@ public class ModderServiceImpl implements ModderService{
     public boolean canRemovePost(long userId, long postId) throws NoSuchPostException, NoSuchCommunityException {
 
         Post toDelete = ps.getPostById(postId);
-        Community postFrom = cs.findByName(toDelete.getCommunity_name());
+        Community postFrom = cs.findByName(toDelete.getCommunityName());
 
         return isModderOfCommunity(userId, postFrom.getId());
     }
@@ -84,7 +84,7 @@ public class ModderServiceImpl implements ModderService{
         }
         Community postFrom;
         try {
-            postFrom = cs.findByName(toDelete.getCommunity_name());
+            postFrom = cs.findByName(toDelete.getCommunityName());
         } catch (NoSuchCommunityException e) {
             return false;
         }

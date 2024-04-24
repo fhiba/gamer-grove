@@ -1,9 +1,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<%@ page contentType="text/html;charset=UTF-8"%>
+<%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
-    <title><spring:message code="Communities.Title"/> </title>
+    <title><spring:message code="Communities.Title"/></title>
     <link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="${pageContext.request.contextPath}/css/general-styling.css" rel="stylesheet"/>
     <script src="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js"></script>
@@ -14,13 +14,44 @@
 <%@ include file="/WEB-INF/jsp/components/header.jsp" %>
 
 <div class="container-fluid">
-    <div class="row mt-4 min-vh-100">
+    <div class="row min-vh-100">
         <%--COMMUNITY LIST--%>
-        <div class="col-3">
-
-
+        <div class="col-2 sidebar">
+            <div class="card sidebar-card m-auto">
+                <div class="card-body">
+                    <c:url value="/home" var="homeUrl"/>
+                    <a href="${homeUrl}" class="text-decoration-none card-title text-light mb-3">
+                        <h5><spring:message code="Navbar.Home"/></h5>
+                    </a>
+                    <c:url value="/all" var="allUrl"/>
+                    <a href="${allUrl}" class="text-decoration-none card-title text-light mb-3">
+                        <h5><spring:message code="All"/></h5>
+                    </a>
+                    <c:if test="${isLogged == null}">
+                        <div class="h5 card-title text-light mb-3">Communities</div>
+                    </c:if>
+                    <c:if test="${isLogged != null}">
+                        <div class="card-title text-light mb-3">My Communities</div>
+                    </c:if>
+                    <c:forEach var="community" items="${followedCommunities}">
+                        <c:url value="/community/${community.name}" var="communityUrl"/>
+                        <a href="${communityUrl}" class="text-light text-decoration-none">
+                            <div class="card-body-community d-flex align-items-center text-decoration-none mb-3">
+                                <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
+                                     class="very-small-profile-pic mb-1" alt="Profile Picture">
+                                <div class="text-decoration-none">
+                                    <h5 class="fw-semibold card-subtitle ">
+                                        /<c:out value="${community.name}" escapeXml="true"/>
+                                    </h5>
+                                </div>
+                            </div>
+                        </a>
+                    </c:forEach>
+                </div>
+            </div>
         </div>
-
+        <div class="col-1">
+        </div>
         <%--LISTA DE COMMUNITIES--%>
         <div class="col-6">
             <div class="card border-0 text-decoration-none">
@@ -75,21 +106,26 @@
         <div class="col-3">
             <div class="card border-0 text-decoration-none">
                 <div class="card-body">
-                    <h5><spring:message code="Home.FilterCategory"/> </h5>
+                    <h5><spring:message code="Home.FilterCategory"/></h5>
                     <div id="categoryPills" class="d-flex flex-row flex-wrap">
                     </div>
                     <div class="d-flex border border-dark-subtle">
                         <div class="accordion accordion-flush w-100" id="accordionFlushExample">
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="flush-headingOne">
-                                    <button id="addCategoryButton"  class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                                    <button id="addCategoryButton" class="accordion-button collapsed" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#flush-collapseOne"
+                                            aria-expanded="false" aria-controls="flush-collapseOne">
                                         Add Category
                                     </button>
                                 </h2>
-                                <div id="flush-collapseOne" class="accordion-collapse collapse border border-top-dark justify-content-evenly" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+                                <div id="flush-collapseOne"
+                                     class="accordion-collapse collapse border border-top-dark justify-content-evenly"
+                                     aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
                                     <div id="categoriesBody" class="accordion-body">
 
-                                        <p class="text-dark-emphasis m-1" hidden="hidden" id="emptyCatText">No more categories to apply.</p>
+                                        <p class="text-dark-emphasis m-1" hidden="hidden" id="emptyCatText">No more
+                                            categories to apply.</p>
                                     </div>
                                 </div>
                             </div>
@@ -125,8 +161,6 @@
 
         addCategoriesToForm();
     }
-
-
 
 
     let createPill = (selected) => {

@@ -9,25 +9,32 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Repository
-public class CommunityDaoJdbc implements CommunityDao{
+public class CommunityDaoJdbc implements CommunityDao {
 
     private static final RowMapper<Community> ROW_MAPPER = (rs, rowNum) -> {
-            Community community = new  Community(rs.getLong("id"),
-            rs.getString("name"),
-            rs.getString("description"));
-            community.setPortrait_id(rs.getLong("portrait_id"));
-            return community;
+        Community community = new Community(rs.getLong("id"),
+                rs.getString("name"),
+                rs.getString("description"),
+                rs.getString("publisher"),
+                rs.getString("developer"),
+                rs.getTimestamp("release_date").toLocalDateTime());
+        community.setPortrait_id(rs.getLong("portrait_id"));
+        return community;
     };
 
     private static final RowMapper<Community> ROW_MAPPER_CATEGORIES = (rs, rowNum) -> {
-        Community community = new  Community(rs.getLong("id"),
+        Community community = new Community(rs.getLong("id"),
                 rs.getString("name"),
-                rs.getString("description"));
+                rs.getString("description"),
+                rs.getString("publisher"),
+                rs.getString("developer"),
+                rs.getTimestamp("release_date").toLocalDateTime());
         community.setPortrait_id(rs.getLong("portrait_id"));
-        if(rs.getString("categories") != null)
+        if (rs.getString("categories") != null)
             community.setCategories(Arrays.stream(rs.getString("categories").split(",")).toList());
         return community;
     };
@@ -46,11 +53,11 @@ public class CommunityDaoJdbc implements CommunityDao{
 
 
     @Autowired
-    public CommunityDaoJdbc(final DataSource ds){
+    public CommunityDaoJdbc(final DataSource ds) {
         jdbcTemplate = new JdbcTemplate(ds);
         jdbcInsert = new SimpleJdbcInsert(ds).usingGeneratedKeyColumns("id").withTableName("community");
         jdbcInsertUser = new SimpleJdbcInsert(ds).withTableName("community_user");
-        jdbcInsertCategory =  new SimpleJdbcInsert(ds).withTableName("communities_categories");
+        jdbcInsertCategory = new SimpleJdbcInsert(ds).withTableName("communities_categories");
     }
 
     @Override
@@ -62,35 +69,41 @@ public class CommunityDaoJdbc implements CommunityDao{
     }
 
     @Override
-    public Community createCommunity(String name, String description) {
+    public Community createCommunity(String name, String description, String developer, String publisher, LocalDateTime releaseDate) {
+        System.out.println("entre al dao");
         Map<String, Object> args = new HashMap<>();
         args.put("name", name);
         args.put("description", description);
+        args.put("portrait_id",null);
+        args.put("developer",developer);
+        args.put("publisher",publisher);
+        args.put("release_date",releaseDate);
         long id = jdbcInsert.executeAndReturnKey(args).longValue();
-        return new Community(id, name,  description);
+        System.out.println(id);
+        return new Community(id, name, description,publisher,developer,releaseDate);
     }
 
     @Override
     public List<Community> findAllCommunities() {
-          return jdbcTemplate.query("SELECT community.*, string_agg(cc.category, ',') as categories" +
-                  " FROM community LEFT JOIN communities_categories as cc ON community.id = cc.community_id" +
-                  " GROUP BY community.id, community.name, community.description, community.portrait_id" +
-                  " ORDER BY community.name", ROW_MAPPER_CATEGORIES);
+        return jdbcTemplate.query("SELECT community.*, string_agg(cc.category, ',') as categories" +
+                " FROM community LEFT JOIN communities_categories as cc ON community.id = cc.community_id" +
+                " GROUP BY community.id, community.name, community.description, community.portrait_id" +
+                " ORDER BY community.name", ROW_MAPPER_CATEGORIES);
     }
 
     @Override
     public Optional<Community> findByName(String communityName) {
         return jdbcTemplate.query("SELECT community.*, string_agg(cc.category, ',') as categories" +
-                " FROM community LEFT JOIN communities_categories as cc ON community.id = cc.community_id" +
-                " WHERE name = ?" +
-                " GROUP BY community.id, community.name, community.description, community.portrait_id" +
-                " ORDER BY community.name"
+                        " FROM community LEFT JOIN communities_categories as cc ON community.id = cc.community_id" +
+                        " WHERE name = ?" +
+                        " GROUP BY community.id, community.name, community.description, community.portrait_id" +
+                        " ORDER BY community.name"
                 , new Object[]{communityName}, ROW_MAPPER_CATEGORIES).stream().findFirst();
     }
 
     @Override
     public List<String> getCategoriesOfCommunity(long id) {
-       return jdbcTemplate.query("SELECT category FROM communities_categories WHERE community_id = ?", new Object[]{id}, (rs, rowNum) -> rs.getString("category"));
+        return jdbcTemplate.query("SELECT category FROM communities_categories WHERE community_id = ?", new Object[]{id}, (rs, rowNum) -> rs.getString("category"));
     }
 
     @Override
@@ -107,7 +120,7 @@ public class CommunityDaoJdbc implements CommunityDao{
 
     @Override
     public Boolean addCategory(long id, String category) {
-        Map<String, Object> args= new HashMap<>();
+        Map<String, Object> args = new HashMap<>();
         args.put("community_id", id);
         args.put("category", category);
         return jdbcInsertCategory.execute(args) > 0;
@@ -117,7 +130,6 @@ public class CommunityDaoJdbc implements CommunityDao{
     public Boolean removeCategory(long id, String category) {
         return jdbcTemplate.update("DELETE FROM communities_categories WHERE community_id = ? AND category = ?", id, category) > 0;
     }
-
 
 
     private class QueryBuilder {
@@ -132,22 +144,26 @@ public class CommunityDaoJdbc implements CommunityDao{
         private final List<String> categories = new ArrayList<>();
         private String searchTerm = "";
         private int categoriesCount = 0;
+
         public QueryBuilder() {
         }
+
         public QueryBuilder withCategory(String category) {
             categories.add(category);
             categoriesCount++;
             return this;
         }
+
         public QueryBuilder withSearchTerm(String searchTerm) {
-            if(searchTerm == null || searchTerm.isEmpty())
+            if (searchTerm == null || searchTerm.isEmpty())
                 return this;
 
             this.searchTerm = searchTerm;
             return this;
         }
+
         public QueryBuilder withCategories(List<String> categories) {
-            if(categories == null || categories.isEmpty()) {
+            if (categories == null || categories.isEmpty()) {
                 return this;
             }
             this.categories.addAll(categories);
@@ -163,7 +179,7 @@ public class CommunityDaoJdbc implements CommunityDao{
             long categoriesSize = categories.size();
             objects.add("%" + searchTerm + "%");
 
-            if(categoriesCount > 0) {
+            if (categoriesCount > 0) {
                 sb.append(CATEGORY);
                 sb.append(CATEGORY_CONDITION);
                 categoriesCount--;
@@ -189,12 +205,12 @@ public class CommunityDaoJdbc implements CommunityDao{
     }
 
     @Override
-    public void followCommunity(long id, int communityId,String communityName) {
+    public void followCommunity(long id, int communityId, String communityName) {
         Map<String, Object> args = new HashMap<>();
         args.put("community_id", communityId);
         args.put("user_id", id);
         args.put("community_role", 0);
-        args.put("community_name",communityName);
+        args.put("community_name", communityName);
         jdbcInsertUser.execute(args);
     }
 
@@ -202,4 +218,11 @@ public class CommunityDaoJdbc implements CommunityDao{
     public List<Community> getFollowedCommunities(long userId) {
         return jdbcTemplate.query("SELECT * FROM community WHERE id IN (SELECT community_id FROM community_user WHERE user_id = ?)", new Object[]{userId}, ROW_MAPPER);
     }
+
+    @Override
+    public List<Community> getAllCommunitiesNoCat() {
+        return jdbcTemplate.query("SELECT * FROM community", ROW_MAPPER);
+    }
+
+
 }
