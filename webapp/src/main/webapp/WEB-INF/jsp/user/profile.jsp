@@ -9,6 +9,8 @@
     <link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="${pageContext.request.contextPath}/css/general-styling.css" rel="stylesheet"/>
     <script src="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js"></script>
+    <%--suppress JSUnresolvedLibraryURL --%>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
 <body>
 
@@ -66,12 +68,12 @@
                         <div class="col-3">
                             <c:if test="${user.portraid_id == 0}">
 
-                                <img src="${pageContext.request.contextPath}/images/default-avatar-icon.jpg"
+                                <img  src="${pageContext.request.contextPath}/images/default-avatar-icon.jpg"
                                      class="w-100 h-100 rounded-1" id="imgFile" alt="Profile Picture">
                             </c:if>
                             <c:if test="${user.portraid_id != 0}">
 
-                                <img src="<c:url value='/image/${user.portraid_id}'/>"
+                                <img  src="<c:url value='/image/${user.portraid_id}'/>"
                                      class="w-100 h-100 rounded-1" id="imgFile" alt="Profile Picture">
                             </c:if>
 
@@ -98,7 +100,7 @@
                                            modelAttribute="userPfpForm">
                                     <label class="form-label fw-semibold"><spring:message
                                             code="Profile.UpdateProfilePicture"/></label>
-                                    <form:input path="file" class="form-control w-50" type="file"/>
+                                    <form:input onchange="document.getElementById('imgFile').src = window.URL.createObjectURL(this.files[0])" path="file" class="form-control w-50" type="file"/>
                                     <p class="mt-3 mb-auto"><form:errors path="file" cssStyle="color: red"
                                                                          cssClass="error"/></p>
                                     <button type="submit" class="btn btn-primary mt-3"><spring:message
