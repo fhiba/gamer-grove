@@ -66,16 +66,20 @@ public class PostController {
         User user = null;
         List<Community> communities = null;
         List<Community> followedCommunities = null;
+        Boolean isAdmin = false;
         try{
             user = us.getLoggedUserChecked();
         }catch (Exception ignored){
 
         }
-        if(user != null)
+        if(user != null) {
             followedCommunities = cs.getFollowedCommunities(user);
+            isAdmin = us.isUserAdmin(user.getId());
+        }
         else{
             followedCommunities = cs.getAllCommunitiesNoCat();
         }
+        mav.addObject("isAdmin",isAdmin);
         mav.addObject("followedCommunities",followedCommunities);
         mav.addObject("isLogged", user != null);
         //TODO: SHOULD BE THE ONES THAT ARE CURRENTLY BEING FOLLOWED BY USER OR A FEW RANDOMLY SELECTED
@@ -142,6 +146,7 @@ public class PostController {
         List<Post> posts = ps.getAllPosts();
         List<Community> communities;
         User user = null;
+        Boolean isAdmin = false;
         try{
             user = us.getLoggedUserChecked();
         }catch (Exception ignored){
@@ -149,6 +154,7 @@ public class PostController {
         }
         if(user != null) {
             communities = cs.getFollowedCommunities(user);
+            isAdmin = us.isUserAdmin(user.getId());
             if (category != null && !category.isEmpty() && !category.equals("all")) {
                 posts = ps.getMyFollowedPostsByCategory(category,user);
             } else {
@@ -158,6 +164,7 @@ public class PostController {
         else{
             communities = cs.getAllCommunitiesNoCat();
         }
+        mav.addObject("isAdmin",isAdmin);
         mav.addObject("isLogged", user != null);
         mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
         mav.addObject("posts",posts);
@@ -179,6 +186,7 @@ public class PostController {
         List<Comment> grooviedComments = Collections.emptyList();
         List<Comment> negativeGrooviedComments = Collections.emptyList();
         Boolean isFollowing = false;
+        Boolean isAdmin = false;
         boolean canDelete = false;
         int isGrooved = 0;
         try{
@@ -192,6 +200,7 @@ public class PostController {
             negativeGrooviedComments = commentService.getDownGroovedComments(postId);
             isGrooved = ps.checkGrooviness(postId);
             canDelete = ms.canRemovePost(us.getLoggedUser().get().getId(), postId);
+            isAdmin = us.isUserAdmin(user.getId());
         } else {
             communities = cs.getAllCommunitiesNoCat();
         }
@@ -204,6 +213,7 @@ public class PostController {
             //TODO: Should log
             throw e;
         }
+        mav.addObject("isAdmin",isAdmin);
         mav.addObject("isFollowing",isFollowing);
         mav.addObject("community",community);
         mav.addObject("isLogged", user != null);

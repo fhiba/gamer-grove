@@ -43,16 +43,19 @@ public class CommunityController {
         ModelAndView mav = new ModelAndView("community/newCommunity");
         User user = null;
         List<Community> communities;
+        Boolean isAdmin = false;
         try{
             user = us.getLoggedUserChecked();
         }catch (Exception ignored){
 
         }
-        if(user != null)
+        if(user != null) {
             communities = cs.getFollowedCommunities(user);
-        else{
+            isAdmin = us.isUserAdmin(user.getId());
+        }else{
             communities = cs.getAllCommunitiesNoCat();
         }
+        mav.addObject("isAdmin",isAdmin);
         mav.addObject("isLogged", user != null);
         mav.addObject("communities",communities);
         mav.addObject("categories", Arrays.stream(CommunityCategories.values()).map(CommunityCategories::getCategory).toArray(String[]::new));
@@ -74,6 +77,7 @@ public class CommunityController {
         ModelAndView mav = new ModelAndView("community/community");
         Community community = cs.findByName(communityName);
         List<Post> posts = ps.getPostsByCommunity(communityName);
+        Boolean isAdmin = false;
         Boolean isFollowing = false;
         try {
             isFollowing = cs.checkIfUserFollowsCommunity((int)community.getId());
@@ -84,6 +88,7 @@ public class CommunityController {
         List<Community> communities;
         try{
             user = us.getLoggedUserChecked();
+            isAdmin = us.isUserAdmin(user.getId());
         }catch (Exception ignored){
 
         }
@@ -93,6 +98,7 @@ public class CommunityController {
         else {
             communities = cs.getAllCommunitiesNoCat();
         }
+        mav.addObject("isAdmin",isAdmin);
         mav.addObject("isLogged", user != null);
         mav.addObject("communities", communities);
         mav.addObject("isFollowing",isFollowing);
@@ -125,11 +131,12 @@ public class CommunityController {
         ModelAndView mav = new ModelAndView("community/communities");
         List<String> selectedCategories = Arrays.asList(categories.split(","));
         List<Community> communities = cs.find(searchTerms, selectedCategories);
-
+        Boolean isAdmin = false;
         User user = null;
         List<Community> followedCommunities;
         try{
             user = us.getLoggedUserChecked();
+            isAdmin = us.isUserAdmin(user.getId());
         }catch (Exception ignored){
 
         }
@@ -139,6 +146,7 @@ public class CommunityController {
         else {
             followedCommunities = cs.getAllCommunitiesNoCat();
         }
+        mav.addObject("isAdmin",isAdmin);
         mav.addObject("isLogged",user != null);
         mav.addObject("categories", Arrays.stream(CommunityCategories.values()).map(CommunityCategories::getCategory).toArray(String[]::new));
         mav.addObject("selectedCategories", selectedCategories);
