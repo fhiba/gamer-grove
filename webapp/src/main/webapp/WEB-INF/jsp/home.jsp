@@ -88,8 +88,14 @@
                             <div class="card mb-3">
                                 <div class="card-body">
                                     <div class="title-container">
-                                        <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
-                                             class="small-profile-pic mb-1" alt="Profile Picture">
+<%--                                        <c:if test="${community.portrait_id == 0}">--%>
+<%--                                            <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"--%>
+<%--                                                 class="very-small-profile-pic mb-1" alt="Profile Picture">--%>
+<%--                                        </c:if>--%>
+<%--                                        <c:if test="${community.portrait_id != 0}">--%>
+<%--                                            <img src="<c:url value='/image/${community.portrait_id}'/>"--%>
+<%--                                                 class="very-small-profile-pic mb-1" alt="Profile Picture">--%>
+<%--                                        </c:if>                                            --%>
                                         <p class="fw-semibold card-subtitle">/<c:out value="${post.communityName}"
                                                                                      escapeXml="true"/></p>
                                         <span class="badge rounded-pill mb-1 ${post.category}">${post.category}</span>
@@ -128,6 +134,7 @@
                         <a href="${newsUrl}" class="card-link text-decoration-none ">
                             <div class="card mb-3">
                                 <div class="card-body">
+                                    <h6 class="card-subtitle text-secondary fw-bold"><c:out value="${a_new.communityName}" escapeXml="true"/></h6>
                                     <h5 class="card-title fw-bold"><c:out value="${a_new.title}" escapeXml="true"/></h5>
                                     <p class="card-text post-body"><c:out value="${a_new.body}" escapeXml="true"/></p>
                                 </div>

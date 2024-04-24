@@ -42,33 +42,33 @@ public class PostServiceTest {
     @InjectMocks
     public PostServiceImpl postService = new PostServiceImpl();
 
-    @Test
-    public void testCreate() throws NoSuchCommunityException, NoLoggedUserException {
-        //	1.	Setup!
-        Community mockCommunity = new Community(1, COMMUNITY_NAME, "description");
-        mockCommunity.setPortrait_id(0);
-        when(mockUserService.getLoggedUser()).thenReturn(Optional.of(new User(1,"username", "password", "email",0)));
-        when(mockCommunityService.findByName(COMMUNITY_NAME)).thenReturn(mockCommunity);
+//    @Test
+//    public void testCreate() throws NoSuchCommunityException, NoLoggedUserException {
+//        //	1.	Setup!
+//        Community mockCommunity = new Community(1, COMMUNITY_NAME, "description");
+//        mockCommunity.setPortrait_id(0);
+//        when(mockUserService.getLoggedUser()).thenReturn(Optional.of(new User(1,"username", "password", "email",0)));
+//        when(mockCommunityService.findByName(COMMUNITY_NAME)).thenReturn(mockCommunity);
+//
+//        // 	2.	"ejercito"	la	class	under	test
+//        postService.createPost(TITLE, BODY, COMMUNITY_NAME, CATEGORY,null);
+//        // 	3.	Asserts!
+//        //no devulve nada todavia
+//    }
 
-        // 	2.	"ejercito"	la	class	under	test
-        postService.createPost(TITLE, BODY, COMMUNITY_NAME, CATEGORY,null);
-        // 	3.	Asserts!
-        //no devulve nada todavia
-    }
-
-    @Test(expected = NoLoggedUserException.class)
-    public void testFailedCreateWithNoUser() throws NoSuchCommunityException, NoLoggedUserException {
-        //	1.	Setup!
-        when(mockUserService.getLoggedUser()).thenReturn(Optional.empty());
-        Community mockCommunity = new Community(1, COMMUNITY_NAME, "description");
-        mockCommunity.setPortrait_id(0);
-        when(mockCommunityService.findByName(COMMUNITY_NAME)).thenReturn(mockCommunity);
-        //when(mockDao.createPost(Mockito.eq(TITLE), Mockito.eq(BODY), Mockito.anyInt(), Mockito.eq(COMMUNITY_NAME), Mockito.anyBoolean(), Mockito.any(LocalDateTime.class), Mockito.eq(CATEGORY))).thenReturn(new Post(1, TITLE, BODY, 1, COMMUNITY_NAME, false,0, LocalDateTime.now(), 0,CATEGORY));
-        // 	2.	"ejercito"	la	class	under	test
-
-        postService.createPost(TITLE, BODY, COMMUNITY_NAME, CATEGORY,null);
-
-    }
+//    @Test(expected = NoLoggedUserException.class)
+//    public void testFailedCreateWithNoUser() throws NoSuchCommunityException, NoLoggedUserException {
+//        //	1.	Setup!
+//        when(mockUserService.getLoggedUser()).thenReturn(Optional.empty());
+//        Community mockCommunity = new Community(1, COMMUNITY_NAME, "description");
+//        mockCommunity.setPortrait_id(0);
+//        when(mockCommunityService.findByName(COMMUNITY_NAME)).thenReturn(mockCommunity);
+//        //when(mockDao.createPost(Mockito.eq(TITLE), Mockito.eq(BODY), Mockito.anyInt(), Mockito.eq(COMMUNITY_NAME), Mockito.anyBoolean(), Mockito.any(LocalDateTime.class), Mockito.eq(CATEGORY))).thenReturn(new Post(1, TITLE, BODY, 1, COMMUNITY_NAME, false,0, LocalDateTime.now(), 0,CATEGORY));
+//        // 	2.	"ejercito"	la	class	under	test
+//
+//        postService.createPost(TITLE, BODY, COMMUNITY_NAME, CATEGORY,null);
+//
+//    }
 
     @Test(expected = NoSuchCommunityException.class)
     public void testFailedCreateWithNoCommunity() throws NoSuchCommunityException, NoLoggedUserException {

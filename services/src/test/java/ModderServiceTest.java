@@ -47,7 +47,7 @@ public class ModderServiceTest {
     public void testAddModder() throws NoSuchCommunityException, UserNotFoundException, AlreadyModException {
 
         when(mockUserService.findByUsername(USERNAME)).thenReturn(Optional.of(new User(USER_ID,"username", "password", "email",0)));
-        when(mockCommunityService.findById(Mockito.anyLong())).thenReturn(new Community(1, "name", "description"));
+//        when(mockCommunityService.findById(Mockito.anyLong())).thenReturn(new Community(1, "name", "description"));
         when(mockModderDao.isModderOfCommunity(Mockito.eq(USER_ID), Mockito.anyInt())).thenReturn(false);
         when(mockModderDao.addModder(Mockito.eq(USER_ID), Mockito.anyInt())).thenReturn(1);
 
@@ -68,7 +68,7 @@ public class ModderServiceTest {
     @Test(expected = AlreadyModException.class)
     public void testAddAlreadyMod() throws NoSuchCommunityException, UserNotFoundException, AlreadyModException {
         when(mockUserService.findByUsername(USERNAME)).thenReturn(Optional.of(new User(USER_ID, "username", "password", "email",0)));
-        when(mockCommunityService.findById(Mockito.anyLong())).thenReturn(new Community(1, "name", "description"));
+//        when(mockCommunityService.findById(Mockito.anyLong())).thenReturn(new Community(1, "name", "description"));
         when(mockModderDao.isModderOfCommunity(Mockito.eq(USER_ID), Mockito.anyInt())).thenReturn(true);
 
         int result = modderService.addModder(USERNAME, COMMUNITY_ID);
@@ -77,7 +77,7 @@ public class ModderServiceTest {
     @Test
     public void testCanRemovePostAlternative() throws NoSuchCommunityException, NoSuchPostException {
         when(mockModderDao.isModderOfCommunity(Mockito.anyLong(), Mockito.anyLong())).thenReturn(true);
-        when(mockCommunityService.findByName(Mockito.anyString())).thenReturn(new Community(1, "name", "description"));
+//        when(mockCommunityService.findByName(Mockito.anyString())).thenReturn(new Community(1, "name", "description"));
         when(mockUserService.getLoggedUser()).thenReturn(Optional.of(new User(1, "username", "password", "email", 0)));
         when(mockPostService.getPostById(Mockito.anyLong())).thenReturn(new Post(1, "title", "content", 1, "hola", false, 0, LocalDateTime.now(),0,false, "name"));
 

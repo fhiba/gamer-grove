@@ -141,7 +141,7 @@ public class CommunityController {
         else {
             followedCommunities = cs.getAllCommunitiesNoCat();
         }
-
+        mav.addObject("isLogged",user != null);
         mav.addObject("categories", Arrays.stream(CommunityCategories.values()).map(CommunityCategories::getCategory).toArray(String[]::new));
         mav.addObject("selectedCategories", selectedCategories);
         mav.addObject("searchTerms", searchTerms);

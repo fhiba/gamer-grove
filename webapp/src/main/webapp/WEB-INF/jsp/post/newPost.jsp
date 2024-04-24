@@ -20,26 +20,36 @@
         <div class="col-2 sidebar">
             <div class="card sidebar-card m-auto">
                 <div class="card-body">
+                    <hr>
                     <c:url value="/home" var="homeUrl"/>
                     <a href="${homeUrl}" class="text-decoration-none card-title text-light mb-3">
                         <h5><spring:message code="Navbar.Home"/></h5>
                     </a>
+                    <hr>
+
                     <c:url value="/all" var="allUrl"/>
                     <a href="${allUrl}" class="text-decoration-none card-title text-light mb-3">
                         <h5><spring:message code="All"/></h5>
                     </a>
+                    <hr>
                     <c:if test="${isLogged == null}">
                         <div class="h5 card-title text-light mb-3">Communities</div>
                     </c:if>
                     <c:if test="${isLogged != null}">
                         <div class="card-title text-light mb-3">My Communities</div>
                     </c:if>
-                    <c:forEach var="community" items="${followedCommunities}">
+                    <c:forEach var="community" items="${communities}">
                         <c:url value="/community/${community.name}" var="communityUrl"/>
                         <a href="${communityUrl}" class="text-light text-decoration-none">
                             <div class="card-body-community d-flex align-items-center text-decoration-none mb-3">
-                                <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
-                                     class="very-small-profile-pic mb-1" alt="Profile Picture">
+                                <c:if test="${community.portrait_id == 0}">
+                                    <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
+                                         class="very-small-profile-pic mb-1" alt="Profile Picture">
+                                </c:if>
+                                <c:if test="${community.portrait_id != 0}">
+                                    <img src="<c:url value='/image/${community.portrait_id}'/>"
+                                         class="very-small-profile-pic mb-1" alt="Profile Picture">
+                                </c:if>
                                 <div class="text-decoration-none">
                                     <h5 class="fw-semibold card-subtitle ">
                                         /<c:out value="${community.name}" escapeXml="true"/>
@@ -59,7 +69,8 @@
                 <div class="card-body">
                     <h1 class="card-title fw-bold"><spring:message code="Post.Create"/></h1>
                     <c:url var="postUrl" value="/post"/>
-                    <form:form action="${postUrl}" method="post" modelAttribute="newPostForm" enctype="multipart/form-data">
+                    <form:form action="${postUrl}" method="post" modelAttribute="newPostForm"
+                               enctype="multipart/form-data">
                         <div class="mb-3">
                             <label for="titleInput" class="form-label"><spring:message code="Post.Title"/></label>
                             <form:input path="title" class="form-control" id="titleInput"/>
@@ -100,11 +111,12 @@
                                 </form:select>
                                 <form:errors path="category" cssStyle="color: red" cssClass="error"/>
                             </div>
-                            <div class="item-upload" >
+                            <div class="item-upload">
                                 <spring:message code="Post.Image"/>
                                 <div class="input-group mb-3 mt-2">
                                     <label class="input-group-text" for="files"><i class="fa-solid fa-file"></i></label>
-                                    <form:input type="file" class="form-control"  name="files" path="files" multiple="true"/>
+                                    <form:input type="file" class="form-control" name="files" path="files"
+                                                multiple="true"/>
                                 </div>
                                 <div id="photo-upload__preview" class="upload-preview"></div>
                                 <form:errors path="files" cssStyle="color: red"/>
@@ -117,41 +129,41 @@
                 </div>
             </div>
         </div>
-<div class="col-1">
+        <div class="col-1">
 
-</div>
+        </div>
         <%--POSTS LIST OF THE COMMUNITY--%>
-            <div class="col-2">
-                <div class="card  border-0 bg-transparent">
-                    <div class="card-body">
-                        <c:forEach items="${news}" var="otherPost">
-                        <c:url value="/post/${otherPost.id}" var="postUrl"/>
-                        <a href="${postUrl}" class="text-decoration-none text-body-primary">
-                            <div class="card mb-3">
-                                <div class="card-body">
-                                    <c:if test="${!otherPost.deleted}">
-                                        <h5 class="card-title card-title other-post-title fw-bold mb-1"><c:out
-                                                value="${otherPost.title}"
-                                                escapeXml="true"/>
-                                        </h5>
-                                        <span class="badge rounded-pill ${otherPost.category} mb-1">${otherPost.category}</span>
-                                        <p class="card-text post-body"><c:out value="${otherPost.body}"
-                                                                              escapeXml="true"/></p>
-                                    </c:if>
-                                    <c:if test="${otherPost.deleted}">
-                                        <h5 class="card-title
+        <div class="col-2">
+            <div class="card  border-0 bg-transparent">
+                <div class="card-body">
+                    <c:forEach items="${news}" var="otherPost">
+                    <c:url value="/post/${otherPost.id}" var="postUrl"/>
+                    <a href="${postUrl}" class="text-decoration-none text-body-primary">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <c:if test="${!otherPost.deleted}">
+                                    <h5 class="card-title card-title other-post-title fw-bold mb-1"><c:out
+                                            value="${otherPost.title}"
+                                            escapeXml="true"/>
+                                    </h5>
+                                    <span class="badge rounded-pill ${otherPost.category} mb-1">${otherPost.category}</span>
+                                    <p class="card-text post-body"><c:out value="${otherPost.body}"
+                                                                          escapeXml="true"/></p>
+                                </c:if>
+                                <c:if test="${otherPost.deleted}">
+                                    <h5 class="card-title
                                  card-title other-post-title fw-bold mb-1"><spring:message code="Post.Deleted"/>
-                                        </h5>
-                                        <span class="badge rounded-pill ${otherPost.category} mb-1">${otherPost.category}</span>
-                                        <p class="card-text post-body"><spring:message code="Post.Deleted"/></p>
-                                    </c:if>
-                                </div>
+                                    </h5>
+                                    <span class="badge rounded-pill ${otherPost.category} mb-1">${otherPost.category}</span>
+                                    <p class="card-text post-body"><spring:message code="Post.Deleted"/></p>
+                                </c:if>
                             </div>
-                            </c:forEach>
-                        </a>
-                    </div>
+                        </div>
+                        </c:forEach>
+                    </a>
                 </div>
             </div>
+        </div>
 
     </div>
 </div>
@@ -176,7 +188,7 @@
             removeButton.classList.add('delete');
             removeButton.dataset.filename = selectedFiles[i].name,
                 // removeButton.innerHTML = '<span>&times;</span>'
-            imageContainer.appendChild(elem);
+                imageContainer.appendChild(elem);
             imageContainer.appendChild(removeButton);
             elemContainer.appendChild(imageContainer);
         }
