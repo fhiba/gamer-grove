@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -50,7 +51,8 @@ public class CommunityController {
         }
         mav.addObject("isLogged", user != null);
         mav.addObject("communities",communities);
-        return new ModelAndView("community/newCommunity").addObject("categories", Arrays.stream(CommunityCategories.values()).map(CommunityCategories::getCategory).toArray(String[]::new));
+        mav.addObject("categories", Arrays.stream(CommunityCategories.values()).map(CommunityCategories::getCategory).toArray(String[]::new));
+        return mav;
     }
 
     @RequestMapping(path="/new-community", method = RequestMethod.POST)
@@ -58,7 +60,7 @@ public class CommunityController {
         if(errors.hasErrors())
             return newCommunity(newCommunityForm);
         System.out.println(newCommunityForm.getCategories());
-        cs.createCommunity(newCommunityForm.getName(), newCommunityForm.getDescription(), newCommunityForm.getCategories(), newCommunityForm.getDeveloper(),newCommunityForm.getPublisher(),newCommunityForm.getReleaseDate());
+        cs.createCommunity(newCommunityForm.getName(), newCommunityForm.getDescription(), newCommunityForm.getCategories(), newCommunityForm.getDeveloper(),newCommunityForm.getPublisher(), LocalDateTime.now());
         return new ModelAndView("redirect:/");
     }
 

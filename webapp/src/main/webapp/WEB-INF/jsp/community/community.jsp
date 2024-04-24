@@ -149,7 +149,7 @@
                                          data-bs-parent="#accordionFlushExample">
                                         <h6 class="fw-bold">Developer: ${community.developer}</h6>
                                         <h6 class="fw-bold">Publisher: ${community.publisher}</h6>
-                                        <h6 class="fw-bold">Release Date: ${community.releaseDate}</h6>
+<%--                                        <h6 class="fw-bold">Release Date: ${community.releaseDate}</h6>--%>
 
                                     </div>
 

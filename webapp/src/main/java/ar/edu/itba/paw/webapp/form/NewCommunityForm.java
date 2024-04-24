@@ -15,9 +15,10 @@ public class NewCommunityForm {
 
     @ValidCommunityCategoriesConstraint
     private String categories;
+
     private String publisher;
+
     private String developer;
-    private LocalDateTime releaseDate;
 
     public String getName() {
         return name;
@@ -60,11 +61,4 @@ public class NewCommunityForm {
         this.developer = developer;
     }
 
-    public LocalDateTime getReleaseDate() {
-        return releaseDate;
-    }
-
-    public void setReleaseDate(LocalDateTime releaseDate) {
-        this.releaseDate = releaseDate;
-    }
 }

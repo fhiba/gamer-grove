@@ -22,6 +22,7 @@ public class CommunityServiceImpl implements CommunityService{
 
     @Override
     public void createCommunity(final String name, final String description, final String categories, String developer, String publisher, LocalDateTime releaseDate) throws NoSuchCommunityException {
+        System.out.println("entre al service");
         Community community = communityDao.createCommunity(name,description,developer,publisher,releaseDate);
 
         if(categories != null && !categories.isEmpty()) {

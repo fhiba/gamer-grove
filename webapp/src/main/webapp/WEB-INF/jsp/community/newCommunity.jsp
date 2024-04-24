@@ -78,8 +78,25 @@
                         <td><form:input path="publisher"/></td>
                         <td><form:errors path="publisher" cssStyle="color: red" cssClass="error"/></td>
                     </tr>
-                    <form:hidden path="releaseDate" value="1/1/1900"/>
-<%--                    TODO:PONER EL DATEPICKER PARA EL RELEASE DATE--%>
+                        <tr>
+<%--                        <td>--%>
+<%--                            <label for="date" class="col-1 col-form-label">Date</label>--%>
+<%--                            <div class="col-5">--%>
+<%--                                <div class="input-group date" id="datepicker">--%>
+<%--                                    <input type="text" class="form-control" id="date"/>--%>
+<%--                                    <span class="input-group-append">--%>
+<%--                                      <span class="input-group-text bg-light d-block">--%>
+<%--                                        <i class="fas fa-calendar"></i>--%>
+<%--                                      </span>--%>
+<%--                                    </span>--%>
+<%--                                </div>--%>
+<%--                            </div>--%>
+<%--                        </td>--%>
+
+                    </tr>
+
+
+                        <%--                    TODO:PONER EL DATEPICKER PARA EL RELEASE DATE--%>
                     <tr>
                         <td><input type="submit" value="Create!"/></td>
                         <td>
@@ -220,5 +237,8 @@
             form.appendChild(input);
         });
 
+        $(function(){
+            $('#datepicker').datePicker()
+        });
     }
 </script>

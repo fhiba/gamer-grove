@@ -210,3 +210,7 @@ body {
     overflow: hidden;
     width: 5em;
 }
+
+.input-group-append {
+    cursor: pointer;
+}
