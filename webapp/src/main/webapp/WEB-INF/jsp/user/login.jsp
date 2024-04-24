@@ -20,23 +20,22 @@
                 <div class="card-body text-center">
                     <h2 class="fw-bold mb-2"><spring:message code="Login.Title"/></h2>
                     <c:url var="loginUrl" value="/login"/>
-                    <form:form action="${loginUrl}" method="post" modelAttribute="loginForm">
+                    <form action="${loginUrl}" method="post" modelAttribute="loginForm">
                         <div class="mb-3">
-                            <label for="usernameInput" class="form-label"><spring:message code="Login.Username"/></label>
-                            <form:input path="username" class="form-control" id="usernameInput"/>
-                            <form:errors path="username" cssStyle="color: red" cssClass="error"/>
+                            <label for="username" class="form-label"><spring:message code="Login.Username"/></label>
+                            <input type="text" id="username"  class="form-control" name="username"/>
                         </div>
                         <div class="mb-3">
-                            <label for="passwordInput" class="form-label"><spring:message code="Login.Password"/></label>
-                            <form:password path="password" class="form-control" id="passwordInput"/>
-                            <form:errors path="password" cssStyle="color: red" cssClass="error"/>
+                            <label for="password" class="form-label"><spring:message code="Login.Password"/></label>
+                            <input type="password" id="password" class="form-control" name="password"/>
                         </div>
                         <button class="btn btn-primary" type="submit" value="Register">
                             <spring:message code="Login.Title"/>
                         </button>
-                        ${error}
-                        <form:errors cssStyle="color: red" cssClass="error"/>
-                    </form:form>
+                    </form>
+                    <c:if test="${error != null}">
+                        <p class="text-danger">${error}</p>
+                    </c:if>
                     <p>Or</p>
                     <c:url var="registerUrl" value="/register"/>
                     <a href="${registerUrl}" >

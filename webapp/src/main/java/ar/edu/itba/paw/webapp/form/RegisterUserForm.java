@@ -24,7 +24,7 @@ public class RegisterUserForm {
     private String password;
 
     @NotBlank
-    @Size(min = 5, max = 50)
+    @Size(min = 6, max = 50)
     private String repeatPassword;
 
     public String getUsername() {
