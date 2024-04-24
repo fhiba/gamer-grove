@@ -18,6 +18,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.swing.text.StyledEditorKit;
 import javax.validation.Valid;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -104,14 +105,17 @@ public class PostController {
         List<Post> posts;
         User user = null;
         List<Community> communities;
+        Boolean isAdmin = false;
         try{
             user = us.getLoggedUserChecked();
         }catch (Exception ignored){
 
         }
 
-        if(user != null)
+        if(user != null) {
             communities = cs.getFollowedCommunities(user);
+            isAdmin = us.isUserAdmin(user.getId());
+        }
         else{
             communities = cs.getAllCommunitiesNoCat();
         }
@@ -121,7 +125,7 @@ public class PostController {
         } else {
             posts = ps.getAllPosts();
         }
-
+        mav.addObject("isAdmin",isAdmin);
         mav.addObject("isLogged", user != null);
         mav.addObject("posts",posts);
         //TODO: SHOULD BE THE ONES THAT ARE CURRENTLY BEING FOLLOWED BY USER OR A FEW RANDOMLY SELECTED
