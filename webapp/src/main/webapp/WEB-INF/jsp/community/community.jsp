@@ -216,7 +216,7 @@
                                     </c:if>
                                     <c:if test="${post.deleted}">
                                         <h4 class="card-title fw-bold"><spring:message code="Post.Deleted"/></h4>
-                                        <p class="card-text post-body"><<spring:message code="Post.Deleted"/>/></p>
+                                        <p class="card-text post-body"><<spring:message code="Post.Deleted"/></p>
                                     </c:if>
                                 </div>
                             </div>
@@ -258,7 +258,7 @@
             removeButton.setAttribute('type', 'button');
             removeButton.setAttribute('class', 'btn-close delete');
             removeButton.classList.add('delete');
-            removeButton.dataset.filename = selectedFiles[i].name,
+            removeButton.dataset.filename = selectedFiles[i].name;
                 // removeButton.innerHTML = '<span>&times;</span>'
                 imageContainer.appendChild(elem);
             imageContainer.appendChild(removeButton);

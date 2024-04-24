@@ -29,8 +29,7 @@ public interface PostDao {
 
     void updateGroovyHistory(long postId, long id, boolean b);
 
-    public Optional<Post> findByIdWithImage(final long id);
-
+    Optional<Post> findByIdWithImage(final long id);
 
     List<Post> getMyFollowedPosts(long userId);
 

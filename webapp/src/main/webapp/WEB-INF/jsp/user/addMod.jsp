@@ -9,10 +9,13 @@
     <link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="${pageContext.request.contextPath}/css/general-styling.css" rel="stylesheet"/>
     <script src="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js"></script>
+    <%--suppress JSUnresolvedLibraryURL --%>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-
+    <%--suppress JSUnresolvedLibraryURL --%>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <%--suppress JSUnresolvedLibraryURL --%>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet"/>
+    <%--suppress JSUnresolvedLibraryURL --%>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
 </head>
 <body>

@@ -49,12 +49,9 @@ public class PostServiceImpl implements PostService{
         Post post = postDao.createPost(title,body,(int)userId,community.getName(),false, LocalDateTime.now(), category);
         notifyUsers(post, user.get());
         System.out.println(files.length);
-        if(files.length > 0){
-            for (MultipartFile file : files) {
-                if(!file.isEmpty())
-                    fs.uploadPostImage(file, post.getId());
-            }
-
+        for (MultipartFile file : files) {
+            if (!file.isEmpty())
+                fs.uploadPostImage(file, post.getId());
         }
 
         return post;

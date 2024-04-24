@@ -9,6 +9,7 @@
     <link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="${pageContext.request.contextPath}/css/general-styling.css" rel="stylesheet"/>
     <script src="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js"></script>
+    <%--suppress JSUnresolvedLibraryURL --%>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 
 </head>
@@ -106,7 +107,7 @@
                                     </c:if>
                                     <c:if test="${post.deleted}">
                                         <h4 class="card-title fw-bold"><spring:message code="Post.Deleted"/></h4>
-                                        <p class="card-text post-body"><<spring:message code="Post.Deleted"/>/></p>
+                                        <p class="card-text post-body"><<spring:message code="Post.Deleted"/></p>
                                     </c:if>
 
                                     <p class="m-auto">

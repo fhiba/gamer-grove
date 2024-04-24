@@ -7,7 +7,6 @@ import ar.edu.itba.paw.services.CommunityService;
 import ar.edu.itba.paw.services.PostService;
 import ar.edu.itba.paw.services.UserService;
 import ar.edu.itba.paw.webapp.form.FollowCommunityForm;
-import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.services.*;
 import ar.edu.itba.paw.webapp.form.FileForm;
 import ar.edu.itba.paw.webapp.form.NewCommunityForm;
@@ -17,7 +16,6 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
@@ -83,7 +81,7 @@ public class CommunityController {
             //do nothing
         }
         User user = null;
-        List<Community> communities = null;
+        List<Community> communities;
         try{
             user = us.getLoggedUserChecked();
         }catch (Exception ignored){
@@ -129,7 +127,7 @@ public class CommunityController {
         List<Community> communities = cs.find(searchTerms, selectedCategories);
 
         User user = null;
-        List<Community> followedCommunities = null;
+        List<Community> followedCommunities;
         try{
             user = us.getLoggedUserChecked();
         }catch (Exception ignored){
@@ -179,9 +177,8 @@ public class CommunityController {
 
     @RequestMapping(path="/seeImages/{imageId}", method = RequestMethod.GET)
     public ModelAndView getImage(@PathVariable("imageId") final long imageId) {
-        ModelAndView mav = new ModelAndView("image");
-//        mav.addObject("image",fs.getFile(imageId).get());
-        return mav;
+        //        mav.addObject("image",fs.getFile(imageId).get());
+        return new ModelAndView("image");
     }
 
     @RequestMapping(value = "/image/{imageId}", method = RequestMethod.GET,

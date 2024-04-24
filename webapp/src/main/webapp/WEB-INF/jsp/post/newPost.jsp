@@ -9,6 +9,7 @@
     <link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="${pageContext.request.contextPath}/css/general-styling.css" rel="stylesheet"/>
     <script src="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js"></script>
+<%--suppress JSUnresolvedLibraryURL --%>
     <script src="https://kit.fontawesome.com/002da5939d.js" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -186,7 +187,7 @@
             removeButton.setAttribute('type', 'button');
             removeButton.setAttribute('class', 'btn-close delete');
             removeButton.classList.add('delete');
-            removeButton.dataset.filename = selectedFiles[i].name,
+            removeButton.dataset.filename = selectedFiles[i].name;
                 // removeButton.innerHTML = '<span>&times;</span>'
                 imageContainer.appendChild(elem);
             imageContainer.appendChild(removeButton);
@@ -212,6 +213,6 @@
             item_images = item_images.filter(img => img.name != fileName)
         }
     })
-
+// mmmm no se si ese = esta bien, chequear si no va un = solo
 </script>
 
