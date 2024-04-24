@@ -1,9 +1,11 @@
 package ar.edu.itba.paw.webapp.form;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 public class NewCommentForm {
     @NotBlank
+    @Size(min=1,max = 500)
     private String body;
 
     private long postId;

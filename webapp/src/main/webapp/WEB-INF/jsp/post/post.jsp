@@ -204,7 +204,7 @@
                                     <div class="ms-2 me-auto">
                                         <div class="fw-bold"><c:out value="${comment.username}" escapeXml="true"/>
                                         </div>
-                                        <p>
+                                        <p class="text-break">
                                             <c:out value="${comment.body}" escapeXml="true"/>
                                         </p>
                                         <p>
