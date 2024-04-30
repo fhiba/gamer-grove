@@ -23,66 +23,66 @@
 <div class="container-fluid">
     <div class="row min-vh-100">
         <%--COMMUNITY LIST--%>
-            <div class="col-2 sidebar">
-                <div class="card sidebar-card m-auto">
-                    <div class="card-body">
-                        <c:if test="${isAdmin}">
-                            <div class="row-cols-2">
-                                <c:url value="/addMod" var="addModUrl"/>
-                                <a href="${addModUrl}">
-                                    <button class="btn-outline-primary">Add Mod</button>
-                                </a>
-                                <c:url value="/new-community" var="newCommunityUrl"/>
-                                <a href="${newCommunityUrl}">
-                                    <button class="btn-outline-primary">Add Community</button>
-                                </a>
-                            </div>
-                        </c:if>
-                        <hr>
-                        <c:url value="/home" var="homeUrl"/>
-                        <a href="${homeUrl}" class="text-decoration-none card-title text-light mb-3">
-                            <h5><spring:message code="Navbar.Home"/></h5>
-                        </a>
-                        <hr>
-
-                        <c:url value="/all" var="allUrl"/>
-                        <a href="${allUrl}" class="text-decoration-none card-title text-light mb-3">
-                            <h5><spring:message code="All"/></h5>
-                        </a>
-                        <hr>
-                        <c:if test="${isLogged == null}">
-                            <div class="h5 card-title text-light mb-3">Communities</div>
-                        </c:if>
-                        <c:if test="${isLogged != null}">
-                            <div class="card-title text-light mb-3">My Communities</div>
-                        </c:if>
-                        <c:forEach var="community" items="${communities}">
-                            <c:url value="/community/${community.name}" var="communityUrl"/>
-                            <a href="${communityUrl}" class="text-light text-decoration-none">
-                                <div class="card-body-community d-flex align-items-center text-decoration-none mb-3">
-                                    <c:if test="${community.portrait_id == 0}">
-                                        <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
-                                             class="very-small-profile-pic mb-1" alt="Profile Picture">
-                                    </c:if>
-                                    <c:if test="${community.portrait_id != 0}">
-                                        <img src="<c:url value='/image/${community.portrait_id}'/>"
-                                             class="very-small-profile-pic mb-1" alt="Profile Picture">
-                                    </c:if>
-                                    <div class="text-decoration-none">
-                                        <h5 class="fw-semibold card-subtitle ">
-                                            /<c:out value="${community.name}" escapeXml="true"/>
-                                        </h5>
-                                    </div>
-                                </div>
+        <div class="col-2 sidebar">
+            <div class="card sidebar-card m-auto">
+                <div class="card-body">
+                    <c:if test="${isAdmin}">
+                        <div class="row-cols-2">
+                            <c:url value="/addMod" var="addModUrl"/>
+                            <a href="${addModUrl}">
+                                <button class="btn-outline-primary">Add Mod</button>
                             </a>
-                        </c:forEach>
-                    </div>
+                            <c:url value="/new-community" var="newCommunityUrl"/>
+                            <a href="${newCommunityUrl}">
+                                <button class="btn-outline-primary">Add Community</button>
+                            </a>
+                        </div>
+                    </c:if>
+                    <hr>
+                    <c:url value="/home" var="homeUrl"/>
+                    <a href="${homeUrl}" class="text-decoration-none card-title text-light mb-3">
+                        <h5><spring:message code="Navbar.Home"/></h5>
+                    </a>
+                    <hr>
+
+                    <c:url value="/all" var="allUrl"/>
+                    <a href="${allUrl}" class="text-decoration-none card-title text-light mb-3">
+                        <h5><spring:message code="All"/></h5>
+                    </a>
+                    <hr>
+                    <c:if test="${isLogged == null}">
+                        <div class="h5 card-title text-light mb-3">Communities</div>
+                    </c:if>
+                    <c:if test="${isLogged != null}">
+                        <div class="card-title text-light mb-3">My Communities</div>
+                    </c:if>
+                    <c:forEach var="community" items="${communities}">
+                        <c:url value="/community/${community.name}" var="communityUrl"/>
+                        <a href="${communityUrl}" class="text-light text-decoration-none">
+                            <div class="card-body-community d-flex align-items-center text-decoration-none mb-3">
+                                <c:if test="${community.portrait_id == 0}">
+                                    <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
+                                         class="very-small-profile-pic mb-1" alt="Profile Picture">
+                                </c:if>
+                                <c:if test="${community.portrait_id != 0}">
+                                    <img src="<c:url value='/image/${community.portrait_id}'/>"
+                                         class="very-small-profile-pic mb-1" alt="Profile Picture">
+                                </c:if>
+                                <div class="text-decoration-none">
+                                    <h5 class="fw-semibold card-subtitle ">
+                                        /<c:out value="${community.name}" escapeXml="true"/>
+                                    </h5>
+                                </div>
+                            </div>
+                        </a>
+                    </c:forEach>
                 </div>
             </div>
-            <div class="col-1"></div>
+        </div>
+        <div class="col-1"></div>
         <div class="col-6 mt-3">
             <div>
-                <div class="card border-dark-subtle bg-dark-subtle d-inline-flex col">
+                <div class="card d-inline-flex col">
                     <div class="card-body ">
                         <p class="fw-semibold card-subtitle mb-1">
                             <spring:message code="Mod.New"/>
@@ -105,7 +105,8 @@
                                     <td>
                                         <form:select path="communityId" id="addModSelect">
                                             <c:forEach var="community" items="${communities}">
-                                                <form:option value="${community.id}" label="${community.name}"/>
+                                                <form:option cssStyle="color:black;" value="${community.id}"
+                                                             label="${community.name}"/>
                                             </c:forEach>
                                         </form:select>
                                     </td>
@@ -120,7 +121,7 @@
                     </div>
                 </div>
             </div>
-            <div class="card border-dark-subtle bg-dark-subtle mt-3 d-inline-flex col">
+            <div class="card mt-3 d-inline-flex col">
                 <div class="card-body">
                     <p class="fw-semibold card-subtitle mb-1">
                         <spring:message code="Mod.Remove"/>
@@ -136,11 +137,11 @@
                             <tr>
                                 <td><spring:message code="Mod.Communnity"/>:</td>
                                 <td>
-                                    <form:select path="fromCommunityId" id="removeModSelect">
-                                        <c:forEach var="community" items="${communities}">
-                                            <form:option value="${community.id}" label="${community.name}"/>
-                                        </c:forEach>
-                                    </form:select>
+                                        <form:select class="mod-form" path="fromCommunityId" id="removeModSelect">
+                                            <c:forEach var="community" items="${communities}">
+                                                <form:option value="${community.id}" label="${community.name}"/>
+                                            </c:forEach>
+                                        </form:select>
                                 </td>
                                 <td><form:errors path="fromCommunityId" cssStyle="color: red" cssClass="error"/></td>
                             </tr>
@@ -192,7 +193,8 @@
     $(document).ready(function () {
         $('#addModSelect').select2({
             placeholder: "Select a community",
-            allowClear: true
+            allowClear: true,
+            theme:"classic"
         });
     });
     $(document).ready(function () {

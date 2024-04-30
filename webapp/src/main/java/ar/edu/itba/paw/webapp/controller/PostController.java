@@ -194,6 +194,14 @@ public class PostController {
         }catch (Exception ignored){
 
         }
+        try {
+            post = ps.getPostByIdWithImage(postId);
+            mav.addObject("post", post);
+            community = cs.findByName(post.getCommunityName());
+        } catch (NoSuchPostException e) {
+            //TODO: Should log
+            throw e;
+        }
         if(user != null) {
             communities = cs.getFollowedCommunities(user);
             grooviedComments = commentService.getUpGroovedComments(postId);
@@ -201,17 +209,9 @@ public class PostController {
             isGrooved = ps.checkGrooviness(postId);
             canDelete = ms.canRemovePost(us.getLoggedUser().get().getId(), postId);
             isAdmin = us.isUserAdmin(user.getId());
+            isFollowing = cs.checkIfUserFollowsCommunity((int)community.getId());
         } else {
             communities = cs.getAllCommunitiesNoCat();
-        }
-        try {
-            post = ps.getPostByIdWithImage(postId);
-            mav.addObject("post", post);
-            community = cs.findByName(post.getCommunityName());
-            isFollowing = cs.checkIfUserFollowsCommunity((int)community.getId());
-        } catch (NoSuchPostException | NoLoggedUserException e) {
-            //TODO: Should log
-            throw e;
         }
         mav.addObject("isAdmin",isAdmin);
         mav.addObject("isFollowing",isFollowing);

@@ -35,7 +35,7 @@
                         <div class="mb-3">
                             <label for="bodyInput" class="form-label"><spring:message code="Post.Body"/></label>
                             <form:textarea path="body" class="form-control" id="bodyInput"/>
-                            <form:errors path="title" cssStyle="color: red" cssClass="error"/>
+                            <form:errors path="body" cssStyle="color: red" cssClass="error"/>
                         </div>
                         <div class="mb-3">
                             <label for="bodyInput" class="form-label"><spring:message code="Post.Category"/></label>
@@ -48,6 +48,7 @@
                                     </option>
                                 </c:forEach>
                             </form:select>
+                            <form:errors path="category" cssStyle="color: red" cssClass="error"/>
                             <form:hidden path="community" value="${community.name}"/>
                         </div>
                         <div class="item-upload">
@@ -81,11 +82,11 @@
                             <div class="row-cols-2">
                                 <c:url value="/addMod" var="addModUrl"/>
                                 <a href="${addModUrl}">
-                                    <button class="btn-outline-primary">Add Mod</button>
+                                    <button class="btn btn-outline-primary">Add Mod</button>
                                 </a>
                                 <c:url value="/new-community" var="newCommunityUrl"/>
                                 <a href="${newCommunityUrl}">
-                                    <button class="btn-outline-primary">Add Community</button>
+                                    <button class="ms-2 btn btn-outline-success">Add Community</button>
                                 </a>
                             </div>
                         </c:if>

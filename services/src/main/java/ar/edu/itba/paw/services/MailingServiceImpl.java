@@ -44,8 +44,8 @@ public class MailingServiceImpl implements MailingService {
     @Autowired
     private MessageSource messageSource;
 
-    private final static String base = "http://localhost:8080/";
-    private final static String prodBase = "http://pawserver.it.itba.edu.ar/paw-2024a-09/";
+    private final static String devbase = "http://localhost:8080/";
+    private final static String base = "http://pawserver.it.itba.edu.ar/paw-2024a-09/";
 
     Properties getProps() {
         Properties properties = System.getProperties();

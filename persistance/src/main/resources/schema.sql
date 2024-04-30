@@ -119,9 +119,10 @@ create table if not exists modders(
 ALTER TABLE post ADD COLUMN deleted boolean DEFAULT false NOT NULL;
 ALTER TABLE comment ADD COLUMN deleted boolean DEFAULT false NOT NULL;
 
-ALTER TABLE community ADD COLUMN publisher text DEFAULT '-' NOT NULL;
-ALTER TABLE community ADD COLUMN developer text DEFAULT '-' NOT NULL;
-ALTER TABLE community ADD COLUMN release_date TIMESTAMP;
+ALTER TABLE community ADD COLUMN publisher text DEFAULT 'Not specified' NOT NULL;
+ALTER TABLE community ADD COLUMN developer text DEFAULT 'Not specified' NOT NULL;
+ALTER TABLE community ADD COLUMN release_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL;
+ALTER TABLE community_user ADD COLUMN community_name TEXT NOT NULL;
 
 CREATE TABLE IF NOT EXISTS post_images (
                                            post_id INT NOT NULL ,

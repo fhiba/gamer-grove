@@ -25,11 +25,11 @@
                             <div class="row-cols-2">
                                 <c:url value="/addMod" var="addModUrl"/>
                                 <a href="${addModUrl}">
-                                    <button class="btn-outline-primary">Add Mod</button>
+                                    <button class="btn btn-outline-primary">Add Mod</button>
                                 </a>
                                 <c:url value="/new-community" var="newCommunityUrl"/>
                                 <a href="${newCommunityUrl}">
-                                    <button class="btn-outline-primary">Add Community</button>
+                                    <button class="btn btn-outline-success">Add Community</button>
                                 </a>
                             </div>
                         </c:if>

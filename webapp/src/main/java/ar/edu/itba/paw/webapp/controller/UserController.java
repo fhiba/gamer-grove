@@ -157,6 +157,8 @@ public class UserController {
     public ModelAndView getProfile(@ModelAttribute("userPfpForm") final UserPfpForm userPfpForm) {
         ModelAndView mav = new ModelAndView("user/profile");
         User user = us.getLoggedUser().orElseThrow();
+        Boolean isAdmin = us.isUserAdmin(user.getId());
+        mav.addObject("isAdmin",isAdmin);
         mav.addObject("user",user);
         mav.addObject("posts",ps.getPostsByUser(user.getId()));
         mav.addObject("likedPosts",ps.getUserLikedPosts(user.getId()));

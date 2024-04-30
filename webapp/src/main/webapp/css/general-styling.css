@@ -134,6 +134,10 @@ body {
     object-fit: cover; /* Ensures the image covers the entire element, cropping if necessary */
 }
 
+.mod-form{
+    color:black!important;
+}
+
 .card-body-community {
     margin-bottom: -10px;
     background-color: #1c1919; /* Change to desired color for Sidebar */

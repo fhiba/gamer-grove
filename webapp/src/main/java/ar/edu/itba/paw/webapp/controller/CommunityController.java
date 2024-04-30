@@ -170,6 +170,15 @@ public class CommunityController {
     public ModelAndView communityImage(@PathVariable("communityName") final String communityName, @ModelAttribute("newCommunityImage") final FileForm newCommunityImage) throws NoSuchCommunityException {
         ModelAndView mav = new ModelAndView("community/communityImage");
         Community community = cs.findByName(communityName);
+        User user = null;
+        try{
+            user = us.getLoggedUserChecked();
+        } catch (NoLoggedUserException e) {
+//do nothing
+        }
+        if(user != null) {
+            mav.addObject("isAdmin", us.isUserAdmin(user.getId()));
+        }
         mav.addObject("community",community);
         mav.addObject("communities",cs.getAllCommunities());
         return mav;

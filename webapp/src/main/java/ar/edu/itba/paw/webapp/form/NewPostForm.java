@@ -12,7 +12,7 @@ public class NewPostForm {
 
 
     @NotBlank
-    @Size(min = 1, max = 50)
+    @Size(min = 1, max = 150)
     private String title;
 
     @NotBlank

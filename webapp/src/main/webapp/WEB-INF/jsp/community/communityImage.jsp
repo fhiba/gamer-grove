@@ -30,11 +30,11 @@
                             <div class="row-cols-2">
                                 <c:url value="/addMod" var="addModUrl"/>
                                 <a href="${addModUrl}">
-                                    <button class="btn-outline-primary">Add Mod</button>
+                                    <button class="btn btn-outline-primary">Add Mod</button>
                                 </a>
                                 <c:url value="/new-community" var="newCommunityUrl"/>
                                 <a href="${newCommunityUrl}">
-                                    <button class="btn-outline-primary">Add Community</button>
+                                    <button class="ms-2 btn btn-outline-success">Add Community</button>
                                 </a>
                             </div>
                         </c:if>
@@ -50,12 +50,7 @@
                             <h5><spring:message code="All"/></h5>
                         </a>
                         <hr>
-                        <c:if test="${isLogged == null}">
-                            <div class="h5 card-title text-light mb-3">Communities</div>
-                        </c:if>
-                        <c:if test="${isLogged != null}">
                             <div class="card-title text-light mb-3">My Communities</div>
-                        </c:if>
                         <c:forEach var="community" items="${communities}">
                             <c:url value="/community/${community.name}" var="communityUrl"/>
                             <a href="${communityUrl}" class="text-light text-decoration-none">
