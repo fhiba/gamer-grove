@@ -8,6 +8,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -38,6 +39,18 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
     }
+    @Bean
+    public AuthenticationFailureHandler authenticationFailureHandler() {
+        SimpleUrlAuthenticationFailureHandler simpleUrlAuthenticationFailureHandler = new SimpleUrlAuthenticationFailureHandler("/loginFailed");
+        simpleUrlAuthenticationFailureHandler.setUseForward(true);
+        return simpleUrlAuthenticationFailureHandler;
+    }
+
+
+    @Bean
+    public AuthenticationManager authenticationManager() throws Exception{
+        return super.authenticationManager();
+    }
     @Override
     public void configure(WebSecurity web) throws Exception {
         web.ignoring().
@@ -53,17 +66,24 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 .invalidSessionUrl("/login")
             .and().authorizeRequests()
                 .antMatchers("/login","/register").anonymous()
+                .antMatchers("/profile").authenticated()
                 .antMatchers("/community/{communityName}/new", "/post").authenticated()
                 .antMatchers(HttpMethod.POST,"/post/{postId}/+").authenticated()
+                .antMatchers(HttpMethod.POST,"/post/{postId}/up").authenticated()
                 .antMatchers(HttpMethod.POST,"/post").authenticated()
                 .antMatchers(HttpMethod.POST,"/comment").authenticated()
+                .antMatchers(HttpMethod.POST,"/community/{communityName}").authenticated()
+                .antMatchers(HttpMethod.POST,"/profile").authenticated()
                 .antMatchers("/new-community").hasRole("ADMIN")
+                .antMatchers("/post/{postId}/delete","/comment/{postId}/delete").access("@modderServiceImpl.canRemovePostAlternative(#postId) or hasRole('ADMIN')")
+                .antMatchers("/new-community","/addMod").hasRole("ADMIN")
                 .antMatchers("/**").permitAll()
             .and().formLogin()
-                .usernameParameter("j_username")
-                .passwordParameter("j_password")
+                .usernameParameter("username")
+                .passwordParameter("password")
                 .defaultSuccessUrl("/",	false)
                 .loginPage("/login")
+                .failureHandler(authenticationFailureHandler())
             .and().rememberMe()
                 .rememberMeParameter("j_rememberme")
                 .userDetailsService(userDetailsService)

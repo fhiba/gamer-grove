@@ -1,56 +1,50 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
+
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<html>
+<head>
+    <title><spring:message code="Register.Title"/></title>
+    <link rel="icon" href="${pageContext.request.contextPath}/images/favicon.ico" type="image/x-icon">
+    <link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="${pageContext.request.contextPath}/css/general-styling.css" rel="stylesheet"/>
+    <script src="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js"></script>
 
-<link rel="icon" href="${pageContext.request.contextPath}/images/favicon.ico" type="image/x-icon">
-<link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet"/>
-<script src="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js"></script>
-
-<section class="vh-100 gradient-custom">
-    <div class="container py-5 h-100">
-        <div class="row d-flex justify-content-center align-items-center h-100">
-            <div class="col-12 col-md-8 col-lg-6 col-xl-5">
-                <div class="card bg-dark text-white" style="border-radius: 1rem;">
-                    <div class="card-body p-5 text-center">
-                        <c:url value="/login" var="loginUrl" />
-                        <form action="${loginUrl}" method="post" enctype="application/x-www-form-urlencoded">
-                        <div class="mb-md-5 mt-md-4 pb-5">
-
-                            <h2 class="fw-bold mb-2 text-uppercase"><spring:message code="Login.Title"/></h2>
-                            <p class="text-white-50 mb-5"><spring:message code="Login.Subtitle"/></p>
-
-                            <div class="form-outline form-white mb-4">
-                                <input type="text" id="username" name="j_username" class="form-control form-control-lg" />
-                                <label class="form-label" for="username"><spring:message code="Login.Username"/> </label>
-                            </div>
-
-                            <div class="form-outline form-white mb-4">
-                                <input type="password" id="password" name="j_password" class="form-control form-control-lg" />
-                                <label class="form-label" for="password"><spring:message code="Login.Password"/></label>
-                            </div>
-                            <c:if test="${param.error}">
-                                <div><spring:message code="Login.Invalid"/></div>
-                            </c:if>
-                            <p class="small mb-5 pb-lg-2"><a class="text-white-50" ><spring:message code="Login.ForgotPass"/></a></p>
-
-                            <button class="btn btn-outline-light btn-lg px-5" type="submit"><spring:message code="Login.Title"/></button>
-
-                            <div class="d-flex justify-content-center text-center mt-4 pt-1">
-                                <a class="text-white"><i class="fab fa-facebook-f fa-lg"></i></a>
-                                <a class="text-white"><i class="fab fa-twitter fa-lg mx-4 px-2"></i></a>
-                                <a class="text-white"><i class="fab fa-google fa-lg"></i></a>
-                            </div>
-
+</head>
+<body>
+<%@ include file="/WEB-INF/jsp/components/header.jsp" %>
+<div class="container-fluid h-100">
+    <div class="row mt-4 justify-content-center">
+        <div class="col d-flex justify-content-center">
+            <div class="card mb-4 w-25">
+                <div class="card-body text-center">
+                    <h2 class="fw-bold mb-2"><spring:message code="Login.Title"/></h2>
+                    <c:url var="loginUrl" value="/login"/>
+                    <form action="${loginUrl}" method="post" modelAttribute="loginForm">
+                        <div class="mb-3">
+                            <label for="username" class="form-label"><spring:message code="Login.Username"/></label>
+                            <input type="text" id="username"  class="form-control" name="username"/>
                         </div>
-                        </form>
-                        <div>
-                            <c:url value="/register" var="registerUrl" />
-                            <p class="mb-0"><spring:message code="Login.NoAccount"/><a href="${registerUrl}" class="text-white-50 fw-bold"><spring:message code="Login.SignUp"/></a>
-                            </p>
+                        <div class="mb-3">
+                            <label for="password" class="form-label"><spring:message code="Login.Password"/></label>
+                            <input type="password" id="password" class="form-control" name="password"/>
                         </div>
-
-                    </div>
+                        <button class="btn btn-primary" type="submit" value="Register">
+                            <spring:message code="Login.Title"/>
+                        </button>
+                    </form>
+                    <c:if test="${error != null}">
+                        <p class="text-danger">${error}</p>
+                    </c:if>
+                    <p>Or</p>
+                    <c:url var="registerUrl" value="/register"/>
+                    <a href="${registerUrl}" >
+                        <spring:message code="Register.Title"/>
+                    </a>
                 </div>
             </div>
         </div>
     </div>
-</section>
+</div>
+</body>
+</html>

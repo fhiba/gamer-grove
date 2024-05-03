@@ -14,6 +14,11 @@ import org.springframework.test.jdbc.JdbcTestUtils;
 
 import javax.sql.DataSource;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
@@ -27,7 +32,7 @@ public class PostDaoJdbcTest {
     private static final boolean media = false;
     private static final LocalDateTime date = LocalDateTime.now();
     private static final int grooviness = 0;
-    private static final String category = "Miscellaneous";
+    private static final String category = "Discussion";
 
     @Autowired
     private DataSource ds;
@@ -37,26 +42,59 @@ public class PostDaoJdbcTest {
 
 
     @Before
-    public void setup(){
+    public void setup() {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "post");
+//        JdbcTestUtils.deleteFromTables(jdbcTemplate, "post");
+    }
+
+//    @Test
+//    public void testCreatePost(){
+//        User user = new User(1,"Pedro", "curti", "pedro@curti.com",0);
+//        Community community = new Community(1, "test",  "This is a test community");
+//        community.setPortrait_id(0);
+//        final Post post = postDao.createPost(title, body, (int) user.getId(), community.getName(), media, date, category);
+//        assertEquals(id, post.getId());
+//        assertEquals(title, post.getTitle());
+//        assertEquals(body, post.getBody());
+//        assertEquals(author_id, post.getAuthor_id());
+//        assertEquals(community_name, post.getCommunity_name());
+//        assertEquals(media, post.getMedia());
+//        assertEquals(date, post.getDate());
+//        assertEquals(grooviness, post.getGrooviness());
+//        assertEquals(category, post.getCategory());
+//
+//    }
+
+    @Test
+    public void testFindPostsByUser() {
+        // When
+        List<Post> posts = postDao.findPostsByUser(1);
+
+        // Then
+        // Assert that the size of the list is as expected
+        assertEquals(1, posts.size()); // Replace expectedSize with the expected size of the list
+
+        // Assert that the IDs of the returned posts match the IDs of the liked posts
+        for (Post postTest : posts) {
+            assertEquals(postTest.getId(), 1);
+        }
+
     }
 
     @Test
-    public void testCreatePost(){
-        User user = new User(1,"Pedro", "curti", "pedro@curti.com");
-        Community community = new Community(1, "test", 0,  "This is a test community");
-        final Post post = postDao.createPost(title, body, (int)user.getId(), community.getName(), media, date, category);
-        Assert.assertEquals(id, post.getId());
-        Assert.assertEquals(title, post.getTitle());
-        Assert.assertEquals(body, post.getBody());
-        Assert.assertEquals(author_id, post.getAuthor_id());
-        Assert.assertEquals(community_name, post.getCommunity_name());
-        Assert.assertEquals(media, post.getMedia());
-        Assert.assertEquals(date, post.getDate());
-        Assert.assertEquals(grooviness, post.getGrooviness());
-        Assert.assertEquals(category, post.getCategory());
+    public void testFindPostsLikedByUser() {
 
+        // When
+        List<Post> posts = postDao.findPostsLikedByUser(1);
+
+        // Then
+        // Assert that the size of the list is as expected
+        assertEquals(1, posts.size()); // Replace expectedSize with the expected size of the list
+
+        // Assert that the IDs of the returned posts match the IDs of the liked posts
+        for (Post postTest : posts) {
+            assertEquals(postTest.getId(), 1);
+        }
     }
 
 

@@ -3,9 +3,11 @@ package ar.edu.itba.paw.webapp.controller;
 import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
 import ar.edu.itba.paw.exceptions.NoSuchPostException;
+import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,7 +26,8 @@ public class ExceptionHandlerController {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(value = {
             NoSuchPostException.class,
-            NoSuchCommunityException.class
+            NoSuchCommunityException.class,
+            UserNotFoundException.class
     })
     public ModelAndView notFoundException() {
         ModelAndView mav = new ModelAndView("errors/error");
@@ -42,6 +45,12 @@ public class ExceptionHandlerController {
         mav.addObject("error_title", messageSource.getMessage("401", null, Locale.getDefault()));
         mav.addObject("error_message", messageSource.getMessage("401.message", null, Locale.getDefault()));
         return mav;
+    }
+
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler({BadCredentialsException.class})
+    public ModelAndView unregisteredUserException() {
+        return new ModelAndView("user/login").addObject("error", messageSource.getMessage("Login.Incorrect", null, Locale.getDefault()));
     }
 
 }

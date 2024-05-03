@@ -21,4 +21,21 @@ public interface PostDao {
 
     void addToGroovy(long userId, long postId, boolean grooviness);
 
+    Optional<Boolean> checkGrooviness(long postId, long userId);
+
+    void insertIntoGroovyHistory(long postId, long id, boolean grooviness);
+
+    void deleteGrooviness(long postId, long id);
+
+    void updateGroovyHistory(long postId, long id, boolean b);
+
+    Optional<Post> findByIdWithImage(final long id);
+
+    List<Post> getMyFollowedPosts(long userId);
+
+    List<Post> getMyFollowedPostsByCategory(String category, long userId);
+
+    List<Post> findPostsByUser(long id);
+
+    List<Post> findPostsLikedByUser(long id);
 }

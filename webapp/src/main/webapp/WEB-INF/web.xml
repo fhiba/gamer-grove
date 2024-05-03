@@ -13,7 +13,7 @@
     </context-param>
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value>ar.edu.itba.paw.webapp.config.WebConfig,ar.edu.itba.paw.webapp.config.WebAuthConfig</param-value>
+        <param-value>ar.edu.itba.paw.webapp.config.WebConfig,ar.edu.itba.paw.webapp.config.WebAuthConfig, ar.edu.itba.paw.webapp.config.MailingConfig</param-value>
     </context-param>
 
     <listener>
@@ -64,14 +64,14 @@
     </filter-mapping>
 
     <!-- ERROR DISPATCHING -->
-    <error-page>
-        <error-code>404</error-code>
-        <location>/WEB-INF/jsp/errors/404.jsp</location>
-    </error-page>
+<!--    <error-page>-->
+<!--        <error-code>404</error-code>-->
+<!--        <location>/WEB-INF/jsp/errors/404.jsp</location>-->
+<!--    </error-page>-->
 
-    <error-page>
-        <error-code>500</error-code>
-        <location>/WEB-INF/jsp/errors/500.jsp</location>
-    </error-page>
+<!--    <error-page>-->
+<!--        <error-code>500</error-code>-->
+<!--        <location>/WEB-INF/jsp/errors/500.jsp</location>-->
+<!--    </error-page>-->
 
 </web-app>

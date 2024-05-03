@@ -28,6 +28,5 @@ public interface CommentDao {
 
     List<Comment> getDownGroovedComments(long postId, long id);
 
-
-
+    int deleteComment(long commentId);
 }

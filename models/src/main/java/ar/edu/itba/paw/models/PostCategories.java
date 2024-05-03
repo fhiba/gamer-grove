@@ -1,7 +1,7 @@
 package ar.edu.itba.paw.models;
 
 public enum PostCategories {
-    MISC("Miscellaneous"),
+    DISC("Discussion"),
     NEWS("News"),
     REVIEW("Review"),
     HELP("Help"),

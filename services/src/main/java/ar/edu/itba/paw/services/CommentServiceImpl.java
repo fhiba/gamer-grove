@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchPostException;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.models.Comment;
@@ -7,6 +8,7 @@ import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistance.CommentDao;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import ar.edu.itba.paw.exceptions.NoSuchCommentException;
 
@@ -23,17 +25,42 @@ public class CommentServiceImpl implements CommentService {
     private UserService userService;
 
     @Autowired
+    private MailingService mailingService;
+
+    @Autowired
     private PostService postService;
 
+    @Autowired
+    private ModderService modderService;
+
     @Override
-    public Comment createComment(long postId, String body) {
+    public Comment createComment(long postId, String body) throws NoLoggedUserException{
         Optional<User> user = userService.getLoggedUser();
         if(user.isEmpty())
-            throw new IllegalArgumentException("User not found");
+            throw new NoLoggedUserException("User not logged");
         long userId = user.get().getId();
         String username = user.get().getUsername();
-        return commentDao.createComment(postId,body,username,LocalDateTime.now(),userId);
+        LocalDateTime date = LocalDateTime.now();
+        Comment comment = commentDao.createComment(postId,body,username,date,userId);
+        sendMailToPostOwner(postId,date);
+        return comment;
     }
+    @Async
+    void sendMailToPostOwner(long postId, LocalDateTime date) {
+        Post post;
+
+        try{
+            post = postService.getPostById(postId);
+        } catch (NoSuchPostException e){
+            return;
+        }
+
+        Optional<User> user = userService.findById(post.getAuthorId());
+        if(user.isEmpty())
+            return;
+        mailingService.sendNewCommentNotification(user.get(), post, date);
+    }
+
 
     @Override
     public List<Comment> getPostComments(long postId) {
@@ -100,5 +127,13 @@ public class CommentServiceImpl implements CommentService {
             throw new UserNotFoundException("User not found");
         User user = possibleUser.get();
         return commentDao.getDownGroovedComments(postId,user.getId());
+    }
+
+    @Override
+    public int deleteComment(long commentId) throws NoSuchCommentException {
+        Optional<Comment> comment = commentDao.getCommentById(commentId);
+        if(comment.isEmpty())
+            throw new NoSuchCommentException("Comment not found");
+        return commentDao.deleteComment(commentId);
     }
 }

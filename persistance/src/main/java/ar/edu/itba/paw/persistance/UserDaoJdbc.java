@@ -19,7 +19,8 @@ public class UserDaoJdbc implements UserDao{
     private static final RowMapper<User> ROW_MAPPER = (rs, rowNum) -> new User(rs.getLong("id"),
                                                                                 rs.getString("username"),
                                                                                 rs.getString("password"),
-                                                                                rs.getString("email"));
+                                                                                rs.getString("email"),
+                                                                                rs.getLong("portrait_id"));
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
     @Autowired
@@ -54,12 +55,29 @@ public class UserDaoJdbc implements UserDao{
         userData.put("email",email);
         userData.put("password",password);
         userData.put("owner", false);
+        userData.put("portrait_id", null);
         Number id = jdbcInsert.executeAndReturnKey(userData);
-        return new User(id.longValue(), username, password, email);
+        return new User(id.longValue(), username, password, email,0);
     }
 
     @Override
     public Optional<Boolean> isAdmin(long id) {
         return jdbcTemplate.query("SELECT owner FROM users WHERE id = ?", new Object[]{id}, (rs, rowNum) -> rs.getBoolean("owner")).stream().findFirst();
+    }
+
+    @Override
+    public List<User> findByCommunity(String communityName) {
+        //return jdbcTemplate.query("SELECT * FROM users WHERE id IN (SELECT user_id FROM community_user WHERE community_name = ?)", new Object[]{communityName}, ROW_MAPPER);
+        return List.of();
+    }
+
+    @Override
+    public List<User> findAll() {
+        return jdbcTemplate.query("SELECT * FROM users", ROW_MAPPER);
+    }
+
+    @Override
+    public void updateImageId(long id, long imageId) {
+        jdbcTemplate.update("UPDATE users SET portrait_id = ? WHERE id = ?", imageId, id);
     }
 }

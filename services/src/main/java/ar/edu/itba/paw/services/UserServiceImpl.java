@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistance.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -47,6 +49,24 @@ public class UserServiceImpl implements UserService {
     @Override
     public Boolean isUserAdmin(long id) {
         return userDao.isAdmin(id).orElse(false);
+    }
+
+    @Override
+    public List<User> findAll() {
+        return userDao.findAll();
+    }
+
+    @Override
+    public void updateImageId(long id, long imageId) {
+        userDao.updateImageId(id, imageId);
+    }
+
+    @Override
+    public User getLoggedUserChecked() throws NoLoggedUserException {
+        Optional<User> maybeUser = getLoggedUser();
+        if(maybeUser.isEmpty())
+            throw new NoLoggedUserException("User not logged");
+        return maybeUser.get();
     }
 
 }

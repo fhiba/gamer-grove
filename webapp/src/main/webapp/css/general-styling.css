@@ -4,9 +4,38 @@
 /* Apply Inter font to the entire page */
 body {
     font-family: 'Inter', sans-serif;
+    background-color: #1f1f1f;
+    color:#ffffff!important;
 }
 
-.miscellaneous {
+.text-body-secondary{
+    color: rgba(174, 174, 174, 0.75) !important;
+}
+
+.card-body{
+    border-color: #000000;!important;
+}
+.card{
+    background-color: transparent;
+    color:#ffffff;
+    border-color:#000000;
+}
+
+.background-of-views{
+    background-color: #1f1f1f;
+}
+
+.modal{
+    background-color: #1f1f1f;
+
+}
+
+.modal-content{
+    background-color: #414141;
+    border:none;
+}
+
+.discussion{
     background-color: #FF5733; /* Change to desired color for Miscellaneous */
 }
 
@@ -33,7 +62,7 @@ body {
 .navbar {
     background-color: #1c1919;
 !important; /* Change to desired color for Navbar */
-    box-shadow: 5px 0px 10px rgba(0, 0, 0, 0.5);
+    box-shadow: 5px 0 10px rgba(0, 0, 0, 0.5);
 }
 
 .img-container {
@@ -105,6 +134,10 @@ body {
     object-fit: cover; /* Ensures the image covers the entire element, cropping if necessary */
 }
 
+.mod-form{
+    color:black!important;
+}
+
 .card-body-community {
     margin-bottom: -10px;
     background-color: #1c1919; /* Change to desired color for Sidebar */
@@ -120,5 +153,68 @@ body {
 .sidebar{
     background-color: #1c1919; /* Change to desired color for Sidebar */
     border-color: #1c1919; /* Change to desired color for Sidebar border */
-    box-shadow: 5px 0px 10px rgba(0, 0, 0, 0.5); ;
+    box-shadow: 5px 0 10px rgba(0, 0, 0, 0.5); ;
+}
+
+.follow-button {
+    background-color:transparent;
+    color: #ff0000;
+    border-color: #ff0000;
+    font-size: 20px; /* Adjust as needed */
+    max-height: 2.5rem;
+    max-width: min-content;
+    padding: 0 1rem; /* Adjust as needed */
+}
+
+.cat-badge {
+    max-height: min-content;
+    text-underline: none;
+    background-color: lightslategrey;
+    margin-bottom: 0.5rem;
+}
+
+.community-accordion{
+    color: transparent;
+}
+
+.expand-btn{
+    justify-content: end;
+    background-color: transparent;
+    border:none;
+    color: white;
+}
+
+.post-body-home {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* number of lines to show */
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.fa-arrow-down{
+    color: lightslategrey;
+}
+
+.fa-arrow-up{
+    color: lightslategrey;
+}
+
+.dropdown-menu-header[data-bs-popper] {
+    top: 100%;
+    right: 0;
+    left: auto!important;
+    margin-top: var(--bs-dropdown-spacer);
+}
+
+.ellipsis {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+    overflow: hidden;
+    width: 5em;
+}
+
+.input-group-append {
+    cursor: pointer;
 }
