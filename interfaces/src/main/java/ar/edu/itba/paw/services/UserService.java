@@ -22,4 +22,6 @@ public interface UserService {
     List<User> findAll();
 
     void updateImageId(long id, long imageId);
+
+    List<User> findByCommunity(String communityName);
 }

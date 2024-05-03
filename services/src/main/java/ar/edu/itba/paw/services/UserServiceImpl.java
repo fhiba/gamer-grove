@@ -69,4 +69,9 @@ public class UserServiceImpl implements UserService {
         return maybeUser.get();
     }
 
+
+    @Override
+    public List<User> findByCommunity(String communityName) {
+        return userDao.findByCommunity(communityName);
+    }
 }

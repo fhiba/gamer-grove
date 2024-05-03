@@ -60,8 +60,7 @@ public class PostServiceImpl implements PostService{
     void notifyUsers(Post post, User user) {
         // TODO: BRING USERS FROM COMMUNITY
         System.out.println("notifying");
-        //List<User> users = userService.getUsersByCommunity(post.getCommunity_name());
-        List<User> users = userService.findAll();
+        List<User> users = userService.findByCommunity(post.getCommunityName()).stream().filter(u -> u.getId() != user.getId()).toList();
         mailingService.sendNewPostNotifications(users, post, user);
     }
 
