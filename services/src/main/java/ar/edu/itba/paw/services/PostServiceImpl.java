@@ -8,7 +8,6 @@ import ar.edu.itba.paw.persistance.PostDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
@@ -16,8 +15,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-
-@Transactional(readOnly = true)
 @Service
 public class PostServiceImpl implements PostService{
 
@@ -42,7 +39,6 @@ public class PostServiceImpl implements PostService{
         return posts;
     }
 
-    @Transactional
     @Override
     public Post createPost(final String title, final String body, final String communityName, final String category, final MultipartFile[] files) throws NoLoggedUserException, NoSuchCommunityException {
         Optional<User> user = userService.getLoggedUser();
@@ -52,6 +48,7 @@ public class PostServiceImpl implements PostService{
         Community community = communityService.findByName(communityName);
         Post post = postDao.createPost(title,body,(int)userId,community.getName(),false, LocalDateTime.now(), category);
         notifyUsers(post, user.get());
+        System.out.println(files.length);
         for (MultipartFile file : files) {
             if (!file.isEmpty())
                 fs.uploadPostImage(file, post.getId());
@@ -62,7 +59,9 @@ public class PostServiceImpl implements PostService{
     @Async
     void notifyUsers(Post post, User user) {
         // TODO: BRING USERS FROM COMMUNITY
-        List<User> users = userService.findByCommunity(post.getCommunityName()).stream().filter(u -> u.getId() != user.getId()).toList();
+        System.out.println("notifying");
+        //List<User> users = userService.getUsersByCommunity(post.getCommunity_name());
+        List<User> users = userService.findAll();
         mailingService.sendNewPostNotifications(users, post, user);
     }
 
@@ -94,7 +93,6 @@ public class PostServiceImpl implements PostService{
         return post.get();
     }
 
-    @Transactional
     @Override
     public void editGrooviness(int grooviness, long postId) throws UserNotFoundException, NoSuchPostException {
         Optional<Post> post = postDao.findById(postId);
@@ -170,4 +168,12 @@ public class PostServiceImpl implements PostService{
         List<Post> posts = postDao.findPostsLikedByUser(id);
         return posts.isEmpty()? Collections.emptyList(): posts;
     }
+
+    @Override
+    public List<String> getUsedCategories() {
+        List<String> categories = postDao.getUsedCategories();
+        return categories.isEmpty()? Collections.emptyList(): categories;
+    }
+
+
 }

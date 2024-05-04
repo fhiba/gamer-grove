@@ -134,6 +134,10 @@ body {
     object-fit: cover; /* Ensures the image covers the entire element, cropping if necessary */
 }
 
+.form-select{
+    min-width: fit-content;
+}
+
 .mod-form{
     color:black!important;
 }

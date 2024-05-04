@@ -25,11 +25,11 @@
                             <div class="row-cols-2">
                                 <c:url value="/addMod" var="addModUrl"/>
                                 <a href="${addModUrl}">
-                                    <button class="btn btn-outline-primary">Add Mod</button>
+                                    <button class="btn btn-outline-primary"><spring:message  code="Mod.Add"/></button>
                                 </a>
                                 <c:url value="/new-community" var="newCommunityUrl"/>
                                 <a href="${newCommunityUrl}">
-                                    <button class="ms-2 btn btn-outline-success">Add Community</button>
+                                    <button class="btn btn-outline-success"><spring:message code="Community.Add"/></button>
                                 </a>
                             </div>
                         </c:if>
@@ -46,7 +46,7 @@
                         </a>
                         <hr>
 
-                            <div class="card-title text-light mb-3">My Communities</div>
+                        <div class="h5 card-title text-light mb-3"><spring:message code="Communities.Title"/></div>
                         <c:forEach var="community" items="${communities}">
                             <c:url value="/community/${community.name}" var="communityUrl"/>
                             <a href="${communityUrl}" class="text-light text-decoration-none">

@@ -166,5 +166,10 @@ public class PostDaoJdbc implements PostDao {
         return jdbcTemplate.query("SELECT * FROM post WHERE id IN(SELECT post_id FROM groovy_post_history WHERE user_id=?) ORDER BY post_date DESC",new Object[]{id},ROW_MAPPER);
     }
 
+    @Override
+    public List<String> getUsedCategories() {
+        return jdbcTemplate.query("SELECT DISTINCT category FROM post WHERE category IS NOT NULL", (rs, rowNum) -> rs.getString("category"));
+    }
+
 
 }

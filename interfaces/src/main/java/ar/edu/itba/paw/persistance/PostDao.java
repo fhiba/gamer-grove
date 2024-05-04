@@ -38,4 +38,6 @@ public interface PostDao {
     List<Post> findPostsByUser(long id);
 
     List<Post> findPostsLikedByUser(long id);
+
+    List<String> getUsedCategories();
 }

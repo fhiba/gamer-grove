@@ -25,11 +25,11 @@
                             <div class="row-cols-2">
                                 <c:url value="/addMod" var="addModUrl"/>
                                 <a href="${addModUrl}">
-                                    <button class="btn btn-outline-primary">Add Mod</button>
+                                    <button class="btn btn-outline-primary"><spring:message  code="Mod.Add"/></button>
                                 </a>
                                 <c:url value="/new-community" var="newCommunityUrl"/>
                                 <a href="${newCommunityUrl}">
-                                    <button class="btn btn-outline-success">Add Community</button>
+                                    <button class="btn btn-outline-success"><spring:message code="Community.Add"/></button>
                                 </a>
                             </div>
                         </c:if>
@@ -46,10 +46,10 @@
                         </a>
                         <hr>
                         <c:if test="${isLogged == null}">
-                            <div class="h5 card-title text-light mb-3">Communities</div>
+                            <div class="h5 card-title text-light mb-3"><spring:message code="Communities.Title"/></div>
                         </c:if>
                         <c:if test="${isLogged != null}">
-                            <div class="card-title text-light mb-3">My Communities</div>
+                            <div class="card-title text-light mb-3"><spring:message code="Communities.Logged"/></div>
                         </c:if>
                         <c:forEach var="community" items="${communities}">
                             <c:url value="/community/${community.name}" var="communityUrl"/>
@@ -85,7 +85,7 @@
                         <a href="${communityUrl}"
                            class="text-decoration-none text-light text-body-primary">c/<c:out value="${post.communityName}"
                                                                                    escapeXml="true"/></a>
-                        <span class="badge rounded-pill ${post.category}">${post.category}</span>
+                        <span class="badge rounded-pill ${post.category}"><c:out value="${post.category}" escapeXml="true"/></span>
                     </p>
 
                     <c:if test="${post.deleted}">
@@ -113,13 +113,13 @@
                                         data-bs-target="#carouselExample"
                                         data-bs-slide="prev">
                                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                    <span class="visually-hidden">Previous</span>
+                                    <span class="visually-hidden"><spring:message code="Previous"/></span>
                                 </button>
                                 <button class="carousel-control-next" type="button"
                                         data-bs-target="#carouselExample"
                                         data-bs-slide="next">
                                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                    <span class="visually-hidden">Next</span>
+                                    <span class="visually-hidden"><spring:message code="Next"/></span>
                                 </button>
                             </div>
                         </c:if>
@@ -135,9 +135,9 @@
                         </c:if>
                         <div class="d-flex align-items-center">
                             <p class="card-text mb-0"><small
-                                    class="text-body-secondary">${post.date.format(format)}</small>
+                                    class="text-body-secondary"><c:out value="${post.date.format(format)}" escapeXml="true"/></small>
                             </p>
-                            <span class="grooviness-count" style="margin-left: 1rem;">${post.grooviness}</span>
+                            <span class="grooviness-count" style="margin-left: 1rem;"><c:out value="${post.grooviness}" escapeXml="true"/></span>
                             <div class="d-none">
                                 <c:url value="/post/${postId}/up" var="upPostUrl"/>
                                 <form:form action="${upPostUrl}" method="post" modelA="newPostGroovyForm"
@@ -298,7 +298,7 @@
                     <div class="card-title d-flex row-cols-2 justify-content-between">
                         <c:url value="/community/${community.name}" var="communityUrl"/>
                         <a href="${communityUrl}" class="text-decoration-none">
-                            <h5 class="card-title text-light fw-bold">${community.name}</h5>
+                            <h5 class="card-title text-light fw-bold"><c:out value="${community.name}" escapeXml="true"/></h5>
                         </a>
                         <div class="d-none">
                             <c:url var="followUrl" value="/community/${community.name}/follow"/>
@@ -325,7 +325,7 @@
                         <span class="cat-badge badge">${category}</span>
                     </c:forEach>
                     <div class="card-subtitle text-body-secondary mt-3">
-                        ${community.description}
+                        <c:out value="${community.description}" escapeXml="true"/>
                     </div>
                 </div>
             </div>

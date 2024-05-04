@@ -44,10 +44,10 @@
                         </a>
                         <hr>
                         <c:if test="${isLogged == null}">
-                            <div class="h5 card-title text-light mb-3">Communities</div>
+                            <div class="h5 card-title text-light mb-3"><spring:message code="Communities.Title"/> </div>
                         </c:if>
                         <c:if test="${isLogged != null}">
-                            <div class="card-title text-light mb-3">My Communities</div>
+                            <div class="card-title text-light mb-3"><spring:message code="Communities.Logged"/> </div>
                         </c:if>
                         <c:forEach var="community" items="${communities}">
                             <c:url value="/community/${community.name}" var="communityUrl"/>
@@ -105,7 +105,7 @@
                                         <div class="flex-column overflow-auto w-100">
                                             <div class="d-flex justify-content-between">
                                                 <h2 class="fw-semibold card-subtitle mb-1">
-                                                    /${community.name}
+                                                    /<c:out value="${community.name}" escapeXml="true"/>
                                                 </h2>
                                                 <div class="justify-content-end">
                                                     <c:forEach var="communityCategories"
@@ -114,7 +114,7 @@
                                                     </c:forEach>
                                                 </div>
                                             </div>
-                                            <h6 class="card-title text-secondary">${community.description}</h6>
+                                            <h6 class="card-title text-secondary"><c:out value="${community.description}" escapeXml="true"/></h6>
                                         </div>
                                     </div>
                                 </div>
@@ -139,7 +139,7 @@
                                     <button id="addCategoryButton" class="accordion-button collapsed" type="button"
                                             data-bs-toggle="collapse" data-bs-target="#flush-collapseOne"
                                             aria-expanded="false" aria-controls="flush-collapseOne">
-                                        Add Category
+                                        <spring:message code="Category.Add"/>
                                     </button>
                                 </h2>
                                 <div id="flush-collapseOne"
@@ -147,8 +147,7 @@
                                      aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
                                     <div id="categoriesBody" class="accordion-body">
 
-                                        <p class="text-dark-emphasis m-1" hidden="hidden" id="emptyCatText">No more
-                                            categories to apply.</p>
+                                        <p class="text-dark-emphasis m-1" hidden="hidden" id="emptyCatText"><spring:message code="Category.NoMore"></p>
                                     </div>
                                 </div>
                             </div>

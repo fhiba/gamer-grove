@@ -35,4 +35,6 @@ public interface PostService {
     List<Post> getPostsByUser(long id);
 
     List<Post> getUserLikedPosts(long id);
+
+    List<String> getUsedCategories();
 }

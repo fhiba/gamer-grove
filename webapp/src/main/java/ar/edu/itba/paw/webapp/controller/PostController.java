@@ -67,6 +67,7 @@ public class PostController {
         List<Community> communities = null;
         List<Community> followedCommunities = null;
         Boolean isAdmin = false;
+
         try{
             user = us.getLoggedUserChecked();
         }catch (Exception ignored){
@@ -99,6 +100,7 @@ public class PostController {
 
 //    @RequestMapping(path = "/post/{postId}/up", method = RequestMethod.GET)
 //    public ModelAndView testtest(){
+//        System.out.println("ENTRE");
 //        return new ModelAndView("redirect:/home");
 //    }
 
@@ -109,6 +111,7 @@ public class PostController {
         User user = null;
         List<Community> communities;
         Boolean isAdmin = false;
+        List<String> categories = ps.getUsedCategories();
         try{
             user = us.getLoggedUserChecked();
         }catch (Exception ignored){
@@ -135,7 +138,7 @@ public class PostController {
         mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
         mav.addObject("communities", communities);
         mav.addObject("news", ps.getByCategory(PostCategories.NEWS.getCategory()));
-        mav.addObject("categories", Arrays.stream(PostCategories.values()).map(PostCategories::getCategory).toArray(String[]::new));
+        mav.addObject("categories", categories);
         return mav;
     }
 
@@ -146,6 +149,7 @@ public class PostController {
         List<Community> communities;
         User user = null;
         Boolean isAdmin = false;
+        List<String> categories = ps.getUsedCategories();
         try{
             user = us.getLoggedUserChecked();
         }catch (Exception ignored){
@@ -169,7 +173,7 @@ public class PostController {
         mav.addObject("posts",posts);
         mav.addObject("communities", communities);
         mav.addObject("news", ps.getByCategory(PostCategories.NEWS.getCategory()));
-        mav.addObject("categories", Arrays.stream(PostCategories.values()).map(PostCategories::getCategory).toArray(String[]::new));
+        mav.addObject("categories", categories);
         return mav;
     }
 
