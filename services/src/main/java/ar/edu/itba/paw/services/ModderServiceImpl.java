@@ -10,9 +10,11 @@ import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistance.ModderDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+@Transactional(readOnly = true)
 @Service
 public class ModderServiceImpl implements ModderService{
 
@@ -25,6 +27,7 @@ public class ModderServiceImpl implements ModderService{
     @Autowired
     private PostService ps;
 
+    @Transactional
     @Override
     public int addModder(String username, long communityId) throws UserNotFoundException, NoSuchCommunityException, AlreadyModException {
         Optional<User> possibleNewMod = us.findByUsername(username);
@@ -47,6 +50,7 @@ public class ModderServiceImpl implements ModderService{
         return md.isModderOfCommunity(userId,communityId) || us.isUserAdmin(userId);
     }
 
+    @Transactional
     @Override
     public int removeModder(String username, long communityId) throws UserNotFoundException {
         Optional<User> possibleNewMod = us.findByUsername(username);
@@ -60,10 +64,12 @@ public class ModderServiceImpl implements ModderService{
         return 0;
     }
 
+    @Transactional
     @Override
     public int removePost(long postId) {
         return md.removePost(postId);
     }
+
 
     @Override
     public boolean canRemovePost(long userId, long postId) throws NoSuchPostException, NoSuchCommunityException {
@@ -95,6 +101,4 @@ public class ModderServiceImpl implements ModderService{
 
         return isModderOfCommunity(possibleMod.get().getId(), postFrom.getId());
     }
-
-
 }

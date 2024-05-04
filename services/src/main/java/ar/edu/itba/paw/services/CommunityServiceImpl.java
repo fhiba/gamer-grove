@@ -7,13 +7,14 @@ import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistance.CommunityDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-
+@Transactional(readOnly = true)
 @Service
 public class CommunityServiceImpl implements CommunityService{
     @Autowired
@@ -21,9 +22,9 @@ public class CommunityServiceImpl implements CommunityService{
     @Autowired
     private UserService userService;
 
+    @Transactional
     @Override
     public void createCommunity(final String name, final String description, final String categories, String developer, String publisher, LocalDateTime releaseDate) throws NoSuchCommunityException {
-        System.out.println("entre al service");
         Community community = communityDao.createCommunity(name,description,developer,publisher,releaseDate);
 
         if(categories != null && !categories.isEmpty()) {
@@ -67,6 +68,7 @@ public class CommunityServiceImpl implements CommunityService{
         return communityDao.find(searchTerms.replaceAll("([%_\\\\])", "\\\\$1"), newList == null? List.of(): newList);
     }
 
+    @Transactional
     @Override
     public void addCategory(long id, String category) throws NoSuchCommunityException {
         Optional<Community> community = communityDao.findById(id);
@@ -75,6 +77,7 @@ public class CommunityServiceImpl implements CommunityService{
         communityDao.addCategory(id,category);
     }
 
+    @Transactional
     @Override
     public void removeCategory(long id, String category) throws NoSuchCommunityException {
         Optional<Community> community = communityDao.findById(id);
@@ -83,6 +86,7 @@ public class CommunityServiceImpl implements CommunityService{
         communityDao.removeCategory(id,category);
     }
 
+    @Transactional
     @Override
     public void addCategories(long id, List<String> categories) throws NoSuchCommunityException {
        for (String category: categories){
@@ -90,6 +94,7 @@ public class CommunityServiceImpl implements CommunityService{
        }
     }
 
+    @Transactional
     @Override
     public void removeCategories(long id, List<String> categories) throws NoSuchCommunityException {
         for (String category: categories){
@@ -105,6 +110,7 @@ public class CommunityServiceImpl implements CommunityService{
         return communities;
     }
 
+    @Transactional
     @Override
     public void modifyUserOnCommunity(int communityId,String communityName) throws NoLoggedUserException {
         Boolean followsCommunity = checkIfUserFollowsCommunity(communityId);
@@ -113,11 +119,12 @@ public class CommunityServiceImpl implements CommunityService{
             communityDao.unfollowCommunity(user.getId(), communityId);
         }
         else{
-            System.out.println(user.getId());
             communityDao.followCommunity(user.getId(), communityId,communityName);
         }
 
     }
+
+    @Transactional
     @Override
     public void updateCommunityImageId(long id, long imageId) {
         communityDao.updateCommunityImageId(id,imageId);

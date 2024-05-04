@@ -20,6 +20,7 @@ import java.util.*;
 import javax.mail.*;
 import javax.mail.internet.*;
 
+
 @Service
 @PropertySource("classpath:mail.properties")
 public class MailingServiceImpl implements MailingService {
@@ -79,8 +80,7 @@ public class MailingServiceImpl implements MailingService {
             Transport.send(helper.getMimeMessage());
 
         }catch (MessagingException e) {
-//            System.out.println("Error sending email");
-//            System.out.println(e.getMessage());
+            //TODO: LOGGER
         }
     }
 
