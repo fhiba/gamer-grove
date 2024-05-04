@@ -8,14 +8,12 @@ import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistance.FileDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 
 import javax.imageio.IIOException;
 import java.io.IOException;
 import java.util.Optional;
-
 @Service
 public class FileServiceImpl implements FileService{
 
@@ -32,7 +30,6 @@ public class FileServiceImpl implements FileService{
         return fd.getFile(imageId);
     }
 
-    @Transactional
     @Override
     public Optional<File> uploadCommunityImage(String communityId, MultipartFile file) throws NoSuchCommunityException {
         Community UpdateProfileImage = cs.findByName(communityId);
@@ -57,7 +54,6 @@ public class FileServiceImpl implements FileService{
         return image;
     }
 
-    @Transactional
     @Override
     public Optional<File> uploadUserImage(MultipartFile file) throws NoLoggedUserException {
         Optional<User> UpdateProfileImageMaybe = us.getLoggedUser();
@@ -85,7 +81,6 @@ public class FileServiceImpl implements FileService{
         return image;
     }
 
-    @Transactional
     @Override
     public void uploadPostImage(MultipartFile file, long id) {
         try {

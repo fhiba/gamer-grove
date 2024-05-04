@@ -99,6 +99,7 @@ public class PostController {
 
 //    @RequestMapping(path = "/post/{postId}/up", method = RequestMethod.GET)
 //    public ModelAndView testtest(){
+//        System.out.println("ENTRE");
 //        return new ModelAndView("redirect:/home");
 //    }
 

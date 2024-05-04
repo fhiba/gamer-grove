@@ -92,7 +92,9 @@ public class CommentDaoJdbc implements CommentDao{
 
     @Override
     public void deleteGrooviness(long commentId, long id, long postId) {
-        jdbcTemplate.update("DELETE FROM groovy_comment_history WHERE comment_id = ? AND user_id = ? AND post_id = ?", new Object[]{commentId,id,postId});
+        System.out.println(
+        jdbcTemplate.update("DELETE FROM groovy_comment_history WHERE comment_id = ? AND user_id = ? AND post_id = ?", new Object[]{commentId,id,postId})
+        );
     }
 
     @Override

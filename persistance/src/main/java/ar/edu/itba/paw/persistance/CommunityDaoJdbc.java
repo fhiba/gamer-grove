@@ -70,6 +70,7 @@ public class CommunityDaoJdbc implements CommunityDao {
 
     @Override
     public Community createCommunity(String name, String description, String developer, String publisher, LocalDateTime releaseDate) {
+        System.out.println("entre al dao");
         Map<String, Object> args = new HashMap<>();
         args.put("name", name);
         args.put("description", description);
@@ -78,6 +79,7 @@ public class CommunityDaoJdbc implements CommunityDao {
         args.put("publisher",publisher);
         args.put("release_date",releaseDate);
         long id = jdbcInsert.executeAndReturnKey(args).longValue();
+        System.out.println(id);
         return new Community(id, name, description,publisher,developer,releaseDate);
     }
 

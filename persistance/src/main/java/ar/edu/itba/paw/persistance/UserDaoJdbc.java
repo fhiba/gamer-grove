@@ -67,7 +67,8 @@ public class UserDaoJdbc implements UserDao{
 
     @Override
     public List<User> findByCommunity(String communityName) {
-        return jdbcTemplate.query("SELECT users.* FROM users JOIN community_user ON users.id = community_user.user_id WHERE community_name = ?", new Object[]{communityName}, ROW_MAPPER);
+        //return jdbcTemplate.query("SELECT * FROM users WHERE id IN (SELECT user_id FROM community_user WHERE community_name = ?)", new Object[]{communityName}, ROW_MAPPER);
+        return List.of();
     }
 
     @Override
