@@ -147,7 +147,7 @@
                                      aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
                                     <div id="categoriesBody" class="accordion-body">
 
-                                        <p class="text-dark-emphasis m-1" hidden="hidden" id="emptyCatText"><spring:message code="Category.NoMore"></p>
+                                        <p class="text-dark-emphasis m-1" hidden="hidden" id="emptyCatText"><spring:message code="Category.NoMore"/></p>
                                     </div>
                                 </div>
                             </div>
