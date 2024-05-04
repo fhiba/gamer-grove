@@ -7,10 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
+@Transactional(readOnly = true)
 @Service
 public class UserServiceImpl implements UserService {
     @Autowired
@@ -33,6 +35,7 @@ public class UserServiceImpl implements UserService {
         return userDao.findByUsername(username);
     }
 
+    @Transactional
     @Override
     public User create(final String username, final String email, final String password) {
 
@@ -56,6 +59,7 @@ public class UserServiceImpl implements UserService {
         return userDao.findAll();
     }
 
+    @Transactional
     @Override
     public void updateImageId(long id, long imageId) {
         userDao.updateImageId(id, imageId);
@@ -69,4 +73,8 @@ public class UserServiceImpl implements UserService {
         return maybeUser.get();
     }
 
+    @Override
+    public List<User> findByCommunity(String communityName) {
+        return userDao.findByCommunity(communityName);
+    }
 }

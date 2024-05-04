@@ -11,11 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import ar.edu.itba.paw.exceptions.NoSuchCommentException;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+@Transactional(readOnly = true)
 @Service
 public class CommentServiceImpl implements CommentService {
     @Autowired
@@ -33,6 +35,7 @@ public class CommentServiceImpl implements CommentService {
     @Autowired
     private ModderService modderService;
 
+    @Transactional
     @Override
     public Comment createComment(long postId, String body) throws NoLoggedUserException{
         Optional<User> user = userService.getLoggedUser();
@@ -67,6 +70,7 @@ public class CommentServiceImpl implements CommentService {
         return commentDao.getPostComments(postId);
     }
 
+    @Transactional
     @Override
     public void editGroovinessOnComment(long commentId, int grooviness, long postId) throws NoSuchCommentException, UserNotFoundException {
         Optional<Comment> comment = commentDao.getCommentById(commentId);
@@ -109,6 +113,7 @@ public class CommentServiceImpl implements CommentService {
         }
     }
 
+
     @Override
     public List<Comment> getUpGroovedComments(long postId) throws NoSuchPostException, UserNotFoundException {
         Optional<User> possibleUser = userService.getLoggedUser();
@@ -129,6 +134,7 @@ public class CommentServiceImpl implements CommentService {
         return commentDao.getDownGroovedComments(postId,user.getId());
     }
 
+    @Transactional
     @Override
     public int deleteComment(long commentId) throws NoSuchCommentException {
         Optional<Comment> comment = commentDao.getCommentById(commentId);
