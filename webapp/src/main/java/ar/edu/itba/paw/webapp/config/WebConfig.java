@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.config;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -28,6 +29,13 @@ import java.util.concurrent.TimeUnit;
 public class WebConfig extends WebMvcConfigurerAdapter {
 
     private final static Long MAX_FILE_SIZE = (long) 10*1000*1000;
+    private static final String DB_URL_PARAMETER = "DB_URL";
+    private static final String DB_USERNAME_PARAMETER = "DB_USERNAME";
+    private static final String DB_PASSWORD_PARAMETER="DB_PASSWORD";
+
+    private static final String PROD_DB_URL_PARAMETER = "PROD_DB_URL";
+    private static final String PROD_DB_USERNAME_PARAMETER = "PROD_DB_USERNAME";
+    private static final String PROD_DB_PASSWORD_PARAMETER="PROD_DB_PASSWORD";
 
 
     @Bean
@@ -56,10 +64,11 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     @Bean
     public DataSource dataSource() {
         final SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
+        final Dotenv env = Dotenv.load();
         dataSource.setDriverClass(org.postgresql.Driver.class);
-        dataSource.setUrl("jdbc:postgresql://localhost:5432/");
-        dataSource.setUsername("postgres");
-        dataSource.setPassword("postgres");
+        dataSource.setUrl(env.get(DB_URL_PARAMETER));
+        dataSource.setUsername(env.get(DB_USERNAME_PARAMETER));
+        dataSource.setPassword(env.get(DB_PASSWORD_PARAMETER));
         return dataSource;
     }
 
