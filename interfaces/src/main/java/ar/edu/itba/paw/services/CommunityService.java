@@ -37,4 +37,6 @@ public interface CommunityService {
     List<Community> getAllCommunitiesNoCat();
 
     void updateCommunityImageId(long id, long imageId);
+
+    void editCommunityInfo(String communityName, String description, String publisher, String developer);
 }

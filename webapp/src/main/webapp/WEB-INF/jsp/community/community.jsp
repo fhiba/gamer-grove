@@ -200,7 +200,7 @@
                     </div>
                     <div class="d-flex <c:if test="${canEdit}"> justify-content-between </c:if> <c:if test="${!canEdit}"> justify-content-end </c:if>  mb-3 ">
                         <c:if test="${canEdit}">
-                            <a href="<c:url value="/community/${communityName}/image"/>">
+                            <a href="<c:url value="/community/${communityName}/info"/>">
                                 <button type="button" class="btn btn-primary ">
                                     <spring:message code="Community.Edit"/>
                                 </button>

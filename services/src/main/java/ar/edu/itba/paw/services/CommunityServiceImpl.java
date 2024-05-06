@@ -130,6 +130,12 @@ public class CommunityServiceImpl implements CommunityService{
         communityDao.updateCommunityImageId(id,imageId);
     }
 
+    @Transactional
+    @Override
+    public void editCommunityInfo(String communityName, String description, String publisher, String developer) {
+        communityDao.editCommunityInfo(communityName,description,publisher,developer);
+    }
+
 
     @Override
     public Boolean checkIfUserFollowsCommunity(int communityId) throws NoLoggedUserException {

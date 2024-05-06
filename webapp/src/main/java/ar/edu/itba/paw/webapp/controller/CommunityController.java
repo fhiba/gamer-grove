@@ -6,11 +6,8 @@ import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.services.CommunityService;
 import ar.edu.itba.paw.services.PostService;
 import ar.edu.itba.paw.services.UserService;
-import ar.edu.itba.paw.webapp.form.FollowCommunityForm;
+import ar.edu.itba.paw.webapp.form.*;
 import ar.edu.itba.paw.services.*;
-import ar.edu.itba.paw.webapp.form.FileForm;
-import ar.edu.itba.paw.webapp.form.NewCommunityForm;
-import ar.edu.itba.paw.webapp.form.NewPostForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -165,9 +162,9 @@ public class CommunityController {
         return community(communityName,newPostForm,followCommunityForm);
     }
 
-    @RequestMapping(path="/community/{communityName}/image", method = RequestMethod.GET)
-    public ModelAndView communityImage(@PathVariable("communityName") final String communityName, @ModelAttribute("newCommunityImage") final FileForm newCommunityImage) throws NoSuchCommunityException {
-        ModelAndView mav = new ModelAndView("community/communityImage");
+    @RequestMapping(path="/community/{communityName}/info", method = RequestMethod.GET)
+    public ModelAndView communityImage(@PathVariable("communityName") final String communityName, @ModelAttribute("EditCommunityForm") final EditCommunityInfoForm editCommunityInfoForm) throws NoSuchCommunityException {
+        ModelAndView mav = new ModelAndView("community/communityInfo");
         Community community = cs.findByName(communityName);
         User user = null;
         try{
@@ -178,16 +175,18 @@ public class CommunityController {
         if(user != null) {
             mav.addObject("isAdmin", us.isUserAdmin(user.getId()));
         }
+        mav.addObject("categories", Arrays.stream(CommunityCategories.values()).map(CommunityCategories::getCategory).toArray(String[]::new));
         mav.addObject("community",community);
         mav.addObject("communities",cs.getAllCommunities());
         return mav;
     }
 
-    @RequestMapping(path="/community/{communityName}/image", method = RequestMethod.POST)
-    public ModelAndView uploadCommunityImage(@PathVariable("communityName") final String communityName, @Valid @ModelAttribute("newCommunityImage") final FileForm newCommunityImage, BindingResult errors) throws NoSuchCommunityException {
+    @RequestMapping(path="/community/{communityName}/info", method = RequestMethod.POST)
+    public ModelAndView uploadCommunityImage(@PathVariable("communityName") final String communityName, @Valid @ModelAttribute("EditCommunityForm") final EditCommunityInfoForm editCommunityInfoForm, BindingResult errors) throws NoSuchCommunityException {
         if(errors.hasErrors())
-            return communityImage(communityName,newCommunityImage);
-        fs.uploadCommunityImage(communityName,newCommunityImage.getFile());
+            return communityImage(communityName,editCommunityInfoForm);
+        cs.editCommunityInfo(communityName,editCommunityInfoForm.getDescription(),editCommunityInfoForm.getPublisher(),editCommunityInfoForm.getDeveloper());
+        fs.uploadCommunityImage(communityName,editCommunityInfoForm.getImage());
         return new ModelAndView("redirect:/community/"+communityName);
     }
 

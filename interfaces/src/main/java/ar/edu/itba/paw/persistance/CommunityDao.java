@@ -34,4 +34,6 @@ public interface CommunityDao {
     void updateCommunityImageId(long id, long imageId);
 
     List<Community> getAllCommunitiesNoCat();
+
+    void editCommunityInfo(String communityName, String description, String publisher, String developer);
 }

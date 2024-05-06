@@ -222,5 +222,10 @@ public class CommunityDaoJdbc implements CommunityDao {
         return jdbcTemplate.query("SELECT * FROM community", ROW_MAPPER);
     }
 
+    @Override
+    public void editCommunityInfo(String communityName, String description, String publisher, String developer) {
+        jdbcTemplate.update("UPDATE community SET description = ?, publisher = ?, developer = ? WHERE name = ?",new Object[]{description, publisher, developer, communityName});
+    }
+
 
 }
