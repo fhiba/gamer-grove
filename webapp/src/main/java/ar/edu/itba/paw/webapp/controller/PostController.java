@@ -139,6 +139,7 @@ public class PostController {
         mav.addObject("communities", communities);
         mav.addObject("news", ps.getByCategory(PostCategories.NEWS.getCategory()));
         mav.addObject("categories", categories);
+        mav.addObject("isVerified",user != null ? user.isVerified() : false);
         return mav;
     }
 
@@ -174,6 +175,7 @@ public class PostController {
         mav.addObject("communities", communities);
         mav.addObject("news", ps.getByCategory(PostCategories.NEWS.getCategory()));
         mav.addObject("categories", categories);
+        mav.addObject("isVerified",user != null ? user.isVerified() : false);
         return mav;
     }
 

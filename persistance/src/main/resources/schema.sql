@@ -135,3 +135,13 @@ CREATE TABLE IF NOT EXISTS post_images (
 ALTER TABLE users ADD COLUMN portrait_id int DEFAULT null;
 
 ALTER TABLE users ADD CONSTRAINT fk_users_portrait_id FOREIGN KEY (portrait_id) REFERENCES media(id);
+
+CREATE TABLE IF NOT EXISTS token(
+    value CHAR(50) NOT NULL,
+    user_id INT NOT NULL,
+    type CHAR(10) CHECK (type IN ('Validation', 'ResetPass')) NOT NULL,
+    PRIMARY KEY (value),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+ALTER TABLE users ADD COLUMN verified BOOLEAN DEFAULT FALSE NOT NULL;

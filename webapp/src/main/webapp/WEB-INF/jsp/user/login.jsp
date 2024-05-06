@@ -13,7 +13,7 @@
 </head>
 <body>
 <%@ include file="/WEB-INF/jsp/components/header.jsp" %>
-<div class="container-fluid h-100">
+<div id="container" class="container-fluid h-100">
     <div class="row mt-4 justify-content-center">
         <div class="col d-flex justify-content-center">
             <div class="card mb-4 w-25">
@@ -41,10 +41,47 @@
                     <a href="${registerUrl}" >
                         <spring:message code="Register.Title"/>
                     </a>
+                    <br/>
+                    <c:url var="forgotPassword" value="/auth/forgotCredentials"/>
+                    <a href="${forgotPassword}" class="link-light link-underline-opacity-0">
+                        <spring:message code="Login.ForgotPass"/></a>
                 </div>
+            </div>
+        </div>
+    </div>
+    <div id="toastBox" class=" position-fixed bottom-0 end-0 m-3" style="display: none">
+        <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto"><spring:message code="Toast.Title.Notification"/></strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body text-dark" id="toast_body">
+
             </div>
         </div>
     </div>
 </div>
 </body>
+<script>
+    let hasToast = document.URL.includes("resetPassword");
+    const successMessage = "<spring:message code="ForgotCredentials.Success"/>";
+    const errorMessage = " <spring:message code="ForgotCredentials.Error"/>";
+    if(hasToast) {
+        let toastMessage = document.URL.split("resetPassword=")[1];
+        console.log(toastMessage);
+        document.getElementById('toast_body').innerText = toastMessage === 'true' ? successMessage : errorMessage;
+        document.getElementById('toastBox').style.display = 'block';
+        new bootstrap.Toast(document.querySelector('.toast')).show();
+    }
+    let hasToastSucceeded = document.URL.includes("resetSuccess");
+    const resetSuccessMessage = "<spring:message code="ResetPassword.Success"/>";
+    const resetErrorMessage = " <spring:message code="ResetPassword.Error"/>";
+    if(hasToastSucceeded) {
+        let toastMessage = document.URL.split("resetSuccess=")[1];
+        console.log(toastMessage);
+        document.getElementById('toast_body').innerText = toastMessage === 'true' ? resetSuccessMessage : resetErrorMessage;
+        document.getElementById('toastBox').style.display = 'block';
+        new bootstrap.Toast(document.querySelector('.toast')).show();
+    }
+</script>
 </html>

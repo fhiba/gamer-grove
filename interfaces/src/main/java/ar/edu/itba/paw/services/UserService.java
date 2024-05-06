@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.exceptions.NoLoggedUserException;
+import ar.edu.itba.paw.exceptions.NoSuchTokenException;
 import ar.edu.itba.paw.models.User;
 
 import java.util.Optional;
@@ -24,4 +25,12 @@ public interface UserService {
     void updateImageId(long id, long imageId);
 
     List<User> findByCommunity(String communityName);
+
+    void resetPassword(String token, String password) throws NoSuchTokenException;
+
+    Optional<User> verifyUser(String token) throws NoSuchTokenException;
+
+    Boolean startResetPassword(String email);
+
+    void resendVerification() throws NoLoggedUserException;
 }

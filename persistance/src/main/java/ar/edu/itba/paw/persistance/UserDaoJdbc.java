@@ -20,7 +20,8 @@ public class UserDaoJdbc implements UserDao{
                                                                                 rs.getString("username"),
                                                                                 rs.getString("password"),
                                                                                 rs.getString("email"),
-                                                                                rs.getLong("portrait_id"));
+                                                                                rs.getLong("portrait_id"),
+                                                                                rs.getBoolean("verified"));
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
     @Autowired
@@ -56,8 +57,9 @@ public class UserDaoJdbc implements UserDao{
         userData.put("password",password);
         userData.put("owner", false);
         userData.put("portrait_id", null);
+        userData.put("verified", false);
         Number id = jdbcInsert.executeAndReturnKey(userData);
-        return new User(id.longValue(), username, password, email,0);
+        return new User(id.longValue(), username, password, email,0, false);
     }
 
     @Override
@@ -78,5 +80,15 @@ public class UserDaoJdbc implements UserDao{
     @Override
     public void updateImageId(long id, long imageId) {
         jdbcTemplate.update("UPDATE users SET portrait_id = ? WHERE id = ?", imageId, id);
+    }
+
+    @Override
+    public void updatePassword(Long id, String password) {
+        jdbcTemplate.update("UPDATE users SET password = ? WHERE id = ?", password, id);
+    }
+
+    @Override
+    public void verifyUser(Long id) {
+        jdbcTemplate.update("UPDATE users SET verified = true WHERE id = ?", id);
     }
 }

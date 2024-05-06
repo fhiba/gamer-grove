@@ -92,6 +92,7 @@
                         <div class="col-8">
 
                             <h1 class="card-title"><spring:message code="User.Profile"/></h1>
+
                             <div class="d-flex">
                                 <div class="me-5">
                                     <label class="form-label fw-semibold"><spring:message
@@ -103,7 +104,13 @@
                                             code="Login.Username"/></label>
                                     <p><c:out value="${user.username}" escapeXml="true"/></p>
                                 </div>
-
+                           <c:if test="${!user.isVerified()}" >
+                                <div class="ms-5">
+                                <c:url value="auth/resend-verification" var="resendUrl"/>
+                                <spring:message code="VerifyAccount.Verify"/>
+                                <a href="${resendUrl}"><button type="button" class="p-0 btn btn-link"><spring:message code="email.validateAccount.action"/></button></a>
+                                </div>
+                            </c:if>
                             </div>
                             <div>
                                 <c:url value="/user/update" var="userUpdateUrl"/>

@@ -168,8 +168,33 @@
                     </c:forEach>
                 </div>
             </div>
+
+            <div id="toastBox" class=" position-fixed bottom-0 end-0 m-3" style="display: none">
+                <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast-header">
+                        <strong id="toast_header" class="me-auto"></strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                    <div class="toast-body text-dark" id="toast_body">
+
+                    </div>
+                </div>
+            </div>
+            <c:if test="${isLogged && !isVerified }">
+                <c:url value="auth/resend-verification" var="verifyUrl"/>
+                <div class="toast show position-fixed bottom-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true" id="verifyToastBox">
+                    <div class="toast-body text-dark">
+                        <spring:message code="VerifyAccount.Verify"/>
+                        <div class="mt-2 pt-2 border-top">
+                            <a href="${verifyUrl}"><button type="button" class="btn btn-primary btn-sm"><spring:message code="VerifyAccount.Resend"/></button></a>
+                            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="toast"><spring:message code="Close"/></button>
+                        </div>
+                    </div>
+                </div>
+            </c:if>
         </div>
     </div>
+
 
 </div>
 
@@ -196,6 +221,37 @@
             communityName[i].innerText = communityName[i].innerText.substring(0, 10) + '...';
         }
     }
-</script>
 
+
+
+    let hasToast = document.URL.includes("verifySuccess");
+    const successMessage = "<spring:message code="VerifyAccount.Success"/>";
+    const errorMessage = " <spring:message code="VerifyAccount.Error"/>";
+    if(hasToast) {
+        let toastMessage = document.URL.split("verifySuccess=")[1];
+        console.log(toastMessage);
+        document.getElementById('toast_header').innerText = "<spring:message code="Toast.Title.Notification"/>";
+        document.getElementById('toast_body').innerText = toastMessage === 'true' ? successMessage : errorMessage;
+        document.getElementById('toastBox').style.display = 'block';
+        new bootstrap.Toast(document.querySelector('.toast')).show();
+    }
+    let hasRegistered = document.URL.includes("registerSuccess");
+    if(hasRegistered) {
+        document.getElementById('verifyToastBox').style.display = 'none';
+        document.getElementById('toast_header').innerText = "<spring:message code="Toast.Title.Welcome"/>";
+        document.getElementById('toast_body').innerText = "<spring:message code="Register.Success"/>";
+        document.getElementById('toastBox').style.display = 'block';
+        new bootstrap.Toast(document.querySelector('.toast')).show();
+    }
+    let resendVerification = document.URL.includes("resendVerification");
+
+    if(resendVerification) {
+
+        document.getElementById('verifyToastBox').style.display = 'none';
+        document.getElementById('toast_header').innerText = "<spring:message code="Toast.Title.Notification"/>";
+        document.getElementById('toast_body').innerText = "<spring:message code="VerifyAccount.EmailSent"/>";
+        document.getElementById('toastBox').style.display = 'block';
+        new bootstrap.Toast(document.querySelector('.toast')).show();
+    }
+</script>
 
