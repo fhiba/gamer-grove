@@ -140,6 +140,23 @@ public class CommentServiceImpl implements CommentService {
         Optional<Comment> comment = commentDao.getCommentById(commentId);
         if(comment.isEmpty())
             throw new NoSuchCommentException("Comment not found");
-        return commentDao.deleteComment(commentId);
+        int ret = commentDao.deleteComment(commentId);
+        notifyCommentDeletion(comment.get());
+        return  ret;
+    }
+
+    @Async
+    public void notifyCommentDeletion(Comment comment) {
+        Optional<User> user = userService.findByUsername(comment.getUsername());
+        if(user.isEmpty()) {
+            return;
+        }
+        Post post;
+        try {
+            post = postService.getPostById(comment.getPostId());
+        } catch (NoSuchPostException e) {
+            return;
+        }
+        mailingService.notifyCommentDeletion(user.get().getEmail(), user.get().getUsername(), comment.getPostId(), post.getTitle(), post.getCommunityName(), comment.getBody());
     }
 }

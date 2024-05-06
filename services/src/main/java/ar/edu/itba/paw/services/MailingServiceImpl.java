@@ -102,7 +102,7 @@ public class MailingServiceImpl implements MailingService {
         vars.put("post_title", post.getTitle());
         Context thymeleafContext = new Context();
         thymeleafContext.setVariables(vars);
-        String htmlBody = thymeleafTemplateEngine.process("postcommentnotification", thymeleafContext);
+        String htmlBody = thymeleafTemplateEngine.process("postCommentNotification", thymeleafContext);
         sendHtmlMessage(to.getEmail(), messageSource.getMessage("email.newCommentPostNotification.subject", null, Locale.getDefault()), htmlBody, null);
 
     }
@@ -119,7 +119,7 @@ public class MailingServiceImpl implements MailingService {
 
         thymeleafContext.setVariables(vars);
 
-        String htmlBody = thymeleafTemplateEngine.process("postnotification", thymeleafContext);
+        String htmlBody = thymeleafTemplateEngine.process("postNotification", thymeleafContext);
 
         sendHtmlMessage(to, messageSource.getMessage("email.newPostNotification.subject",new Object[] {thymeleafContext.getVariable("community")}, Locale.getDefault()), htmlBody, null);
     }
@@ -133,10 +133,11 @@ public class MailingServiceImpl implements MailingService {
         vars.put("base", base);
         Context thymeleafContext = new Context();
         thymeleafContext.setVariables(vars);
-        String htmlBody = thymeleafTemplateEngine.process("resetpassword", thymeleafContext);
+        String htmlBody = thymeleafTemplateEngine.process("resetPassword", thymeleafContext);
         sendHtmlMessage(to, messageSource.getMessage("email.resetPassword.subject", null, Locale.getDefault()), htmlBody, null);
     }
 
+    @Async
     @Override
     public void sendValidationEmail(String to, String name, String token) {
         Map<String, Object> vars = new HashMap<>();
@@ -145,7 +146,40 @@ public class MailingServiceImpl implements MailingService {
         vars.put("base", base);
         Context thymeleafContext = new Context();
         thymeleafContext.setVariables(vars);
-        String htmlBody = thymeleafTemplateEngine.process("verifyaccount", thymeleafContext);
+        String htmlBody = thymeleafTemplateEngine.process("verifyAccount", thymeleafContext);
         sendHtmlMessage(to, messageSource.getMessage("email.validateAccount.subject", null, Locale.getDefault()), htmlBody, null);
+    }
+
+    @Async
+    @Override
+    public void notifyPostDeletion(String to, String name, Long postId, String postTitle, String communityName) {
+
+        Map<String, Object> vars = new HashMap<>();
+        vars.put("username", name);
+        vars.put("post_title", postTitle);
+        vars.put("community", communityName);
+        vars.put("post_id", postId);
+        vars.put("base", base);
+        Context thymeleafContext = new Context();
+        thymeleafContext.setVariables(vars);
+
+        String htmlBody = thymeleafTemplateEngine.process("postDeletion", thymeleafContext);
+        sendHtmlMessage(to, messageSource.getMessage("email.postDeletion.subject", null, Locale.getDefault()), htmlBody, null);
+    }
+
+    @Async
+    @Override
+    public void notifyCommentDeletion(String to, String name,  Long postId, String postTitle, String communityName, String commentBody) {
+        Map<String, Object> vars = new HashMap<>();
+        vars.put("username", name);
+        vars.put("post_title", postTitle);
+        vars.put("community", communityName);
+        vars.put("comment_body", commentBody);
+        vars.put("post_id", postId);
+        vars.put("base", base);
+        Context thymeleafContext = new Context();
+        thymeleafContext.setVariables(vars);
+        String htmlBody = thymeleafTemplateEngine.process("commentDeletion", thymeleafContext);
+        sendHtmlMessage(to, messageSource.getMessage("email.commentDeletion.subject", null, Locale.getDefault()), htmlBody, null);
     }
 }

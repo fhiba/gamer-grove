@@ -9,6 +9,7 @@ import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistance.ModderDao;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,9 @@ public class ModderServiceImpl implements ModderService{
     private CommunityService cs;
     @Autowired
     private PostService ps;
+
+    @Autowired
+    private MailingService mailingService;
 
     @Transactional
     @Override
@@ -67,9 +71,34 @@ public class ModderServiceImpl implements ModderService{
     @Transactional
     @Override
     public int removePost(long postId) {
-        return md.removePost(postId);
+        int toRet = md.removePost(postId);
+        notifyDeletion(postId);
+        return toRet;
     }
 
+
+    @Async
+    public void notifyDeletion(Long postId) {
+        System.out.println("Notifying post deletion");
+        Post post;
+        try {
+            post = ps.getPostById(postId);
+        } catch (NoSuchPostException e) {
+            //should Log
+            System.out.println("Post not found");
+            return;
+        }
+        long authorId = post.getAuthorId();
+        Optional<User> author = us.findById(authorId);
+
+        if(author.isEmpty()){
+            //should Log
+            System.out.println("Author not found");
+            return;
+        }
+        User authorUser = author.get();
+        mailingService.notifyPostDeletion(authorUser.getEmail(), authorUser.getUsername(), post.getId(), post.getTitle(), post.getCommunityName());
+    }
 
     @Override
     public boolean canRemovePost(long userId, long postId) throws NoSuchPostException, NoSuchCommunityException {

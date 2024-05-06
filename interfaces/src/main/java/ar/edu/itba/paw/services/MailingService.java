@@ -20,4 +20,10 @@ public interface MailingService {
 
     @Async
     void sendValidationEmail(String to, String name, String token);
+
+    @Async
+    void notifyPostDeletion(String to, String name, Long postId, String postTitle, String communityName);
+
+    @Async
+    void notifyCommentDeletion(String to, String name, Long postId, String postTitle, String communityName, String commentBody);
 }
