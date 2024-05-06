@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.exceptions.NoLoggedUserException;
+import ar.edu.itba.paw.exceptions.NoSuchTokenException;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistance.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,12 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private TokenService tokenService;
+
+    @Autowired
+    private MailingService mailingService;
+
     public Optional<User> findById(long id) {
         return userDao.findById(id);
     }
@@ -38,8 +45,10 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public User create(final String username, final String email, final String password) {
-
-        return userDao.create(username, email, passwordEncoder.encode(password));
+        User user =  userDao.create(username, email, passwordEncoder.encode(password));
+        String token = tokenService.generateValidationToken(user.getId());
+        mailingService.sendValidationEmail(email, username, token);
+        return user;
     }
 
     @Override
@@ -76,5 +85,50 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> findByCommunity(String communityName) {
         return userDao.findByCommunity(communityName);
+    }
+
+    @Transactional
+    @Override
+    public void resetPassword(String token, String password) throws NoSuchTokenException {
+        Optional<Long> maybeId = tokenService.getUserIdFromToken(token, "ResetPass");
+        if (maybeId.isEmpty()) {
+            System.out.println("Token " + token + " does not exist");
+            throw new NoSuchTokenException("Token " + token + " does not exist");
+        }
+
+        userDao.updatePassword(maybeId.get(), passwordEncoder.encode(password));
+        tokenService.deleteResetTokens(maybeId.get());
+    }
+
+    @Transactional
+    @Override
+    public Optional<User> verifyUser(String token) throws NoSuchTokenException{
+        Optional<Long> maybeId = tokenService.getUserIdFromToken(token, "Validation");
+        if (maybeId.isEmpty()) {
+            System.out.println("Token " + token + " does not exist");
+            throw new NoSuchTokenException("Token " + token + " does not exist");
+        }
+        userDao.verifyUser(maybeId.get());
+        return userDao.findById(maybeId.get());
+    }
+
+    @Transactional
+    @Override
+    public Boolean startResetPassword(String email) {
+        Optional<User> maybeUser = findByEmail(email);
+        if(maybeUser.isEmpty())
+            return false;
+        String token = tokenService.generateResetToken(maybeUser.get().getId());
+        mailingService.sendResetPasswordEmail(maybeUser.get().getEmail(), maybeUser.get().getUsername(), token);
+        return true;
+    }
+
+
+    @Transactional
+    @Override
+    public void resendVerification() throws NoLoggedUserException {
+        User loggedUSer = getLoggedUserChecked();
+        String token = tokenService.generateValidationToken(loggedUSer.getId());
+        mailingService.sendValidationEmail(loggedUSer.getEmail(), loggedUSer.getUsername(), token);
     }
 }

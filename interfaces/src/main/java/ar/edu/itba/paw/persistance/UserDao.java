@@ -19,4 +19,7 @@ public interface UserDao {
         List<User> findAll();
 
         void updateImageId(long id, long imageId);
+
+        void updatePassword(Long id, String password);
+        void verifyUser(Long id);
 }

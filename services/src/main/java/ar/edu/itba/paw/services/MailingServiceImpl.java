@@ -124,4 +124,28 @@ public class MailingServiceImpl implements MailingService {
         sendHtmlMessage(to, messageSource.getMessage("email.newPostNotification.subject",new Object[] {thymeleafContext.getVariable("community")}, Locale.getDefault()), htmlBody, null);
     }
 
+    @Async
+    @Override
+    public void sendResetPasswordEmail(String to, String name, String token) {
+        Map<String, Object> vars = new HashMap<>();
+        vars.put("username", name);
+        vars.put("token", token);
+        vars.put("base", base);
+        Context thymeleafContext = new Context();
+        thymeleafContext.setVariables(vars);
+        String htmlBody = thymeleafTemplateEngine.process("resetpassword", thymeleafContext);
+        sendHtmlMessage(to, messageSource.getMessage("email.resetPassword.subject", null, Locale.getDefault()), htmlBody, null);
+    }
+
+    @Override
+    public void sendValidationEmail(String to, String name, String token) {
+        Map<String, Object> vars = new HashMap<>();
+        vars.put("username", name);
+        vars.put("token", token);
+        vars.put("base", base);
+        Context thymeleafContext = new Context();
+        thymeleafContext.setVariables(vars);
+        String htmlBody = thymeleafTemplateEngine.process("verifyaccount", thymeleafContext);
+        sendHtmlMessage(to, messageSource.getMessage("email.validateAccount.subject", null, Locale.getDefault()), htmlBody, null);
+    }
 }
