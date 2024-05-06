@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 @Configuration
 public class WebConfig extends WebMvcConfigurerAdapter {
 
-    private final static Long MAX_FILE_SIZE = (long) 10*1000*1000;
+    private final static Long MAX_FILE_SIZE = (long) 5*1000*1000;
     private static final String DB_URL_PARAMETER = "DB_URL";
     private static final String DB_USERNAME_PARAMETER = "DB_USERNAME";
     private static final String DB_PASSWORD_PARAMETER="DB_PASSWORD";

@@ -97,6 +97,13 @@
                         <a href="${newPostUrl}" type="button" class="btn  btn-primary  h-25 me-2 mt-1"><spring:message
                                 code="Post.Create"/></a>
                     </div>
+                    <c:if test="${posts.size() == 0}">
+                        <c:url var="allUrl" value="/all"/>
+                        <div class="align-items-center text-center justify-content-center w-100">
+                                <h6 class="card-title"><spring:message code="Home.NoPosts"/> <a href="${allUrl}"><spring:message code="Home.GoAll"/></a></h6>
+
+                        </div>
+                    </c:if>
                     <c:forEach var="post" items="${posts}">
                         <c:url value="/post/${post.id}" var="postUrl"/>
                         <a href="${postUrl}" class="card-link text-decoration-none">

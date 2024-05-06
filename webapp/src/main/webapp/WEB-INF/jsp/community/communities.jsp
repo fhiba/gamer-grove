@@ -136,14 +136,14 @@
                         <div class="accordion accordion-flush w-100" id="accordionFlushExample">
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="flush-headingOne">
-                                    <button id="addCategoryButton" class="accordion-button collapsed" type="button"
+                                    <button id="addCategoryButton" class="accordion-button btn-light collapsed bg-dark text-light" type="button"
                                             data-bs-toggle="collapse" data-bs-target="#flush-collapseOne"
                                             aria-expanded="false" aria-controls="flush-collapseOne">
                                         <spring:message code="Category.Add"/>
                                     </button>
                                 </h2>
                                 <div id="flush-collapseOne"
-                                     class="accordion-collapse collapse border border-top-dark justify-content-evenly"
+                                     class="accordion-collapse bg-dark collapse border border-top-light justify-content-evenly"
                                      aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
                                     <div id="categoriesBody" class="accordion-body">
 
@@ -171,7 +171,7 @@
         let button = document.createElement("button");
         button.id = category + 'Option';
         button.innerHTML = category;
-        button.setAttribute("class", "btn btn-outline-dark m-1");
+        button.setAttribute("class", "btn btn-outline-light m-1");
         button.onclick = () => {
             addCategory(category);
         };
@@ -189,7 +189,7 @@
         let categoryPills = document.getElementById("categoryPills");
         let pill = document.createElement("div");
         pill.id = selected + 'Pill';
-        pill.setAttribute("class", "card flex-row align-items-center justify-content-center m-1");
+        pill.setAttribute("class", "card flex-row align-items-center border-light justify-content-center m-1");
         let innerDiv = document.createElement("div");
         innerDiv.setAttribute("class", "card-body d-flex flex-row p-2 align-items-center justify-content-center");
         pill.appendChild(innerDiv);
@@ -200,7 +200,7 @@
         categoryPills.appendChild(pill);
         let removeButton = document.createElement("button");
         removeButton.type = "button";
-        removeButton.setAttribute("class", "btn-close flex-col");
+        removeButton.setAttribute("class", "btn-close-white flex-col");
         removeButton.onclick = () => {
             removeCategory(selected);
         };
