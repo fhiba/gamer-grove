@@ -14,4 +14,10 @@ public interface MailingService {
 
     @Async
     void sendNewCommentNotification(User to, Post post, LocalDateTime date);
+
+    @Async
+    void sendResetPasswordEmail(String to, String name, String token);
+
+    @Async
+    void sendValidationEmail(String to, String name, String token);
 }

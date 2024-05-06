@@ -25,6 +25,9 @@ public class PawUserDetailsService implements UserDetailsService {
         final User user = us.findByUsername(s).orElseThrow(() -> new UsernameNotFoundException("User "+ s +" not found"));
         final Set<GrantedAuthority> authorities = new HashSet<>();
         authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+        if(user.isVerified()) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_VERIFIED"));
+        }
         if(us.isUserAdmin(user.getId())) {
             authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
         }

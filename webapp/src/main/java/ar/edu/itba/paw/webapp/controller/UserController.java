@@ -87,7 +87,7 @@ public class UserController {
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(registerUserForm.getUsername(), registerUserForm.getPassword());
         Authentication auth = authenticationManager.authenticate(authToken);
         SecurityContextHolder.getContext().setAuthentication(auth);
-        return new ModelAndView("redirect:/");
+        return new ModelAndView("redirect:/").addObject("registerSuccess", true);
     }
 
     @RequestMapping(path="/addMod", method = RequestMethod.GET)
@@ -164,6 +164,7 @@ public class UserController {
         mav.addObject("likedPosts",ps.getUserLikedPosts(user.getId()));
         mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
         mav.addObject("communities",cs.getFollowedCommunities(user));
+        mav.addObject("isVerified",user.isVerified());
         return mav;
     }
 

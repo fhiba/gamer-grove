@@ -32,7 +32,7 @@ public class UserServiceTest {
     @Test
     public void testCreate() {
         //	1.	Setup!
-        Mockito.when(mockDao.create(Mockito.eq(USERNAME), Mockito.eq(EMAIL), Mockito.eq(PASSWORD))).thenReturn(new User(1, USERNAME, PASSWORD, EMAIL,0));
+        Mockito.when(mockDao.create(Mockito.eq(USERNAME), Mockito.eq(EMAIL), Mockito.eq(PASSWORD))).thenReturn(new User(1, USERNAME, PASSWORD, EMAIL,0, false));
         Mockito.when(mockPasswordEncoder.encode(Mockito.anyString())).thenReturn(PASSWORD);
         // 	2.	"ejercito"	la	class	under	test
         User maybeUser = userService.create(USERNAME, EMAIL, PASSWORD);

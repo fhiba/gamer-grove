@@ -1,0 +1,103 @@
+package ar.edu.itba.paw.webapp.controller;
+
+import ar.edu.itba.paw.exceptions.NoLoggedUserException;
+import ar.edu.itba.paw.exceptions.UserNotFoundException;
+import ar.edu.itba.paw.exceptions.NoSuchTokenException;
+import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.services.TokenService;
+import ar.edu.itba.paw.services.UserService;
+import ar.edu.itba.paw.webapp.form.EmailForm;
+import ar.edu.itba.paw.webapp.form.ResetPasswordForm;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import java.net.http.HttpRequest;
+import java.util.Optional;
+
+@Controller
+public class AuthController {
+
+    @Autowired
+    TokenService tokenService;
+
+    @Autowired
+    UserService userService;
+
+    @RequestMapping(value = "/auth/resend-verification", method = RequestMethod.GET)
+    public ModelAndView resendVerification() throws NoLoggedUserException {
+        userService.resendVerification();
+        return new ModelAndView("redirect:/home").addObject("resendVerification", true);
+    }
+
+    @RequestMapping(value = "/verify", method = RequestMethod.GET)
+    public ModelAndView validateAccount(@ModelAttribute("token") final String token) throws NoSuchTokenException, UserNotFoundException {
+        if(token == null || token.isEmpty())
+            throw new NoSuchTokenException("token is empty or null");
+
+        ModelAndView mav = new ModelAndView("redirect:/home");
+
+        try {
+            userService.verifyUser(token);
+        } catch (NoSuchTokenException e) {
+            return mav.addObject("verifySuccess", false);
+        }
+
+        return mav.addObject("verifySuccess", true);
+    }
+
+    @RequestMapping(value = "/auth/resetPassword", method = RequestMethod.GET)
+    public ModelAndView resetPassword(@ModelAttribute("token") final String token, @ModelAttribute("resetPasswordForm") ResetPasswordForm resetPasswordForm) throws NoSuchTokenException, UserNotFoundException {
+        if(token == null || token.isEmpty())
+            throw new NoSuchTokenException("token is empty or null");
+        Boolean tokenExists = tokenService.verifyResetToken(token);
+        if(!tokenExists)
+            throw new NoSuchTokenException("token is invalid");
+        ModelAndView mav = new ModelAndView("user/resetPassword");
+        mav.addObject("token",token);
+        return mav;
+    }
+
+    @RequestMapping(value = "/auth/resetPassword", method = RequestMethod.POST)
+    public ModelAndView resetPassword( @Valid @ModelAttribute("resetPasswordForm") ResetPasswordForm resetPasswordForm, final BindingResult errors) throws NoSuchTokenException, UserNotFoundException {
+        if(errors.hasErrors()) {
+            return resetPassword(resetPasswordForm.getToken(), resetPasswordForm);
+        }
+        ModelAndView mav = new ModelAndView("redirect:/login");
+        mav.clear();
+        mav.setViewName("redirect:/login");
+        try {
+            userService.resetPassword(resetPasswordForm.getToken(), resetPasswordForm.getPassword());
+        } catch (NoSuchTokenException e) {
+
+            return mav.addObject("resetSuccess", false);
+        }
+
+        return mav.addObject("resetSuccess", true);
+    }
+
+    @RequestMapping(value="/auth/forgotCredentials", method = RequestMethod.GET)
+    public ModelAndView forgotCredentials(@ModelAttribute("emailForm") final EmailForm emailForm) {
+        return new ModelAndView("user/forgotCredentials");
+    }
+
+    @RequestMapping(value="/auth/forgotCredentials", method = RequestMethod.POST)
+    public ModelAndView forgotCredentials(@Valid @ModelAttribute("emailForm") final EmailForm emailForm, final BindingResult errors) throws NoSuchTokenException, UserNotFoundException{
+        if(errors.hasErrors()) {
+            return forgotCredentials(emailForm);
+        }
+        Boolean success = userService.startResetPassword(emailForm.getEmail());
+        return new ModelAndView("redirect:/login").addObject("resetPassword", success);
+    }
+}

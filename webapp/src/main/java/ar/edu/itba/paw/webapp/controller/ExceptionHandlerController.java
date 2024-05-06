@@ -1,9 +1,6 @@
 package ar.edu.itba.paw.webapp.controller;
 
-import ar.edu.itba.paw.exceptions.NoLoggedUserException;
-import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
-import ar.edu.itba.paw.exceptions.NoSuchPostException;
-import ar.edu.itba.paw.exceptions.UserNotFoundException;
+import ar.edu.itba.paw.exceptions.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
@@ -27,7 +24,8 @@ public class ExceptionHandlerController {
     @ExceptionHandler(value = {
             NoSuchPostException.class,
             NoSuchCommunityException.class,
-            UserNotFoundException.class
+            UserNotFoundException.class,
+            NoSuchTokenException.class
     })
     public ModelAndView notFoundException() {
         ModelAndView mav = new ModelAndView("errors/error");
