@@ -20,8 +20,8 @@
 </head>
 <body>
 <%@ include file="/WEB-INF/jsp/components/header.jsp" %>
-<div class="container-fluid">
-    <div class="row min-vh-100">
+<div class="container-fluid min-vh-100">
+    <div class="row min-vh-100 justify-content-between">
         <%--COMMUNITY LIST--%>
         <div class="col-2 sidebar">
             <div class="card sidebar-card m-auto">
@@ -30,11 +30,11 @@
                         <div class="row-cols-2">
                             <c:url value="/addMod" var="addModUrl"/>
                             <a href="${addModUrl}">
-                                <button class="btn-outline-primary">Add Mod</button>
+                                <button class="btn btn-outline-primary">Add Mod</button>
                             </a>
                             <c:url value="/new-community" var="newCommunityUrl"/>
                             <a href="${newCommunityUrl}">
-                                <button class="btn-outline-primary">Add Community</button>
+                                <button class="btn btn-outline-success">Add Community</button>
                             </a>
                         </div>
                     </c:if>
@@ -79,111 +79,96 @@
                 </div>
             </div>
         </div>
-        <div class="col-1"></div>
-        <div class="col-6 mt-3">
-            <div>
-                <div class="card d-inline-flex col">
-                    <div class="card-body ">
-                        <p class="fw-semibold card-subtitle mb-1">
-                            <spring:message code="Mod.New"/>
-                        </p>
-                        <c:url var="addModUrl" value="/addMod"/>
-                        <form:form action="${addModUrl}" method="post" modelAttribute="newModForm">
-                            <table>
-                                <tr>
-                                    <td><spring:message code="Mod.Username"/></td>
-                                    <td><form:input path="username" class="form-control" id="titleInput"/></td>
-                                    <td><form:errors path="username" cssStyle="color: red" cssClass="error"/></td>
-                                </tr>
-                                <tr>
-                                    <td><spring:message code="Mod.Email"/></td>
-                                    <td><form:input path="email" class="form-control" id="titleInput"/></td>
-                                    <td><form:errors path="email" cssStyle="color: red" cssClass="error"/></td>
-                                </tr>
-                                <tr>
-                                    <td><spring:message code="Mod.Communnity"/></td>
-                                    <td>
-                                        <form:select path="communityId" id="addModSelect">
-                                            <c:forEach var="community" items="${communities}">
-                                                <form:option cssStyle="color:black;" value="${community.id}"
-                                                             label="${community.name}"/>
-                                            </c:forEach>
-                                        </form:select>
-                                    </td>
-                                    <td><form:errors path="communityId" cssStyle="color: red" cssClass="error"/></td>
-                                </tr>
-                                <tr>
-                                    <td><input type="submit" value=<spring:message code="Mod.Add"/>/></td>
-                                </tr>
-                            </table>
-                            <form:errors cssStyle="color: red" cssClass="error"/>
-                        </form:form>
-                    </div>
-                </div>
-            </div>
-            <div class="card mt-3 d-inline-flex col">
+        <div class="col-5">
+            <div class="card border-0 w-100 ms-5">
                 <div class="card-body">
-                    <p class="fw-semibold card-subtitle mb-1">
-                        <spring:message code="Mod.Remove"/>
-                    </p>
-                    <c:url var="removeModUrl" value="/removeMod"/>
-                    <form:form action="${removeModUrl}" method="post" modelAttribute="removeModForm">
-                        <table>
-                            <tr>
-                                <td><spring:message code="Mod.Username"/></td>
-                                <td><form:input path="removeUsername" class="form-control" id="titleInput"/></td>
-                                <td><form:errors path="removeUsername" cssStyle="color: red" cssClass="error"/></td>
-                            </tr>
-                            <tr>
-                                <td><spring:message code="Mod.Communnity"/>:</td>
-                                <td>
-                                        <form:select class="mod-form" path="fromCommunityId" id="removeModSelect">
-                                            <c:forEach var="community" items="${communities}">
-                                                <form:option value="${community.id}" label="${community.name}"/>
-                                            </c:forEach>
-                                        </form:select>
-                                </td>
-                                <td><form:errors path="fromCommunityId" cssStyle="color: red" cssClass="error"/></td>
-                            </tr>
-                            <tr>
-                                <td><input type="submit" value=<spring:message code="Mod.Remove"/>/></td>
-                            </tr>
-                        </table>
-                        <form:errors cssStyle="color: red" cssClass="error"/>
+                    <h3 class="fw-semibold card-subtitle mb-1">
+                        <spring:message code="Mod.New"/>
+                    </h3>
+                    <c:url var="addModUrl" value="/addMod"/>
+                    <form:form action="${addModUrl}" method="post" modelAttribute="newModForm">
+                        <div class="mt-2">
+                            <label class="form-label fw-semibold"><spring:message
+                                    code="Login.Username"/>: </label>
+                            <form:input path="username"/>
+                            <form:errors path="username" cssStyle="color: red" cssClass="error"/>
+                        </div>
+                        <div class="mt-2">
+                            <label class="form-label fw-semibold"><spring:message
+                                    code="Mod.Communnity"/>: </label>
+                            <form:select cssClass="text-bg-dark" path="communityId" id="addModSelect">
+                                <c:forEach var="community" items="${communities}">
+                                    <form:option cssStyle="color:black;" value="${community.id}"
+                                                 label="${community.name}"/>
+                                </c:forEach>
+                            </form:select>
+                            <form:errors path="communityId" cssStyle="color: red" cssClass="error"/>
+                        </div>
+                        <button class="btn btn-outline-primary mt-2"><spring:message code="Mod.Add"/></button>
                     </form:form>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="modal fade" id="NotaMod" tabindex="-1" aria-labelledby="alreadyModModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="NotaModLabel">Error</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="col-5">
+            <div class="card border-0 w-100 ms-5">
+                <div class="card-body">
+                    <h3 class="fw-semibold card-subtitle mb-1">
+                        <spring:message code="Mod.Remove"/>
+                    </h3>
+                    <c:url var="removeModUrl" value="/removeMod"/>
+                    <form:form action="${removeModUrl}" method="post" modelAttribute="removeModForm">
+                        <div class="mt-2">
+                            <label class="form-label fw-semibold"><spring:message
+                                    code="Login.Username"/>: </label>
+                            <form:input path="removeUsername"/>
+                            <form:errors path="removeUsername" cssStyle="color: red" cssClass="error"/>
+                        </div>
+                        <div class="mt-2">
+                            <label class="form-label fw-semibold"><spring:message
+                                    code="Mod.Communnity"/>: </label>
+                            <form:select class="mod-form bg-dark" path="fromCommunityId" id="removeModSelect">
+                                <c:forEach var="community" items="${communities}">
+                                    <form:option value="${community.id}" label="${community.name}"/>
+                                </c:forEach>
+                            </form:select>
+                        </div>
+                        <form:errors path="fromCommunityId" cssStyle="color: red" cssClass="error"/>
+                        <button class="btn btn-outline-danger mt-2"><spring:message code="Mod.Remove"/></button>
+                    </form:form>
                 </div>
-                <div class="modal-body">
-                    This user is not a mod in this community.
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+        <div class="modal fade" id="NotaMod" tabindex="-1" aria-labelledby="alreadyModModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="NotaModLabel">Error</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        This user is not a mod in this community.
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<div class="modal fade" id="alreadyModModal" tabindex="-1" aria-labelledby="alreadyModModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="alreadyModModalLabel">Error</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                This user is already a mod in this community.
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+    <div class="modal fade" id="alreadyModModal" tabindex="-1" aria-labelledby="alreadyModModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="alreadyModModalLabel">Error</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    This user is already a mod in this community.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>
@@ -194,12 +179,13 @@
         $('#addModSelect').select2({
             placeholder: "Select a community",
             allowClear: true,
-            theme:"classic"
+            color: "black!important",
         });
     });
     $(document).ready(function () {
         $('#removeModSelect').select2({
             placeholder: "Select a community",
+            color: "black",
             allowClear: true
         });
     });

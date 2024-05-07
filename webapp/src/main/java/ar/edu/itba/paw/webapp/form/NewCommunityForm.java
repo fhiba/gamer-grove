@@ -1,12 +1,17 @@
 package ar.edu.itba.paw.webapp.form;
 
+import ar.edu.itba.paw.webapp.validators.interfaces.NullableImageConstraint;
 import ar.edu.itba.paw.webapp.validators.interfaces.ValidCommunityCategoriesConstraint;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotBlank;
-import java.time.LocalDateTime;
 
 
 public class NewCommunityForm {
+
+
+    @NullableImageConstraint
+    private MultipartFile image;
 
     @NotBlank
     private String name;
@@ -59,6 +64,14 @@ public class NewCommunityForm {
 
     public void setDeveloper(String developer) {
         this.developer = developer;
+    }
+
+    public MultipartFile getImage() {
+        return image;
+    }
+
+    public void setImage(MultipartFile image) {
+        this.image = image;
     }
 
 }
