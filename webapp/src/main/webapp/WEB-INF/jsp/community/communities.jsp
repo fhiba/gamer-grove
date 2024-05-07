@@ -130,7 +130,7 @@
             <div class="card border-0 text-decoration-none">
                 <div class="card-body">
                     <h5><spring:message code="Home.FilterCategory"/></h5>
-                    <div id="categoryPills" class="d-flex flex-row flex-wrap">
+                    <div id="categoryPills" class="d-flex flex-row flex-wrap mb-3">
                     </div>
                     <div class="d-flex border border-dark-subtle">
                         <div class="accordion accordion-flush w-100" id="accordionFlushExample">
