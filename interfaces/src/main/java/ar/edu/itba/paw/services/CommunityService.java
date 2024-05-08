@@ -4,13 +4,14 @@ import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
 import ar.edu.itba.paw.models.Community;
 import ar.edu.itba.paw.models.User;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 
 public interface CommunityService {
-    void createCommunity(final String name, final String description, String categories, String developer, String publisher, LocalDateTime releaseDate) throws NoSuchCommunityException;
+    void createCommunity(final String name, final String description, String categories, String developer, String publisher, LocalDateTime releaseDate, MultipartFile image) throws NoSuchCommunityException;
 
     List<Community> getAllCommunities();
 

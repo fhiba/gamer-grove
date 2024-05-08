@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -26,12 +27,14 @@ public class CommunityServiceImpl implements CommunityService{
     private CommunityDao communityDao;
     @Autowired
     private UserService userService;
+    @Autowired
+    private FileService fileService;
 
     @Transactional
     @Override
-    public void createCommunity(final String name, final String description, final String categories, String developer, String publisher, LocalDateTime releaseDate) throws NoSuchCommunityException {
+    public void createCommunity(final String name, final String description, final String categories, String developer, String publisher, LocalDateTime releaseDate, MultipartFile image) throws NoSuchCommunityException {
         Community community = communityDao.createCommunity(name,description,developer,publisher,releaseDate);
-
+        fileService.uploadCommunityImage(community.getName(), image);
         if(categories != null && !categories.isEmpty()) {
             addCategories(community.getId(), List.of(categories.split(",")));
         }

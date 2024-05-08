@@ -78,7 +78,7 @@ public class PostDaoJdbc implements PostDao {
 
     @Override
     public List<Post> findAllPosts() {
-        return jdbcTemplate.query("SELECT * FROM post ORDER BY post_date DESC", ROW_MAPPER);
+        return jdbcTemplate.query("SELECT * FROM post WHERE deleted = false ORDER BY post_date DESC", ROW_MAPPER);
     }
 
     @Override
@@ -104,7 +104,7 @@ public class PostDaoJdbc implements PostDao {
 
     @Override
     public List<Post> findByCategory(String category) {
-        return jdbcTemplate.query("SELECT * FROM post WHERE category = ? ORDER BY post_date DESC", new Object[]{category}, ROW_MAPPER);
+        return jdbcTemplate.query("SELECT * FROM post WHERE category = ? AND deleted = false ORDER BY post_date DESC", new Object[]{category}, ROW_MAPPER);
     }
 
     @Override
@@ -147,12 +147,12 @@ public class PostDaoJdbc implements PostDao {
 
     @Override
     public List<Post> getMyFollowedPosts(long userId) {
-        return jdbcTemplate.query("SELECT * FROM post WHERE community_name IN (SELECT community_name FROM community_user WHERE user_id = ?) ORDER BY post_date DESC",new Object[]{userId},ROW_MAPPER);
+        return jdbcTemplate.query("SELECT * FROM post WHERE community_name IN (SELECT community_name FROM community_user WHERE user_id = ?) AND deleted = false ORDER BY post_date DESC",new Object[]{userId},ROW_MAPPER);
     }
 
     @Override
     public List<Post> getMyFollowedPostsByCategory(String category, long userId) {
-        return jdbcTemplate.query("SELECT * FROM post WHERE community_name IN (SELECT community_name FROM community_user WHERE user_id = ?) AND category = ? ORDER BY post_date DESC",new Object[]{userId,category},ROW_MAPPER);
+        return jdbcTemplate.query("SELECT * FROM post WHERE community_name IN (SELECT community_name FROM community_user WHERE user_id = ?) AND category = ? AND deleted = false ORDER BY post_date DESC",new Object[]{userId,category},ROW_MAPPER);
 
     }
 
