@@ -5,6 +5,8 @@ import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
 import ar.edu.itba.paw.models.Community;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistance.CommunityDao;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +19,9 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 @Service
 public class CommunityServiceImpl implements CommunityService{
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommunityServiceImpl.class);
+
     @Autowired
     private CommunityDao communityDao;
     @Autowired

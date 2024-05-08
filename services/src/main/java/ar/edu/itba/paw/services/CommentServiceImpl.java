@@ -7,6 +7,8 @@ import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistance.CommentDao;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,10 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 @Service
 public class CommentServiceImpl implements CommentService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommentServiceImpl.class);
+
+
     @Autowired
     private CommentDao commentDao;
 

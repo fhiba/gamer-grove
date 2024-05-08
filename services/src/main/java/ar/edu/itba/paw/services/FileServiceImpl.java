@@ -6,6 +6,8 @@ import ar.edu.itba.paw.models.Community;
 import ar.edu.itba.paw.models.File;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistance.FileDao;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +20,9 @@ import java.util.Optional;
 
 @Service
 public class FileServiceImpl implements FileService{
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(FileServiceImpl.class);
+
 
     @Autowired
     private FileDao fd;
@@ -43,12 +48,14 @@ public class FileServiceImpl implements FileService{
                 if(image.isPresent())
                     cs.updateCommunityImageId(UpdateProfileImage.getId(),image.get().getImageId());
             } catch (IOException e) {
+                LOGGER.debug("Error uploading image",e);
                 throw new RuntimeException(e);
             }
         } else {
             try {
                 image = fd.updateCommunityImage(UpdateProfileImage.getPortrait_id(), file.getBytes());
             } catch (IOException e) {
+                LOGGER.debug("Error updating image",e);
                 throw new RuntimeException(e);
             }
         }
@@ -72,12 +79,14 @@ public class FileServiceImpl implements FileService{
                 if(image.isPresent())
                     us.updateImageId(UpdateProfileImage.getId(),image.get().getImageId());
             } catch (IOException e) {
+                LOGGER.debug("Error uploading user image",e);
                 throw new RuntimeException(e);
             }
         } else {
             try {
                 image = fd.updateUserImage(UpdateProfileImage.getPortraid_id(), file.getBytes());
             } catch (IOException e) {
+                LOGGER.debug("Error updating user image",e);
                 throw new RuntimeException(e);
             }
         }
@@ -93,6 +102,7 @@ public class FileServiceImpl implements FileService{
             if(postImage.isPresent())
                 fd.uploadPostImage(id, postImage.get().getImageId());
         } catch (IOException e) {
+            LOGGER.debug("Error uploading post image",e);
             throw new RuntimeException(e);
         }
     }

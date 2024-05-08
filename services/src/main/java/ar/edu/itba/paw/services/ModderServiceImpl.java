@@ -8,6 +8,8 @@ import ar.edu.itba.paw.models.Community;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistance.ModderDao;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,9 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 @Service
 public class ModderServiceImpl implements ModderService{
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ModderServiceImpl.class);
+
 
     @Autowired
     private UserService us;
@@ -43,7 +48,6 @@ public class ModderServiceImpl implements ModderService{
         Community community = cs.findById(communityId);
         //Checkeo si existe el mod
         if(isModderOfCommunity(newMod.getId(), communityId)){
-
             throw new AlreadyModException("User with id "+newMod.getId()+" is already a mod of community with id "+communityId);
         }
         return md.addModder(newMod.getId(), communityId);
@@ -79,21 +83,18 @@ public class ModderServiceImpl implements ModderService{
 
     @Async
     public void notifyDeletion(Long postId) {
-        System.out.println("Notifying post deletion");
         Post post;
         try {
             post = ps.getPostById(postId);
         } catch (NoSuchPostException e) {
-            //should Log
-            System.out.println("Post not found");
+            LOGGER.debug("Post not found");
             return;
         }
         long authorId = post.getAuthorId();
         Optional<User> author = us.findById(authorId);
 
         if(author.isEmpty()){
-            //should Log
-            System.out.println("Author not found");
+            LOGGER.debug("Author not found");
             return;
         }
         User authorUser = author.get();

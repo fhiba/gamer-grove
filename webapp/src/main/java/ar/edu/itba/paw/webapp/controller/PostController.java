@@ -12,6 +12,8 @@ import ar.edu.itba.paw.services.CommunityService;
 import ar.edu.itba.paw.services.PostService;
 import ar.edu.itba.paw.services.UserService;
 import ar.edu.itba.paw.webapp.form.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -28,6 +30,9 @@ import java.util.Optional;
 
 @Controller
 public class PostController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PostController.class);
+
 
     @Autowired
     private PostService ps;
@@ -51,10 +56,10 @@ public class PostController {
         try {
             ps.createPost(newPostForm.getTitle(), newPostForm.getBody(), newPostForm.getCommunity(), newPostForm.getCategory(),newPostForm.getFiles());
         } catch (NoLoggedUserException e) {
-            //TODO: log later
+            LOGGER.debug("No logged user", e);
             throw e;
         } catch ( NoSuchCommunityException e) {
-            //TODO: log later
+            LOGGER.debug("No logged user", e);
             throw e;
         }
         return new ModelAndView("redirect:/home");
@@ -68,6 +73,7 @@ public class PostController {
         List<Community> followedCommunities = null;
         Boolean isAdmin = false;
 
+        // TODO:HACER ESTO MAS LINDO
         try{
             user = us.getLoggedUserChecked();
         }catch (Exception ignored){
@@ -151,6 +157,8 @@ public class PostController {
         User user = null;
         Boolean isAdmin = false;
         List<String> categories = ps.getUsedCategories();
+
+        //TODO:HACER ESTO MAS LINDO
         try{
             user = us.getLoggedUserChecked();
         }catch (Exception ignored){
@@ -204,7 +212,7 @@ public class PostController {
             mav.addObject("post", post);
             community = cs.findByName(post.getCommunityName());
         } catch (NoSuchPostException e) {
-            //TODO: Should log
+            LOGGER.debug("No such post", e);
             throw e;
         }
         if(user != null) {

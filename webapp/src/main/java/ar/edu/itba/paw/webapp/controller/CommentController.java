@@ -8,6 +8,8 @@ import ar.edu.itba.paw.services.CommentService;
 import ar.edu.itba.paw.webapp.form.CommentDeleteForm;
 import ar.edu.itba.paw.webapp.form.NewCommentForm;
 import ar.edu.itba.paw.webapp.form.NewCommentGroovyForm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,6 +26,8 @@ public class CommentController {
 
     @Autowired
     private CommentService commentService;
+    private static final Logger LOGGER = LoggerFactory.getLogger(PostController.class);
+
 
     @RequestMapping(path="/comment", method = RequestMethod.POST)
     public ModelAndView newComment(@Valid @ModelAttribute("newCommentForm") final NewCommentForm newCommentForm, final BindingResult errors) throws NoLoggedUserException {

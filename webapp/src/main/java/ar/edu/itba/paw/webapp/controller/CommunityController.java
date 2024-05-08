@@ -8,6 +8,8 @@ import ar.edu.itba.paw.services.PostService;
 import ar.edu.itba.paw.services.UserService;
 import ar.edu.itba.paw.webapp.form.*;
 import ar.edu.itba.paw.services.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -23,6 +25,9 @@ import java.util.Optional;
 
 @Controller
 public class CommunityController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommunityController.class);
+
 
     @Autowired
     private CommunityService cs;
@@ -41,6 +46,8 @@ public class CommunityController {
         User user = null;
         List<Community> communities;
         Boolean isAdmin = false;
+
+        //TODO:HACER MAS LINDO ESTO
         try{
             user = us.getLoggedUserChecked();
         }catch (Exception ignored){
@@ -189,7 +196,7 @@ public class CommunityController {
         fs.uploadCommunityImage(communityName,editCommunityInfoForm.getImage());
         return new ModelAndView("redirect:/community/"+communityName);
     }
-
+    //TODO delete
     @RequestMapping(path="/seeImages/{imageId}", method = RequestMethod.GET)
     public ModelAndView getImage(@PathVariable("imageId") final long imageId) {
         //        mav.addObject("image",fs.getFile(imageId).get());

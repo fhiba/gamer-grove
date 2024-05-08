@@ -5,6 +5,8 @@ import ar.edu.itba.paw.models.Community;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistance.PostDao;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,9 @@ import java.util.Optional;
 
 @Service
 public class PostServiceImpl implements PostService{
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PostServiceImpl.class);
+
 
     @Autowired
     private PostDao postDao;

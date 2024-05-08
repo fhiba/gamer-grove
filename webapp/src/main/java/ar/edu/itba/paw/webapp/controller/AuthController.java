@@ -8,6 +8,8 @@ import ar.edu.itba.paw.services.TokenService;
 import ar.edu.itba.paw.services.UserService;
 import ar.edu.itba.paw.webapp.form.EmailForm;
 import ar.edu.itba.paw.webapp.form.ResetPasswordForm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -35,6 +37,9 @@ public class AuthController {
 
     @Autowired
     UserService userService;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
+
 
     @RequestMapping(value = "/auth/resend-verification", method = RequestMethod.GET)
     public ModelAndView resendVerification() throws NoLoggedUserException {

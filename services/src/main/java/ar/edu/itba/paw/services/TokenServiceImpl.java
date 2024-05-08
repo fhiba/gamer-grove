@@ -5,6 +5,8 @@ import ar.edu.itba.paw.exceptions.NoSuchTokenException;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistance.TokenDao;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +18,9 @@ import java.util.UUID;
 @Transactional(readOnly = true)
 @Service
 public class TokenServiceImpl implements TokenService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(TokenServiceImpl.class);
+
 
     @Autowired
     TokenDao tokenDao;

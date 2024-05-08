@@ -2,6 +2,8 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
@@ -24,6 +26,9 @@ import javax.mail.internet.*;
 @Service
 @PropertySource("classpath:mail.properties")
 public class MailingServiceImpl implements MailingService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MailingServiceImpl.class);
+
 
     @Value("${MAIL_PROTOCOL}")
     private String MAIL_PROTOCOL;
@@ -80,7 +85,7 @@ public class MailingServiceImpl implements MailingService {
             Transport.send(helper.getMimeMessage());
 
         }catch (MessagingException e) {
-            //TODO: LOGGER
+            LOGGER.debug("Error sending email", e);
         }
     }
 

@@ -4,6 +4,8 @@ import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchTokenException;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistance.UserDao;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,6 +18,10 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 @Service
 public class UserServiceImpl implements UserService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
+
+
     @Autowired
     private UserDao userDao;
 
@@ -92,7 +98,7 @@ public class UserServiceImpl implements UserService {
     public void resetPassword(String token, String password) throws NoSuchTokenException {
         Optional<Long> maybeId = tokenService.getUserIdFromToken(token, "ResetPass");
         if (maybeId.isEmpty()) {
-            System.out.println("Token " + token + " does not exist");
+            LOGGER.debug("Token {} does not exist",token);
             throw new NoSuchTokenException("Token " + token + " does not exist");
         }
 
@@ -105,7 +111,7 @@ public class UserServiceImpl implements UserService {
     public Optional<User> verifyUser(String token) throws NoSuchTokenException{
         Optional<Long> maybeId = tokenService.getUserIdFromToken(token, "Validation");
         if (maybeId.isEmpty()) {
-            System.out.println("Token " + token + " does not exist");
+            LOGGER.debug("Token {} does not exist",token);
             throw new NoSuchTokenException("Token " + token + " does not exist");
         }
         userDao.verifyUser(maybeId.get());

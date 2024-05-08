@@ -24,6 +24,8 @@ import ar.edu.itba.paw.webapp.form.NewPostForm;
 import ar.edu.itba.paw.webapp.form.RegisterUserForm;
 import ar.edu.itba.paw.webapp.form.RemoveModForm;
 import ar.edu.itba.paw.webapp.form.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -45,6 +47,8 @@ import java.util.ArrayList;
 
 @Controller
 public class UserController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
     private UserService us;
