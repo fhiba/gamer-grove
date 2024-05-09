@@ -85,10 +85,14 @@
                         <div class="form-floating w-25 mb-3">
                             <select class="form-select" id="category" aria-label="Floating label select example"
                                     onchange="filterPosts()">
-                                <option disabled selected hidden><spring:message code="Home.FilterCategory"/></option>
-                                <option value="all"><spring:message code="All"/></option>
-                                <c:forEach var="category" items="${categories}">
-                                    <option value="${category}">${category}</option>
+                                <c:if test="${category == null}">
+                                    <option selected value="all"><spring:message code="All"/></option>
+                                </c:if>
+                                <c:if test="${category != null}">
+                                    <option value="all"><spring:message code="All"/></option>
+                                </c:if>
+                                <c:forEach var="categoryItem" items="${categories}">
+                                <option <c:if test="${categoryItem == category}"> selected </c:if> value="${categoryItem}">${categoryItem}</option>
                                 </c:forEach>
                             </select>
                             <label for="category"><spring:message code="Home.Category"/></label>

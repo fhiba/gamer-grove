@@ -20,10 +20,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.swing.text.StyledEditorKit;
+
 import javax.validation.Valid;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -69,8 +69,7 @@ public class PostController {
     public ModelAndView getNewPost(@ModelAttribute("newPostForm") final NewPostForm newPostForm) {
         ModelAndView mav = new ModelAndView("post/newPost");
         User user = null;
-        List<Community> communities = null;
-        List<Community> followedCommunities = null;
+        List<Community> followedCommunities;
         Boolean isAdmin = false;
         List<String> categories = ps.getUsedCategories();
         // TODO:HACER ESTO MAS LINDO
@@ -146,6 +145,7 @@ public class PostController {
         mav.addObject("news", ps.getByCategory(PostCategories.NEWS.getCategory()));
         mav.addObject("categories", categories);
         mav.addObject("isVerified",user != null ? user.isVerified() : false);
+        mav.addObject("category",category);
         return mav;
     }
 
@@ -164,10 +164,11 @@ public class PostController {
         }catch (Exception ignored){
 
         }
+        boolean all = category != null && !category.isEmpty() && !category.equals("all");
         if(user != null) {
             communities = cs.getFollowedCommunities(user);
             isAdmin = us.isUserAdmin(user.getId());
-            if (category != null && !category.isEmpty() && !category.equals("all")) {
+            if (all) {
                 posts = ps.getMyFollowedPostsByCategory(category,user);
             } else {
                 posts = ps.getMyFollowedPosts(user);
@@ -175,6 +176,8 @@ public class PostController {
         }
         else{
             communities = cs.getAllCommunitiesNoCat();
+            if (all)
+                posts = ps.getByCategory(category);
         }
         mav.addObject("isAdmin",isAdmin);
         mav.addObject("isLogged", user != null);
@@ -184,6 +187,7 @@ public class PostController {
         mav.addObject("news", ps.getByCategory(PostCategories.NEWS.getCategory()));
         mav.addObject("categories", categories);
         mav.addObject("isVerified",user != null ? user.isVerified() : false);
+        mav.addObject("category",category);
         return mav;
     }
 
@@ -256,19 +260,4 @@ public class PostController {
     }
 
 
-
-
-//    @RequestMapping(path = "/post/{postId}/{grooviness}", method = RequestMethod.POST)
-//    public ModelAndView moreGroovy(@PathVariable("postId") final long postId, @PathVariable("grooviness") final int grooviness) throws NoLoggedUserException, NoSuchPostException {
-//        try {
-//            ps.editGrooviness(postId, grooviness);
-//        } catch (NoLoggedUserException e) {
-//            //TODO: Log
-//            throw e;
-//        } catch (NoSuchPostException e) {
-//            //TODO: Log
-//            throw e;
-//        }
-//        return new ModelAndView("redirect:/post/" + postId);
-//    }
 }
