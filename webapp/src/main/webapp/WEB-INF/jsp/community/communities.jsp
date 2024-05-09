@@ -110,7 +110,7 @@
                                                 <div class="justify-content-end">
                                                     <c:forEach var="communityCategories"
                                                                items="${community.categories}">
-                                                        <span class="fs-6 cat-badge p-1 badge bg-dark">${communityCategories}</span>
+                                                        <span class="fs-6 cat-badge p-1 badge bg-dark-subtle text-dark">${communityCategories}</span>
                                                     </c:forEach>
                                                 </div>
                                             </div>
@@ -189,7 +189,7 @@
         let categoryPills = document.getElementById("categoryPills");
         let pill = document.createElement("div");
         pill.id = selected + 'Pill';
-        pill.setAttribute("class", "card flex-row align-items-center border-light justify-content-center m-1");
+        pill.setAttribute("class", "card flex-row align-items-center border-light justify-content-center m-1 btn p-0");
         let innerDiv = document.createElement("div");
         innerDiv.setAttribute("class", "card-body d-flex flex-row p-2 align-items-center justify-content-center");
         pill.appendChild(innerDiv);
@@ -200,8 +200,8 @@
         categoryPills.appendChild(pill);
         let removeButton = document.createElement("button");
         removeButton.type = "button";
-        removeButton.setAttribute("class", "btn-close-white flex-col");
-        removeButton.onclick = () => {
+        removeButton.setAttribute("class", "btn btn-close btn-close-white flex-col");
+        pill.onclick = () => {
             removeCategory(selected);
         };
         innerDiv.appendChild(removeButton);

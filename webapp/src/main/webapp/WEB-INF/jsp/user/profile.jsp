@@ -16,7 +16,7 @@
 
 <%@ include file="/WEB-INF/jsp/components/header.jsp" %>
 <div class="container-fluid min-vh-100">
-    <div class="row">
+    <div class="row min-vh-100">
         <%--COMMUNITY LIST--%>
             <div class="col-2 sidebar">
                 <div class="card sidebar-card m-auto">

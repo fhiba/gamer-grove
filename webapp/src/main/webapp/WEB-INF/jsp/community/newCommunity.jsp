@@ -9,6 +9,8 @@
     <link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="${pageContext.request.contextPath}/css/general-styling.css" rel="stylesheet"/>
     <script src="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js"></script>
+    <%--suppress JSUnresolvedLibraryURL --%>
+    <script src="https://kit.fontawesome.com/002da5939d.js" crossorigin="anonymous"></script>
 </head>
 <body>
 <%@ include file="/WEB-INF/jsp/components/header.jsp" %>
@@ -80,7 +82,7 @@
                             <c:url var="communityUrl" value="/new-community"/>
                             <form:form action="${communityUrl}" method="post" modelAttribute="newCommunityForm"
                                        id="myForm"
-                                       onsubmit="addCategoriesToForm()">
+                                       onsubmit="addCategoriesToForm()" enctype="multipart/form-data">
                                 <img src="${pageContext.request.contextPath}/images/default-avatar-icon.jpg"
                                      class="w-100 h-75 rounded-1" id="imgFile" alt="Profile Picture">
                             <label class="form-label fw-semibold"><spring:message
@@ -127,6 +129,7 @@
                             </div>
                             <form:errors cssStyle="color: red" cssClass="error"/>
                             <form:errors cssStyle="color: red" cssClass="error" path="categories"/>
+                            <button class="btn btn-outline-primary w-25 mt-5" type="submit"><spring:message code="Post.CreateButton"/> </button>
                         </div>
                         </form:form>
                     </div>

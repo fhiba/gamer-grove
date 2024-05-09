@@ -141,11 +141,11 @@
                         <div class="col-4">
                             <c:if test="${community.portrait_id == 0}">
                                 <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
-                                     class="w-100 rounded-1 img-thumbnail " alt="Profile Picture">
+                                     class="w-100 rounded-1 img-thumbnail img-com" alt="Profile Picture">
                             </c:if>
                             <c:if test="${community.portrait_id != 0}">
                                 <img src="<c:url value='/image/${community.portrait_id}'/>"
-                                     class="w-100 rounded-1 img-thumbnail" alt="Profile Picture">
+                                     class="w-100 rounded-1 img-thumbnail img-com" alt="Profile Picture">
                             </c:if>
 
                         </div>

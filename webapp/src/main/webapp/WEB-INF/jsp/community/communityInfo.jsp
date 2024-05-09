@@ -105,17 +105,17 @@
                                     <label class="form-label fw-semibold"><spring:message
                                             code="Description"/></label>
                                     <form:input path="description" class="form-control"
-                                                   type="text" value="${community.description}"/>
+                                                    type="textarea" value="${community.description}"/>
                                     <form:errors path="description" cssStyle="color: red" cssClass="error"/>
                                 </div>
-                                <div class="me-5">
+                                <div class="me-5 mt-3">
                                     <label class="form-label fw-semibold"><spring:message
                                             code="Publisher"/></label>
                                     <form:input value="${community.publisher}" path="publisher" class="form-control"
                                                 type="text"/>
                                     <form:errors path="publisher" cssStyle="color: red" cssClass="error"/>
                                 </div>
-                                <div class="me-5">
+                                <div class="me-5 mt-3">
                                     <label class="form-label fw-semibold"><spring:message
                                             code="Developer"/></label>
                                     <form:input value="${community.developer}" path="developer" class="form-control"
@@ -189,6 +189,7 @@
         select = document.createElement("select");
         select.id = "select";
         select.onchange = addCategory;
+        select.setAttribute("class","form-select");
         document.getElementById("selectDiv").appendChild(select);
         let defaultOption = document.createElement("option");
         defaultOption.hidden = true;
@@ -196,7 +197,6 @@
         defaultOption.selected = true;
         defaultOption.text = "Categories";
         select.appendChild(defaultOption);
-        select.setAttribute("class", "dropdown min-vh-25")
         selectArray.sort((a, b) => a.localeCompare(b));
         for (category of selectArray) {
             addOptionToSelect(category);
@@ -207,22 +207,22 @@
         let categoryPills = document.getElementById("categoryPills");
         let pill = document.createElement("div");
         pill.id = selected + 'Pill';
-        pill.setAttribute("class", " d-flex flex-col");
-        let p = document.createElement("h5");
-        let span = document.createElement("span");
-        span.setAttribute("class", "badge rounded-pill bg-primary");
-        span.innerHTML = selected;
-        pill.appendChild(p);
-        p.appendChild(span);
+        pill.setAttribute("class", "card border-light flex-row align-items-center justify-content-center me-2 mb-2");
+        let innerDiv = document.createElement("div");
+        innerDiv.setAttribute("class", "card-body border-light d-flex flex-row p-2 align-items-center justify-content-center");
+        pill.appendChild(innerDiv);
+        let p = document.createElement("p");
+        p.setAttribute("class", "m-0 me-1");
+        p.innerHTML = selected;
+        innerDiv.appendChild(p);
         categoryPills.appendChild(pill);
         let removeButton = document.createElement("button");
-        removeButton.innerHTML = "X";
         removeButton.type = "button";
-        removeButton.setAttribute("class", "btn btn-outline-danger");
+        removeButton.setAttribute("class", "btn-close-white flex-col");
         removeButton.onclick = () => {
             removeCategory(selected);
         };
-        pill.appendChild(removeButton);
+        innerDiv.appendChild(removeButton);
     }
 
 

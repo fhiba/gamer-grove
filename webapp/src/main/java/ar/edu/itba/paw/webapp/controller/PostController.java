@@ -72,7 +72,7 @@ public class PostController {
         List<Community> communities = null;
         List<Community> followedCommunities = null;
         Boolean isAdmin = false;
-
+        List<String> categories = ps.getUsedCategories();
         // TODO:HACER ESTO MAS LINDO
         try{
             user = us.getLoggedUserChecked();
@@ -91,7 +91,7 @@ public class PostController {
         mav.addObject("isLogged", user != null);
         //TODO: SHOULD BE THE ONES THAT ARE CURRENTLY BEING FOLLOWED BY USER OR A FEW RANDOMLY SELECTED
         mav.addObject("communities", cs.getAllCommunities());
-        mav.addObject("categories", Arrays.stream(PostCategories.values()).map(PostCategories::getCategory).toArray(String[]::new));
+        mav.addObject("categories", categories);
         mav.addObject("news", ps.getByCategory(PostCategories.NEWS.getCategory()));
 
         return mav;

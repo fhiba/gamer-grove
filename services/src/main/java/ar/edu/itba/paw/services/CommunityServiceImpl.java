@@ -34,7 +34,9 @@ public class CommunityServiceImpl implements CommunityService{
     @Override
     public void createCommunity(final String name, final String description, final String categories, String developer, String publisher, LocalDateTime releaseDate, MultipartFile image) throws NoSuchCommunityException {
         Community community = communityDao.createCommunity(name,description,developer,publisher,releaseDate);
-        fileService.uploadCommunityImage(community.getName(), image);
+        System.out.println("llegue hasta aca");
+        if(!image.isEmpty())
+            fileService.uploadCommunityImage(community.getName(), image);
         if(categories != null && !categories.isEmpty()) {
             addCategories(community.getId(), List.of(categories.split(",")));
         }
@@ -140,8 +142,11 @@ public class CommunityServiceImpl implements CommunityService{
 
     @Transactional
     @Override
-    public void editCommunityInfo(String communityName, String description, String publisher, String developer) {
+    public void editCommunityInfo(String communityName, String description, String publisher, String developer, MultipartFile image) throws NoSuchCommunityException {
         communityDao.editCommunityInfo(communityName,description,publisher,developer);
+
+        if(!image.isEmpty())
+            fileService.uploadCommunityImage(communityName, image);
     }
 
 

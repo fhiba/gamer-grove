@@ -239,3 +239,12 @@ body {
 .select2-results__option--selectable{
     color: black!important;
 }
+
+.img-com{
+    max-width: 350px;
+    max-height: 350px;
+    display: block;
+    margin: auto;
+    width: auto;
+    height: 100%;
+}
