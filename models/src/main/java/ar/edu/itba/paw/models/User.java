@@ -36,7 +36,7 @@ public class User {
 
     public User(final long id,final String username, final String password, final String email, long portraidId, Boolean verified, String locale) {
         this.username = username;
-        this.id = -1;
+        this.id = id;
         this.email = email;
         this.password = password;
         portraid_id = portraidId;

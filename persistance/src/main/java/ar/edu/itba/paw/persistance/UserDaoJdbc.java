@@ -59,6 +59,7 @@ public class UserDaoJdbc implements UserDao{
         userData.put("owner", false);
         userData.put("portrait_id", null);
         userData.put("verified", false);
+        userData.put("locale", "en");
         Number id = jdbcInsert.executeAndReturnKey(userData);
         return new User(id.longValue(), username, password, email,0, false);
     }
