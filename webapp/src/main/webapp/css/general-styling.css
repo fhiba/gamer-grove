@@ -248,3 +248,8 @@ body {
     width: auto;
     height: 100%;
 }
+
+.carousel-img{
+    max-width: 80%;
+    height: auto;
+}

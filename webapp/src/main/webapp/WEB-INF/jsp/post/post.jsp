@@ -103,11 +103,13 @@
                         <p class="card-text"><c:out value="${post.body}" escapeXml="true"/></p>
                         <c:if test="${post.images.size() > 0}">
                             <div id="carouselExample" class="carousel slide ">
+<%--                                TODO: poner un contador para ver en que foto del carousel estoy--%>
+<%--                                <p class="float-end">${post.images.size()}</p>--%>
                                 <div class="carousel-inner bg-dark">
                                     <c:forEach var="image" items="${post.images}" varStatus="loop">
                                         <div class="carousel-item  <c:if test="${loop.index == 0}"> active</c:if>">
-                                            <img src="<c:url value='/image/${image}'/>" class="d-block m-auto "
-                                                 style="height: 500px;width: 500px" alt="...">
+                                            <img src="<c:url value='/image/${image}'/>" class="d-block m-auto carousel-img"
+                                                 alt="...">
                                         </div>
                                     </c:forEach>
                                 </div>
