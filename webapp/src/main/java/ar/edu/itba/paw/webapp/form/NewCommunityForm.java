@@ -5,6 +5,7 @@ import ar.edu.itba.paw.webapp.validators.interfaces.ValidCommunityCategoriesCons
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 
 
 public class NewCommunityForm {
@@ -14,6 +15,7 @@ public class NewCommunityForm {
     private MultipartFile image;
 
     @NotBlank
+    //@Pattern(regexp = "^[a-zA-Z0-9_. :;-]*$")
     private String name;
 
     private String description;

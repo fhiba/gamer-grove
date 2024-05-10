@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -124,7 +126,7 @@ public class CommunityController {
             return community(communityName,newPostForm,followCommunityForm);
 
         ps.createPost(newPostForm.getTitle(),newPostForm.getBody(),communityName,newPostForm.getCategory(),newPostForm.getFiles());
-        return new ModelAndView("redirect:/community/"+communityName);
+        return new ModelAndView("redirect:/community/"+ URLEncoder.encode(communityName, StandardCharsets.UTF_8));
     }
 
 
@@ -193,7 +195,7 @@ public class CommunityController {
         if(errors.hasErrors())
             return communityImage(communityName,editCommunityInfoForm);
         cs.editCommunityInfo(communityName,editCommunityInfoForm.getDescription(),editCommunityInfoForm.getPublisher(),editCommunityInfoForm.getDeveloper(), editCommunityInfoForm.getImage());
-        return new ModelAndView("redirect:/community/"+communityName);
+        return new ModelAndView("redirect:/community/"+URLEncoder.encode(communityName,StandardCharsets.UTF_8));
     }
     //TODO delete
     @RequestMapping(path="/seeImages/{imageId}", method = RequestMethod.GET)
@@ -215,6 +217,6 @@ public class CommunityController {
         if(errors.hasErrors())
             return community(communityName,new NewPostForm(),followCommunityForm);
         cs.modifyUserOnCommunity(followCommunityForm.getCommunityId(),followCommunityForm.getCommunityName());
-        return new ModelAndView("redirect:/community/"+communityName);
+        return new ModelAndView("redirect:/community/"+URLEncoder.encode(communityName,StandardCharsets.UTF_8));
     }
 }

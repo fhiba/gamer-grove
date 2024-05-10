@@ -50,7 +50,7 @@
                             <div class="card-title text-light mb-3"><spring:message code="Communities.Logged"/> </div>
                         </c:if>
                         <c:forEach var="community" items="${communities}">
-                            <c:url value="/community/${community.name}" var="communityUrl"/>
+                            <c:url value="/community/${community.encodedName}" var="communityUrl"/>
                             <a href="${communityUrl}" class="text-light text-decoration-none">
                                 <div class="card-body-community d-flex align-items-center text-decoration-none mb-3">
                                     <c:if test="${community.portrait_id == 0}">
@@ -88,7 +88,7 @@
                     </c:if>
                     <c:if test="${not empty communities}">
                         <c:forEach var="community" items="${communities}">
-                            <c:url value="/community/${community.name}" var="communityUrl"/>
+                            <c:url value="/community/${community.encodedName}" var="communityUrl"/>
                             <a href="${communityUrl}" class="card-link text-decoration-none">
                                 <div class="card mb-3">
                                     <div class="card-body d-flex flex-row">

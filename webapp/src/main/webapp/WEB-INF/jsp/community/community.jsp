@@ -109,7 +109,7 @@
                             <div class="card-title text-light mb-3">My Communities</div>
                         </c:if>
                         <c:forEach var="community" items="${communities}">
-                            <c:url value="/community/${community.name}" var="communityUrl"/>
+                            <c:url value="/community/${community.encodedName}" var="communityUrl"/>
                             <a href="${communityUrl}" class="text-light text-decoration-none">
                                 <div class="card-body-community d-flex align-items-center text-decoration-none mb-3">
                                     <c:if test="${community.portrait_id == 0}">
@@ -154,7 +154,7 @@
                                 <h1 class="card-title fw-bold"><c:out value="c/${community.name}"
                                                                       escapeXml="true"/></h1>
                                 <div class="d-none">
-                                    <c:url var="followUrl" value="/community/${community.name}/follow"/>
+                                    <c:url var="followUrl" value="/community/${community.encodedName}/follow"/>
                                     <form:form modelAttribute="followCommunityForm" action="${followUrl}" method="post"
                                                id="followForm">
                                         <form:hidden path="communityName" value="${community.name}"/>

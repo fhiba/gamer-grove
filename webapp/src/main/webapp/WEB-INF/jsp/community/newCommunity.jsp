@@ -51,7 +51,7 @@
                         <div class="card-title text-light mb-3">My Communities</div>
                     </c:if>
                     <c:forEach var="community" items="${communities}">
-                        <c:url value="/community/${community.name}" var="communityUrl"/>
+                        <c:url value="/community/${community.encodedName}" var="communityUrl"/>
                         <a href="${communityUrl}" class="text-light text-decoration-none">
                             <div class="card-body-community d-flex align-items-center text-decoration-none mb-3">
                                 <c:if test="${community.portrait_id == 0}">

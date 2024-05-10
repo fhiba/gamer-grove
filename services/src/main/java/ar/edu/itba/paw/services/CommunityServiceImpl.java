@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -52,7 +54,8 @@ public class CommunityServiceImpl implements CommunityService{
 
     @Override
     public Community findByName(final String communityName) throws NoSuchCommunityException {
-        Optional<Community> possibleCommunity = communityDao.findByName(communityName);
+        Optional<Community> possibleCommunity = communityDao.findByName(URLDecoder.decode(communityName, StandardCharsets.UTF_8));
+        LOGGER.debug("Community name: " + communityName + " decoded: " + URLDecoder.decode(communityName, StandardCharsets.UTF_8));
         if(possibleCommunity.isEmpty())
             throw new NoSuchCommunityException("Community " + communityName+ " not found");
         return possibleCommunity.get();
@@ -143,10 +146,11 @@ public class CommunityServiceImpl implements CommunityService{
     @Transactional
     @Override
     public void editCommunityInfo(String communityName, String description, String publisher, String developer, MultipartFile image) throws NoSuchCommunityException {
-        communityDao.editCommunityInfo(communityName,description,publisher,developer);
+        String decodedName = URLDecoder.decode(communityName,StandardCharsets.UTF_8);
+        communityDao.editCommunityInfo(decodedName,description,publisher,developer);
 
         if(!image.isEmpty())
-            fileService.uploadCommunityImage(communityName, image);
+            fileService.uploadCommunityImage(decodedName, image);
     }
 
 

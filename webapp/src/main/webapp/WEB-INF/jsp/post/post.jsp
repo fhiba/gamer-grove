@@ -81,7 +81,7 @@
             <div class="card border-0 bg-transparent">
                 <div class="card-body">
                     <p class="fw-semibold card-subtitle mb-1">
-                        <c:url value="/community/${post.communityName}" var="communityUrl"/>
+                        <c:url value="/community/${post.encodedCommunityName}" var="communityUrl"/>
                         <a href="${communityUrl}"
                            class="text-decoration-none text-light text-body-primary">c/<c:out
                                 value="${post.communityName}"
@@ -302,7 +302,7 @@
             <div class="card  border-black bg-transparent">
                 <div class="card-body">
                     <div class="card-title d-flex row-cols-2 justify-content-between">
-                        <c:url value="/community/${community.name}" var="communityUrl"/>
+                        <c:url value="/community/${community.encodedName}" var="communityUrl"/>
                         <a href="${communityUrl}" class="text-decoration-none">
                             <h5 class="card-title text-light fw-bold"><c:out value="${community.name}"
                                                                              escapeXml="true"/></h5>

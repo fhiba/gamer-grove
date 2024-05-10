@@ -12,6 +12,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -69,7 +71,7 @@ public class PostServiceImpl implements PostService{
 
     @Override
     public List<Post> getPostsByCommunity(final String communityName) {
-        List<Post> posts = postDao.findPostsByCommunity(communityName);
+        List<Post> posts = postDao.findPostsByCommunity(URLDecoder.decode(communityName, StandardCharsets.UTF_8));
         return posts.isEmpty()? Collections.emptyList(): posts;
 
     }

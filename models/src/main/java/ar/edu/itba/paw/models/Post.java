@@ -1,5 +1,7 @@
 package ar.edu.itba.paw.models;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -17,6 +19,7 @@ public class Post {
     private final boolean deleted;
 
     private final String category;
+
 
     private List<Integer> images = null;
 
@@ -84,5 +87,9 @@ public class Post {
 
     public void setImages(List<Integer> images) {
         this.images = images;
+    }
+
+    public String getEncodedCommunityName(){
+        return URLEncoder.encode(communityName, StandardCharsets.UTF_8);
     }
 }

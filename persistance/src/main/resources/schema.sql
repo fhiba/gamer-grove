@@ -144,4 +144,6 @@ CREATE TABLE IF NOT EXISTS token(
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
+--- Sprint 3
+
 ALTER TABLE users ADD COLUMN verified BOOLEAN DEFAULT FALSE NOT NULL;
