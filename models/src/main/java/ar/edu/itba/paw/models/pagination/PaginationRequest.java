@@ -19,6 +19,7 @@ public class PaginationRequest {
     }
     public PaginationRequest(int pageSize) {
         this.pageSize = pageSize;
+        this.pageNumber = DEFAULT_INITIAL_PAGE_NUMBER;
     }
     // Getters and setters
     public int getPageNumber() {
