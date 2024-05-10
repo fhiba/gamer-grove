@@ -4,8 +4,10 @@ import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchPostException;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.models.Comment;
+import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.pagination.PaginationRequest;
 import ar.edu.itba.paw.persistance.CommentDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,6 +76,28 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public List<Comment> getPostComments(long postId) {
         return commentDao.getPostComments(postId);
+    }
+
+    @Override
+    public PaginatedDataWrapper<Comment> getPostCommentsPaginated(long postId, PaginationRequest request) {
+        if( request.getPageSize() < 1){
+            throw new IllegalArgumentException("Invalid Page size");
+        }
+        if(postId < 1){
+            throw new IllegalArgumentException("Invalid Post id");
+        }
+        int totalCount = commentDao.getPostCommentsTotalCount(postId);
+        if(request.getPageNumber() <1 ){
+            throw new IllegalArgumentException("Invalid Page number");
+        }
+        int offset = (request.getPageNumber() - 1) * request.getPageSize();
+        List<Comment> data = commentDao.getPostCommentsPaginated(postId,request.getPageSize(), offset);
+        PaginatedDataWrapper<Comment> dataWrapper = new PaginatedDataWrapper<>(data, request.getPageNumber(), totalCount, request.getPageSize());
+        if(request.getPageNumber() > dataWrapper.getTotalPages()){
+            throw new IllegalArgumentException("Invalid Page number");
+        }
+
+        return dataWrapper;
     }
 
     @Transactional

@@ -14,3 +14,13 @@ INSERT INTO communities_categories(community_id, category) VALUES (2, 'RPG');
 INSERT INTO modders(user_id, community_id) VALUES (1, 1);
 
 INSERT INTO groovy_post_history(user_id, post_id, groovy_type) VALUES (1,1,false);
+
+
+INSERT INTO comment ( post_id, author_id, parent_id, body, comment_date, grooviness,deleted)
+VALUES ( 1, 1, null, 'Comment 1', CURRENT_TIMESTAMP, 0, false);
+
+INSERT INTO comment ( post_id, author_id, parent_id, body, comment_date, grooviness,deleted)
+VALUES ( 1, 1, null, 'Comment 2', CURRENT_TIMESTAMP, 0, false);
+
+INSERT INTO comment ( post_id, author_id, parent_id, body, comment_date, grooviness,deleted)
+VALUES ( 1, 1, null, 'Comment 3', CURRENT_TIMESTAMP, 0,false);

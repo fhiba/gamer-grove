@@ -6,6 +6,8 @@ import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
 import ar.edu.itba.paw.exceptions.NoSuchPostException;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
+import ar.edu.itba.paw.models.pagination.PaginationRequest;
 import ar.edu.itba.paw.services.*;
 import ar.edu.itba.paw.services.CommentService;
 import ar.edu.itba.paw.services.CommunityService;
@@ -23,16 +25,11 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.swing.text.StyledEditorKit;
 import javax.validation.Valid;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Controller
 public class PostController {
-
     private static final Logger LOGGER = LoggerFactory.getLogger(PostController.class);
-
 
     @Autowired
     private PostService ps;
@@ -188,14 +185,17 @@ public class PostController {
     }
 
     @RequestMapping(path = "/post/{postId}", method = RequestMethod.GET)
-    public ModelAndView singlePost(@PathVariable("postId") final long postId, @ModelAttribute("newPostGroovyForm") final NewPostGroovyForm newPostGroovyForm, @ModelAttribute("newCommentForm") final NewCommentForm newCommentForm, @ModelAttribute("newCommentGroovyForm") final NewCommentGroovyForm newCommentGroovyForm, @ModelAttribute("postDeleteForm") final PostDeleteForm postDeleteForm, @ModelAttribute("commentDeleteForm") final CommentDeleteForm commentDeleteForm,@ModelAttribute("followCommunityForm") final FollowCommunityForm followCommunityForm) throws UserNotFoundException, NoSuchPostException, NoSuchCommunityException, NoLoggedUserException {
+    public ModelAndView singlePost(@PathVariable("postId") final long postId,@RequestParam(required = false) Integer pageNumber, @ModelAttribute("newPostGroovyForm") final NewPostGroovyForm newPostGroovyForm, @ModelAttribute("newCommentForm") final NewCommentForm newCommentForm, @ModelAttribute("newCommentGroovyForm") final NewCommentGroovyForm newCommentGroovyForm, @ModelAttribute("postDeleteForm") final PostDeleteForm postDeleteForm, @ModelAttribute("commentDeleteForm") final CommentDeleteForm commentDeleteForm,@ModelAttribute("followCommunityForm") final FollowCommunityForm followCommunityForm) throws UserNotFoundException, NoSuchPostException, NoSuchCommunityException, NoLoggedUserException {
         ModelAndView mav = new ModelAndView("/post/post");
         mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
         Post post;
         Community community;
         List<Community> communities;
         User user = null;
-        List<Comment> comments = commentService.getPostComments((postId));
+        PaginationRequest paginationRequest = new PaginationRequest(5);
+        if(!Objects.isNull(pageNumber))
+            paginationRequest.setPageNumber(pageNumber);
+
         List<Comment> grooviedComments = Collections.emptyList();
         List<Comment> negativeGrooviedComments = Collections.emptyList();
         Boolean isFollowing = false;
@@ -215,6 +215,12 @@ public class PostController {
             LOGGER.debug("No such post", e);
             throw e;
         }
+        PaginatedDataWrapper<Comment> comments;
+        try {
+            comments = commentService.getPostCommentsPaginated(postId,paginationRequest);
+        }catch (IllegalArgumentException e){
+            comments = null;
+        }
         if(user != null) {
             communities = cs.getFollowedCommunities(user);
             grooviedComments = commentService.getUpGroovedComments(postId);
@@ -226,6 +232,7 @@ public class PostController {
         } else {
             communities = cs.getAllCommunitiesNoCat();
         }
+
         mav.addObject("isAdmin",isAdmin);
         mav.addObject("isFollowing",isFollowing);
         mav.addObject("community",community);

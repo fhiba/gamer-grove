@@ -16,6 +16,7 @@ import org.springframework.test.jdbc.JdbcTestUtils;
 
 import javax.sql.DataSource;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
@@ -40,7 +41,6 @@ public class CommentDaoJdbcTest {
     @Before
     public void setup(){
         JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "comment");
     }
 
     @Test
@@ -53,6 +53,16 @@ public class CommentDaoJdbcTest {
         Assert.assertEquals(NOW,comment.getDate());
         Assert.assertEquals(-1,comment.getParentId());
         Assert.assertEquals(0, comment.getGrooviness());
+    }
+
+    @Test
+    public void testGetPostCommentsPaginated() {
+        // Call the method to be tested
+        for (int i = 0; i < 3; i++) {
+            List<Comment> result = commentDao.getPostCommentsPaginated(POST_ID, 1, i);
+            Assert.assertEquals(1, result.size());
+            Assert.assertEquals(i+1,result.get(0).getId());
+        }
     }
 
 }

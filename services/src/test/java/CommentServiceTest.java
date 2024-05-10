@@ -4,6 +4,8 @@ import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.Community;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
+import ar.edu.itba.paw.models.pagination.PaginationRequest;
 import ar.edu.itba.paw.persistance.CommentDao;
 import ar.edu.itba.paw.persistance.UserDao;
 import ar.edu.itba.paw.services.*;
@@ -16,6 +18,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
@@ -69,6 +73,49 @@ public class CommentServiceTest {
 
         commentService.createComment(1, "Test comment");
 
+    }
+
+    @Test
+    public void testGetPostCommentsPaginated() {
+        // Mock data for testing
+        List<Comment> mockComments = Arrays.asList(
+                new Comment(1L, 1L, "username", -1, "Comment 1", LocalDateTime.now(), 0, false),
+                new Comment(2L, 1L, "username", -1, "Comment 2", LocalDateTime.now(), 0, false),
+                new Comment(3L, 1L, "username", -1, "Comment 3", LocalDateTime.now(), 0, false)
+        );
+
+        // Mock behavior of commentDao methods
+        when(commentDao.getPostCommentsPaginated(eq(1L), anyInt(), anyInt())).thenReturn(mockComments);
+        when(commentDao.getPostCommentsTotalCount(eq(1L))).thenReturn(3);
+
+        // Call the method to be tested
+        PaginatedDataWrapper<Comment> result = commentService.getPostCommentsPaginated(1L, new PaginationRequest());
+
+        // Verify the result
+        assertEquals(1, result.getPageNumber());
+        assertEquals(1, result.getTotalPages());
+        assertEquals(3, result.getTotalCount());
+        assertEquals(10, result.getPageSize());
+        assertEquals(mockComments, result.getData());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testIllegalPostIdGetPostCommentsPaginated() {
+        commentService.getPostCommentsPaginated(-1,new PaginationRequest());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testIllegalPageNumberGetPostCommentsPaginated() {
+        commentService.getPostCommentsPaginated(1,new PaginationRequest(-1,1));
+    }
+    @Test(expected = IllegalArgumentException.class)
+    public void testIllegalPageSizeGetPostCommentsPaginated() {
+        commentService.getPostCommentsPaginated(1,new PaginationRequest(1,-1));
+    }
+    @Test(expected = IllegalArgumentException.class)
+    public void testIllegalPageNumberMoreThanPageCountGetPostCommentsPaginated() {
+        when(commentDao.getPostCommentsTotalCount(eq(1L))).thenReturn(3);
+        commentService.getPostCommentsPaginated(1,new PaginationRequest(4,2));
     }
 
 }
