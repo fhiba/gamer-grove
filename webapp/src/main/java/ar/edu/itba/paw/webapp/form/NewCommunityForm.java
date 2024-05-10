@@ -15,7 +15,7 @@ public class NewCommunityForm {
     private MultipartFile image;
 
     @NotBlank
-    //@Pattern(regexp = "^[a-zA-Z0-9_. :;-]*$")
+    @Pattern(regexp = "^[a-zA-Z0-9,_. :-]*$")
     private String name;
 
     private String description;
