@@ -259,14 +259,14 @@
 
     function previewImage(e, selectedFiles, imagesArray) {
         const elemContainer = document.createElement('div');
-        elemContainer.setAttribute('class', 'item-images');
+        elemContainer.setAttribute('class', 'item-images d-flex flex-row flex-wrap justify-content-start align-items-center');
         for (let i = 0; i < selectedFiles.length; i++) {
             imagesArray.push(selectedFiles[i]);
             const imageContainer = document.createElement('div');
             const elem = document.createElement('img');
             elem.setAttribute('src', URL.createObjectURL(selectedFiles[i]));
             elem.setAttribute('class', 'photo-upload__preview')
-            elem.setAttribute('style', 'width: 100px; height: 100px; object-fit: cover;')
+            elem.setAttribute('style', 'width: 100px; height: 100px; object-fit: cover; margin-top: 5px;')
             const removeButton = document.createElement('button');
             removeButton.setAttribute('type', 'button');
             removeButton.setAttribute('class', 'btn-close delete');
@@ -287,6 +287,7 @@
         photoPreviewContainer.childNodes.forEach(child => child.remove());
         const elemContainer = previewImage(e, selectedFiles, item_images);
         photoPreviewContainer.appendChild(elemContainer);
+        photoPreviewContainer.setAttribute("class","d-flex flex-row")
     });
 
     document.getElementById('photo-upload__preview').addEventListener('click', (e) => {
