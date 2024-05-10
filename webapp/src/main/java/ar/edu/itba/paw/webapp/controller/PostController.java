@@ -255,7 +255,7 @@ public class PostController {
         if (errors.hasErrors()) {
             return new ModelAndView("redirect:/post/" + postDeleteForm.getPostId());
         }
-        ms.removePost(postDeleteForm.getPostId());
+            ms.removePost(postDeleteForm.getPostId());
         return new ModelAndView("redirect:/post/" + postDeleteForm.getPostId());
     }
 

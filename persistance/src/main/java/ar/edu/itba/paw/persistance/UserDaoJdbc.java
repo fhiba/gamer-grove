@@ -21,7 +21,8 @@ public class UserDaoJdbc implements UserDao{
                                                                                 rs.getString("password"),
                                                                                 rs.getString("email"),
                                                                                 rs.getLong("portrait_id"),
-                                                                                rs.getBoolean("verified"));
+                                                                                rs.getBoolean("verified"),
+                                                                                rs.getString("locale"));
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
     @Autowired

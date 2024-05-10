@@ -1,0 +1,35 @@
+package ar.edu.itba.paw.webapp.config;
+
+import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.services.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Optional;
+
+@Configuration
+public class ApplicationLocaleResolver extends SessionLocaleResolver {
+    @Autowired
+    UserService userService;
+
+    @Override
+    public Locale resolveLocale(HttpServletRequest request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String localeOption;
+        if( authentication instanceof AnonymousAuthenticationToken)
+            localeOption = "es";
+        else {
+            localeOption = userService.getLoggedUser().get().getLocale();
+        }
+        return Locale.forLanguageTag(localeOption);
+    }
+
+}
