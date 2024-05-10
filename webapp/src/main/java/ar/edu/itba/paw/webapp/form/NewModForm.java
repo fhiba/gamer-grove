@@ -12,15 +12,10 @@ public class NewModForm {
     @UsernameMustExistConstraint
     private String username;
 
-    @NotBlank
-    @Email
-    private String email;
     @NotNull
     private Long communityId;
 
-    public String getEmail() {
-        return email;
-    }
+
 
     public Long getCommunityId() {
         return communityId;
@@ -30,9 +25,6 @@ public class NewModForm {
         this.communityId = communityId;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
 
     public String getUsername() {
         return username;

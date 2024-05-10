@@ -1,5 +1,7 @@
 package ar.edu.itba.paw.models;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -69,5 +71,9 @@ public class Community {
 
     public LocalDateTime getReleaseDate() {
         return releaseDate;
+    }
+
+    public String getEncodedName(){
+        return URLEncoder.encode(name, StandardCharsets.UTF_8);
     }
 }

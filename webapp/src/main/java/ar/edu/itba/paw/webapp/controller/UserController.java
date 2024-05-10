@@ -116,6 +116,7 @@ public class UserController {
         try {
             md.addModder(newModForm.getUsername(), newModForm.getCommunityId());
         }catch (AlreadyModException e) {
+            LOGGER.debug("User is already a mod");
             return getAddMod(newModForm,removeModForm).addObject("isAlreadyMod", true);
         }
         return new ModelAndView("redirect:/addMod");

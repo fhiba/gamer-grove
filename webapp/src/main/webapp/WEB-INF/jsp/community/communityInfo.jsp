@@ -46,7 +46,7 @@
                     <hr>
                     <div class="card-title text-light mb-3">My Communities</div>
                     <c:forEach var="community" items="${communities}">
-                        <c:url value="/community/${community.name}" var="communityUrl"/>
+                        <c:url value="/community/${community.encodedName}" var="communityUrl"/>
                         <a href="${communityUrl}" class="text-light text-decoration-none">
                             <div class="card-body-community d-flex align-items-center text-decoration-none mb-3">
                                 <c:if test="${community.portrait_id == 0}">
@@ -74,7 +74,7 @@
                 <div class="card-body">
                     <div class="mb-3 row w-100">
                         <div class="col-3">
-                            <c:url value="/community/${community.name}/info" var="editCommunityUrl"/>
+                            <c:url value="/community/${community.encodedName}/info" var="editCommunityUrl"/>
                             <form:form method="POST" action="${editCommunityUrl}" enctype="multipart/form-data"
                                        modelAttribute="EditCommunityForm" id="myForm">
                             <c:if test="${community.portrait_id == 0}">
