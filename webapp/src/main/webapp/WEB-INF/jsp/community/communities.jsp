@@ -19,7 +19,7 @@
             <%--COMMUNITY LIST--%>
             <c:set var="isAdmin" value="${isAdmin}" scope="request"/>
             <c:set var="isLogged" value="${isLogged}" scope="request"/>
-            <c:set var="communities" value="${communities}" scope="request"/>
+            <c:set var="communities" value="${followedCommunities}" scope="request"/>
             <jsp:include page="/WEB-INF/jsp/components/sidebar.jsp"/>
 
             <div class="col-1">
@@ -28,15 +28,15 @@
         <div class="col-6">
             <div class="card border-0 text-decoration-none">
                 <div class="card-body">
-                    <c:if test="${empty communities}">
+                    <c:if test="${empty communitiesPaginated}">
                         <div class="d-flex flex-column align-items-center">
                             <h4 class="fw-semi-bold"><spring:message code="Communities.NoCommunitites"/></h4>
                             <c:url value="/communities" var="showAll"/>
                             <a href="${showAll}" class="btn btn-primary"><spring:message code="Communities.searchAll"/></a>
                         </div>
                     </c:if>
-                    <c:if test="${not empty communities}">
-                        <c:forEach var="community" items="${communities.data}">
+                    <c:if test="${not empty communitiesPaginated}">
+                        <c:forEach var="community" items="${communitiesPaginated.data}">
                             <c:url value="/community/${community.name}" var="communityUrl"/>
                             <a href="${communityUrl}" class="card-link text-decoration-none">
                                 <div class="card mb-3">
@@ -70,11 +70,11 @@
                             </a>
                         </c:forEach>
                         <div class="d-flex justify-content-center align-items-center">
-                            <c:if test="${empty communities}">
+                            <c:if test="${empty communitiesPaginated}">
                                 <span class="badge bg-danger">Invalid page number</span>
                             </c:if>
-                            <c:if test="${not empty communities}">
-                                <c:set var="paginatedDataWrapper" value="${communities}" scope="request" />
+                            <c:if test="${not empty communitiesPaginated}">
+                                <c:set var="paginatedDataWrapper" value="${communitiesPaginated}" scope="request" />
                                 <c:set var="pageNumberName" value="pageNumber" scope="request"/>
                                 <jsp:include page="/WEB-INF/jsp/components/paginationFooter.jsp"/>
                             </c:if>

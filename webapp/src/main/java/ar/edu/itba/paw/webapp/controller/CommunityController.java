@@ -177,7 +177,7 @@ public class CommunityController {
         mav.addObject("categories", Arrays.stream(CommunityCategories.values()).map(CommunityCategories::getCategory).toArray(String[]::new));
         mav.addObject("selectedCategories", selectedCategories);
         mav.addObject("searchTerms", searchTerms);
-        mav.addObject("communities",communities);
+        mav.addObject("communitiesPaginated",communities);
         mav.addObject("followedCommunities",followedCommunities);
         return mav;
     }
