@@ -5,6 +5,8 @@ import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
 import ar.edu.itba.paw.exceptions.NoSuchPostException;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.models.Post;
+import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
+import ar.edu.itba.paw.models.pagination.PaginationRequest;
 import org.springframework.web.multipart.MultipartFile;
 import ar.edu.itba.paw.models.User;
 
@@ -19,7 +21,12 @@ public interface PostService {
 
     List<Post> getPostsByCommunity(final String communityName);
 
+    PaginatedDataWrapper<Post> getPostsByCommunityPaginated(String communityName, PaginationRequest request);
+
     List<Post> getByCategory(final String category);
+
+    PaginatedDataWrapper<Post> getPostsByCategoryPaginated(String category, PaginationRequest request);
+
     Post getPostById(long postId) throws NoSuchPostException;
 
     public Post getPostByIdWithImage(long postId) throws NoSuchPostException;
@@ -30,11 +37,23 @@ public interface PostService {
 
     List<Post> getMyFollowedPosts(User user) throws NoLoggedUserException;
 
+    PaginatedDataWrapper<Post> getUserFollowedPostsPaginated(long userId, PaginationRequest request);
+
     List<Post> getMyFollowedPostsByCategory(String category, User user) throws NoLoggedUserException;
+
+    PaginatedDataWrapper<Post> getUserFollowedPostsByCategoryPaginated(String category, long userId, PaginationRequest request);
 
     List<Post> getPostsByUser(long id);
 
     List<Post> getUserLikedPosts(long id);
 
+    List<Post> getNewsLimited(int limit);
+
+    PaginatedDataWrapper<Post> getUserLikedPostsPaginated(long userId, PaginationRequest request);
+
     List<String> getUsedCategories();
+
+    PaginatedDataWrapper<Post> getAllPostsPaginated(PaginationRequest paginationRequest);
+
+    PaginatedDataWrapper<Post> getPostsByUserPaginated(long id, PaginationRequest paginationRequest);
 }

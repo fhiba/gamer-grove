@@ -4,23 +4,19 @@ import ar.edu.itba.paw.exceptions.AlreadyModException;
 import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
+import ar.edu.itba.paw.models.pagination.PaginationRequest;
 import ar.edu.itba.paw.services.CommunityService;
 import ar.edu.itba.paw.services.FileService;
 import ar.edu.itba.paw.services.ModderService;
-import ar.edu.itba.paw.exceptions.NoLoggedUserException;
-import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
-import ar.edu.itba.paw.models.Comment;
-import ar.edu.itba.paw.models.Community;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.services.CommentService;
-import ar.edu.itba.paw.services.CommunityService;
 import ar.edu.itba.paw.services.PostService;
 import ar.edu.itba.paw.services.UserService;
 //import ar.edu.itba.paw.webapp.form.EditProfileForm;
 import ar.edu.itba.paw.webapp.form.LogInForm;
 import ar.edu.itba.paw.webapp.form.NewModForm;
-import ar.edu.itba.paw.webapp.form.NewPostForm;
 import ar.edu.itba.paw.webapp.form.RegisterUserForm;
 import ar.edu.itba.paw.webapp.form.RemoveModForm;
 import ar.edu.itba.paw.webapp.form.*;
@@ -37,13 +33,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.validation.BindingResult;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
+import java.util.Objects;
 
 @Controller
 public class UserController {
@@ -149,26 +146,58 @@ public class UserController {
     @RequestMapping(path = "/user/update", method = RequestMethod.POST)
     public ModelAndView updateUser(@Valid @ModelAttribute("userPfpForm") final UserPfpForm userPfpForm, final BindingResult errors) throws NoLoggedUserException {
         if(errors.hasErrors()) {
-            return getProfile(userPfpForm);
+            return getProfileUserPosts(null,userPfpForm);
         }
         fs.uploadUserImage(userPfpForm.getFile());
         return new ModelAndView("redirect:/profile");
     }
 
-
-
-    @RequestMapping(path = "/profile", method = RequestMethod.GET)
-    public ModelAndView getProfile(@ModelAttribute("userPfpForm") final UserPfpForm userPfpForm) {
-        ModelAndView mav = new ModelAndView("user/profile");
+    @RequestMapping(path = {"/profile/userPosts","/profile"}, method = RequestMethod.GET)
+    public ModelAndView getProfileUserPosts(@RequestParam(required = false) Integer pageNumber, @ModelAttribute("userPfpForm") final UserPfpForm userPfpForm) {
+        ModelAndView mav = new ModelAndView("user/profile/userPosts");
         User user = us.getLoggedUser().orElseThrow();
         Boolean isAdmin = us.isUserAdmin(user.getId());
         mav.addObject("isAdmin",isAdmin);
         mav.addObject("user",user);
-        mav.addObject("posts",ps.getPostsByUser(user.getId()));
-        mav.addObject("likedPosts",ps.getUserLikedPosts(user.getId()));
         mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
         mav.addObject("communities",cs.getFollowedCommunities(user));
         mav.addObject("isVerified",user.isVerified());
+
+        PaginatedDataWrapper<Post> posts;
+        PaginationRequest paginationRequest = new PaginationRequest(5);
+        if(Objects.nonNull(pageNumber))
+            paginationRequest.setPageNumber(pageNumber);
+        try {
+            posts = ps.getPostsByUserPaginated(user.getId(),paginationRequest);
+        }catch (IllegalArgumentException e){
+            mav.addObject("invalidPageNumber",true);
+            posts = null;
+        }
+        mav.addObject("posts",posts);
+        return mav;
+    }
+
+    @RequestMapping(path = "/profile/likedPosts", method = RequestMethod.GET)
+    public ModelAndView getProfileLikedPosts(@RequestParam(required = false) Integer pageNumber, @ModelAttribute("userPfpForm") final UserPfpForm userPfpForm) {
+        ModelAndView mav = new ModelAndView("user/profile/likedPosts");
+        User user = us.getLoggedUser().orElseThrow();
+        Boolean isAdmin = us.isUserAdmin(user.getId());
+        mav.addObject("isAdmin",isAdmin);
+        mav.addObject("user",user);
+        mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+        mav.addObject("communities",cs.getFollowedCommunities(user));
+        mav.addObject("isVerified",user.isVerified());
+        PaginatedDataWrapper<Post> likedPosts;
+        PaginationRequest paginationRequestLikedPosts = new PaginationRequest(5);
+        if(Objects.nonNull(pageNumber))
+            paginationRequestLikedPosts.setPageNumber(pageNumber);
+        try {
+            likedPosts = ps.getUserLikedPostsPaginated(user.getId(),paginationRequestLikedPosts);
+        }catch (IllegalArgumentException e){
+            mav.addObject("invalidPageNumber",true);
+            likedPosts = null;
+        }
+        mav.addObject("posts",likedPosts);
         return mav;
     }
 

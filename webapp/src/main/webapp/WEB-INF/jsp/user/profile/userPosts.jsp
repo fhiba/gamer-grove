@@ -16,7 +16,7 @@
 
 <%@ include file="/WEB-INF/jsp/components/header.jsp" %>
 <div class="container-fluid min-vh-100">
-    <div class="row">
+    <div class="row ">
         <%--COMMUNITY LIST--%>
             <div class="col-2 sidebar">
                 <div class="card sidebar-card m-auto">
@@ -70,9 +70,9 @@
                     </div>
                 </div>
             </div>
-
+            <div class="col-1"></div>
         <%--PROFILE--%>
-        <div class="col-8">
+        <div class="col-8 justify-content-center">
             <div class="card border-light border-0">
                 <div class="card-body">
                     <div class="mb-3 row">
@@ -129,13 +129,21 @@
 
                         </div>
                     </div>
-                    <h2 class="text-center mt-4"><spring:message code="Profile.UserPosts"/></h2>
-                    <c:if test="${empty posts}">
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page"><spring:message code="Profile.UserPosts"/></a>
+                        </li>
+                        <li class="nav-item">
+                            <c:url var="likedPostsUrl" value="/profile/likedPosts" />
+                            <a class="nav-link" href="${likedPostsUrl}"><spring:message code="Profile.LikedPost"/></a>
+                        </li>
+                    </ul>
+                    <c:if test="${empty posts.data}">
                         <h4><spring:message code="Profile.NoUserPosts"/></h4>
                         <c:url value="/" var="homeUrl"/>
                         <a href="${homeUrl}" class="btn btn-primary"><spring:message code="Post.Create"/></a>
                     </c:if>
-                    <c:forEach var="post" items="${posts}">
+                    <c:forEach var="post" items="${posts.data}">
                         <c:url value="/post/${post.id}" var="postUrl"/>
                         <a href="${postUrl}" class="card-link text-decoration-none">
                             <div class="card mb-3">
@@ -158,42 +166,19 @@
                             </div>
                         </a>
                     </c:forEach>
+                    <div class="d-flex justify-content-center align-items-center">
+                        <c:if test="${empty posts}">
+                            <span class="badge bg-danger">Invalid page number</span>
+                        </c:if>
+                        <c:if test="${not empty posts}">
+                            <c:set var="paginatedDataWrapper" value="${posts}" scope="request" />
+                            <c:set var="pageNumberName" value="pageNumber" scope="request"/>
+                            <jsp:include page="/WEB-INF/jsp/components/paginationFooter.jsp"/>
+                        </c:if>
+                    </div>
                 </div>
             </div>
         </div>
-        <%--POSTS LIST OF THE COMMUNITY--%>
-        <div class="col-2">
-            <div class="card border-0">
-                <div class="card-body">
-                    <h3 class="card-title text-center mb-3"><spring:message code="Profile.LikedPost"/></h3>
-                    <c:if test="${empty likedPosts}">
-                        <h5 class="text-center mt-4"><spring:message code="Profile.NoLikedPosts"/></h5>
-                    </c:if>
-                    <c:forEach var="post" items="${likedPosts}">
-                        <c:url value="/post/${post.id}" var="postUrl"/>
-                        <a href="${postUrl}" class="card-link text-decoration-none">
-                            <div class="card mb-3">
-                                <div class="card-body">
-                                    <div class="title-container">
-                                        <p class="fw-semibold card-subtitle">/<c:out value="${post.communityName}"
-                                                                                     escapeXml="true"/></p>
-                                        <span class="badge rounded-pill mb-1 ${post.category}">${post.category}</span>
-                                    </div>
-
-                                    <h4 class="card-title fw-bold"><c:out value="${post.title}" escapeXml="true"/></h4>
-                                    <p class="card-text post-body-home"><c:out value="${post.body}"
-                                                                               escapeXml="true"/></p>
-                                    <p class="m-auto">
-                                        <small class="text-body-secondary">
-                                            <c:out value="${post.date.format(format)}" escapeXml="true"/>
-                                        </small>
-                                    </p>
-                                </div>
-                            </div>
-                        </a>
-                    </c:forEach>
-                </div>
-            </div>
         </div>
     </div>
 </div>

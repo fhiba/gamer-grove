@@ -73,6 +73,13 @@
                             </div>
                         </a>
                     </c:forEach>
+                    <c:if test="${empty communities}">
+                        <c:url value="/communities" var="communitiesUrl"/>
+                        <p><spring:message code="Navbar.NoCommunitiesFollowed"/></p>
+                        <a href="${communitiesUrl}" class=" card-title text-light mb-3">
+                            <h5><spring:message code="Navbar.AllCommunities"/></h5>
+                        </a>
+                    </c:if>
                 </div>
             </div>
         </div>
@@ -97,14 +104,14 @@
                         <a href="${newPostUrl}" type="button" class="btn  btn-primary  h-25 me-2 mt-1"><spring:message
                                 code="Post.Create"/></a>
                     </div>
-                    <c:if test="${posts.size() == 0}">
+                    <c:if test="${posts.data.size() == 0}">
                         <c:url var="allUrl" value="/all"/>
                         <div class="align-items-center text-center justify-content-center w-100">
                                 <h6 class="card-title"><spring:message code="Home.NoPosts"/> <a href="${allUrl}"><spring:message code="Home.GoAll"/></a></h6>
 
                         </div>
                     </c:if>
-                    <c:forEach var="post" items="${posts}">
+                    <c:forEach var="post" items="${posts.data}">
                         <c:url value="/post/${post.id}" var="postUrl"/>
                         <a href="${postUrl}" class="card-link text-decoration-none">
                             <div class="card mb-3">
@@ -149,6 +156,16 @@
                             </div>
                         </a>
                     </c:forEach>
+                    <div class="d-flex justify-content-center align-items-center">
+                        <c:if test="${empty posts}">
+                            <span class="badge bg-danger">Invalid page number</span>
+                        </c:if>
+                        <c:if test="${not empty posts}">
+                            <c:set var="paginatedDataWrapper" value="${posts}" scope="request"/>
+                            <c:set var="pageNumberName" value="pageNumber" scope="request"/>
+                            <jsp:include page="/WEB-INF/jsp/components/paginationFooter.jsp"/>
+                        </c:if>
+                    </div>
                 </div>
             </div>
         </div>

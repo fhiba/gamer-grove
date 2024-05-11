@@ -212,7 +212,7 @@
                         </button>
                     </div>
 
-                    <c:forEach var="post" items="${posts}">
+                    <c:forEach var="post" items="${posts.data}">
                         <c:url value="/post/${post.id}" var="postUrl"/>
                         <a href="${postUrl}" class="card-link text-decoration-none">
                             <div class="card mb-3">
@@ -235,6 +235,16 @@
                             </div>
                         </a>
                     </c:forEach>
+                    <div class="d-flex justify-content-center align-items-center">
+                        <c:if test="${empty posts}">
+                            <span class="badge bg-danger">Invalid page number</span>
+                        </c:if>
+                        <c:if test="${not empty posts}">
+                            <c:set var="paginatedDataWrapper" value="${posts}" scope="request" />
+                            <c:set var="pageNumberName" value="pageNumber" scope="request"/>
+                            <jsp:include page="/WEB-INF/jsp/components/paginationFooter.jsp"/>
+                        </c:if>
+                    </div>
                 </div>
             </div>
         </div>

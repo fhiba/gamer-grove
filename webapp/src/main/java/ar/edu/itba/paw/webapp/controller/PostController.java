@@ -107,80 +107,96 @@ public class PostController {
 //        return new ModelAndView("redirect:/home");
 //    }
 
-    @RequestMapping(path = {"/all", "/"}, method = RequestMethod.GET)
-    public ModelAndView getHomePosts(@RequestParam(value = "category", required = false) final String category) {
+    @RequestMapping(path = {"home"}, method = RequestMethod.GET)
+    public ModelAndView getHomePosts(@RequestParam(required = false) Integer pageNumber,@RequestParam(value = "category", required = false) final String category) {
         ModelAndView mav = new ModelAndView("/home");
-        List<Post> posts;
-        User user = null;
         List<Community> communities;
         Boolean isAdmin = false;
         List<String> categories = ps.getUsedCategories();
-        try{
-            user = us.getLoggedUserChecked();
-        }catch (Exception ignored){
+        Optional<User > userOptional = us.getLoggedUser();
+        PaginatedDataWrapper<Post> posts;
+        PaginationRequest paginationRequest = new PaginationRequest();
+        if(Objects.nonNull(pageNumber))
+            paginationRequest.setPageNumber(pageNumber);
 
-        }
-
-        if(user != null) {
+        if(userOptional.isPresent()) {
+            User user = userOptional.get();
             communities = cs.getFollowedCommunities(user);
             isAdmin = us.isUserAdmin(user.getId());
-        }
-        else{
-            communities = cs.getAllCommunitiesNoCat();
-        }
-
-        if (category != null && !category.isEmpty() && !category.equals("all")) {
-            posts = ps.getByCategory(category);
-        } else {
-            posts = ps.getAllPosts();
+            if (Objects.nonNull(category) &&!category.isEmpty() && !category.equals("all")) {
+                try {
+                    posts = ps.getUserFollowedPostsByCategoryPaginated(category,user.getId(),paginationRequest);
+                }catch (IllegalArgumentException e){
+                    mav.addObject("invalidPageNumber",true);
+                    posts = null;
+                }
+            } else {
+                try {
+                    posts = ps.getUserFollowedPostsPaginated(user.getId(),paginationRequest);
+                }catch (IllegalArgumentException e){
+                    mav.addObject("invalidPageNumber",true);
+                    posts = null;
+                }
+            }
+        }else{
+           return new ModelAndView("redirect:/all/");
         }
         mav.addObject("isAdmin",isAdmin);
-        mav.addObject("isLogged", user != null);
+        mav.addObject("isLogged", userOptional.isPresent());
         mav.addObject("posts",posts);
         //TODO: SHOULD BE THE ONES THAT ARE CURRENTLY BEING FOLLOWED BY USER OR A FEW RANDOMLY SELECTED
         mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
         mav.addObject("communities", communities);
-        mav.addObject("news", ps.getByCategory(PostCategories.NEWS.getCategory()));
+        mav.addObject("news", ps.getNewsLimited(5));
         mav.addObject("categories", categories);
-        mav.addObject("isVerified",user != null ? user.isVerified() : false);
+        mav.addObject("isVerified", userOptional.isPresent() && userOptional.get().isVerified());
         return mav;
     }
 
-    @RequestMapping(path = {"/home"}, method = RequestMethod.GET)
-    public ModelAndView getAllPosts(@RequestParam(value = "category", required = false) final String category) throws NoLoggedUserException {
+
+    @RequestMapping(path = {"/all","/"}, method = RequestMethod.GET)
+    public ModelAndView getAllPosts(@RequestParam(required = false) Integer pageNumber,@RequestParam(value = "category", required = false) final String category) throws NoLoggedUserException {
         ModelAndView mav = new ModelAndView("/home");
-        List<Post> posts = ps.getAllPosts();
+        PaginatedDataWrapper<Post> posts;
         List<Community> communities;
-        User user = null;
         Boolean isAdmin = false;
         List<String> categories = ps.getUsedCategories();
+        PaginationRequest paginationRequest = new PaginationRequest();
+        Optional<User> optionalUser = us.getLoggedUser();
+        if(Objects.nonNull(pageNumber))
+            paginationRequest.setPageNumber(pageNumber);
 
-        //TODO:HACER ESTO MAS LINDO
-        try{
-            user = us.getLoggedUserChecked();
-        }catch (Exception ignored){
 
-        }
-        if(user != null) {
+        if(optionalUser.isPresent()) {
+            User user = optionalUser.get();
             communities = cs.getFollowedCommunities(user);
             isAdmin = us.isUserAdmin(user.getId());
-            if (category != null && !category.isEmpty() && !category.equals("all")) {
-                posts = ps.getMyFollowedPostsByCategory(category,user);
-            } else {
-                posts = ps.getMyFollowedPosts(user);
-            }
-        }
-        else{
+        }else{
             communities = cs.getAllCommunitiesNoCat();
         }
+        if (Objects.nonNull(category) && !category.isEmpty() && !category.equals("all")) {
+            try {
+                posts = ps.getPostsByCategoryPaginated(category,paginationRequest);
+            }catch (IllegalArgumentException e){
+                mav.addObject("invalidPageNumber",true);
+                posts = null;
+            }
+        } else {
+            try {
+                posts = ps.getAllPostsPaginated(paginationRequest);
+            }catch (IllegalArgumentException e){
+                mav.addObject("invalidPageNumber",true);
+                posts = null;
+            }
+        }
         mav.addObject("isAdmin",isAdmin);
-        mav.addObject("isLogged", user != null);
+        mav.addObject("isLogged", optionalUser.isPresent());
         mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
         mav.addObject("posts",posts);
         mav.addObject("communities", communities);
-        mav.addObject("news", ps.getByCategory(PostCategories.NEWS.getCategory()));
+        mav.addObject("news", ps.getNewsLimited(5));
         mav.addObject("categories", categories);
-        mav.addObject("isVerified",user != null ? user.isVerified() : false);
+        mav.addObject("isVerified",optionalUser.isPresent() && optionalUser.get().isVerified());
         return mav;
     }
 
@@ -219,6 +235,7 @@ public class PostController {
         try {
             comments = commentService.getPostCommentsPaginated(postId,paginationRequest);
         }catch (IllegalArgumentException e){
+            mav.addObject("invalidPageNumber",true);
             comments = null;
         }
         if(user != null) {

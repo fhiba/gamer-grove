@@ -289,11 +289,12 @@
                             </c:if>
                         </c:forEach>
                         <div class="d-flex justify-content-center align-items-center">
-                            <c:if test="${empty comments}">
+                            <c:if test="${not empty invalidPageNumber && not empty comments}">
                                 <span class="badge bg-danger">Invalid page number</span>
                             </c:if>
-                            <c:if test="${not empty comments}">
+                            <c:if test="${empty invalidPageNumber && not empty comments}">
                                 <c:set var="paginatedDataWrapper" value="${comments}" scope="request"/>
+                                <c:set var="pageNumberName" value="pageNumber" scope="request"/>
                                 <jsp:include page="/WEB-INF/jsp/components/paginationFooter.jsp"/>
                             </c:if>
                         </div>
