@@ -3,6 +3,8 @@ package ar.edu.itba.paw.webapp.controller;
 import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
 import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
+import ar.edu.itba.paw.models.pagination.PaginationRequest;
 import ar.edu.itba.paw.services.CommunityService;
 import ar.edu.itba.paw.services.PostService;
 import ar.edu.itba.paw.services.UserService;
@@ -23,6 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Controller
@@ -78,10 +81,21 @@ public class CommunityController {
 
 
     @RequestMapping(path="/community/{communityName}", method = RequestMethod.GET)
-    public ModelAndView community(@PathVariable("communityName") final String communityName, @ModelAttribute("newPostForm") final NewPostForm newPostForm, @ModelAttribute("followCommunityForm") final FollowCommunityForm followCommunityForm) throws NoSuchCommunityException {
+    public ModelAndView community(@RequestParam(required = false) Integer pageNumber,@PathVariable("communityName") final String communityName, @ModelAttribute("newPostForm") final NewPostForm newPostForm, @ModelAttribute("followCommunityForm") final FollowCommunityForm followCommunityForm) throws NoSuchCommunityException {
         ModelAndView mav = new ModelAndView("community/community");
         Community community = cs.findByName(communityName);
-        List<Post> posts = ps.getPostsByCommunity(communityName);
+        PaginatedDataWrapper<Post> posts;
+        PaginationRequest paginationRequest = new PaginationRequest(5);
+        if(Objects.nonNull(pageNumber))
+            paginationRequest.setPageNumber(pageNumber);
+        try {
+            posts = ps.getPostsByCommunityPaginated(communityName,paginationRequest);
+
+        }catch (IllegalArgumentException e){
+            mav.addObject("invalidPageNumber",true);
+            posts = null;
+        }
+        mav.addObject("posts",posts);
         Boolean isAdmin = false;
         Boolean isFollowing = false;
         try {
@@ -123,7 +137,7 @@ public class CommunityController {
     public ModelAndView createPostOnCommunity(@PathVariable("communityName") final String communityName,@ModelAttribute("followCommunityForm") final FollowCommunityForm followCommunityForm,@Valid @ModelAttribute("newPostForm") final NewPostForm newPostForm,BindingResult errors) throws NoLoggedUserException, NoSuchCommunityException {
 
         if(errors.hasErrors())
-            return community(communityName,newPostForm,followCommunityForm);
+            return community(null,communityName,newPostForm,followCommunityForm);
 
         ps.createPost(newPostForm.getTitle(),newPostForm.getBody(),communityName,newPostForm.getCategory(),newPostForm.getFiles());
         return new ModelAndView("redirect:/community/"+ URLEncoder.encode(communityName, StandardCharsets.UTF_8));
@@ -132,10 +146,19 @@ public class CommunityController {
 
 
     @RequestMapping(path="/communities", method = RequestMethod.GET)
-    public ModelAndView communities(@ModelAttribute("searchTerms") final String searchTerms, @ModelAttribute("categories") final String categories) {
+    public ModelAndView communities(@RequestParam(required = false) Integer pageNumber,@ModelAttribute("searchTerms") final String searchTerms, @ModelAttribute("categories") final String categories) {
         ModelAndView mav = new ModelAndView("community/communities");
         List<String> selectedCategories = Arrays.asList(categories.split(","));
-        List<Community> communities = cs.find(searchTerms, selectedCategories);
+        PaginatedDataWrapper<Community> communities;
+        PaginationRequest paginationRequest = new PaginationRequest(5);
+        if(Objects.nonNull(pageNumber))
+            paginationRequest.setPageNumber(pageNumber);
+        try {
+            communities = cs.find(paginationRequest,searchTerms, selectedCategories);
+        }catch (IllegalArgumentException e){
+            mav.addObject("invalidPageNumber",true);
+            communities = null;
+        }
         Boolean isAdmin = false;
         User user = null;
         List<Community> followedCommunities;
@@ -156,7 +179,7 @@ public class CommunityController {
         mav.addObject("categories", Arrays.stream(CommunityCategories.values()).map(CommunityCategories::getCategory).toArray(String[]::new));
         mav.addObject("selectedCategories", selectedCategories);
         mav.addObject("searchTerms", searchTerms);
-        mav.addObject("communities",communities);
+        mav.addObject("communitiesPaginated",communities);
         mav.addObject("followedCommunities",followedCommunities);
         return mav;
     }
@@ -164,11 +187,11 @@ public class CommunityController {
     @RequestMapping(path="/community/{communityName}/new", method = RequestMethod.POST)
     public ModelAndView newCommunityPost(@PathVariable("communityName") final String communityName,@ModelAttribute("followCommunityForm") final FollowCommunityForm followCommunityForm,@ModelAttribute("newPostForm") final NewPostForm newPostForm,BindingResult errors) throws NoSuchCommunityException, NoLoggedUserException {
         if(errors.hasErrors())
-            return community(communityName,newPostForm,followCommunityForm);
+            return community(null,communityName,newPostForm,followCommunityForm);
         //chequeo de que exista la community
         Community community = cs.findByName(communityName);
         ps.createPost(newPostForm.getTitle(),newPostForm.getBody(),community.getName(),newPostForm.getCategory(),newPostForm.getFiles());
-        return community(communityName,newPostForm,followCommunityForm);
+        return community(null,communityName,newPostForm,followCommunityForm);
     }
 
     @RequestMapping(path="/community/{communityName}/info", method = RequestMethod.GET)
@@ -215,7 +238,7 @@ public class CommunityController {
     @RequestMapping(path = "/community/{communityName}/follow", method = RequestMethod.POST)
     public ModelAndView followCommunity(@PathVariable("communityName") final String communityName, @ModelAttribute("followCommunityForm") final FollowCommunityForm followCommunityForm, BindingResult errors) throws NoSuchCommunityException, NoLoggedUserException {
         if(errors.hasErrors())
-            return community(communityName,new NewPostForm(),followCommunityForm);
+            return community(null,communityName,new NewPostForm(),followCommunityForm);
         cs.modifyUserOnCommunity(followCommunityForm.getCommunityId(),followCommunityForm.getCommunityName());
         return new ModelAndView("redirect:/community/"+URLEncoder.encode(communityName,StandardCharsets.UTF_8));
     }

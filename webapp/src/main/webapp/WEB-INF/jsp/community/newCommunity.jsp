@@ -17,62 +17,10 @@
 <div class="container-fluid">
     <div class="row min-vh-100">
         <%--COMMUNITY LIST--%>
-        <div class="col-2 sidebar">
-            <div class="card sidebar-card m-auto">
-                <div class="card-body">
-                    <c:if test="${isAdmin}">
-                        <div class="row-cols-2">
-                            <c:url value="/addMod" var="addModUrl"/>
-                            <a href="${addModUrl}">
-                                <button class="btn btn-outline-primary">Add Mod</button>
-                            </a>
-                            <c:url value="/new-community" var="newCommunityUrl"/>
-                            <a href="${newCommunityUrl}">
-                                <button class="ms-2 btn btn-outline-success">Add Community</button>
-                            </a>
-                        </div>
-                    </c:if>
-                    <hr>
-                    <c:url value="/home" var="homeUrl"/>
-                    <a href="${homeUrl}" class="text-decoration-none card-title text-light mb-3">
-                        <h5><spring:message code="Navbar.Home"/></h5>
-                    </a>
-                    <hr>
-
-                    <c:url value="/all" var="allUrl"/>
-                    <a href="${allUrl}" class="text-decoration-none card-title text-light mb-3">
-                        <h5><spring:message code="All"/></h5>
-                    </a>
-                    <hr>
-                    <c:if test="${isLogged == null}">
-                        <div class="h5 card-title text-light mb-3">Communities</div>
-                    </c:if>
-                    <c:if test="${isLogged != null}">
-                        <div class="card-title text-light mb-3">My Communities</div>
-                    </c:if>
-                    <c:forEach var="community" items="${communities}">
-                        <c:url value="/community/${community.encodedName}" var="communityUrl"/>
-                        <a href="${communityUrl}" class="text-light text-decoration-none">
-                            <div class="card-body-community d-flex align-items-center text-decoration-none mb-3">
-                                <c:if test="${community.portrait_id == 0}">
-                                    <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
-                                         class="very-small-profile-pic mb-1" alt="Profile Picture">
-                                </c:if>
-                                <c:if test="${community.portrait_id != 0}">
-                                    <img src="<c:url value='/image/${community.portrait_id}'/>"
-                                         class="very-small-profile-pic mb-1" alt="Profile Picture">
-                                </c:if>
-                                <div class="text-decoration-none">
-                                    <h5 class="fw-semibold card-subtitle ">
-                                        /<c:out value="${community.name}" escapeXml="true"/>
-                                    </h5>
-                                </div>
-                            </div>
-                        </a>
-                    </c:forEach>
-                </div>
-            </div>
-        </div>
+        <c:set var="isAdmin" value="${isAdmin}" scope="request"/>
+        <c:set var="isLogged" value="${isLogged}" scope="request"/>
+        <c:set var="communities" value="${communities}" scope="request"/>
+        <jsp:include page="/WEB-INF/jsp/components/sidebar.jsp"/>
         <%--NEW COMMUNITY FORM--%>
         <div class="col-10 d-flex justify-content-center">
             <div class="card border-0 w-100 ms-5">
@@ -89,7 +37,7 @@
                                     code="Profile.UpdateProfilePicture"/></label>
                             <form:input
                                     onchange="document.getElementById('imgFile').src = window.URL.createObjectURL(this.files[0])"
-                                    path="image" class="form-control w-100" type="file"/>
+                                    path="image" class="form-control w-100" type="file" accept="image/*"/>
                             <p class="mt-3 mb-auto"><form:errors path="image" cssStyle="color: red"
                                                                  cssClass="error"/></p>
                             <form:errors cssStyle="color: red" cssClass="error"/>

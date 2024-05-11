@@ -171,5 +171,76 @@ public class PostDaoJdbc implements PostDao {
         return jdbcTemplate.query("SELECT DISTINCT category FROM post WHERE category IS NOT NULL", (rs, rowNum) -> rs.getString("category"));
     }
 
+    @Override
+    public int getTotalPostCount() {
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM post WHERE deleted = false", Integer.class);
+    }
+
+    @Override
+    public List<Post> getAllPostsPaginated(int pageSize, int offset) {
+        return jdbcTemplate.query("SELECT * FROM post WHERE deleted = false ORDER BY post_date DESC LIMIT ? OFFSET ?",new Object[]{pageSize,offset}, ROW_MAPPER);
+    }
+
+    @Override
+    public int getTotalPostByCategoryCount(String category) {
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM post WHERE deleted = false AND category = ?",new Object[]{category}, Integer.class);
+    }
+
+    @Override
+    public List<Post> getAllPostsByCategoryPaginated(String category, int pageSize, int offset) {
+        return jdbcTemplate.query("SELECT * FROM post WHERE deleted = false AND category = ? ORDER BY post_date DESC LIMIT ? OFFSET ?",new Object[]{category,pageSize,offset}, ROW_MAPPER);
+    }
+
+    @Override
+    public int getTotalPostByCommunityCount(String communityName) {
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM post WHERE deleted = false AND community_name = ?",new Object[]{communityName}, Integer.class);
+    }
+
+    @Override
+    public List<Post> getPostsByCommunityPaginated(String communityName, int pageSize, int offset) {
+        return jdbcTemplate.query("SELECT * FROM post WHERE deleted = false AND community_name = ? ORDER BY post_date DESC LIMIT ? OFFSET ?",new Object[]{communityName,pageSize,offset}, ROW_MAPPER);
+    }
+
+    @Override
+    public int getTotaltFollowedPostsByUserCount(long userId) {
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM post WHERE deleted = false AND community_name IN (SELECT community_name FROM community_user WHERE user_id = ?) ",new Object[]{userId}, Integer.class);
+    }
+
+    @Override
+    public List<Post> getFollowedPostsByUserPaginated(long userId, int pageSize, int offset) {
+        return jdbcTemplate.query("SELECT * FROM post WHERE deleted = false AND community_name IN (SELECT community_name FROM community_user WHERE user_id = ?)  ORDER BY post_date DESC LIMIT ? OFFSET ?",new Object[]{userId,pageSize,offset}, ROW_MAPPER);
+    }
+
+    @Override
+    public int getTotalUserFollowedPostsByCategoryCount(long userId, String category) {
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM post WHERE deleted = false AND community_name IN (SELECT community_name FROM community_user WHERE user_id = ?)  AND category = ?",new Object[]{userId,category}, Integer.class);
+    }
+
+    @Override
+    public List<Post> getUserFollowedPostsByCategoryPaginated(long userId, String category, int pageSize, int offset) {
+        return jdbcTemplate.query("SELECT * FROM post WHERE deleted = false AND community_name IN (SELECT community_name FROM community_user WHERE user_id = ?) AND category = ?  ORDER BY post_date DESC LIMIT ? OFFSET ?",new Object[]{userId,category,pageSize,offset}, ROW_MAPPER);
+    }
+
+    @Override
+    public int getTotalUserLikedPostCount(long userId) {
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM post WHERE deleted = false AND id IN(SELECT post_id FROM groovy_post_history WHERE user_id=?)",new Object[]{userId}, Integer.class);
+    }
+
+    @Override
+    public List<Post> getUserLikedPostPaginated(long userId, int pageSize, int offset) {
+        return jdbcTemplate.query("SELECT * FROM post WHERE deleted = false AND id IN(SELECT post_id FROM groovy_post_history WHERE user_id=?) ORDER BY post_date DESC LIMIT ? OFFSET ?",new Object[]{userId,pageSize,offset},ROW_MAPPER);
+    }
+
+    @Override
+    public List<Post> getNewsLimited(int limit) {
+        return jdbcTemplate.query("SELECT * FROM post WHERE category = 'News' AND deleted = false ORDER BY post_date DESC LIMIT ?", new Object[]{limit}, ROW_MAPPER);
+    }
+
+    @Override
+    public List<Post> getPostsByUserPaginated(long id, int pageSize, int offset) {
+        return jdbcTemplate.query("SELECT * FROM post WHERE deleted = false AND author_id = ? ORDER BY post_date DESC LIMIT ? OFFSET ?",new Object[]{id,pageSize,offset},ROW_MAPPER);
+
+    }
+
 
 }

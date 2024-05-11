@@ -4,6 +4,8 @@ import ar.edu.itba.paw.exceptions.*;
 import ar.edu.itba.paw.models.Community;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
+import ar.edu.itba.paw.models.pagination.PaginationRequest;
 import ar.edu.itba.paw.persistance.PostDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,9 +82,55 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
+    public PaginatedDataWrapper<Post> getPostsByCommunityPaginated(final String communityName, PaginationRequest request) {
+        if( request.getPageSize() < 1){
+            throw new IllegalArgumentException("Invalid Page size");
+        }
+        if(request.getPageNumber() <1 ){
+            throw new IllegalArgumentException("Invalid Page number");
+        }
+        int totalCount = postDao.getTotalPostByCommunityCount(communityName);
+        if(totalCount == 0){
+            return new PaginatedDataWrapper<>(Collections.emptyList(), request.getPageNumber(), totalCount, request.getPageSize());
+        }
+
+
+        int offset = (request.getPageNumber() - 1) * request.getPageSize();
+        List<Post> data = postDao.getPostsByCommunityPaginated(communityName,request.getPageSize() , offset);
+        PaginatedDataWrapper<Post> dataWrapper = new PaginatedDataWrapper<>(data, request.getPageNumber(), totalCount, request.getPageSize());
+        if(request.getPageNumber() > dataWrapper.getTotalPages()){
+            throw new IllegalArgumentException("Invalid Page number");
+        }
+        return dataWrapper;
+    }
+
+
+    @Override
     public List<Post> getByCategory(String category) {
         List<Post> posts = postDao.findByCategory(category);
         return posts.isEmpty()? Collections.emptyList(): posts;
+    }
+
+    @Override
+    public PaginatedDataWrapper<Post> getPostsByCategoryPaginated(String category, PaginationRequest request) {
+        if( request.getPageSize() < 1){
+            throw new IllegalArgumentException("Invalid Page size");
+        }
+        if(request.getPageNumber() <1 ){
+            throw new IllegalArgumentException("Invalid Page number");
+        }
+        int totalCount = postDao.getTotalPostByCategoryCount(category);
+        if(totalCount == 0){
+            return new PaginatedDataWrapper<>(Collections.emptyList(), request.getPageNumber(), totalCount, request.getPageSize());
+        }
+
+        int offset = (request.getPageNumber() - 1) * request.getPageSize();
+        List<Post> data = postDao.getAllPostsByCategoryPaginated(category,request.getPageSize() , offset);
+        PaginatedDataWrapper<Post> dataWrapper = new PaginatedDataWrapper<>(data, request.getPageNumber(), totalCount, request.getPageSize());
+        if(request.getPageNumber() > dataWrapper.getTotalPages()){
+            throw new IllegalArgumentException("Invalid Page number");
+        }
+        return dataWrapper;
     }
 
     @Override
@@ -156,6 +204,26 @@ public class PostServiceImpl implements PostService{
             return Collections.emptyList();
         return posts;
     }
+    @Override
+    public PaginatedDataWrapper<Post> getUserFollowedPostsPaginated(long userId, PaginationRequest request) {
+        if( request.getPageSize() < 1){
+            throw new IllegalArgumentException("Invalid Page size");
+        }
+        if(request.getPageNumber() <1 ){
+            throw new IllegalArgumentException("Invalid Page number");
+        }
+        int totalCount = postDao.getTotaltFollowedPostsByUserCount(userId);
+        if(totalCount == 0){
+            return new PaginatedDataWrapper<>(Collections.emptyList(), request.getPageNumber(), totalCount, request.getPageSize());
+        }
+        int offset = (request.getPageNumber() - 1) * request.getPageSize();
+        List<Post> data = postDao.getFollowedPostsByUserPaginated(userId,request.getPageSize() , offset);
+        PaginatedDataWrapper<Post> dataWrapper = new PaginatedDataWrapper<>(data, request.getPageNumber(), totalCount, request.getPageSize());
+        if(request.getPageNumber() > dataWrapper.getTotalPages()){
+            throw new IllegalArgumentException("Invalid Page number");
+        }
+        return dataWrapper;
+    }
 
     @Override
     public List<Post> getMyFollowedPostsByCategory(String category, User user) {
@@ -163,6 +231,27 @@ public class PostServiceImpl implements PostService{
         if(posts.isEmpty())
             return Collections.emptyList();
         return posts;
+    }
+    @Override
+    public PaginatedDataWrapper<Post> getUserFollowedPostsByCategoryPaginated(String category, long userId, PaginationRequest request) {
+        if( request.getPageSize() < 1){
+            throw new IllegalArgumentException("Invalid Page size");
+        }
+        if(request.getPageNumber() <1 ){
+            throw new IllegalArgumentException("Invalid Page number");
+        }
+        int totalCount = postDao.getTotalUserFollowedPostsByCategoryCount(userId,category);
+        if(totalCount == 0){
+            return new PaginatedDataWrapper<>(Collections.emptyList(), request.getPageNumber(), totalCount, request.getPageSize());
+        }
+
+        int offset = (request.getPageNumber() - 1) * request.getPageSize();
+        List<Post> data = postDao.getUserFollowedPostsByCategoryPaginated(userId,category,request.getPageSize() , offset);
+        PaginatedDataWrapper<Post> dataWrapper = new PaginatedDataWrapper<>(data, request.getPageNumber(), totalCount, request.getPageSize());
+        if(request.getPageNumber() > dataWrapper.getTotalPages()){
+            throw new IllegalArgumentException("Invalid Page number");
+        }
+        return dataWrapper;
     }
 
     @Override
@@ -178,9 +267,84 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
+    public List<Post> getNewsLimited(int limit) {
+        if(limit < 1){
+            throw new IllegalArgumentException();
+        }
+        List<Post> posts = postDao.getNewsLimited(limit);
+        return posts.isEmpty()? Collections.emptyList(): posts;
+    }
+
+    @Override
+    public PaginatedDataWrapper<Post> getUserLikedPostsPaginated(long userId, PaginationRequest request) {
+        if( request.getPageSize() < 1){
+            throw new IllegalArgumentException("Invalid Page size");
+        }
+        if(request.getPageNumber() <1 ){
+            throw new IllegalArgumentException("Invalid Page number");
+        }
+        int totalCount = postDao.getTotalUserLikedPostCount(userId);
+        if(request.getPageNumber() <1 ){
+            throw new IllegalArgumentException("Invalid Page number");
+        }
+        int offset = (request.getPageNumber() - 1) * request.getPageSize();
+        List<Post> data = postDao.getUserLikedPostPaginated(userId,request.getPageSize() , offset);
+        PaginatedDataWrapper<Post> dataWrapper = new PaginatedDataWrapper<>(data, request.getPageNumber(), totalCount, request.getPageSize());
+        if(request.getPageNumber() > dataWrapper.getTotalPages()){
+            throw new IllegalArgumentException("Invalid Page number");
+        }
+        return dataWrapper;
+    }
+
+
+    @Override
     public List<String> getUsedCategories() {
         List<String> categories = postDao.getUsedCategories();
         return categories.isEmpty()? Collections.emptyList(): categories;
+    }
+
+    @Override
+    public PaginatedDataWrapper<Post> getAllPostsPaginated(PaginationRequest request) {
+        if( request.getPageSize() < 1){
+            throw new IllegalArgumentException("Invalid Page size");
+        }
+        if(request.getPageNumber() <1 ){
+            throw new IllegalArgumentException("Invalid Page number");
+        }
+        int totalCount = postDao.getTotalPostCount();
+        if(request.getPageNumber() <1 ){
+            throw new IllegalArgumentException("Invalid Page number");
+        }
+
+        int offset = (request.getPageNumber() - 1) * request.getPageSize();
+        List<Post> data = postDao.getAllPostsPaginated(request.getPageSize(), offset);
+        PaginatedDataWrapper<Post> dataWrapper = new PaginatedDataWrapper<>(data, request.getPageNumber(), totalCount, request.getPageSize());
+        if(request.getPageNumber() > dataWrapper.getTotalPages()){
+            throw new IllegalArgumentException("Invalid Page number");
+        }
+        return dataWrapper;
+    }
+
+    @Override
+    public PaginatedDataWrapper<Post> getPostsByUserPaginated(long id, PaginationRequest request) {
+        if( request.getPageSize() < 1){
+            throw new IllegalArgumentException("Invalid Page size");
+        }
+        if(request.getPageNumber() <1 ){
+            throw new IllegalArgumentException("Invalid Page number");
+        }
+        int totalCount = postDao.getTotalPostCount();
+        if(request.getPageNumber() <1 ){
+            throw new IllegalArgumentException("Invalid Page number");
+        }
+
+        int offset = (request.getPageNumber() - 1) * request.getPageSize();
+        List<Post> data = postDao.getPostsByUserPaginated(id,request.getPageSize(), offset);
+        PaginatedDataWrapper<Post> dataWrapper = new PaginatedDataWrapper<>(data, request.getPageNumber(), totalCount, request.getPageSize());
+        if(request.getPageNumber() > dataWrapper.getTotalPages()){
+            throw new IllegalArgumentException("Invalid Page number");
+        }
+        return dataWrapper;
     }
 
 

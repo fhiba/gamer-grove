@@ -6,6 +6,8 @@ import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
 import ar.edu.itba.paw.exceptions.NoSuchPostException;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
+import ar.edu.itba.paw.models.pagination.PaginationRequest;
 import ar.edu.itba.paw.services.*;
 import ar.edu.itba.paw.services.CommentService;
 import ar.edu.itba.paw.services.CommunityService;
@@ -23,6 +25,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
 import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 import java.util.Collections;
 import java.util.List;
@@ -109,99 +112,113 @@ public class PostController {
 //        return new ModelAndView("redirect:/home");
 //    }
 
-    @RequestMapping(path = {"/all", "/"}, method = RequestMethod.GET)
-    public ModelAndView getHomePosts(@RequestParam(value = "category", required = false) final String category) {
+    @RequestMapping(path = {"home"}, method = RequestMethod.GET)
+    public ModelAndView getHomePosts(@RequestParam(required = false) Integer pageNumber,@RequestParam(value = "category", required = false) final String category) {
         ModelAndView mav = new ModelAndView("/home");
-        List<Post> posts;
-        User user = null;
         List<Community> communities;
         Boolean isAdmin = false;
         List<String> categories = ps.getUsedCategories();
-        try{
-            user = us.getLoggedUserChecked();
-        }catch (Exception ignored){
+        Optional<User > userOptional = us.getLoggedUser();
+        PaginatedDataWrapper<Post> posts;
+        PaginationRequest paginationRequest = new PaginationRequest();
+        if(Objects.nonNull(pageNumber))
+            paginationRequest.setPageNumber(pageNumber);
 
-        }
-
-        if(user != null) {
+        if(userOptional.isPresent()) {
+            User user = userOptional.get();
             communities = cs.getFollowedCommunities(user);
             isAdmin = us.isUserAdmin(user.getId());
-        }
-        else{
-            communities = cs.getAllCommunitiesNoCat();
-        }
-
-        if (category != null && !category.isEmpty() && !category.equals("all")) {
-            posts = ps.getByCategory(category);
-        } else {
-            posts = ps.getAllPosts();
+            if (Objects.nonNull(category) &&!category.isEmpty() && !category.equals("all")) {
+                try {
+                    posts = ps.getUserFollowedPostsByCategoryPaginated(category,user.getId(),paginationRequest);
+                }catch (IllegalArgumentException e){
+                    mav.addObject("invalidPageNumber",true);
+                    posts = null;
+                }
+            } else {
+                try {
+                    posts = ps.getUserFollowedPostsPaginated(user.getId(),paginationRequest);
+                }catch (IllegalArgumentException e){
+                    mav.addObject("invalidPageNumber",true);
+                    posts = null;
+                }
+            }
+        }else{
+           return new ModelAndView("redirect:/all/");
         }
         mav.addObject("isAdmin",isAdmin);
-        mav.addObject("isLogged", user != null);
+        mav.addObject("isLogged", userOptional.isPresent());
         mav.addObject("posts",posts);
         //TODO: SHOULD BE THE ONES THAT ARE CURRENTLY BEING FOLLOWED BY USER OR A FEW RANDOMLY SELECTED
         mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
         mav.addObject("communities", communities);
-        mav.addObject("news", ps.getByCategory(PostCategories.NEWS.getCategory()));
+        mav.addObject("news", ps.getNewsLimited(5));
         mav.addObject("categories", categories);
-        mav.addObject("isVerified",user != null ? user.isVerified() : false);
+        mav.addObject("isVerified", userOptional.isPresent() && userOptional.get().isVerified());
         mav.addObject("category",category);
         return mav;
     }
 
-    @RequestMapping(path = {"/home"}, method = RequestMethod.GET)
-    public ModelAndView getAllPosts(@RequestParam(value = "category", required = false) final String category) throws NoLoggedUserException {
+
+    @RequestMapping(path = {"/all","/"}, method = RequestMethod.GET)
+    public ModelAndView getAllPosts(@RequestParam(required = false) Integer pageNumber,@RequestParam(value = "category", required = false) final String category) throws NoLoggedUserException {
         ModelAndView mav = new ModelAndView("/home");
-        List<Post> posts = ps.getAllPosts();
+        PaginatedDataWrapper<Post> posts;
         List<Community> communities;
-        User user = null;
         Boolean isAdmin = false;
         List<String> categories = ps.getUsedCategories();
+        PaginationRequest paginationRequest = new PaginationRequest();
+        Optional<User> optionalUser = us.getLoggedUser();
+        if(Objects.nonNull(pageNumber))
+            paginationRequest.setPageNumber(pageNumber);
 
-        //TODO:HACER ESTO MAS LINDO
-        try{
-            user = us.getLoggedUserChecked();
-            System.out.println(user.getUsername());
-        }catch (Exception ignored){
 
-        }
-        boolean all = ((category != null) && (!category.isEmpty()) && (!category.equals("all")));
-
-        if(user != null) {
+        if(optionalUser.isPresent()) {
+            User user = optionalUser.get();
             communities = cs.getFollowedCommunities(user);
             isAdmin = us.isUserAdmin(user.getId());
-            if (all) {
-                posts = ps.getMyFollowedPostsByCategory(category,user);
-            } else {
-                posts = ps.getMyFollowedPosts(user);
+        }else{
+            communities = cs.getAllCommunitiesNoCat();
+        }
+        if (Objects.nonNull(category) && !category.isEmpty() && !category.equals("all")) {
+            try {
+                posts = ps.getPostsByCategoryPaginated(category,paginationRequest);
+            }catch (IllegalArgumentException e){
+                mav.addObject("invalidPageNumber",true);
+                posts = null;
+            }
+        } else {
+            try {
+                posts = ps.getAllPostsPaginated(paginationRequest);
+            }catch (IllegalArgumentException e){
+                mav.addObject("invalidPageNumber",true);
+                posts = null;
             }
         }
-        else{
-            communities = cs.getAllCommunitiesNoCat();
-            if (all)
-                posts = ps.getByCategory(category);
-        }
         mav.addObject("isAdmin",isAdmin);
-        mav.addObject("isLogged", user != null);
+        mav.addObject("isLogged", optionalUser.isPresent());
         mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
         mav.addObject("posts",posts);
         mav.addObject("communities", communities);
-        mav.addObject("news", ps.getByCategory(PostCategories.NEWS.getCategory()));
+        mav.addObject("news", ps.getNewsLimited(5));
         mav.addObject("categories", categories);
-        mav.addObject("isVerified",user != null ? user.isVerified() : false);
+        mav.addObject("isVerified",optionalUser.isPresent() && optionalUser.get().isVerified());
         mav.addObject("category",category);
         return mav;
     }
 
     @RequestMapping(path = "/post/{postId}", method = RequestMethod.GET)
-    public ModelAndView singlePost(@PathVariable("postId") final long postId, @ModelAttribute("newPostGroovyForm") final NewPostGroovyForm newPostGroovyForm, @ModelAttribute("newCommentForm") final NewCommentForm newCommentForm, @ModelAttribute("newCommentGroovyForm") final NewCommentGroovyForm newCommentGroovyForm, @ModelAttribute("postDeleteForm") final PostDeleteForm postDeleteForm, @ModelAttribute("commentDeleteForm") final CommentDeleteForm commentDeleteForm,@ModelAttribute("followCommunityForm") final FollowCommunityForm followCommunityForm) throws UserNotFoundException, NoSuchPostException, NoSuchCommunityException, NoLoggedUserException {
+    public ModelAndView singlePost(@PathVariable("postId") final long postId,@RequestParam(required = false) Integer pageNumber, @ModelAttribute("newPostGroovyForm") final NewPostGroovyForm newPostGroovyForm, @ModelAttribute("newCommentForm") final NewCommentForm newCommentForm, @ModelAttribute("newCommentGroovyForm") final NewCommentGroovyForm newCommentGroovyForm, @ModelAttribute("postDeleteForm") final PostDeleteForm postDeleteForm, @ModelAttribute("commentDeleteForm") final CommentDeleteForm commentDeleteForm,@ModelAttribute("followCommunityForm") final FollowCommunityForm followCommunityForm) throws UserNotFoundException, NoSuchPostException, NoSuchCommunityException, NoLoggedUserException {
         ModelAndView mav = new ModelAndView("/post/post");
         mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
         Post post;
         Community community;
         List<Community> communities;
         User user = null;
-        List<Comment> comments = commentService.getPostComments((postId));
+        PaginationRequest paginationRequest = new PaginationRequest(5);
+        if(!Objects.isNull(pageNumber))
+            paginationRequest.setPageNumber(pageNumber);
+
         List<Comment> grooviedComments = Collections.emptyList();
         List<Comment> negativeGrooviedComments = Collections.emptyList();
         Boolean isFollowing = false;
@@ -220,6 +237,13 @@ public class PostController {
         } catch (NoSuchPostException e) {
             LOGGER.debug("No such post", e);
             throw e;
+        }
+        PaginatedDataWrapper<Comment> comments;
+        try {
+            comments = commentService.getPostCommentsPaginated(postId,paginationRequest);
+        }catch (IllegalArgumentException e){
+            mav.addObject("invalidPageNumber",true);
+            comments = null;
         }
         if(user != null) {
             communities = cs.getFollowedCommunities(user);

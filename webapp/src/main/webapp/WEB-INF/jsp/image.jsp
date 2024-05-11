@@ -17,7 +17,7 @@
 
         <tr>
             <td><spring:message code="UploadImage.Select" /></td>
-            <td><form:input type="file" name="file" path="file"/></td>
+            <td><form:input type="file" accept="image/*" name="file" path="file"/></td>
         </tr>
 
         <tr>

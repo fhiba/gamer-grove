@@ -79,7 +79,7 @@ public class PostServiceTest {
         // 	2.	"ejercito"	la	class	under	test
 
         postService.createPost(TITLE, BODY, COMMUNITY_NAME, CATEGORY,null);
-
+        
     }
 
     @Test

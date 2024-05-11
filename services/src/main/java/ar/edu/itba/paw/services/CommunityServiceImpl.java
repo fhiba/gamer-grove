@@ -3,7 +3,10 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
 import ar.edu.itba.paw.models.Community;
+import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
+import ar.edu.itba.paw.models.pagination.PaginationRequest;
 import ar.edu.itba.paw.persistance.CommunityDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,13 +75,30 @@ public class CommunityServiceImpl implements CommunityService{
 
 
     @Override
-    public List<Community> find(final String searchTerms, List<String> categories) {
-
+    public PaginatedDataWrapper<Community> find(PaginationRequest request, final String searchTerms, List<String> categories) {
+               if( request.getPageSize() < 1){
+            throw new IllegalArgumentException("Invalid Page size");
+        }
+        if(request.getPageNumber() <1 ){
+            throw new IllegalArgumentException("Invalid Page number");
+        }
         List<String> newList = null;
         if(!categories.isEmpty() && !categories.getFirst().isEmpty()) {
             newList = categories.stream().map(category -> category.replaceAll("([%_\\\\])", "\\\\$1")).toList();
         }
-        return communityDao.find(searchTerms.replaceAll("([%_\\\\])", "\\\\$1"), newList == null? List.of(): newList);
+        int totalCount = communityDao.findCount(searchTerms.replaceAll("([%_\\\\])", "\\\\$1"), newList == null? List.of(): newList);
+        if(request.getPageNumber() <1 ){
+            throw new IllegalArgumentException("Invalid Page number");
+        }
+
+        int offset = (request.getPageNumber() - 1) * request.getPageSize();
+
+        List<Community> data = communityDao.find(request.getPageSize(),offset,searchTerms.replaceAll("([%_\\\\])", "\\\\$1"), newList == null? List.of(): newList);
+        PaginatedDataWrapper<Community> dataWrapper = new PaginatedDataWrapper<>(data, request.getPageNumber(), totalCount, request.getPageSize());
+        if(request.getPageNumber() > dataWrapper.getTotalPages()){
+            throw new IllegalArgumentException("Invalid Page number");
+        }
+        return dataWrapper;
     }
 
     @Transactional
@@ -170,4 +190,6 @@ public class CommunityServiceImpl implements CommunityService{
             return Collections.emptyList();
         return followedCommunities;
     }
+
+
 }

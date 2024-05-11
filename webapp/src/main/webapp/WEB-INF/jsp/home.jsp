@@ -18,64 +18,10 @@
 <div class="container-fluid">
     <div class="row  min-vh-100">
         <%--COMMUNITY LIST--%>
-        <div class="col-2 sidebar">
-            <div class="card sidebar-card m-auto">
-                <div class="card-body">
-                    <c:if test="${isAdmin}">
-                        <div class="row-cols-2">
-                            <c:url value="/addMod" var="addModUrl"/>
-                            <a href="${addModUrl}">
-                                <button class="btn btn-outline-primary">Add Mod</button>
-                            </a>
-                            <c:url value="/new-community" var="newCommunityUrl"/>
-                            <a href="${newCommunityUrl}">
-                                <button class="ms-2 btn btn-outline-success">Add Community</button>
-                            </a>
-                        </div>
-                    </c:if>
-                    <hr>
-                    <c:url value="/home" var="homeUrl"/>
-                    <a href="${homeUrl}" class="text-decoration-none card-title text-light mb-3">
-                        <h5><spring:message code="Navbar.Home"/></h5>
-                    </a>
-                    <hr>
-
-                    <c:url value="/all" var="allUrl"/>
-                    <a href="${allUrl}" class="text-decoration-none card-title text-light mb-3">
-                        <h5><spring:message code="All"/></h5>
-                    </a>
-                    <hr>
-                    <c:if test="${isLogged == null}">
-                        <div class="h5 card-title text-light mb-3">Communities</div>
-                    </c:if>
-                    <c:if test="${isLogged != null}">
-                        <div class="card-title text-light mb-3">My Communities</div>
-                    </c:if>
-                    <c:forEach var="community" items="${communities}">
-                        <c:url value="/community/${community.encodedName}" var="communityUrl"/>
-                        <a href="${communityUrl}" class="text-light text-decoration-none">
-                            <div class="card-body-community d-flex align-items-center text-decoration-none mb-3">
-                                <div class="d-flex justify-content-start">
-                                    <c:if test="${community.portrait_id == 0}">
-                                        <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
-                                             class="very-small-profile-pic mb-1" alt="Profile Picture">
-                                    </c:if>
-                                    <c:if test="${community.portrait_id != 0}">
-                                        <img src="<c:url value='/image/${community.portrait_id}'/>"
-                                             class="very-small-profile-pic mb-1" alt="Profile Picture">
-                                    </c:if>
-                                </div>
-                                <div class="text-decoration-none">
-                                    <h5 class="fw-semibold card-subtitle text-break">
-                                        /<c:out value="${community.name}" escapeXml="true"/>
-                                    </h5>
-                                </div>
-                            </div>
-                        </a>
-                    </c:forEach>
-                </div>
-            </div>
-        </div>
+        <c:set var="isAdmin" value="${isAdmin}" scope="request"/>
+        <c:set var="isLogged" value="${isLogged}" scope="request"/>
+        <c:set var="communities" value="${communities}" scope="request"/>
+        <jsp:include page="/WEB-INF/jsp/components/sidebar.jsp"/>
         <div class="col-1"></div>
         <%--LISTA DE POSTS--%>
         <div class="col-5">
@@ -101,14 +47,14 @@
                         <a href="${newPostUrl}" type="button" class="btn  btn-primary  h-25 me-2 mt-1"><spring:message
                                 code="Post.Create"/></a>
                     </div>
-                    <c:if test="${posts.size() == 0}">
+                    <c:if test="${posts.data.size() == 0}">
                         <c:url var="allUrl" value="/all"/>
                         <div class="align-items-center text-center justify-content-center w-100">
                                 <h6 class="card-title"><spring:message code="Home.NoPosts"/> <a href="${allUrl}"><spring:message code="Home.GoAll"/></a></h6>
 
                         </div>
                     </c:if>
-                    <c:forEach var="post" items="${posts}">
+                    <c:forEach var="post" items="${posts.data}">
                         <c:url value="/post/${post.id}" var="postUrl"/>
                         <a href="${postUrl}" class="card-link text-decoration-none">
                             <div class="card mb-3">
@@ -153,6 +99,16 @@
                             </div>
                         </a>
                     </c:forEach>
+                    <div class="d-flex justify-content-center align-items-center">
+                        <c:if test="${empty posts}">
+                            <span class="badge bg-danger">Invalid page number</span>
+                        </c:if>
+                        <c:if test="${not empty posts}">
+                            <c:set var="paginatedDataWrapper" value="${posts}" scope="request"/>
+                            <c:set var="pageNumberName" value="pageNumber" scope="request"/>
+                            <jsp:include page="/WEB-INF/jsp/components/paginationFooter.jsp"/>
+                        </c:if>
+                    </div>
                 </div>
             </div>
         </div>

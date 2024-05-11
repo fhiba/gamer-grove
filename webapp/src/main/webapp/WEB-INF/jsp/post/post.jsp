@@ -18,62 +18,10 @@
 <div class="container-fluid">
     <div class="row min-vh-100">
         <%--COMMUNITY LIST--%>
-        <div class="col-2 sidebar">
-            <div class="card sidebar-card m-auto">
-                <div class="card-body">
-                    <c:if test="${isAdmin}">
-                        <div class="row-cols-2">
-                            <c:url value="/addMod" var="addModUrl"/>
-                            <a href="${addModUrl}">
-                                <button class="btn btn-outline-primary"><spring:message code="Mod.Add"/></button>
-                            </a>
-                            <c:url value="/new-community" var="newCommunityUrl"/>
-                            <a href="${newCommunityUrl}">
-                                <button class="btn btn-outline-success"><spring:message code="Community.Add"/></button>
-                            </a>
-                        </div>
-                    </c:if>
-                    <hr>
-                    <c:url value="/home" var="homeUrl"/>
-                    <a href="${homeUrl}" class="text-decoration-none card-title text-light mb-3">
-                        <h5><spring:message code="Navbar.Home"/></h5>
-                    </a>
-                    <hr>
-
-                    <c:url value="/all" var="allUrl"/>
-                    <a href="${allUrl}" class="text-decoration-none card-title text-light mb-3">
-                        <h5><spring:message code="All"/></h5>
-                    </a>
-                    <hr>
-                    <c:if test="${isLogged == null}">
-                        <div class="h5 card-title text-light mb-3"><spring:message code="Communities.Title"/></div>
-                    </c:if>
-                    <c:if test="${isLogged != null}">
-                        <div class="card-title text-light mb-3"><spring:message code="Communities.Logged"/></div>
-                    </c:if>
-                    <c:forEach var="community" items="${communities}">
-                        <c:url value="/community/${community.name}" var="communityUrl"/>
-                        <a href="${communityUrl}" class="text-light text-decoration-none">
-                            <div class="card-body-community d-flex align-items-center text-decoration-none mb-3">
-                                <c:if test="${community.portrait_id == 0}">
-                                    <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
-                                         class="very-small-profile-pic mb-1" alt="Profile Picture">
-                                </c:if>
-                                <c:if test="${community.portrait_id != 0}">
-                                    <img src="<c:url value='/image/${community.portrait_id}'/>"
-                                         class="very-small-profile-pic mb-1" alt="Profile Picture">
-                                </c:if>
-                                <div class="text-decoration-none">
-                                    <h5 class="fw-semibold card-subtitle ">
-                                        /<c:out value="${community.name}" escapeXml="true"/>
-                                    </h5>
-                                </div>
-                            </div>
-                        </a>
-                    </c:forEach>
-                </div>
-            </div>
-        </div>
+        <c:set var="isAdmin" value="${isAdmin}" scope="request"/>
+        <c:set var="isLogged" value="${isLogged}" scope="request"/>
+        <c:set var="communities" value="${communities}" scope="request"/>
+        <jsp:include page="/WEB-INF/jsp/components/sidebar.jsp"/>
         <div class="col-1">
         </div>
         <%--POST DATA--%>
@@ -215,7 +163,7 @@
                     </div>
 
                     <ul class="list-group">
-                        <c:forEach var="comment" items="${comments}">
+                        <c:forEach var="comment" items="${comments.data}">
                             <c:if test="${!comment.deleted}">
                                 <li class="list-group-item d-flex justify-content-between align-items-start bg-body-secondary">
                                         <%--suppress CheckImageSize --%>
@@ -292,6 +240,16 @@
                                 </li>
                             </c:if>
                         </c:forEach>
+                        <div class="d-flex justify-content-center align-items-center">
+                            <c:if test="${not empty invalidPageNumber && not empty comments}">
+                                <span class="badge bg-danger">Invalid page number</span>
+                            </c:if>
+                            <c:if test="${empty invalidPageNumber && not empty comments}">
+                                <c:set var="paginatedDataWrapper" value="${comments}" scope="request"/>
+                                <c:set var="pageNumberName" value="pageNumber" scope="request"/>
+                                <jsp:include page="/WEB-INF/jsp/components/paginationFooter.jsp"/>
+                            </c:if>
+                        </div>
                     </ul>
                 </div>
             </div>

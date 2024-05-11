@@ -40,4 +40,32 @@ public interface PostDao {
     List<Post> findPostsLikedByUser(long id);
 
     List<String> getUsedCategories();
+
+    int getTotalPostCount();
+
+    List<Post> getAllPostsPaginated(int pageSize, int offset);
+
+    int getTotalPostByCategoryCount(String category);
+
+    List<Post> getAllPostsByCategoryPaginated(String category, int pageSize, int offset);
+
+    int getTotalPostByCommunityCount(String communityName);
+
+    List<Post> getPostsByCommunityPaginated(String communityName, int pageSize, int offset);
+
+    int getTotaltFollowedPostsByUserCount(long userId);
+
+    List<Post> getFollowedPostsByUserPaginated(long userId, int pageSize, int offset);
+
+    int getTotalUserFollowedPostsByCategoryCount(long userId, String category);
+
+    List<Post> getUserFollowedPostsByCategoryPaginated(long userId, String category, int pageSize, int offset);
+
+    int getTotalUserLikedPostCount(long userId);
+
+    List<Post> getUserLikedPostPaginated(long userId, int pageSize, int offset);
+
+    List<Post> getNewsLimited(int limit);
+
+    List<Post> getPostsByUserPaginated(long id, int pageSize, int offset);
 }

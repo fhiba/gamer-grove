@@ -16,62 +16,11 @@
 <div class="container-fluid">
     <div class="row min-vh-100">
         <%--COMMUNITY LIST--%>
-            <div class="col-2 sidebar">
-                <div class="card sidebar-card m-auto">
-                    <div class="card-body">
-                        <c:if test="${isAdmin}">
-                            <div class="row-cols-2">
-                                <c:url value="/addMod" var="addModUrl"/>
-                                <a href="${addModUrl}">
-                                    <button class="btn btn-outline-primary">Add Mod</button>
-                                </a>
-                                <c:url value="/new-community" var="newCommunityUrl"/>
-                                <a href="${newCommunityUrl}">
-                                    <button class="ms-2 btn btn-outline-success">Add Community</button>
-                                </a>
-                            </div>
-                        </c:if>
-                        <hr>
-                        <c:url value="/home" var="homeUrl"/>
-                        <a href="${homeUrl}" class="text-decoration-none card-title text-light mb-3">
-                            <h5><spring:message code="Navbar.Home"/></h5>
-                        </a>
-                        <hr>
-
-                        <c:url value="/all" var="allUrl"/>
-                        <a href="${allUrl}" class="text-decoration-none card-title text-light mb-3">
-                            <h5><spring:message code="All"/></h5>
-                        </a>
-                        <hr>
-                        <c:if test="${isLogged == null}">
-                            <div class="h5 card-title text-light mb-3"><spring:message code="Communities.Title"/> </div>
-                        </c:if>
-                        <c:if test="${isLogged != null}">
-                            <div class="card-title text-light mb-3"><spring:message code="Communities.Logged"/> </div>
-                        </c:if>
-                        <c:forEach var="community" items="${communities}">
-                            <c:url value="/community/${community.encodedName}" var="communityUrl"/>
-                            <a href="${communityUrl}" class="text-light text-decoration-none">
-                                <div class="card-body-community d-flex align-items-center text-decoration-none mb-3">
-                                    <c:if test="${community.portrait_id == 0}">
-                                        <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
-                                             class="very-small-profile-pic mb-1" alt="Profile Picture">
-                                    </c:if>
-                                    <c:if test="${community.portrait_id != 0}">
-                                        <img src="<c:url value='/image/${community.portrait_id}'/>"
-                                             class="very-small-profile-pic mb-1" alt="Profile Picture">
-                                    </c:if>
-                                    <div class="text-decoration-none">
-                                        <h5 class="fw-semibold card-subtitle ">
-                                            /<c:out value="${community.name}" escapeXml="true"/>
-                                        </h5>
-                                    </div>
-                                </div>
-                            </a>
-                        </c:forEach>
-                    </div>
-                </div>
-            </div>
+            <%--COMMUNITY LIST--%>
+            <c:set var="isAdmin" value="${isAdmin}" scope="request"/>
+            <c:set var="isLogged" value="${isLogged}" scope="request"/>
+            <c:set var="communities" value="${followedCommunities}" scope="request"/>
+            <jsp:include page="/WEB-INF/jsp/components/sidebar.jsp"/>
 
             <div class="col-1">
         </div>
@@ -79,15 +28,15 @@
         <div class="col-6">
             <div class="card border-0 text-decoration-none">
                 <div class="card-body">
-                    <c:if test="${empty communities}">
+                    <c:if test="${empty communitiesPaginated}">
                         <div class="d-flex flex-column align-items-center">
                             <h4 class="fw-semi-bold"><spring:message code="Communities.NoCommunitites"/></h4>
                             <c:url value="/communities" var="showAll"/>
                             <a href="${showAll}" class="btn btn-primary"><spring:message code="Communities.searchAll"/></a>
                         </div>
                     </c:if>
-                    <c:if test="${not empty communities}">
-                        <c:forEach var="community" items="${communities}">
+                    <c:if test="${not empty communitiesPaginated}">
+                        <c:forEach var="community" items="${communitiesPaginated.data}">
                             <c:url value="/community/${community.encodedName}" var="communityUrl"/>
                             <a href="${communityUrl}" class="card-link text-decoration-none">
                                 <div class="card mb-3">
@@ -120,6 +69,16 @@
                                 </div>
                             </a>
                         </c:forEach>
+                        <div class="d-flex justify-content-center align-items-center">
+                            <c:if test="${empty communitiesPaginated}">
+                                <span class="badge bg-danger">Invalid page number</span>
+                            </c:if>
+                            <c:if test="${not empty communitiesPaginated}">
+                                <c:set var="paginatedDataWrapper" value="${communitiesPaginated}" scope="request" />
+                                <c:set var="pageNumberName" value="pageNumber" scope="request"/>
+                                <jsp:include page="/WEB-INF/jsp/components/paginationFooter.jsp"/>
+                            </c:if>
+                        </div>
                     </c:if>
                 </div>
             </div>

@@ -114,4 +114,16 @@ public class CommentDaoJdbc implements CommentDao{
     public int deleteComment(long commentId) {
         return jdbcTemplate.update("UPDATE comment SET deleted = true WHERE id = ?",commentId);
     }
+
+    @Override
+    public List<Comment> getPostCommentsPaginated(long postId, int pageSize, int offset) {
+        String sql = "SELECT * FROM comment JOIN users u on u.id = comment.author_id WHERE post_id = ? ORDER BY comment_date DESC LIMIT ? OFFSET ?";
+        return jdbcTemplate.query(sql, new Object[]{postId,pageSize, offset}, ROW_MAPPER);
+    }
+
+    @Override
+    public int getPostCommentsTotalCount(long postId) {
+        String sql = "SELECT COUNT(*) FROM comment WHERE post_id = ?";
+        return jdbcTemplate.queryForObject(sql,new Object[]{postId}, Integer.class);
+    }
 }

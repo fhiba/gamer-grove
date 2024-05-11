@@ -29,4 +29,10 @@ public interface CommentDao {
     List<Comment> getDownGroovedComments(long postId, long id);
 
     int deleteComment(long commentId);
+
+    int getPostCommentsTotalCount(long postId);
+
+    List<Comment> getPostCommentsPaginated(long postId, int pageSize, int offset);
+
+
 }
