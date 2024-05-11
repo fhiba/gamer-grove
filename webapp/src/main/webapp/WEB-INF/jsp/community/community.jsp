@@ -255,6 +255,10 @@
 </body>
 </html>
 <script>
+    if(document.getElementsByClassName("error").length > 0) {
+        var myModal = new bootstrap.Modal(document.getElementById('createPostModal'))
+        myModal.show()
+    }
     let postBody = document.getElementsByClassName('post-body');
     console.log(postBody.length);
     for (let i = 0; i < postBody.length; i++) {

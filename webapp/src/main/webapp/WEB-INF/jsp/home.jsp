@@ -73,13 +73,14 @@
                             </div>
                         </a>
                     </c:forEach>
+                    <c:url value="/communities" var="communitiesUrl"/>
+
                     <c:if test="${empty communities}">
-                        <c:url value="/communities" var="communitiesUrl"/>
                         <p><spring:message code="Navbar.NoCommunitiesFollowed"/></p>
-                        <a href="${communitiesUrl}" class=" card-title text-light mb-3">
-                            <h5><spring:message code="Navbar.AllCommunities"/></h5>
-                        </a>
                     </c:if>
+                    <a href="${communitiesUrl}" class=" card-title text-light mb-3">
+                        <h5><spring:message code="Navbar.AllCommunities"/></h5>
+                    </a>
                 </div>
             </div>
         </div>
