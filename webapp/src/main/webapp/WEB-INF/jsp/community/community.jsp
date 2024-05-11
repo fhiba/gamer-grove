@@ -159,7 +159,9 @@
                             <i class="fa-solid fa-plus"></i>
                         </button>
                     </div>
-
+                    <c:if test="${empty posts.data}">
+                        <h3 class="text-center mt-5"><spring:message code="Community.NoPost" /> </h3>
+                    </c:if>
                     <c:forEach var="post" items="${posts.data}">
                         <c:url value="/post/${post.id}" var="postUrl"/>
                         <a href="${postUrl}" class="card-link text-decoration-none">

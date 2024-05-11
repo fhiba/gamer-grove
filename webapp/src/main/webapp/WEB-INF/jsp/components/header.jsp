@@ -17,7 +17,7 @@
                 <form class="d-flex align-items-center justify-content-center m-auto w-100 ms-3" role="search"
                       action="${communitySearch}" method="get" id="searchForm">
                     <input class="form-control me-2" type="search" name="searchTerms"
-                           placeholder="Search for communities"
+                           placeholder="<spring:message code="Navbar.SearchCommunity"/>"
                            id="searchTerms"
                            aria-label="Search"
                     <c:if test="${not empty searchTerms}">
