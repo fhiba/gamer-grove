@@ -19,7 +19,7 @@
     <div class="row ">
         <%--COMMUNITY LIST--%>
         <c:set var="isAdmin" value="${isAdmin}" scope="request"/>
-        <c:set var="isLogged" value="${isLogged}" scope="request"/>
+        <c:set var="isLogged" value="${not empty user}" scope="request"/>
         <c:set var="communities" value="${communities}" scope="request"/>
         <jsp:include page="/WEB-INF/jsp/components/sidebar.jsp"/>
         <div class="col-1"></div>
