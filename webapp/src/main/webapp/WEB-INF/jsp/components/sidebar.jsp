@@ -38,10 +38,10 @@
             <hr>
             <jsp:useBean id="isLogged" scope="request" type="java.lang.Boolean"/>
             <c:if test="${!isLogged}">
-                <div class="h5 card-title text-light mb-3">Communities</div>
+                <div class="h5 card-title text-light mb-3"><spring:message code="Communities.Title"/></div>
             </c:if>
             <c:if test="${isLogged}">
-                <div class="card-title text-light mb-3">My Communities</div>
+                <div class="card-title text-light mb-3"><spring:message code="Communities.Logged"/></div>
             </c:if>
 
             <jsp:useBean id="communities" scope="request" type="java.util.List"/>

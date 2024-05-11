@@ -92,35 +92,8 @@
 
         <%--POSTS LIST OF THE COMMUNITY--%>
         <div class="col-2">
-            <div class="card  border-0 bg-transparent">
-                <div class="card-body">
-                    <c:forEach items="${news}" var="otherPost">
-                    <c:url value="/post/${otherPost.id}" var="postUrl"/>
-                    <a href="${postUrl}" class="text-decoration-none text-body-primary">
-                        <div class="card mb-3">
-                            <div class="card-body">
-                                <c:if test="${!otherPost.deleted}">
-                                    <h5 class="card-title card-title other-post-title fw-bold mb-1"><c:out
-                                            value="${otherPost.title}"
-                                            escapeXml="true"/>
-                                    </h5>
-                                    <span class="badge rounded-pill ${otherPost.category} mb-1">${otherPost.category}</span>
-                                    <p class="card-text post-body"><c:out value="${otherPost.body}"
-                                                                          escapeXml="true"/></p>
-                                </c:if>
-                                <c:if test="${otherPost.deleted}">
-                                    <h5 class="card-title
-                                 card-title other-post-title fw-bold mb-1"><spring:message code="Post.Deleted"/>
-                                    </h5>
-                                    <span class="badge rounded-pill ${otherPost.category} mb-1">${otherPost.category}</span>
-                                    <p class="card-text post-body"><spring:message code="Post.Deleted"/></p>
-                                </c:if>
-                            </div>
-                        </div>
-                        </c:forEach>
-                    </a>
-                </div>
-            </div>
+            <c:set var="news" value="${news}" scope="request"/>
+            <jsp:include page="/WEB-INF/jsp/components/newsCard.jsp" />
         </div>
 
     </div>

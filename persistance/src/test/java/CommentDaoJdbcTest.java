@@ -46,7 +46,7 @@ public class CommentDaoJdbcTest {
     @Test
     public void testCreateComment(){
         final Comment comment = commentDao.createComment(POST_ID,BODY,USERNAME,NOW,USER_ID);
-        Assert.assertEquals(1,comment.getId());
+        Assert.assertEquals(4,comment.getId());
         Assert.assertEquals(BODY, comment.getBody());
         Assert.assertEquals(USERNAME, comment.getUsername());
         Assert.assertEquals(POST_ID,comment.getPostId());

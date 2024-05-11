@@ -31,7 +31,7 @@
             </div>
             <c:if test="${not empty pageContext.request.userPrincipal}">
                 <div class="col-3 d-flex justify-content-end align-items-center">
-                    <p class="text-light m-0 me-3">Hi, <c:out value="${pageContext.request.userPrincipal.name}" escapeXml="true" /> </p>
+                    <p class="text-light m-0 me-3"><spring:message code="Hi" />, <c:out value="${pageContext.request.userPrincipal.name}" escapeXml="true" /> </p>
                     <div class="dropdown">
                         <button class="btn btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown"
                                 aria-expanded="false">

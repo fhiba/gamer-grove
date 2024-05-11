@@ -53,7 +53,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
     }
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/css/**","/js/**","/img/**", "favicon.ico"); //Apago SpringSecurity para los assets publicos
+        web.ignoring().antMatchers("/resources/**"); //Apago SpringSecurity para los assets publicos
     }
     @Bean
     public PasswordEncoder passwordEncoder() {

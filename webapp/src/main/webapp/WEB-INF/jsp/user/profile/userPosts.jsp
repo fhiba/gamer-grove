@@ -32,12 +32,12 @@
                             <c:if test="${user.portraid_id == 0}">
 
                                 <img src="${pageContext.request.contextPath}/images/default-avatar-icon.jpg"
-                                     class="w-100 h-100 rounded-1" id="imgFile" alt="Profile Picture">
+                                     class="w-100 h-100 rounded-1 img-com" id="imgFile" alt="Profile Picture">
                             </c:if>
                             <c:if test="${user.portraid_id != 0}">
 
                                 <img src="<c:url value='/image/${user.portraid_id}'/>"
-                                     class="w-100 h-100 rounded-1" id="imgFile" alt="Profile Picture">
+                                     class="w-100 h-100 rounded-1 img-com" id="imgFile" alt="Profile Picture">
                             </c:if>
 
                         </div>
@@ -78,6 +78,16 @@
                                             path="file" class="form-control w-50" accept="image/*" type="file"/>
                                     <p class="mt-3 mb-auto"><form:errors path="file" cssStyle="color: red"
                                                                          cssClass="error"/></p>
+                                    <div class="w-25">
+                                        <label class="form-label fw-semibold">Language</label>
+                                        <form:select style="" class="form-select" required="true" path="locale">
+                                            <form:option selected="true" hidden="true" value="${user.locale}"> <c:out
+                                                    value="${user.locale}" escapeXml="true"/> </form:option>
+                                            <form:option value="es">es</form:option>
+                                            <form:option value="en">en</form:option>
+                                        </form:select>
+                                        <form:errors path="locale" cssStyle="color: red" cssClass="error"/>
+                                    </div>
                                     <button type="submit" class="btn btn-primary mt-3"><spring:message
                                             code="Update"/></button>
                                     <form:errors cssStyle="color: red" cssClass="error"/>
