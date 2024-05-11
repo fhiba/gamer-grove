@@ -16,7 +16,7 @@
 <div class="container-fluid h-100">
     <div class="row mt-4 justify-content-center">
         <div class="col d-flex justify-content-center">
-            <div class="card mb-4 w-25">
+            <div class="card mb-4 w-25 background-of-card">
                 <div class="card-body text-center">
                     <h2 class="fw-bold mb-2"><spring:message code="Register.Title"/></h2>
                     <c:url var="registerUrl" value="/register"/>
