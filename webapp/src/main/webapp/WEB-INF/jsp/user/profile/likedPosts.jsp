@@ -18,58 +18,10 @@
 <div class="container-fluid min-vh-100">
     <div class="row ">
         <%--COMMUNITY LIST--%>
-        <div class="col-2 sidebar">
-            <div class="card sidebar-card m-auto">
-                <div class="card-body">
-                    <c:if test="${isAdmin}">
-                        <div class="row-cols-2">
-                            <c:url value="/addMod" var="addModUrl"/>
-                            <a href="${addModUrl}">
-                                <button class="btn btn-outline-primary"><spring:message  code="Mod.Add"/></button>
-                            </a>
-                            <c:url value="/new-community" var="newCommunityUrl"/>
-                            <a href="${newCommunityUrl}">
-                                <button class="btn btn-outline-success"><spring:message code="Community.Add"/></button>
-                            </a>
-                        </div>
-                    </c:if>
-                    <hr>
-                    <c:url value="/home" var="homeUrl"/>
-                    <a href="${homeUrl}" class="text-decoration-none card-title text-light mb-3">
-                        <h5><spring:message code="Navbar.Home"/></h5>
-                    </a>
-                    <hr>
-
-                    <c:url value="/all" var="allUrl"/>
-                    <a href="${allUrl}" class="text-decoration-none card-title text-light mb-3">
-                        <h5><spring:message code="All"/></h5>
-                    </a>
-                    <hr>
-
-                    <div class="h5 card-title text-light mb-3"><spring:message code="Communities.Title"/></div>
-                    <c:forEach var="community" items="${communities}">
-                        <c:url value="/community/${community.name}" var="communityUrl"/>
-                        <a href="${communityUrl}" class="text-light text-decoration-none">
-                            <div class="card-body-community d-flex align-items-center text-decoration-none mb-3">
-                                <c:if test="${community.portrait_id == 0}">
-                                    <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
-                                         class="very-small-profile-pic mb-1" alt="Profile Picture">
-                                </c:if>
-                                <c:if test="${community.portrait_id != 0}">
-                                    <img src="<c:url value='/image/${community.portrait_id}'/>"
-                                         class="very-small-profile-pic mb-1" alt="Profile Picture">
-                                </c:if>
-                                <div class="text-decoration-none">
-                                    <h5 class="fw-semibold card-subtitle ">
-                                        /<c:out value="${community.name}" escapeXml="true"/>
-                                    </h5>
-                                </div>
-                            </div>
-                        </a>
-                    </c:forEach>
-                </div>
-            </div>
-        </div>
+        <c:set var="isAdmin" value="${isAdmin}" scope="request"/>
+        <c:set var="isLogged" value="${isLogged}" scope="request"/>
+        <c:set var="communities" value="${communities}" scope="request"/>
+        <jsp:include page="/WEB-INF/jsp/components/sidebar.jsp"/>
         <div class="col-1"></div>
         <%--PROFILE--%>
         <div class="col-8 justify-content-center">
@@ -79,13 +31,13 @@
                         <div class="col-3">
                             <c:if test="${user.portraid_id == 0}">
 
-                                <img  src="${pageContext.request.contextPath}/images/default-avatar-icon.jpg"
-                                      class="w-100 h-100 rounded-1" id="imgFile" alt="Profile Picture">
+                                <img src="${pageContext.request.contextPath}/images/default-avatar-icon.jpg"
+                                     class="w-100 h-100 rounded-1" id="imgFile" alt="Profile Picture">
                             </c:if>
                             <c:if test="${user.portraid_id != 0}">
 
-                                <img  src="<c:url value='/image/${user.portraid_id}'/>"
-                                      class="w-100 h-100 rounded-1" id="imgFile" alt="Profile Picture">
+                                <img src="<c:url value='/image/${user.portraid_id}'/>"
+                                     class="w-100 h-100 rounded-1" id="imgFile" alt="Profile Picture">
                             </c:if>
 
                         </div>
@@ -104,11 +56,14 @@
                                             code="Login.Username"/></label>
                                     <p><c:out value="${user.username}" escapeXml="true"/></p>
                                 </div>
-                                <c:if test="${!user.isVerified()}" >
+                                <c:if test="${!user.isVerified()}">
                                     <div class="ms-5">
                                         <c:url value="auth/resend-verification" var="resendUrl"/>
                                         <spring:message code="VerifyAccount.Verify"/>
-                                        <a href="${resendUrl}"><button type="button" class="p-0 btn btn-link"><spring:message code="email.validateAccount.action"/></button></a>
+                                        <a href="${resendUrl}">
+                                            <button type="button" class="p-0 btn btn-link"><spring:message
+                                                    code="email.validateAccount.action"/></button>
+                                        </a>
                                     </div>
                                 </c:if>
                             </div>
@@ -118,7 +73,9 @@
                                            modelAttribute="userPfpForm">
                                     <label class="form-label fw-semibold"><spring:message
                                             code="Profile.UpdateProfilePicture"/></label>
-                                    <form:input onchange="document.getElementById('imgFile').src = window.URL.createObjectURL(this.files[0])" path="file" class="form-control w-50"  type="file" accept="image/*"/>
+                                    <form:input
+                                            onchange="document.getElementById('imgFile').src = window.URL.createObjectURL(this.files[0])"
+                                            path="file" class="form-control w-50" type="file" accept="image/*"/>
                                     <p class="mt-3 mb-auto"><form:errors path="file" cssStyle="color: red"
                                                                          cssClass="error"/></p>
                                     <button type="submit" class="btn btn-primary mt-3"><spring:message
@@ -131,11 +88,12 @@
                     </div>
                     <ul class="nav nav-tabs">
                         <li class="nav-item">
-                            <c:url var="userPostsUrl" value="/profile/userPosts" />
-                            <a class="nav-link" aria-current="page" href="${userPostsUrl}"><spring:message code="Profile.UserPosts"/></a>
+                            <c:url var="userPostsUrl" value="/profile/userPosts"/>
+                            <a class="nav-link" aria-current="page" href="${userPostsUrl}"><spring:message
+                                    code="Profile.UserPosts"/></a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active" ><spring:message code="Profile.LikedPost"/></a>
+                            <a class="nav-link active"><spring:message code="Profile.LikedPost"/></a>
                         </li>
                     </ul>
                     <c:if test="${empty posts.data}">
@@ -171,7 +129,7 @@
                             <span class="badge bg-danger">Invalid page number</span>
                         </c:if>
                         <c:if test="${not empty posts}">
-                            <c:set var="paginatedDataWrapper" value="${posts}" scope="request" />
+                            <c:set var="paginatedDataWrapper" value="${posts}" scope="request"/>
                             <c:set var="pageNumberName" value="pageNumber" scope="request"/>
                             <jsp:include page="/WEB-INF/jsp/components/paginationFooter.jsp"/>
                         </c:if>

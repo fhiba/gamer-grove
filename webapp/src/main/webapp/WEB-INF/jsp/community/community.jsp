@@ -20,7 +20,8 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <c:url var="postUrl" value="/community/${community.name}"/>
-            <form:form action="${postUrl}" method="post" modelAttribute="newPostForm" id="postForm" enctype="multipart/form-data">
+            <form:form action="${postUrl}" method="post" modelAttribute="newPostForm" id="postForm"
+                       enctype="multipart/form-data">
                 <div class="modal-header">
                     <h5 class="modal-title" id="createPostModalLabel"><spring:message code="Post.Create"/></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -55,7 +56,8 @@
                             <spring:message code="Post.Image"/>
                             <div class="input-group mb-3 mt-2">
                                 <label class="input-group-text" for="files"><i class="fa-solid fa-file"></i></label>
-                                <form:input type="file" accept="image/*" class="form-control" name="files" path="files" multiple="true"/>
+                                <form:input type="file" accept="image/*" class="form-control" name="files" path="files"
+                                            multiple="true"/>
                             </div>
                             <div id="photo-upload__preview" class="upload-preview"></div>
                             <form:errors path="files" cssStyle="color: red"/>
@@ -75,64 +77,11 @@
 <div class=" container-fluid">
     <div class="row  min-vh-100">
         <%--COMMUNITY LIST--%>
-            <div class="col-2 sidebar">
-                <div class="card sidebar-card m-auto">
-                    <div class="card-body">
-                        <c:if test="${isAdmin}">
-                            <div class="row-cols-2">
-                                <c:url value="/addMod" var="addModUrl"/>
-                                <a href="${addModUrl}">
-                                    <button class="btn btn-outline-primary">Add Mod</button>
-                                </a>
-                                <c:url value="/new-community" var="newCommunityUrl"/>
-                                <a href="${newCommunityUrl}">
-                                    <button class="ms-2 btn btn-outline-success">Add Community</button>
-                                </a>
-                            </div>
-                        </c:if>
-                        <hr>
-                        <c:url value="/home" var="homeUrl"/>
-                        <a href="${homeUrl}" class="text-decoration-none card-title text-light mb-3">
-                            <h5><spring:message code="Navbar.Home"/></h5>
-                        </a>
-                        <hr>
-
-                        <c:url value="/all" var="allUrl"/>
-                        <a href="${allUrl}" class="text-decoration-none card-title text-light mb-3">
-                            <h5><spring:message code="All"/></h5>
-                        </a>
-                        <hr>
-                        <c:if test="${isLogged == null}">
-                            <div class="h5 card-title text-light mb-3">Communities</div>
-                        </c:if>
-                        <c:if test="${isLogged != null}">
-                            <div class="card-title text-light mb-3">My Communities</div>
-                        </c:if>
-                        <c:forEach var="community" items="${communities}">
-                            <c:url value="/community/${community.name}" var="communityUrl"/>
-                            <a href="${communityUrl}" class="text-light text-decoration-none">
-                                <div class="card-body-community d-flex align-items-center text-decoration-none mb-3">
-                                    <c:if test="${community.portrait_id == 0}">
-                                        <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
-                                             class="very-small-profile-pic mb-1" alt="Profile Picture">
-                                    </c:if>
-                                    <c:if test="${community.portrait_id != 0}">
-                                        <img src="<c:url value='/image/${community.portrait_id}'/>"
-                                             class="very-small-profile-pic mb-1" alt="Profile Picture">
-                                    </c:if>
-                                    <div class="text-decoration-none">
-                                        <h5 class="fw-semibold card-subtitle ">
-                                            /<c:out value="${community.name}" escapeXml="true"/>
-                                        </h5>
-                                    </div>
-                                </div>
-                            </a>
-                        </c:forEach>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-1">
+        <c:set var="isAdmin" value="${isAdmin}" scope="request"/>
+        <c:set var="isLogged" value="${isLogged}" scope="request"/>
+        <c:set var="communities" value="${communities}" scope="request"/>
+        <jsp:include page="/WEB-INF/jsp/components/sidebar.jsp"/>
+        <div class="col-1">
         </div>
         <div class="col-6 mt-5">
             <div class="card border-0">
@@ -179,19 +128,20 @@
                             </c:forEach>
                             <div class="accordion accordion-flush justify-content-end">
 
-                                    <h2 class="accordion-header justify-content-end">
-                                        <button class="expand-btn" type="button"
-                                                data-bs-toggle="collapse" data-bs-target="#flush-collapseOne"
-                                                aria-expanded="false" aria-controls="flush-collapseOne"><i class="fa-solid fa-caret-down expand-btn"></i>
-                                        </button>
-                                    </h2>
-                                    <div id="flush-collapseOne" class="accordion-collapse collapse"
-                                         data-bs-parent="#accordionFlushExample">
-                                        <h6 class="fw-bold">Developer: ${community.developer}</h6>
-                                        <h6 class="fw-bold">Publisher: ${community.publisher}</h6>
-<%--                                        <h6 class="fw-bold">Release Date: ${community.releaseDate}</h6>--%>
+                                <h2 class="accordion-header justify-content-end">
+                                    <button class="expand-btn" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#flush-collapseOne"
+                                            aria-expanded="false" aria-controls="flush-collapseOne"><i
+                                            class="fa-solid fa-caret-down expand-btn"></i>
+                                    </button>
+                                </h2>
+                                <div id="flush-collapseOne" class="accordion-collapse collapse"
+                                     data-bs-parent="#accordionFlushExample">
+                                    <h6 class="fw-bold">Developer: ${community.developer}</h6>
+                                    <h6 class="fw-bold">Publisher: ${community.publisher}</h6>
+                                    <%--                                        <h6 class="fw-bold">Release Date: ${community.releaseDate}</h6>--%>
 
-                                    </div>
+                                </div>
 
                             </div>
                             <h5 class="card-subtitle text-secondary mt-3 mb-1"><c:out value="${community.description}"
@@ -240,7 +190,7 @@
                             <span class="badge bg-danger">Invalid page number</span>
                         </c:if>
                         <c:if test="${not empty posts}">
-                            <c:set var="paginatedDataWrapper" value="${posts}" scope="request" />
+                            <c:set var="paginatedDataWrapper" value="${posts}" scope="request"/>
                             <c:set var="pageNumberName" value="pageNumber" scope="request"/>
                             <jsp:include page="/WEB-INF/jsp/components/paginationFooter.jsp"/>
                         </c:if>
@@ -255,7 +205,7 @@
 </body>
 </html>
 <script>
-    if(document.getElementsByClassName("error").length > 0) {
+    if (document.getElementsByClassName("error").length > 0) {
         var myModal = new bootstrap.Modal(document.getElementById('createPostModal'))
         myModal.show()
     }
@@ -286,8 +236,8 @@
             removeButton.setAttribute('class', 'btn-close delete');
             removeButton.classList.add('delete');
             removeButton.dataset.filename = selectedFiles[i].name;
-                // removeButton.innerHTML = '<span>&times;</span>'
-                imageContainer.appendChild(elem);
+            // removeButton.innerHTML = '<span>&times;</span>'
+            imageContainer.appendChild(elem);
             imageContainer.appendChild(removeButton);
             elemContainer.appendChild(imageContainer);
         }

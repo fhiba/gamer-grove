@@ -18,72 +18,10 @@
 <div class="container-fluid">
     <div class="row  min-vh-100">
         <%--COMMUNITY LIST--%>
-        <div class="col-2 sidebar">
-            <div class="card sidebar-card m-auto">
-                <div class="card-body">
-                    <c:if test="${isAdmin}">
-                        <div class="row-cols-2">
-                            <c:url value="/addMod" var="addModUrl"/>
-                            <a href="${addModUrl}">
-                                <button class="btn btn-outline-primary">Add Mod</button>
-                            </a>
-                            <c:url value="/new-community" var="newCommunityUrl"/>
-                            <a href="${newCommunityUrl}">
-                                <button class="ms-2 btn btn-outline-success">Add Community</button>
-                            </a>
-                        </div>
-                    </c:if>
-                    <hr>
-                    <c:url value="/home" var="homeUrl"/>
-                    <a href="${homeUrl}" class="text-decoration-none card-title text-light mb-3">
-                        <h5><spring:message code="Navbar.Home"/></h5>
-                    </a>
-                    <hr>
-
-                    <c:url value="/all" var="allUrl"/>
-                    <a href="${allUrl}" class="text-decoration-none card-title text-light mb-3">
-                        <h5><spring:message code="All"/></h5>
-                    </a>
-                    <hr>
-                    <c:if test="${isLogged == null}">
-                        <div class="h5 card-title text-light mb-3">Communities</div>
-                    </c:if>
-                    <c:if test="${isLogged != null}">
-                        <div class="card-title text-light mb-3">My Communities</div>
-                    </c:if>
-                    <c:forEach var="community" items="${communities}">
-                        <c:url value="/community/${community.name}" var="communityUrl"/>
-                        <a href="${communityUrl}" class="text-light text-decoration-none">
-                            <div class="card-body-community d-flex align-items-center text-decoration-none mb-3">
-                                <div class="d-flex justify-content-start">
-                                    <c:if test="${community.portrait_id == 0}">
-                                        <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
-                                             class="very-small-profile-pic mb-1" alt="Profile Picture">
-                                    </c:if>
-                                    <c:if test="${community.portrait_id != 0}">
-                                        <img src="<c:url value='/image/${community.portrait_id}'/>"
-                                             class="very-small-profile-pic mb-1" alt="Profile Picture">
-                                    </c:if>
-                                </div>
-                                <div class="text-decoration-none">
-                                    <h5 class="fw-semibold fs-6 card-subtitle text-break">
-                                        /<c:out value="${community.name}" escapeXml="true"/>
-                                    </h5>
-                                </div>
-                            </div>
-                        </a>
-                    </c:forEach>
-                    <c:url value="/communities" var="communitiesUrl"/>
-
-                    <c:if test="${empty communities}">
-                        <p><spring:message code="Navbar.NoCommunitiesFollowed"/></p>
-                    </c:if>
-                    <a href="${communitiesUrl}" class=" fs-6 card-title text-light mb-3">
-                        <p><spring:message code="Navbar.AllCommunities"/></p>
-                    </a>
-                </div>
-            </div>
-        </div>
+        <c:set var="isAdmin" value="${isAdmin}" scope="request"/>
+        <c:set var="isLogged" value="${isLogged}" scope="request"/>
+        <c:set var="communities" value="${communities}" scope="request"/>
+        <jsp:include page="/WEB-INF/jsp/components/sidebar.jsp"/>
         <div class="col-1"></div>
         <%--LISTA DE POSTS--%>
         <div class="col-5">

@@ -17,57 +17,10 @@
 <div class="container-fluid">
     <div class="row min-vh-100">
         <%--COMMUNITY LIST--%>
-        <div class="col-2 sidebar">
-            <div class="card sidebar-card m-auto">
-                <div class="card-body">
-                    <c:if test="${isAdmin}">
-                        <div class="row-cols-2">
-                            <c:url value="/addMod" var="addModUrl"/>
-                            <a href="${addModUrl}">
-                                <button class="btn btn-outline-primary">Add Mod</button>
-                            </a>
-                            <c:url value="/new-community" var="newCommunityUrl"/>
-                            <a href="${newCommunityUrl}">
-                                <button class="ms-2 btn btn-outline-success">Add Community</button>
-                            </a>
-                        </div>
-                    </c:if>
-                    <hr>
-                    <c:url value="/home" var="homeUrl"/>
-                    <a href="${homeUrl}" class="text-decoration-none card-title text-light mb-3">
-                        <h5><spring:message code="Navbar.Home"/></h5>
-                    </a>
-                    <hr>
-
-                    <c:url value="/all" var="allUrl"/>
-                    <a href="${allUrl}" class="text-decoration-none card-title text-light mb-3">
-                        <h5><spring:message code="All"/></h5>
-                    </a>
-                    <hr>
-                    <div class="card-title text-light mb-3">My Communities</div>
-                    <c:forEach var="community" items="${communities}">
-                        <c:url value="/community/${community.name}" var="communityUrl"/>
-                        <a href="${communityUrl}" class="text-light text-decoration-none">
-                            <div class="card-body-community d-flex align-items-center text-decoration-none mb-3">
-                                <c:if test="${community.portrait_id == 0}">
-                                    <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
-                                         class="very-small-profile-pic mb-1" alt="Profile Picture">
-                                </c:if>
-                                <c:if test="${community.portrait_id != 0}">
-                                    <img src="<c:url value='/image/${community.portrait_id}'/>"
-                                         class="very-small-profile-pic mb-1" alt="Profile Picture">
-                                </c:if>
-                                <div class="text-decoration-none">
-                                    <h5 class="fw-semibold card-subtitle ">
-                                        /<c:out value="${community.name}" escapeXml="true"/>
-                                    </h5>
-                                </div>
-                            </div>
-                        </a>
-                    </c:forEach>
-                </div>
-            </div>
-        </div>
+        <c:set var="isAdmin" value="${isAdmin}" scope="request"/>
+        <c:set var="isLogged" value="${isLogged}" scope="request"/>
+        <c:set var="communities" value="${communities}" scope="request"/>
+        <jsp:include page="/WEB-INF/jsp/components/sidebar.jsp"/>
 
         <div class="col-10 d-flex justify-content-center">
             <div class="card border-0 w-100 ms-5">
@@ -105,7 +58,7 @@
                                     <label class="form-label fw-semibold"><spring:message
                                             code="Description"/></label>
                                     <form:input path="description" class="form-control"
-                                                   type="text" value="${community.description}"/>
+                                                type="text" value="${community.description}"/>
                                     <form:errors path="description" cssStyle="color: red" cssClass="error"/>
                                 </div>
                                 <div class="me-5">
@@ -147,7 +100,7 @@
     let selectArray = [];
     let aux = [];
     <c:forEach var="category" items="${community.categories}">
-        aux.push("${category}");
+    aux.push("${category}");
     </c:forEach>
     console.log(aux);
     let addOptionToSelect = (category) => {
@@ -227,22 +180,19 @@
 
 
     let initializeArray = () => {
-    <c:forEach var="category" items="${categories}">
-        if(aux.includes("${category}") === false)
+        <c:forEach var="category" items="${categories}">
+        if (aux.includes("${category}") === false)
             selectArray.push("${category}");
         else
             hiddenArray.push("${category}");
-    </c:forEach>
-    for (category of aux) {
-        createPill(category);
-    }
-    //sort categories alphabetically
-    createSelect();
+        </c:forEach>
+        for (category of aux) {
+            createPill(category);
+        }
+        //sort categories alphabetically
+        createSelect();
     }
     initializeArray();
-
-
-
 
 
     let removeCategory = (category) => {
