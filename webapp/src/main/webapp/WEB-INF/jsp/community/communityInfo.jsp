@@ -91,7 +91,7 @@
                                     code="Profile.UpdateProfilePicture"/></label>
                             <form:input
                                     onchange="document.getElementById('imgFile').src = window.URL.createObjectURL(this.files[0])"
-                                    path="image" class="form-control w-50" type="file"/>
+                                    path="image" class="form-control w-50" type="file" accept="image/*"/>
                             <p class="mt-3 mb-auto"><form:errors path="image" cssStyle="color: red"
                                                                  cssClass="error"/></p>
                             <form:errors cssStyle="color: red" cssClass="error"/>

@@ -118,7 +118,7 @@
                                            modelAttribute="userPfpForm">
                                     <label class="form-label fw-semibold"><spring:message
                                             code="Profile.UpdateProfilePicture"/></label>
-                                    <form:input onchange="document.getElementById('imgFile').src = window.URL.createObjectURL(this.files[0])" path="file" class="form-control w-50" type="file"/>
+                                    <form:input onchange="document.getElementById('imgFile').src = window.URL.createObjectURL(this.files[0])" path="file" class="form-control w-50"  type="file" accept="image/*"/>
                                     <p class="mt-3 mb-auto"><form:errors path="file" cssStyle="color: red"
                                                                          cssClass="error"/></p>
                                     <button type="submit" class="btn btn-primary mt-3"><spring:message

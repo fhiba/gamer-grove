@@ -55,7 +55,7 @@
                             <spring:message code="Post.Image"/>
                             <div class="input-group mb-3 mt-2">
                                 <label class="input-group-text" for="files"><i class="fa-solid fa-file"></i></label>
-                                <form:input type="file" class="form-control" name="files" path="files" multiple="true"/>
+                                <form:input type="file" accept="image/*" class="form-control" name="files" path="files" multiple="true"/>
                             </div>
                             <div id="photo-upload__preview" class="upload-preview"></div>
                             <form:errors path="files" cssStyle="color: red"/>
