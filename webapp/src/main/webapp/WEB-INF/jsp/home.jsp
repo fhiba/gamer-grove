@@ -66,7 +66,7 @@
                                     </c:if>
                                 </div>
                                 <div class="text-decoration-none">
-                                    <h5 class="fw-semibold card-subtitle text-break">
+                                    <h5 class="fw-semibold fs-6 card-subtitle text-break">
                                         /<c:out value="${community.name}" escapeXml="true"/>
                                     </h5>
                                 </div>
@@ -78,8 +78,8 @@
                     <c:if test="${empty communities}">
                         <p><spring:message code="Navbar.NoCommunitiesFollowed"/></p>
                     </c:if>
-                    <a href="${communitiesUrl}" class=" card-title text-light mb-3">
-                        <h5><spring:message code="Navbar.AllCommunities"/></h5>
+                    <a href="${communitiesUrl}" class=" fs-6 card-title text-light mb-3">
+                        <p><spring:message code="Navbar.AllCommunities"/></p>
                     </a>
                 </div>
             </div>
