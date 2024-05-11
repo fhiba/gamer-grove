@@ -152,7 +152,7 @@ public class UserController {
         if(errors.hasErrors()) {
             return getProfile(userPfpForm);
         }
-        fs.uploadUserImage(userPfpForm.getFile());
+        us.updateProfile(userPfpForm.getLocale(),userPfpForm.getFile());
         return new ModelAndView("redirect:/profile");
     }
 

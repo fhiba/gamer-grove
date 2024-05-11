@@ -22,4 +22,6 @@ public interface UserDao {
 
         void updatePassword(Long id, String password);
         void verifyUser(Long id);
+
+        void updateLocale(long id, String locale);
 }

@@ -161,10 +161,12 @@ public class PostController {
         //TODO:HACER ESTO MAS LINDO
         try{
             user = us.getLoggedUserChecked();
+            System.out.println(user.getUsername());
         }catch (Exception ignored){
 
         }
-        boolean all = category != null && !category.isEmpty() && !category.equals("all");
+        boolean all = ((category != null) && (!category.isEmpty()) && (!category.equals("all")));
+
         if(user != null) {
             communities = cs.getFollowedCommunities(user);
             isAdmin = us.isUserAdmin(user.getId());

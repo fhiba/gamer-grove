@@ -11,8 +11,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Transactional(readOnly = true)
@@ -33,6 +35,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private MailingService mailingService;
+
+    @Autowired
+    private FileService fs;
 
     public Optional<User> findById(long id) {
         return userDao.findById(id);
@@ -136,5 +141,14 @@ public class UserServiceImpl implements UserService {
         User loggedUSer = getLoggedUserChecked();
         String token = tokenService.generateValidationToken(loggedUSer.getId());
         mailingService.sendValidationEmail(loggedUSer.getEmail(), loggedUSer.getUsername(), token);
+    }
+
+    @Transactional
+    @Override
+    public void updateProfile(String locale, MultipartFile profilePic) throws NoLoggedUserException {
+        if(!profilePic.isEmpty() && !Objects.isNull(profilePic)) {
+            fs.uploadUserImage(profilePic);
+        }
+        userDao.updateLocale(getLoggedUserChecked().getId(), locale);
     }
 }

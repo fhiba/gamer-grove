@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URLDecoder;
@@ -19,6 +20,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+@Transactional(readOnly = true)
 @Service
 public class PostServiceImpl implements PostService{
 
@@ -46,6 +48,7 @@ public class PostServiceImpl implements PostService{
         return posts;
     }
 
+    @Transactional
     @Override
     public Post createPost(final String title, final String body, final String communityName, final String category, final MultipartFile[] files) throws NoLoggedUserException, NoSuchCommunityException {
         Optional<User> user = userService.getLoggedUser();
@@ -97,6 +100,7 @@ public class PostServiceImpl implements PostService{
         return post.get();
     }
 
+    @Transactional
     @Override
     public void editGrooviness(int grooviness, long postId) throws UserNotFoundException, NoSuchPostException {
         Optional<Post> post = postDao.findById(postId);

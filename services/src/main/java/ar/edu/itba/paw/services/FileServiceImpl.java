@@ -18,6 +18,7 @@ import javax.imageio.IIOException;
 import java.io.IOException;
 import java.util.Optional;
 
+@Transactional(readOnly = true)
 @Service
 public class FileServiceImpl implements FileService{
 

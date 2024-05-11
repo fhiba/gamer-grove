@@ -3,6 +3,7 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchTokenException;
 import ar.edu.itba.paw.models.User;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
 import java.util.List;
@@ -33,4 +34,6 @@ public interface UserService {
     Boolean startResetPassword(String email);
 
     void resendVerification() throws NoLoggedUserException;
+
+    void updateProfile(String locale, MultipartFile profilePic) throws NoLoggedUserException;
 }

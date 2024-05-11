@@ -93,4 +93,9 @@ public class UserDaoJdbc implements UserDao{
     public void verifyUser(Long id) {
         jdbcTemplate.update("UPDATE users SET verified = true WHERE id = ?", id);
     }
+
+    @Override
+    public void updateLocale(long id, String locale) {
+        jdbcTemplate.update("UPDATE users SET locale = ? WHERE id = ?", locale, id);
+    }
 }
