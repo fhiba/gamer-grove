@@ -69,43 +69,43 @@ public class CommunityDaoJdbcTest {
     //Nevertheless, the code is correct, as it works as expected.
     @Test
     public void findWithoutTermsOrCategories() {
-        assertEquals(POPULATED_COMMUNITIES, communityDao.find(null, null).size());
+        assertEquals(POPULATED_COMMUNITIES, communityDao.find(10,0,null, null).size());
     }
 
     //should find two since 2 communities have test in their name
     @Test
     public void findWithNameOnly() {
-        assertEquals(2, communityDao.find(POPULATED_NAME, null).size());
+        assertEquals(2, communityDao.find(10,0,POPULATED_NAME, null).size());
     }
 
     //Should find 1 since only one community has the category Action
     @Test
     public void findActionCategoryOnlyMember() {
-        assertEquals(1, communityDao.find(null, List.of(Category3)).size());
+        assertEquals(1, communityDao.find(10,0,null, List.of(Category3)).size());
     }
 
     //There are 2 members of RPG in populator
     @Test
     public void findRPGCategoryMembers() {
-        assertEquals(2, communityDao.find(null, List.of(Category)).size());
+        assertEquals(2, communityDao.find(10,0,null, List.of(Category)).size());
     }
 
     //Only one community has both RPG and Shooter as categories
     @Test
     public void findRPGAndShooterCategoryMembers() {
-        assertEquals(1, communityDao.find(null, List.of(Category, Category2)).size());
+        assertEquals(1, communityDao.find(10,0,null, List.of(Category, Category2)).size());
     }
 
     //No community has both RPG and Hack and Slash and Shooter as categories
     @Test
     public void findRPGAndShooterAndHackAndSlashCategoryMembers() {
-        assertEquals(0, communityDao.find(null, List.of(Category, Category2, Category4)).size());
+        assertEquals(0, communityDao.find(10,0,null, List.of(Category, Category2, Category4)).size());
     }
 
     //Only first community has RPG as category and name with test in it
     @Test
     public void findRPGCategoryAndNameWithTest() {
-        assertEquals(1, communityDao.find(POPULATED_NAME, List.of(Category)).size());
+        assertEquals(1, communityDao.find(10,0,POPULATED_NAME, List.of(Category)).size());
     }
 
     @Test

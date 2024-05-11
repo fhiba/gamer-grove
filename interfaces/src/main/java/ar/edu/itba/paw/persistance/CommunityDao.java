@@ -16,7 +16,7 @@ public interface CommunityDao {
 
     Optional<Community> findByName(String communityName);
 
-    List<Community> find(String searchTerms, List<String> categories);
+    List<Community> find(int pageSize,int offset,String searchTerms, List<String> categories);
 
     Boolean addCategory(final long id, String category);
 
@@ -36,4 +36,7 @@ public interface CommunityDao {
     List<Community> getAllCommunitiesNoCat();
 
     void editCommunityInfo(String communityName, String description, String publisher, String developer);
+
+    int findCount(String searchTerms, List<String> categories);
+
 }

@@ -110,9 +110,9 @@ public class CommunityDaoJdbc implements CommunityDao {
     }
 
     @Override
-    public List<Community> find(String searchTerms, List<String> categories) {
+    public List<Community> find(int pageSize,int offset,String searchTerms, List<String> categories) {
         QueryBuilder builder = new QueryBuilder().withSearchTerm(searchTerms).withCategories(categories);
-        return builder.build();
+        return builder.buildPaginated(pageSize,offset);
     }
 
 
@@ -139,6 +139,7 @@ public class CommunityDaoJdbc implements CommunityDao {
         private final static String SECONDARY_CATEGORY_CONDITION = " OR cc.category LIKE ?";
         private final static String CATEGORY_END = " GROUP BY cc.community_id HAVING COUNT(cc.community_id) = ?)";
         private final static String END = " GROUP BY community.id, community.name, community.description, community.portrait_id ORDER BY community.name";
+        private final static String PAGINATION = " LIMIT ? OFFSET ?";
         private final List<String> categories = new ArrayList<>();
         private String searchTerm = "";
         private int categoriesCount = 0;
@@ -169,7 +170,7 @@ public class CommunityDaoJdbc implements CommunityDao {
             return this;
         }
 
-        List<Community> build() {
+        List<Community> buildPaginated(int pageSize,int offset) {
             StringBuilder sb = new StringBuilder();
             List<Object> objects = new ArrayList<>();
             sb.append(SELECT);
@@ -187,8 +188,31 @@ public class CommunityDaoJdbc implements CommunityDao {
                 sb.append(CATEGORY_END);
             }
             sb.append(END);
+            objects.add(pageSize);
+            objects.add(offset);
+            sb.append(PAGINATION);
             String query = sb.toString();
+
             return jdbcTemplate.query(query, objects.toArray(), ROW_MAPPER_CATEGORIES);
+        }
+        Integer buildCount() {
+            StringBuilder sb = new StringBuilder();
+            List<Object> objects = new ArrayList<>();
+            sb.append(COUNT_SELECT);
+            sb.append(SEARCH_TERM);
+            long categoriesSize = categories.size();
+            objects.add("%" + searchTerm + "%");
+            if (categoriesCount > 0) {
+                sb.append(CATEGORY);
+                sb.append(CATEGORY_CONDITION);
+                categoriesCount--;
+                sb.append(SECONDARY_CATEGORY_CONDITION.repeat(categoriesCount));
+                objects.addAll(categories);
+                objects.add(categoriesSize);
+                sb.append(CATEGORY_END);
+            }
+            String query = sb.toString();
+            return jdbcTemplate.queryForObject(query, objects.toArray(), Integer.class);
         }
     }
 
@@ -225,6 +249,13 @@ public class CommunityDaoJdbc implements CommunityDao {
     @Override
     public void editCommunityInfo(String communityName, String description, String publisher, String developer) {
         jdbcTemplate.update("UPDATE community SET description = ?, publisher = ?, developer = ? WHERE name = ?",new Object[]{description, publisher, developer, communityName});
+    }
+
+    @Override
+    public int findCount(String searchTerms, List<String> categories) {
+        QueryBuilder builder = new QueryBuilder().withSearchTerm(searchTerms).withCategories(categories);
+        return builder.buildCount();
+
     }
 
 

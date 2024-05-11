@@ -4,6 +4,8 @@ import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
 import ar.edu.itba.paw.models.Community;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
+import ar.edu.itba.paw.models.pagination.PaginationRequest;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
@@ -25,7 +27,7 @@ public interface CommunityService {
 
     List<Community> getFollowedCommunities(User user);
 
-    List<Community> find(final String searchTerms, List<String> categories);
+    PaginatedDataWrapper<Community> find(PaginationRequest request, final String searchTerms, List<String> categories);
 
     void addCategory(final long id, String category) throws NoSuchCommunityException;
 

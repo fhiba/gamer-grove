@@ -44,31 +44,40 @@
                         </a>
                         <hr>
                         <c:if test="${isLogged == null}">
-                            <div class="h5 card-title text-light mb-3"><spring:message code="Communities.Title"/> </div>
+                            <div class="h5 card-title text-light mb-3">Communities</div>
                         </c:if>
                         <c:if test="${isLogged != null}">
-                            <div class="card-title text-light mb-3"><spring:message code="Communities.Logged"/> </div>
+                            <div class="card-title text-light mb-3">My Communities</div>
                         </c:if>
-                        <c:forEach var="community" items="${communities}">
+                        <c:forEach var="community" items="${followedCommunities}">
                             <c:url value="/community/${community.name}" var="communityUrl"/>
                             <a href="${communityUrl}" class="text-light text-decoration-none">
                                 <div class="card-body-community d-flex align-items-center text-decoration-none mb-3">
-                                    <c:if test="${community.portrait_id == 0}">
-                                        <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
-                                             class="very-small-profile-pic mb-1" alt="Profile Picture">
-                                    </c:if>
-                                    <c:if test="${community.portrait_id != 0}">
-                                        <img src="<c:url value='/image/${community.portrait_id}'/>"
-                                             class="very-small-profile-pic mb-1" alt="Profile Picture">
-                                    </c:if>
+                                    <div class="d-flex justify-content-start">
+                                        <c:if test="${community.portrait_id == 0}">
+                                            <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
+                                                 class="very-small-profile-pic mb-1" alt="Profile Picture">
+                                        </c:if>
+                                        <c:if test="${community.portrait_id != 0}">
+                                            <img src="<c:url value='/image/${community.portrait_id}'/>"
+                                                 class="very-small-profile-pic mb-1" alt="Profile Picture">
+                                        </c:if>
+                                    </div>
                                     <div class="text-decoration-none">
-                                        <h5 class="fw-semibold card-subtitle ">
+                                        <h5 class="fw-semibold card-subtitle text-break">
                                             /<c:out value="${community.name}" escapeXml="true"/>
                                         </h5>
                                     </div>
                                 </div>
                             </a>
                         </c:forEach>
+                        <c:if test="${empty followedCommunities}">
+                            <c:url value="/communities" var="communitiesUrl"/>
+                            <p><spring:message code="Navbar.NoCommunitiesFollowed"/></p>
+                            <a href="${communitiesUrl}" class=" card-title text-light mb-3">
+                                <h5><spring:message code="Navbar.AllCommunities"/></h5>
+                            </a>
+                        </c:if>
                     </div>
                 </div>
             </div>
@@ -87,7 +96,7 @@
                         </div>
                     </c:if>
                     <c:if test="${not empty communities}">
-                        <c:forEach var="community" items="${communities}">
+                        <c:forEach var="community" items="${communities.data}">
                             <c:url value="/community/${community.name}" var="communityUrl"/>
                             <a href="${communityUrl}" class="card-link text-decoration-none">
                                 <div class="card mb-3">
@@ -120,6 +129,16 @@
                                 </div>
                             </a>
                         </c:forEach>
+                        <div class="d-flex justify-content-center align-items-center">
+                            <c:if test="${empty communities}">
+                                <span class="badge bg-danger">Invalid page number</span>
+                            </c:if>
+                            <c:if test="${not empty communities}">
+                                <c:set var="paginatedDataWrapper" value="${communities}" scope="request" />
+                                <c:set var="pageNumberName" value="pageNumber" scope="request"/>
+                                <jsp:include page="/WEB-INF/jsp/components/paginationFooter.jsp"/>
+                            </c:if>
+                        </div>
                     </c:if>
                 </div>
             </div>
