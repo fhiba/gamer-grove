@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Locale;
 
 @ControllerAdvice
@@ -47,8 +48,8 @@ public class ExceptionHandlerController {
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler({BadCredentialsException.class})
-    public ModelAndView unregisteredUserException() {
-        return new ModelAndView("user/login").addObject("error", messageSource.getMessage("Login.Incorrect", null, Locale.getDefault()));
+    public ModelAndView unregisteredUserException(HttpServletRequest request) {
+        return new ModelAndView("user/login").addObject("error", messageSource.getMessage("Login.Invalid", null, request.getLocale()));
     }
 
 }

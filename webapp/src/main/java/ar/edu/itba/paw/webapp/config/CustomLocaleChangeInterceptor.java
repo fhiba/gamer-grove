@@ -22,7 +22,13 @@ public class CustomLocaleChangeInterceptor extends HandlerInterceptorAdapter {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         String preferredLanguage;
-        Optional<User> user= userService.getLoggedUser();
+        Optional<User> user;
+        try {
+            user = userService.getLoggedUser();
+        }
+        catch (Exception e){
+            user = Optional.empty();
+        }
         if (user.isEmpty()) {
             preferredLanguage = request.getLocale().getLanguage();
         }else {

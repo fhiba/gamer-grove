@@ -24,12 +24,19 @@ public class ApplicationLocaleResolver extends SessionLocaleResolver {
     public Locale resolveLocale(HttpServletRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String localeOption;
-        if( authentication instanceof AnonymousAuthenticationToken)
-            localeOption = "es";
-        else {
-            localeOption = userService.getLoggedUser().get().getLocale();
+        Optional<User> maybeUser;
+        try {
+            maybeUser = userService.getLoggedUser();
         }
-        return Locale.forLanguageTag(localeOption);
+        catch (Exception e){
+            maybeUser = Optional.empty();
+        }
+        if(maybeUser.isEmpty() )
+            localeOption = request.getLocale().getLanguage();
+        else {
+            localeOption = maybeUser.get().getLocale();
+        }
+        return new Locale(localeOption);
     }
 
 }
