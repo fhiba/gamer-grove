@@ -16,7 +16,7 @@
 
 <%@ include file="/WEB-INF/jsp/components/header.jsp" %>
 <div class="container-fluid min-vh-100">
-    <div class="row ">
+    <div class="row min-vh-100">
         <%--COMMUNITY LIST--%>
         <c:set var="isAdmin" value="${isAdmin}" scope="request"/>
         <c:set var="isLogged" value="${not empty user}" scope="request"/>
@@ -107,9 +107,13 @@
                         </li>
                     </ul>
                     <c:if test="${empty posts.data}">
-                        <h4><spring:message code="Profile.NoUserPosts"/></h4>
-                        <c:url value="/" var="homeUrl"/>
-                        <a href="${homeUrl}" class="btn btn-primary"><spring:message code="Post.Create"/></a>
+                        <div class="mt-5 d-flex justify-content-center">
+                            <div class="mb-4 d-flex flex-column align-items-center">
+                                <h4><spring:message code="Profile.NoUserPosts"/></h4>
+                                <c:url value="/" var="homeUrl"/>
+                                <a href="${homeUrl}" class="btn btn-primary w-50"><spring:message code="Post.Create"/></a>
+                            </div>
+                        </div>
                     </c:if>
                     <c:forEach var="post" items="${posts.data}">
                         <c:url value="/post/${post.id}" var="postUrl"/>
@@ -148,7 +152,6 @@
             </div>
         </div>
     </div>
-</div>
 </div>
 
 </body>
