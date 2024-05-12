@@ -92,7 +92,7 @@ public class PostController {
         mav.addObject("followedCommunities",followedCommunities);
         mav.addObject("isLogged", user != null);
         //TODO: SHOULD BE THE ONES THAT ARE CURRENTLY BEING FOLLOWED BY USER OR A FEW RANDOMLY SELECTED
-        mav.addObject("communities", cs.getAllCommunities());
+        mav.addObject("allCommunities", cs.getAllCommunitiesNoCat());
         mav.addObject("categories", categories);
         mav.addObject("news", ps.getByCategory(PostCategories.NEWS.getCategory()));
 
@@ -132,14 +132,12 @@ public class PostController {
                 try {
                     posts = ps.getUserFollowedPostsByCategoryPaginated(category,user.getId(),paginationRequest);
                 }catch (IllegalArgumentException e){
-                    mav.addObject("invalidPageNumber",true);
                     posts = null;
                 }
             } else {
                 try {
                     posts = ps.getUserFollowedPostsPaginated(user.getId(),paginationRequest);
                 }catch (IllegalArgumentException e){
-                    mav.addObject("invalidPageNumber",true);
                     posts = null;
                 }
             }
@@ -184,14 +182,12 @@ public class PostController {
             try {
                 posts = ps.getPostsByCategoryPaginated(category,paginationRequest);
             }catch (IllegalArgumentException e){
-                mav.addObject("invalidPageNumber",true);
                 posts = null;
             }
         } else {
             try {
                 posts = ps.getAllPostsPaginated(paginationRequest);
             }catch (IllegalArgumentException e){
-                mav.addObject("invalidPageNumber",true);
                 posts = null;
             }
         }
@@ -241,8 +237,8 @@ public class PostController {
         PaginatedDataWrapper<Comment> comments;
         try {
             comments = commentService.getPostCommentsPaginated(postId,paginationRequest);
+
         }catch (IllegalArgumentException e){
-            mav.addObject("invalidPageNumber",true);
             comments = null;
         }
         if(user != null) {

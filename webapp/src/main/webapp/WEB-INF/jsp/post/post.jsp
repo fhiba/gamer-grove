@@ -51,12 +51,13 @@
                         <p class="card-text"><c:out value="${post.body}" escapeXml="true"/></p>
                         <c:if test="${post.images.size() > 0}">
                             <div id="carouselExample" class="carousel slide ">
-<%--                                TODO: poner un contador para ver en que foto del carousel estoy--%>
-<%--                                <p class="float-end">${post.images.size()}</p>--%>
+                                    <%--                                TODO: poner un contador para ver en que foto del carousel estoy--%>
+                                    <%--                                <p class="float-end">${post.images.size()}</p>--%>
                                 <div class="carousel-inner bg-dark">
                                     <c:forEach var="image" items="${post.images}" varStatus="loop">
                                         <div class="carousel-item  <c:if test="${loop.index == 0}"> active</c:if>">
-                                            <img src="<c:url value='/image/${image}'/>" class="d-block m-auto carousel-img"
+                                            <img src="<c:url value='/image/${image}'/>"
+                                                 class="d-block m-auto carousel-img"
                                                  alt="...">
                                         </div>
                                     </c:forEach>
@@ -141,13 +142,15 @@
                     <form:form action="${commentUrl}" method="post" modelAttribute="newCommentForm">
                         <div class="form-outline form-white mb-4">
                             <form:textarea path="body" class="w-100 rounded-3 pt-2 ps-2" rows="4"
-                                           placeholder="Join the discussion and leave a comment!"/>
+                                  id="commentBody"         placeholder=""
+                            />
+
                             <form:errors path="body" cssStyle="color: red" cssClass="error"/>
                         </div>
                         <%--suppress XmlDuplicatedId --%>
                         <form:hidden path="postId" value="${post.id}"/>
                         <button class="btn btn-primary" type="submit">
-                            <spring:message code="Post.Comment"/>
+                            <spring:message code="Post.CommentAction"/>
                         </button>
                         <form:errors cssStyle="color: red" cssClass="error"/>
                     </form:form>
@@ -181,47 +184,62 @@
                                             </small>
                                         </p>
                                     </div>
-                                    <div class="d-flex align-items-center">
-                                        <span class="grooviness-count">${comment.grooviness}</span>
+                                    <div class="d-flex align-items-center justify-content-center">
                                         <div class="d-flex flex-column">
-                                            <c:if test="${upComments.contains(comment)}">
-                                                <button onclick="commentGroovyUpdate(true, ${comment.id})" class="btn">
-                                                    <i class="fas fa-arrow-up text-primary"></i>
-                                                </button>
-                                                <button onclick="commentGroovyUpdate(false, ${comment.id})" class="btn">
-                                                    <i class="fas fa-arrow-down"></i>
-                                                </button>
-                                            </c:if>
-                                            <c:if test="${downComments.contains(comment)}">
-                                                <button onclick="commentGroovyUpdate(true, ${comment.id})" class="btn">
-                                                    <i class="fas fa-arrow-up"></i>
-                                                </button>
-                                                <button onclick="commentGroovyUpdate(false, ${comment.id})" class="btn">
-                                                    <i class="fas fa-arrow-down text-danger"></i>
-                                                </button>
-                                            </c:if>
+                                            <div>
+
+                                                <c:if test="${upComments.contains(comment)}">
+                                                    <button onclick="commentGroovyUpdate(true, ${comment.id})"
+                                                            class="btn">
+                                                        <i class="fas fa-arrow-up text-primary"></i>
+                                                    </button>
+                                                    <span class="grooviness-count d-flex justify-content-center align-items-center">${comment.grooviness}</span>
+
+                                                    <button onclick="commentGroovyUpdate(false, ${comment.id})"
+                                                            class="btn">
+                                                        <i class="fas fa-arrow-down"></i>
+                                                    </button>
+
+                                                </c:if>
+
+                                                <c:if test="${downComments.contains(comment)}">
+                                                    <button onclick="commentGroovyUpdate(true, ${comment.id})"
+                                                            class="btn">
+                                                        <i class="fas fa-arrow-up"></i>
+                                                    </button>
+                                                    <span class="grooviness-count d-flex justify-content-center align-items-center">${comment.grooviness}</span>
+
+                                                    <button onclick="commentGroovyUpdate(false, ${comment.id})"
+                                                            class="btn">
+                                                        <i class="fas fa-arrow-down text-danger"></i>
+                                                    </button>
+                                                </c:if>
+                                            </div>
                                             <c:if test="${!upComments.contains(comment) && !downComments.contains(comment)}">
                                                 <button onclick="commentGroovyUpdate(true, ${comment.id})" class="btn">
                                                     <i class="fas fa-arrow-up"></i>
                                                 </button>
+                                                <span class="grooviness-count d-flex justify-content-center align-items-center">${comment.grooviness}</span>
 
                                                 <button onclick="commentGroovyUpdate(false, ${comment.id})" class="btn">
                                                     <i class="fas fa-arrow-down"></i>
                                                 </button>
                                             </c:if>
                                         </div>
+                                        <div class="d-flex justify-content-center align-items-center">
                                         <c:url value="/comment/${postId}/delete" var="deleteCommentUrl"/>
                                         <c:if test="${canDelete}">
                                             <form:form action="${deleteCommentUrl}" var="deleteCommenttUrl"
                                                        method="post"
-                                                       modelAttribute="commentDeleteForm">
+                                                       modelAttribute="commentDeleteForm" cssClass="m-auto">
                                                 <form:hidden path="commentId" value="${comment.id}"/>
                                                 <button class="btn btn-danger btn-sm align-content-center"
                                                         type="submit">
-                                                    X
+                                                    <i class="fas fa-solid fa-trash"></i>
                                                 </button>
                                             </form:form>
                                         </c:if>
+                                        </div>
                                     </div>
                                 </li>
                             </c:if>
@@ -309,7 +327,7 @@
             postBody[i].innerText = postBody[i].innerText.substring(0, 100) + '...';
         }
     }
-
+    console.log(document.getElementById("commentBody").placeholder)
     let otherPostTitle = document.getElementsByClassName('other-post-title');
     for (let i = 0; i < otherPostTitle.length; i++) {
         if (otherPostTitle[i].innerText.length > 30) {

@@ -56,17 +56,18 @@
                                             code="Login.Username"/></label>
                                     <p><c:out value="${user.username}" escapeXml="true"/></p>
                                 </div>
-                                <c:if test="${!user.isVerified()}">
-                                    <div class="ms-5">
-                                        <c:url value="auth/resend-verification" var="resendUrl"/>
-                                        <spring:message code="VerifyAccount.Verify"/>
-                                        <a href="${resendUrl}">
-                                            <button type="button" class="p-0 btn btn-link"><spring:message
-                                                    code="email.validateAccount.action"/></button>
-                                        </a>
-                                    </div>
-                                </c:if>
+
                             </div>
+                            <c:if test="${!user.isVerified()}">
+                                <div class="mb-3">
+                                    <c:url value="auth/resend-verification" var="resendUrl"/>
+                                    <spring:message code="VerifyAccount.Verify"/>
+                                    <a href="${resendUrl}">
+                                        <button type="button" class="p-0 btn btn-link"><spring:message
+                                                code="email.validateAccount.action"/></button>
+                                    </a>
+                                </div>
+                            </c:if>
                             <div>
                                 <c:url value="/user/update" var="userUpdateUrl"/>
                                 <form:form method="POST" action="${userUpdateUrl}" enctype="multipart/form-data"
@@ -109,9 +110,8 @@
                     <c:if test="${empty posts.data}">
                         <div class="mt-5 d-flex justify-content-center">
                             <div class="mb-4 d-flex flex-column align-items-center">
-                                <h4><spring:message code="Profile.NoUserPosts"/></h4>
+                                <h4><spring:message code="Profile.NoUserLikedPosts"/></h4>
                                 <c:url value="/" var="homeUrl"/>
-                                <a href="${homeUrl}" class="btn btn-primary"><spring:message code="Post.Create"/></a>
                             </div>
                         </div>
                     </c:if>
@@ -139,14 +139,9 @@
                         </a>
                     </c:forEach>
                     <div class="d-flex justify-content-center align-items-center">
-                        <c:if test="${empty posts}">
-                            <span class="badge bg-danger">Invalid page number</span>
-                        </c:if>
-                        <c:if test="${not empty posts}">
                             <c:set var="paginatedDataWrapper" value="${posts}" scope="request"/>
                             <c:set var="pageNumberName" value="pageNumber" scope="request"/>
                             <jsp:include page="/WEB-INF/jsp/components/paginationFooter.jsp"/>
-                        </c:if>
                     </div>
                 </div>
             </div>

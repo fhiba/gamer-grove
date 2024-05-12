@@ -87,15 +87,12 @@ public class CommunityServiceImpl implements CommunityService{
             newList = categories.stream().map(category -> category.replaceAll("([%_\\\\])", "\\\\$1")).toList();
         }
         int totalCount = communityDao.findCount(searchTerms.replaceAll("([%_\\\\])", "\\\\$1"), newList == null? List.of(): newList);
-        if(request.getPageNumber() <1 ){
-            throw new IllegalArgumentException("Invalid Page number");
-        }
 
         int offset = (request.getPageNumber() - 1) * request.getPageSize();
 
         List<Community> data = communityDao.find(request.getPageSize(),offset,searchTerms.replaceAll("([%_\\\\])", "\\\\$1"), newList == null? List.of(): newList);
         PaginatedDataWrapper<Community> dataWrapper = new PaginatedDataWrapper<>(data, request.getPageNumber(), totalCount, request.getPageSize());
-        if(request.getPageNumber() > dataWrapper.getTotalPages()){
+        if(request.getPageNumber() > dataWrapper.getTotalPages() && dataWrapper.getTotalPages() != 0){
             throw new IllegalArgumentException("Invalid Page number");
         }
         return dataWrapper;

@@ -41,15 +41,15 @@
                             <form:textarea path="body" class="form-control" id="bodyInput"/>
                             <form:errors path="title" cssStyle="color: red" cssClass="error"/>
                         </div>
-                        <div class="mb-3 d-flex justify-content-between">
-                            <div>
+                        <div class="mb-3 d-flex justify-content-start">
+                            <div class="me-3">
                                 <label for="bodyInput" class="form-label"><spring:message
                                         code="Post.Community"/></label>
                                 <form:select name="community" path="community"
                                              class="form-select" id="specialtiesSelect">
                                     <option disabled selected hidden><spring:message
                                             code="Post.ChooseCommunity"/></option>
-                                    <c:forEach var="community" items="${communities}">
+                                    <c:forEach var="community" items="${allCommunities}">
                                         <option value="<c:out value="${community.name}" escapeXml="true" />">
                                             <c:out value="${community.name}" escapeXml="true"/>
                                         </option>
@@ -71,18 +71,18 @@
                                 </form:select>
                                 <form:errors path="category" cssStyle="color: red" cssClass="error"/>
                             </div>
-                            <div class="item-upload">
-                                <spring:message code="Post.Image"/>
-                                <div class="input-group mb-3 mt-2">
-                                    <label class="input-group-text" for="files"><i class="fa-solid fa-file"></i></label>
-                                    <form:input type="file" accept="image/*" class="form-control" name="files" path="files"
-                                                multiple="true"/>
-                                </div>
-                                <div id="photo-upload__preview" class="upload-preview"></div>
-                                <form:errors path="files" cssStyle="color: red"/>
-                            </div>
                         </div>
-                        <button type="submit" class="btn btn-primary"><spring:message
+                        <div class="item-upload">
+                            <spring:message code="Post.Image"/>
+                            <div class="input-group mb-3 mt-2 w-50">
+                                <label class="input-group-text" for="files"><i class="fa-solid fa-file"></i></label>
+                                <form:input type="file" accept="image/*" class="form-control" name="files" path="files"
+                                            multiple="true"/>
+                            </div>
+                            <div id="photo-upload__preview" class="upload-preview"></div>
+                            <form:errors path="files" cssStyle="color: red"/>
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-3"><spring:message
                                 code="Post.CreateButton"/></button>
                         <form:errors cssStyle="color: red" cssClass="error"/>
                     </form:form>

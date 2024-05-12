@@ -13,14 +13,14 @@
         <div class="card-body">
             <jsp:useBean id="isAdmin" scope="request" type="java.lang.Boolean"/>
             <c:if test="${isAdmin}">
-                <div class="row-cols-2">
+                <div class="d-flex flex-column justify-content-center align-items-center">
                     <c:url value="/addMod" var="addModUrl"/>
-                    <a href="${addModUrl}">
-                        <button class="btn btn-outline-primary">Add Mod</button>
+                    <a href="${addModUrl}" class="w-100">
+                        <button class="btn btn-outline-primary mb-2 w-100"><spring:message code="Mod.Add"/></button>
                     </a>
                     <c:url value="/new-community" var="newCommunityUrl"/>
-                    <a href="${newCommunityUrl}">
-                        <button class="ms-2 btn btn-outline-success">Add Community</button>
+                    <a href="${newCommunityUrl}" class="w-100">
+                        <button class="btn btn-outline-success w-100"><spring:message code="Community.Add"/> </button>
                     </a>
                 </div>
             </c:if>

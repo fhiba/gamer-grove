@@ -90,9 +90,7 @@ public class CommunityController {
             paginationRequest.setPageNumber(pageNumber);
         try {
             posts = ps.getPostsByCommunityPaginated(communityName,paginationRequest);
-
         }catch (IllegalArgumentException e){
-            mav.addObject("invalidPageNumber",true);
             posts = null;
         }
         mav.addObject("posts",posts);
@@ -156,7 +154,6 @@ public class CommunityController {
         try {
             communities = cs.find(paginationRequest,searchTerms, selectedCategories);
         }catch (IllegalArgumentException e){
-            mav.addObject("invalidPageNumber",true);
             communities = null;
         }
         Boolean isAdmin = false;

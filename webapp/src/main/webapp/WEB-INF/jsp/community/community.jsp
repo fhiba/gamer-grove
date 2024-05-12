@@ -88,7 +88,7 @@
                     <div class="row w-100 mb-2">
                         <div class="col-4">
                             <c:if test="${community.portrait_id == 0}">
-                                <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
+                                <img src="${pageContext.request.contextPath}/images/default-community.png"
                                      class="w-100 rounded-1 img-thumbnail img-com" alt="Profile Picture">
                             </c:if>
                             <c:if test="${community.portrait_id != 0}">
@@ -186,14 +186,9 @@
                         </a>
                     </c:forEach>
                     <div class="d-flex justify-content-center align-items-center">
-                        <c:if test="${empty posts}">
-                            <span class="badge bg-danger">Invalid page number</span>
-                        </c:if>
-                        <c:if test="${not empty posts}">
                             <c:set var="paginatedDataWrapper" value="${posts}" scope="request"/>
                             <c:set var="pageNumberName" value="pageNumber" scope="request"/>
                             <jsp:include page="/WEB-INF/jsp/components/paginationFooter.jsp"/>
-                        </c:if>
                     </div>
                 </div>
             </div>

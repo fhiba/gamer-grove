@@ -93,7 +93,7 @@ public class CommentServiceImpl implements CommentService {
         int offset = (request.getPageNumber() - 1) * request.getPageSize();
         List<Comment> data = commentDao.getPostCommentsPaginated(postId,request.getPageSize(), offset);
         PaginatedDataWrapper<Comment> dataWrapper = new PaginatedDataWrapper<>(data, request.getPageNumber(), totalCount, request.getPageSize());
-        if(request.getPageNumber() > dataWrapper.getTotalPages()){
+        if(request.getPageNumber() > dataWrapper.getTotalPages() && dataWrapper.getTotalPages() != 0){
             throw new IllegalArgumentException("Invalid Page number");
         }
 

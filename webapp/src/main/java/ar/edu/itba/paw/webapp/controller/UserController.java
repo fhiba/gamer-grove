@@ -98,7 +98,7 @@ public class UserController {
         isAdmin = us.isUserAdmin(us.getLoggedUser().get().getId());
         mav.addObject("isAdmin",isAdmin);
         mav.addObject("sidebarcommunities", cs.getFollowedCommunities(us.getLoggedUser().get()));
-        mav.addObject("communities", cs.getAllCommunities());
+        mav.addObject("allCommunities", cs.getAllCommunities());
         mav.addObject("isLogged",true);
         return mav;
     }
@@ -171,7 +171,6 @@ public class UserController {
         try {
             posts = ps.getPostsByUserPaginated(user.getId(),paginationRequest);
         }catch (IllegalArgumentException e){
-            mav.addObject("invalidPageNumber",true);
             posts = null;
         }
         mav.addObject("posts",posts);
@@ -195,7 +194,6 @@ public class UserController {
         try {
             likedPosts = ps.getUserLikedPostsPaginated(user.getId(),paginationRequestLikedPosts);
         }catch (IllegalArgumentException e){
-            mav.addObject("invalidPageNumber",true);
             likedPosts = null;
         }
         mav.addObject("posts",likedPosts);

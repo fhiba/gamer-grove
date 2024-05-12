@@ -18,8 +18,7 @@
     <div class="row min-vh-100">
         <%--COMMUNITY LIST--%>
         <c:set var="isAdmin" value="${isAdmin}" scope="request"/>
-        <c:set var="isLogged" value="${isLogged}" scope="request"/>
-        <c:set var="communities" value="${communities}" scope="request"/>
+            <c:set var="communities" value="${communities}" scope="request"/>
         <jsp:include page="/WEB-INF/jsp/components/sidebar.jsp"/>
 
         <div class="col-10 d-flex justify-content-center">
@@ -219,5 +218,6 @@
         });
 
     }
+
 </script>
 </html>

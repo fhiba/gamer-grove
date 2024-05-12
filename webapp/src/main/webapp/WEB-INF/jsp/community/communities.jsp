@@ -26,6 +26,7 @@
         </div>
         <%--LISTA DE COMMUNITIES--%>
         <div class="col-6">
+
             <div class="card border-0 text-decoration-none">
                 <div class="card-body">
                     <c:if test="${empty communitiesPaginated}">
@@ -70,14 +71,13 @@
                             </a>
                         </c:forEach>
                         <div class="d-flex justify-content-center align-items-center">
-                            <c:if test="${empty communitiesPaginated}">
-                                <span class="badge bg-danger">Invalid page number</span>
-                            </c:if>
-                            <c:if test="${not empty communitiesPaginated}">
+
+                            <div class="d-flex justify-content-center align-items-center">
                                 <c:set var="paginatedDataWrapper" value="${communitiesPaginated}" scope="request" />
                                 <c:set var="pageNumberName" value="pageNumber" scope="request"/>
                                 <jsp:include page="/WEB-INF/jsp/components/paginationFooter.jsp"/>
-                            </c:if>
+                            </div>
+
                         </div>
                     </c:if>
                 </div>

@@ -22,73 +22,77 @@
         <c:set var="communities" value="${communities}" scope="request"/>
         <jsp:include page="/WEB-INF/jsp/components/sidebar.jsp"/>
         <%--NEW COMMUNITY FORM--%>
-        <div class="col-10 d-flex justify-content-center">
-            <div class="card border-0 w-100 ms-5">
+        <div class="col-2"></div>
+        <div class="col-8 d-flex justify-content-start mt-5">
+            <div class="card border-0 w-50 ms-5">
                 <div class="card-body">
-                    <div class="mb-3 row w-100">
-                        <div class="col-3">
-                            <c:url var="communityUrl" value="/new-community"/>
-                            <form:form action="${communityUrl}" method="post" modelAttribute="newCommunityForm"
-                                       id="myForm"
-                                       onsubmit="addCategoriesToForm()" enctype="multipart/form-data">
-                                <img src="${pageContext.request.contextPath}/images/default-avatar-icon.jpg"
-                                     class="w-100 h-75 rounded-1" id="imgFile" alt="Profile Picture">
+                    <h3 class="fw-bold"><spring:message code="NewCommunity"/></h3>
+                    <c:url var="communityUrl" value="/new-community"/>
+                    <form:form action="${communityUrl}" method="post" modelAttribute="newCommunityForm"
+                               id="myForm"
+                               onsubmit="addCategoriesToForm()" enctype="multipart/form-data">
+
+                        <div class="mt-2 d-flex flex-column">
                             <label class="form-label fw-semibold"><spring:message
-                                    code="Profile.UpdateProfilePicture"/></label>
+                                    code="Name"/>:</label>
+                            <form:input path="name"/>
+                            <form:errors path="name" cssStyle="color: red" cssClass="error"/>
+                        </div>
+                        <div class="mt-2 d-flex flex-column">
+                            <label class="form-label fw-semibold"><spring:message
+                                    code="Description"/>:</label>
+                            <form:textarea path="description"/>
+                            <form:errors path="description" cssStyle="color: red" cssClass="error"/>
+                        </div>
+                        <div class="mt-2 d-flex flex-column">
+                            <label class="form-label fw-semibold"><spring:message
+                                    code="Developer"/>:</label>
+                            <form:input path="developer"/>
+                            <form:errors path="developer" cssStyle="color: red" cssClass="error"/>
+                        </div>
+                        <div class="mt-2 d-flex flex-column">
+                            <label class="form-label fw-semibold"><spring:message
+                                    code="Publisher"/>:</label>
+                            <form:input path="publisher"/>
+                            <form:errors path="publisher" cssStyle="color: red" cssClass="error"/>
+                        </div>
+
+
+                        <div id="categoryPills" class="d-flex flex-row">
+                        </div>
+                        <div class="d-flex mt-2">
+                            <div id="selectDiv">
+                                <label for="select"></label>
+                            </div>
+                        </div>
+                        <div class="mt-2 d-flex flex-column">
+                            <label class="form-label fw-semibold"><spring:message
+                                    code="Profile.AddCommunityProfilePictire"/></label>
                             <form:input
-                                    onchange="document.getElementById('imgFile').src = window.URL.createObjectURL(this.files[0])"
+                                    id="image-input"
                                     path="image" class="form-control w-100" type="file" accept="image/*"/>
                             <p class="mt-3 mb-auto"><form:errors path="image" cssStyle="color: red"
                                                                  cssClass="error"/></p>
                             <form:errors cssStyle="color: red" cssClass="error"/>
+                            <img src="${pageContext.request.contextPath}/images/default-avatar-icon.jpg"
+                                 class="w-25 h-25 rounded-1"  id="preview-image" alt="Profile Picture">
                         </div>
-                        <div class="col-6">
-                            <h3 class="fw-bold"><spring:message code="NewCommunity"/> </h3>
-                            <div class="mt-2">
-                                <label class="form-label fw-semibold"><spring:message
-                                        code="Name"/>:</label>
-                                <form:input path="name"/>
-                                <form:errors path="name" cssStyle="color: red" cssClass="error"/>
-                            </div>
-                            <div class="mt-2">
-                                <label class="form-label fw-semibold"><spring:message
-                                        code="Description"/>:</label>
-                                <form:input path="description"/>
-                                <form:errors path="description" cssStyle="color: red" cssClass="error"/>
-                            </div>
-                            <div class="mt-2">
-                                <label class="form-label fw-semibold"><spring:message
-                                        code="Developer"/>:</label>
-                                <form:input path="developer"/>
-                                <form:errors path="developer" cssStyle="color: red" cssClass="error"/>
-                            </div>
-                            <div class="mt-2">
-                                <label class="form-label fw-semibold"><spring:message
-                                        code="Publisher"/>:</label>
-                                <form:input path="publisher"/>
-                                <form:errors path="publisher" cssStyle="color: red" cssClass="error"/>
-                            </div>
-                            <div id="categoryPills" class="d-flex flex-row">
-                            </div>
-                            <div class="d-flex mt-5">
-                                <div id="selectDiv">
-                                    <label for="select"></label>
-                                </div>
-                            </div>
-                            <form:errors cssStyle="color: red" cssClass="error"/>
-                            <form:errors cssStyle="color: red" cssClass="error" path="categories"/>
-                            <button class="btn btn-outline-primary w-25 mt-5" type="submit"><spring:message code="Post.CreateButton"/> </button>
-                        </div>
-                        </form:form>
-                    </div>
+                        <form:errors cssStyle="color: red" cssClass="error"/>
+                        <form:errors cssStyle="color: red" cssClass="error" path="categories"/>
+                        <button class="btn btn-outline-primary w-25 mt-3" type="submit"><spring:message
+                                code="Post.CreateButton"/></button>
+                    </form:form>
                 </div>
             </div>
         </div>
     </div>
 </div>
+</div>
+</div>
 </body>
 </html>
 <script language="JavaScript">
+
     let hiddenArray = [];
     let selectArray = [];
     let addOptionToSelect = (category) => {
@@ -130,7 +134,7 @@
         select = document.createElement("select");
         select.id = "select";
         select.onchange = addCategory;
-        select.setAttribute("class","form-select");
+        select.setAttribute("class", "form-select");
         document.getElementById("selectDiv").appendChild(select);
         let defaultOption = document.createElement("option");
         defaultOption.hidden = true;
@@ -201,4 +205,23 @@
         });
 
     }
+
+    const imageInput = document.getElementById('image-input');
+    const previewImage = document.getElementById('preview-image');
+    previewImage.style.display = 'none';
+    imageInput.addEventListener('change', function(event) {
+        console.log(previewImage.style.display)
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImage.src = e.target.result;
+                previewImage.style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+        } else {
+            previewImage.src = '#';
+            previewImage.style.display = 'none';
+        }
+    });
 </script>

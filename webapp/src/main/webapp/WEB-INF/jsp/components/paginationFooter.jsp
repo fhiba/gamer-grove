@@ -1,6 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <jsp:useBean id="paginatedDataWrapper" scope="request" type="ar.edu.itba.paw.models.pagination.PaginatedDataWrapper"/>
 <jsp:useBean id="pageNumberName" scope="request" type="java.lang.String"/>
+
 <%--
   Created by IntelliJ IDEA.
   User: juani
@@ -10,7 +11,7 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
-<c:if test="${paginatedDataWrapper.pageNumber  <= paginatedDataWrapper.totalPages && paginatedDataWrapper.pageNumber >= 1 && paginatedDataWrapper.totalPages > 1}">
+<c:if test="${not empty paginatedDataWrapper&&paginatedDataWrapper.pageNumber  <= paginatedDataWrapper.totalPages && paginatedDataWrapper.pageNumber >= 1 && paginatedDataWrapper.totalPages > 1}">
     <nav aria-label="Page navigation example">
         <ul class="pagination">
             <c:if test="${paginatedDataWrapper.pageNumber != 1}">
