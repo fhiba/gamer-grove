@@ -150,7 +150,7 @@ public class CommunityController {
         ModelAndView mav = new ModelAndView("community/communities");
         List<String> selectedCategories = Arrays.asList(categories.split(","));
         PaginatedDataWrapper<Community> communities;
-        PaginationRequest paginationRequest = new PaginationRequest(5);
+        PaginationRequest paginationRequest = new PaginationRequest(6);
         if(Objects.nonNull(pageNumber))
             paginationRequest.setPageNumber(pageNumber);
         try {

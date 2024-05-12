@@ -333,7 +333,7 @@ public class PostServiceImpl implements PostService{
         if(request.getPageNumber() <1 ){
             throw new IllegalArgumentException("Invalid Page number");
         }
-        int totalCount = postDao.getTotalPostCount();
+        int totalCount = postDao.getTotalPostsByUser(id);
         if(request.getPageNumber() <1 ){
             throw new IllegalArgumentException("Invalid Page number");
         }

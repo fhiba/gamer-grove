@@ -242,5 +242,10 @@ public class PostDaoJdbc implements PostDao {
 
     }
 
+    @Override
+    public int getTotalPostsByUser(long id) {
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM post WHERE deleted = false AND author_id = ?",new Object[]{id}, Integer.class);
+    }
+
 
 }

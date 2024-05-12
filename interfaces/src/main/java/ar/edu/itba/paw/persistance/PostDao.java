@@ -68,4 +68,6 @@ public interface PostDao {
     List<Post> getNewsLimited(int limit);
 
     List<Post> getPostsByUserPaginated(long id, int pageSize, int offset);
+
+    int getTotalPostsByUser(long id);
 }
