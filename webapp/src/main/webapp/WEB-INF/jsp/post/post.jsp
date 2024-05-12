@@ -321,6 +321,7 @@
 </body>
 </html>
 <script>
+    document.getElementById('commentBody').placeholder = '<spring:message code="Comment.CreateCommentPlaceholder"/> ';
     let postBody = document.getElementsByClassName('post-body');
     for (let i = 0; i < postBody.length; i++) {
         if (postBody[i].innerText.length > 100) {

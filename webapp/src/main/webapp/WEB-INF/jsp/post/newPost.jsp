@@ -102,7 +102,6 @@
 </html>
 <script lang="javascript">
     // $('.dropdown-toggle').dropdown();
-
     function previewImage(e, selectedFiles, imagesArray) {
         const elemContainer = document.createElement('div');
         elemContainer.setAttribute('class', 'item-images d-flex flex-wrap justify-content-start align-items-center');

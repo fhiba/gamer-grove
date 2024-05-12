@@ -52,12 +52,12 @@
                         <div class="col-8">
                             <div class=" d-flex flex-column">
 
-                                <h1><c:out value="${communityName}" escapeXml="true"/></h1>
+                                <h1><c:out value="${community.name}" escapeXml="true"/></h1>
                                 <div class="me-5">
                                     <label class="form-label fw-semibold"><spring:message
                                             code="Description"/></label>
-                                    <form:input path="description" class="form-control"
-                                                    type="textarea" value="${community.description}"/>
+                                    <form:textarea path="description" class="form-control"
+                                                 id="descriptionTextArea"   type="textarea" />
                                     <form:errors path="description" cssStyle="color: red" cssClass="error"/>
                                 </div>
                                 <div class="me-5 mt-3">
@@ -98,6 +98,7 @@
     let hiddenArray = [];
     let selectArray = [];
     let aux = [];
+    document.getElementById('descriptionTextArea').value = '<c:out value="${community.description}" escapeXml="true"/>'
     <c:forEach var="category" items="${community.categories}">
     aux.push("${category}");
     </c:forEach>
