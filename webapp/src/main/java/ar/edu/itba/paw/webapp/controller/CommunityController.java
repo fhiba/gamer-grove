@@ -240,6 +240,6 @@ public class CommunityController {
         if(errors.hasErrors())
             return community(null,communityName,new NewPostForm(),followCommunityForm);
         cs.modifyUserOnCommunity(followCommunityForm.getCommunityId(),followCommunityForm.getCommunityName());
-        return new ModelAndView("redirect:/community/"+URLEncoder.encode(communityName,StandardCharsets.UTF_8));
+        return new ModelAndView("redirect:/community/"+communityName);
     }
 }
