@@ -20,7 +20,7 @@
         <%--COMMUNITY LIST--%>
         <c:set var="isAdmin" value="${isAdmin}" scope="request"/>
         <c:set var="isLogged" value="${isLogged}" scope="request"/>
-        <c:set var="communities" value="${communities}" scope="request"/>
+        <c:set var="communities" value="${followedCommunities}" scope="request"/>
         <jsp:include page="/WEB-INF/jsp/components/sidebar.jsp"/>
 
         <%--CREATE POST FORM--%>
