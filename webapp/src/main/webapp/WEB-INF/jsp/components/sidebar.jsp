@@ -46,7 +46,7 @@
 
             <jsp:useBean id="communities" scope="request" type="java.util.List"/>
             <c:forEach var="community" items="${communities}">
-                <c:url value="/community/${community.name}" var="communityUrl"/>
+                <c:url value="/community/${community.encodedName}" var="communityUrl"/>
                 <a href="${communityUrl}" class="text-light text-decoration-none">
                     <div class="card-body-community d-flex align-items-center text-decoration-none mb-3">
                         <div class="d-flex justify-content-start">

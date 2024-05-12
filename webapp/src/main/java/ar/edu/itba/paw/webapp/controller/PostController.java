@@ -112,7 +112,7 @@ public class PostController {
 //        return new ModelAndView("redirect:/home");
 //    }
 
-    @RequestMapping(path = {"home"}, method = RequestMethod.GET)
+    @RequestMapping(path = {"/home"}, method = RequestMethod.GET)
     public ModelAndView getHomePosts(@RequestParam(required = false) Integer pageNumber,@RequestParam(value = "category", required = false) final String category) {
         ModelAndView mav = new ModelAndView("/home");
         List<Community> communities;
@@ -160,7 +160,7 @@ public class PostController {
     }
 
 
-    @RequestMapping(path = {"/all","/"}, method = RequestMethod.GET)
+    @RequestMapping(path = {"/","/all"}, method = RequestMethod.GET)
     public ModelAndView getAllPosts(@RequestParam(required = false) Integer pageNumber,@RequestParam(value = "category", required = false) final String category) throws NoLoggedUserException {
         ModelAndView mav = new ModelAndView("/home");
         PaginatedDataWrapper<Post> posts;
