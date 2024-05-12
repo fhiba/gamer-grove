@@ -17,4 +17,6 @@ public interface ModderService {
     boolean canRemovePost(final long userId, final long postId) throws NoSuchPostException, NoSuchCommunityException;// fijar si el post pertenece a la comnunidad y el mod tiene los perm necesarios
 
     boolean canRemovePostAlternative(long postId) throws NoSuchPostException, NoSuchCommunityException, UserNotFoundException;
+
+    public boolean canEditCommunityInfo(String encodedCommunityName) throws NoSuchCommunityException, UserNotFoundException;
 }
