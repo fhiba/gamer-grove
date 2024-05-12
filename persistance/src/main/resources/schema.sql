@@ -52,6 +52,7 @@ CREATE TABLE IF NOT EXISTS community_user(
                                community_id INT NOT NULL,
                                user_id INT NOT NULL,
                                community_role INT NOT NULL,
+                               community_name TEXT NOT NULL,
                                PRIMARY KEY (community_id, user_id),
                                foreign key(community_id) references community(id),
                                foreign key(user_id) references users(id)
@@ -122,7 +123,6 @@ ALTER TABLE comment ADD COLUMN deleted boolean DEFAULT false NOT NULL;
 ALTER TABLE community ADD COLUMN publisher text DEFAULT 'Not specified' NOT NULL;
 ALTER TABLE community ADD COLUMN developer text DEFAULT 'Not specified' NOT NULL;
 ALTER TABLE community ADD COLUMN release_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL;
-ALTER TABLE community_user ADD COLUMN community_name TEXT NOT NULL;
 
 CREATE TABLE IF NOT EXISTS post_images (
                                            post_id INT NOT NULL ,

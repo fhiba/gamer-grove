@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.config;
 
+import ar.edu.itba.paw.webapp.auth.CustomAccessDeniedHandler;
 import ar.edu.itba.paw.webapp.auth.PawUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +17,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.util.FileCopyUtils;
@@ -44,6 +46,10 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
         SimpleUrlAuthenticationFailureHandler simpleUrlAuthenticationFailureHandler = new SimpleUrlAuthenticationFailureHandler("/loginFailed");
         simpleUrlAuthenticationFailureHandler.setUseForward(true);
         return simpleUrlAuthenticationFailureHandler;
+    }
+    @Bean
+    public AccessDeniedHandler accessDeniedHandler() {
+        return new CustomAccessDeniedHandler();
     }
 
 
@@ -74,9 +80,9 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST,"/comment").hasRole("VERIFIED")
                 .antMatchers(HttpMethod.POST,"/community/{communityName}").hasRole("VERIFIED")
                 .antMatchers(HttpMethod.POST,"/profile").authenticated()
-                .antMatchers("/new-community").hasRole("ADMIN")
-                .antMatchers("/post/{postId}/delete","/comment/{postId}/delete").access("@modderServiceImpl.canRemovePostAlternative(#postId) or hasRole('ADMIN')")
-                .antMatchers("/new-community","/addMod").hasRole("ADMIN")
+                .antMatchers(HttpMethod.POST,"/new-community").hasRole("ADMIN")
+                .antMatchers("/community/{communityName}/info").access("@modderServiceImpl.canEditCommunityInfo(#communityName) or hasRole('ADMIN')")
+                .antMatchers("/post/{postId}/delete","/comment/{postId}/delete").access("@modderServiceImpl.canRemovePostAlternative(#postId) or hasRole('ADMIN')")                .antMatchers("/new-community","/addMod").hasRole("ADMIN")
                 .antMatchers("/**").permitAll()
             .and().formLogin()
                 .usernameParameter("username")
@@ -92,8 +98,8 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
             .and().logout()
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/login")
-            .and().exceptionHandling()
-                .accessDeniedPage("/403")
+            .and().exceptionHandling().accessDeniedHandler(accessDeniedHandler())
+//                .accessDeniedPage("/403")
             .and().csrf().disable();
     }
 }

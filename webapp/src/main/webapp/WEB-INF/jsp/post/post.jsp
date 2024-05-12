@@ -286,7 +286,7 @@
                                                                              escapeXml="true"/></h5>
                         </a>
                         <div class="d-none">
-                            <c:url var="followUrl" value="/community/${community.name}/follow"/>
+                            <c:url var="followUrl" value="/community/${community.encodedName}/follow"/>
                             <form:form modelAttribute="followCommunityForm" action="${followUrl}" method="post"
                                        id="followForm">
                                 <form:hidden path="communityName" value="${community.name}"/>

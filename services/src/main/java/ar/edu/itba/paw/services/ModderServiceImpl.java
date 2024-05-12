@@ -15,6 +15,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 @Transactional(readOnly = true)
@@ -108,6 +110,20 @@ public class ModderServiceImpl implements ModderService{
         Community postFrom = cs.findByName(toDelete.getCommunityName());
 
         return isModderOfCommunity(userId, postFrom.getId());
+    }
+    @Override
+    public boolean canEditCommunityInfo(String encodedCommunityName) throws NoSuchCommunityException, UserNotFoundException {
+        Community community;
+        try {
+            community = cs.findByName(URLDecoder.decode(encodedCommunityName, StandardCharsets.UTF_8));
+        } catch (Exception e){
+            return false;
+        }
+        Optional<User> possibleMod = us.getLoggedUser();
+        if (possibleMod.isEmpty()) {
+            return false;
+        }
+        return isModderOfCommunity(possibleMod.get().getId(), community.getId());
     }
 
     @Override

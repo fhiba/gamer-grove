@@ -89,14 +89,14 @@ public class PostServiceImpl implements PostService{
         if(request.getPageNumber() <1 ){
             throw new IllegalArgumentException("Invalid Page number");
         }
-        int totalCount = postDao.getTotalPostByCommunityCount(communityName);
+        int totalCount = postDao.getTotalPostByCommunityCount(URLDecoder.decode(communityName, StandardCharsets.UTF_8));
         if(totalCount == 0){
             return new PaginatedDataWrapper<>(Collections.emptyList(), request.getPageNumber(), totalCount, request.getPageSize());
         }
 
 
         int offset = (request.getPageNumber() - 1) * request.getPageSize();
-        List<Post> data = postDao.getPostsByCommunityPaginated(communityName,request.getPageSize() , offset);
+        List<Post> data = postDao.getPostsByCommunityPaginated(URLDecoder.decode(communityName, StandardCharsets.UTF_8),request.getPageSize() , offset);
         PaginatedDataWrapper<Post> dataWrapper = new PaginatedDataWrapper<>(data, request.getPageNumber(), totalCount, request.getPageSize());
         if(request.getPageNumber() > dataWrapper.getTotalPages() && dataWrapper.getTotalPages() != 0){
             throw new IllegalArgumentException("Invalid Page number");
