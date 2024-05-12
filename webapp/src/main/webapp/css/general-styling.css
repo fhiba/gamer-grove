@@ -230,6 +230,14 @@ body {
     -webkit-box-orient: vertical;
 }
 
+.truncate-1-lines {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+}
+
+
 .input-group-append {
     cursor: pointer;
 }

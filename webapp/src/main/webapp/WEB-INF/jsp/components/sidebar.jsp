@@ -60,7 +60,7 @@
                             </c:if>
                         </div>
                         <div class="text-decoration-none">
-                            <h5 class="fw-semibold fs-6 card-subtitle text-break">
+                            <h5 class="fw-semibold fs-6 card-subtitle text-break truncate-1-lines">
                                 /<c:out value="${community.name}" escapeXml="true"/>
                             </h5>
                         </div>
