@@ -198,6 +198,7 @@ public class CommunityController {
     public ModelAndView communityImage(@PathVariable("communityName") final String communityName, @ModelAttribute("EditCommunityForm") final EditCommunityInfoForm editCommunityInfoForm) throws NoSuchCommunityException {
         ModelAndView mav = new ModelAndView("community/communityInfo");
         Community community = cs.findByName(communityName);
+        Boolean isLogged = false;
         User user = null;
         try{
             user = us.getLoggedUserChecked();
@@ -206,7 +207,9 @@ public class CommunityController {
         }
         if(user != null) {
             mav.addObject("isAdmin", us.isUserAdmin(user.getId()));
+            isLogged = true;
         }
+        mav.addObject("isLogged",isLogged);
         mav.addObject("categories", Arrays.stream(CommunityCategories.values()).map(CommunityCategories::getCategory).toArray(String[]::new));
         mav.addObject("community",community);
         mav.addObject("communities",cs.getAllCommunities());
