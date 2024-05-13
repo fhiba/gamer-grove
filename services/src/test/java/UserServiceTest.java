@@ -1,4 +1,6 @@
 import ar.edu.itba.paw.persistance.UserDao;
+import ar.edu.itba.paw.services.MailingService;
+import ar.edu.itba.paw.services.TokenService;
 import ar.edu.itba.paw.services.UserServiceImpl;
 import org.junit.Assert;
 import org.junit.Test;
@@ -25,6 +27,11 @@ public class UserServiceTest {
 
     @Mock
     private PasswordEncoder mockPasswordEncoder;
+    @Mock
+    private TokenService mockTokenService;
+
+    @Mock
+    private MailingService mockMailingService;
     @InjectMocks
     private UserServiceImpl userService = new UserServiceImpl();
 
@@ -34,6 +41,8 @@ public class UserServiceTest {
         //	1.	Setup!
         Mockito.when(mockDao.create(Mockito.eq(USERNAME), Mockito.eq(EMAIL), Mockito.eq(PASSWORD))).thenReturn(new User(1, USERNAME, PASSWORD, EMAIL,0, false));
         Mockito.when(mockPasswordEncoder.encode(Mockito.anyString())).thenReturn(PASSWORD);
+        Mockito.when(mockTokenService.generateValidationToken(Mockito.anyLong())).thenReturn("token");
+//        Mockito.when(mockMailingService.sendValidationEmail(Mockito.anyString(), Mockito.anyString(),"token"))
         // 	2.	"ejercito"	la	class	under	test
         User maybeUser = userService.create(USERNAME, EMAIL, PASSWORD);
         // 	3.	Asserts!

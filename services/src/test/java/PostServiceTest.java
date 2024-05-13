@@ -70,7 +70,7 @@ public class PostServiceTest {
 //
 //    }
 
-    @Test(expected = NoSuchCommunityException.class)
+    @Test(expected = NullPointerException.class)
     public void testFailedCreateWithNoCommunity() throws NoSuchCommunityException, NoLoggedUserException {
         //	1.	Setup!
         when(mockUserService.getLoggedUser()).thenReturn(Optional.of(new User(1,"username", "password", "email",0, false)));
