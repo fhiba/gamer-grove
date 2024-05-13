@@ -121,7 +121,7 @@ public class CommunityController {
             return community(null,communityName,newPostForm,followCommunityForm);
 
         ps.createPost(newPostForm.getTitle(),newPostForm.getBody(),communityName,newPostForm.getCategory(),newPostForm.getFiles());
-        return new ModelAndView("redirect:/community/"+ URLEncoder.encode(communityName, StandardCharsets.UTF_8));
+        return new ModelAndView("redirect:/community/"+ communityName);
     }
 
 
@@ -193,7 +193,8 @@ public class CommunityController {
         if(errors.hasErrors())
             return communityImage(communityName,editCommunityInfoForm);
         cs.editCommunityInfo(communityName,editCommunityInfoForm.getDescription(),editCommunityInfoForm.getPublisher(),editCommunityInfoForm.getDeveloper(), editCommunityInfoForm.getImage(), editCommunityInfoForm.getCategories());
-        return new ModelAndView("redirect:/community/"+URLEncoder.encode(communityName,StandardCharsets.UTF_8));
+        System.out.println("El nombre de la comunidad es: " + communityName);
+        return new ModelAndView("redirect:/community/" + communityName);
     }
 
     @RequestMapping(value = "/image/{imageId}", method = RequestMethod.GET,
@@ -209,6 +210,7 @@ public class CommunityController {
         if(errors.hasErrors())
             return community(null,communityName,new NewPostForm(),followCommunityForm);
         cs.modifyUserOnCommunity(followCommunityForm.getCommunityId(),followCommunityForm.getCommunityName());
+        LOGGER.info(communityName);
         return new ModelAndView("redirect:/community/"+communityName);
     }
 }
