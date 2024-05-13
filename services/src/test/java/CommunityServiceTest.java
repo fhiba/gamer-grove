@@ -1,8 +1,6 @@
 import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
 import ar.edu.itba.paw.models.Community;
 import ar.edu.itba.paw.persistance.CommunityDao;
-import ar.edu.itba.paw.services.FileService;
-import ar.edu.itba.paw.services.UserService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -12,6 +10,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import ar.edu.itba.paw.services.CommunityServiceImpl;
 
 import java.time.LocalDateTime;
+
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
@@ -21,10 +20,6 @@ import static org.junit.Assert.assertEquals;
 public class CommunityServiceTest {
     @Mock
     CommunityDao mockDao;
-    @Mock
-    UserService userService;
-    @Mock
-    FileService fileService;
 
 
     @InjectMocks

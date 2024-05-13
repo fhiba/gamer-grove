@@ -2,7 +2,6 @@ import ar.edu.itba.paw.models.Community;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistance.PostDao;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,18 +9,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.jdbc.JdbcTestUtils;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
+
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
+@Transactional
 public class PostDaoJdbcTest {
 
     private static final long id = 2;
