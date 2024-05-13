@@ -37,10 +37,12 @@ public class CommentDaoJdbcTest {
     @Autowired
     private CommentDao commentDao;
 
+    private JdbcTemplate jdbcTemplate;
+
 
     @Before
     public void setup(){
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+         jdbcTemplate = new JdbcTemplate(ds);
     }
 
     @Test
@@ -53,6 +55,12 @@ public class CommentDaoJdbcTest {
         Assert.assertEquals(NOW,comment.getDate());
         Assert.assertEquals(-1,comment.getParentId());
         Assert.assertEquals(0, comment.getGrooviness());
+    }
+
+    @Test
+    public void testInsertGroovinessIntoComment(){
+        commentDao.insertGroovinessIntoComment(1,1,1,true);
+        Assert.assertEquals(1,JdbcTestUtils.countRowsInTable(jdbcTemplate, "groovy_comment_history"));
     }
 
     @Test

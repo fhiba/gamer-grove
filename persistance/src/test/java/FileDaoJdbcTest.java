@@ -1,6 +1,7 @@
 import ar.edu.itba.paw.models.File;
 import ar.edu.itba.paw.persistance.FileDaoJdbc;
 import ar.edu.itba.paw.persistance.ModderDaoJdbc;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,12 +43,16 @@ public class FileDaoJdbcTest {
         this.jdbcInsertPostImage = new SimpleJdbcInsert(ds).withTableName("post_images");
         fileDao.uploadImage(TEST);
     }
+    @After
+    public void tearDown() {
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "media");
+    }
 
     @Test
     public void testUploadImage() {
         final File file = fileDao.uploadImage(TEST).get();
         assertNotNull(file);
-        assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, "media"));
+        assertEquals(2, JdbcTestUtils.countRowsInTable(jdbcTemplate, "media"));
         assertEquals(TEST, file.getFile());
     }
 

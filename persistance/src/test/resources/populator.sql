@@ -15,6 +15,7 @@ INSERT INTO modders(user_id, community_id) VALUES (1, 1);
 
 INSERT INTO groovy_post_history(user_id, post_id, groovy_type) VALUES (1,1,false);
 
+INSERT INTO community_user(community_id, user_id,community_role,community_name) VALUES (1, 1, 0,'test');
 
 INSERT INTO comment ( post_id, author_id, parent_id, body, comment_date, grooviness,deleted)
 VALUES ( 1, 1, null, 'Comment 1', CURRENT_TIMESTAMP, 0, false);
