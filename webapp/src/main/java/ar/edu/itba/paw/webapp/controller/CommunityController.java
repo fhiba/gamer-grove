@@ -179,12 +179,14 @@ public class CommunityController {
         if(maybeUser.isPresent()) {
             User user = maybeUser.get();
             mav.addObject("isAdmin", us.isUserAdmin(user.getId()));
+            mav.addObject("communities",cs.getFollowedCommunities(user));
             isLogged = true;
+        }else{
+            mav.addObject("communities",cs.getAllCommunitiesNoCat());
         }
         mav.addObject("isLogged",isLogged);
         mav.addObject("categories", Arrays.stream(CommunityCategories.values()).map(CommunityCategories::getCategory).toArray(String[]::new));
         mav.addObject("community",community);
-        mav.addObject("communities",cs.getAllCommunities());
         return mav;
     }
 
