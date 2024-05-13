@@ -1,20 +1,16 @@
 import ar.edu.itba.paw.exceptions.NoLoggedUserException;
-import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
+import ar.edu.itba.paw.exceptions.NoSuchPostException;
 import ar.edu.itba.paw.models.Comment;
-import ar.edu.itba.paw.models.Community;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
 import ar.edu.itba.paw.models.pagination.PaginationRequest;
 import ar.edu.itba.paw.persistance.CommentDao;
-import ar.edu.itba.paw.persistance.UserDao;
 import ar.edu.itba.paw.services.*;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.time.LocalDateTime;
@@ -39,14 +35,24 @@ public class CommentServiceTest {
     @Mock
     private UserService mockUserService;
 
+    @Mock
+    private MailingService mailingService;
+
+    @Mock
+    private PostService mockPostService;
+
     @InjectMocks
     private CommentServiceImpl commentService;
 
+
+
     @Test
-    public void testCreateComment() throws NoLoggedUserException {
+    public void testCreateComment() throws NoLoggedUserException, NoSuchPostException {
         // Mocking user service to return a dummy user
         when(mockUserService.getLoggedUser()).thenReturn(Optional.of(new User(1,"username", "password", "email",0, false)));
-
+        when(mockUserService.findById(anyLong())).thenReturn(Optional.of(new User(1,"username", "password", "email",0, false)));
+        when(mockPostService.getPostById(anyLong()))
+                .thenReturn(new Post(1, "title", "post body", 1, "communityName", false, 0, LocalDateTime.now(), 0,false,"category"));
         LocalDateTime now = LocalDateTime.now();
         // Mocking commentDao's createComment method
         when(commentDao.createComment(anyLong(), anyString(), anyString(), any(LocalDateTime.class), anyLong()))

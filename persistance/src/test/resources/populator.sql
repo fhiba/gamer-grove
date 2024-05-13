@@ -25,3 +25,6 @@ VALUES ( 1, 1, null, 'Comment 2', CURRENT_TIMESTAMP, 0, false);
 
 INSERT INTO comment ( post_id, author_id, parent_id, body, comment_date, grooviness,deleted)
 VALUES ( 1, 1, null, 'Comment 3', CURRENT_TIMESTAMP, 0,false);
+
+INSERT INTO token (value, user_id, type) values ('vaaa', 1, 'Validation');
+INSERT INTO token (value, user_id, type) values ('raaa', 1, 'ResetPass');

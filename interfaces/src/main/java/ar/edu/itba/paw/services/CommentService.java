@@ -17,11 +17,11 @@ public interface CommentService {
         PaginatedDataWrapper<Comment> getPostCommentsPaginated(long postId, PaginationRequest request);
 
 
-        void editGroovinessOnComment(long commentId, int grooviness, long postId) throws NoSuchCommentException, UserNotFoundException;
+        void editGroovinessOnComment(long commentId, int grooviness, long postId) throws NoSuchCommentException, UserNotFoundException, NoLoggedUserException;
 
         List<Comment> getUpGroovedComments(long postId) throws NoSuchPostException, UserNotFoundException;
 
         List<Comment> getDownGroovedComments(long postId) throws UserNotFoundException;
 
-        public int deleteComment(long commentId) throws NoSuchCommentException;
+        int deleteComment(long commentId) throws NoSuchCommentException;
 }

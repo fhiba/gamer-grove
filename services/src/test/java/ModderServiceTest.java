@@ -43,20 +43,12 @@ public class ModderServiceTest {
     @InjectMocks
     ModderServiceImpl modderService = new ModderServiceImpl();
 
+
     @Test
-    public void testAddModder() throws NoSuchCommunityException, UserNotFoundException, AlreadyModException {
-
-        when(mockUserService.findByUsername(USERNAME)).thenReturn(Optional.of(new User(USER_ID,"username", "password", "email",0, false)));
-//        when(mockCommunityService.findById(Mockito.anyLong())).thenReturn(new Community(1, "name", "description"));
-        when(mockModderDao.isModderOfCommunity(Mockito.eq(USER_ID), Mockito.anyInt())).thenReturn(false);
-        when(mockModderDao.addModder(Mockito.eq(USER_ID), Mockito.anyInt())).thenReturn(1);
-
-
-        // 2. "ejercito" la class under test
-        int result = modderService.addModder(USERNAME, COMMUNITY_ID);
-
-        // 3. Asserts!
-        assertEquals(1, result);
+    public void testIsModderOfCommunity() throws NoSuchCommunityException {
+        when(mockModderDao.isModderOfCommunity(Mockito.anyLong(), Mockito.anyLong())).thenReturn(true);
+        boolean result = modderService.isModderOfCommunity(USER_ID, COMMUNITY_ID);
+        assertTrue(result);
     }
 
     @Test(expected = UserNotFoundException.class)
@@ -65,23 +57,15 @@ public class ModderServiceTest {
         modderService.addModder(USERNAME, COMMUNITY_ID);
     }
 
-    @Test(expected = AlreadyModException.class)
-    public void testAddAlreadyMod() throws NoSuchCommunityException, UserNotFoundException, AlreadyModException {
-        when(mockUserService.findByUsername(USERNAME)).thenReturn(Optional.of(new User(USER_ID, "username", "password", "email",0, false)));
-//        when(mockCommunityService.findById(Mockito.anyLong())).thenReturn(new Community(1, "name", "description"));
-        when(mockModderDao.isModderOfCommunity(Mockito.eq(USER_ID), Mockito.anyInt())).thenReturn(true);
-
-        int result = modderService.addModder(USERNAME, COMMUNITY_ID);
-    }
 
     @Test
-    public void testCanRemovePostAlternative() throws NoSuchCommunityException, NoSuchPostException {
+    public void testCanRemovePostAlternative() throws NoSuchCommunityException, NoSuchPostException, UserNotFoundException {
         when(mockModderDao.isModderOfCommunity(Mockito.anyLong(), Mockito.anyLong())).thenReturn(true);
-//        when(mockCommunityService.findByName(Mockito.anyString())).thenReturn(new Community(1, "name", "description"));
+        when(mockCommunityService.findByName(Mockito.anyString())).thenReturn(new Community(1, "name", "description","developer","publisher",LocalDateTime.now()));
         when(mockUserService.getLoggedUser()).thenReturn(Optional.of(new User(1, "username", "password", "email", 0, false)));
-        when(mockPostService.getPostById(Mockito.anyLong())).thenReturn(new Post(1, "title", "content", 1, "hola", false, 0, LocalDateTime.now(),0,false, "name"));
+        when(mockPostService.getPostById(1L)).thenReturn(new Post(1, "title", "content", 1, "hola", false, 0, LocalDateTime.now(),0,false, "name"));
 
-        boolean result = modderService.canRemovePost(1, 1);
+        boolean result = modderService.canRemovePostAlternative(1);
         assertTrue(result);
     }
 

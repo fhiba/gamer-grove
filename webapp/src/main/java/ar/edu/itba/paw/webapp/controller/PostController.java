@@ -59,10 +59,7 @@ public class PostController {
         }
         try {
             ps.createPost(newPostForm.getTitle(), newPostForm.getBody(), newPostForm.getCommunity(), newPostForm.getCategory(),newPostForm.getFiles());
-        } catch (NoLoggedUserException e) {
-            LOGGER.debug("No logged user", e);
-            throw e;
-        } catch ( NoSuchCommunityException e) {
+        } catch (NoLoggedUserException | NoSuchCommunityException e) {
             LOGGER.debug("No logged user", e);
             throw e;
         }
@@ -89,7 +86,6 @@ public class PostController {
         mav.addObject("isAdmin",isAdmin);
         mav.addObject("followedCommunities",followedCommunities);
         mav.addObject("isLogged", isLogged);
-        //TODO: SHOULD BE THE ONES THAT ARE CURRENTLY BEING FOLLOWED BY USER OR A FEW RANDOMLY SELECTED
         mav.addObject("allCommunities", cs.getAllCommunitiesNoCat());
         mav.addObject("categories", categories);
         mav.addObject("news", ps.getByCategory(PostCategories.NEWS.getCategory()));
@@ -98,7 +94,7 @@ public class PostController {
     }
 
     @RequestMapping(path = "/post/{postId}/up", method = RequestMethod.POST)
-    public ModelAndView groovyPost(@Valid @ModelAttribute("newPostGroovyForm") NewPostGroovyForm newPostGroovyForm, final BindingResult errors) throws NoSuchPostException, UserNotFoundException {
+    public ModelAndView groovyPost(@Valid @ModelAttribute("newPostGroovyForm") NewPostGroovyForm newPostGroovyForm, final BindingResult errors) throws NoSuchPostException, UserNotFoundException, NoLoggedUserException {
         if (!errors.hasErrors())
             ps.editGrooviness( newPostGroovyForm.isGroovyType()? 1 : -1,newPostGroovyForm.getPostId());
         return new ModelAndView("redirect:/post/" + newPostGroovyForm.getPostId());
@@ -109,12 +105,11 @@ public class PostController {
     public ModelAndView getHomePosts(@RequestParam(required = false) Integer pageNumber,@RequestParam(value = "category", required = false) final String category) {
         ModelAndView mav = new ModelAndView("/home");
         List<Community> communities;
-        Boolean isAdmin = false;
+        Boolean isAdmin;
         List<String> categories = ps.getUsedCategories();
         Optional<User > userOptional = us.getLoggedUser();
         PaginatedDataWrapper<Post> posts;
         PaginationRequest paginationRequest = new PaginationRequest();
-        boolean isLogged = false;
         if(Objects.nonNull(pageNumber))
             paginationRequest.setPageNumber(pageNumber);
 
@@ -122,7 +117,6 @@ public class PostController {
             User user = userOptional.get();
             communities = cs.getFollowedCommunities(user);
             isAdmin = us.isUserAdmin(user.getId());
-            isLogged = true;
             if (Objects.nonNull(category) &&!category.isEmpty() && !category.equals("all")) {
                 try {
                     posts = ps.getUserFollowedPostsByCategoryPaginated(category,user.getId(),paginationRequest);
@@ -142,7 +136,6 @@ public class PostController {
         mav.addObject("isAdmin",isAdmin);
         mav.addObject("isLogged", true);
         mav.addObject("posts",posts);
-        //TODO: SHOULD BE THE ONES THAT ARE CURRENTLY BEING FOLLOWED BY USER OR A FEW RANDOMLY SELECTED
         mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
         return homeAndAllConfig(category, mav, communities, categories, userOptional);
     }
@@ -159,7 +152,7 @@ public class PostController {
 
 
     @RequestMapping(path = {"/","/all"}, method = RequestMethod.GET)
-    public ModelAndView getAllPosts(@RequestParam(required = false) Integer pageNumber,@RequestParam(value = "category", required = false) final String category) throws NoLoggedUserException {
+    public ModelAndView getAllPosts(@RequestParam(required = false) Integer pageNumber,@RequestParam(value = "category", required = false) final String category) {
         ModelAndView mav = new ModelAndView("/home");
         PaginatedDataWrapper<Post> posts;
         List<Community> communities;
@@ -259,7 +252,6 @@ public class PostController {
         mav.addObject("comments", comments);
         Optional<User> author = us.findById(post.getAuthorId());
         mav.addObject("author", author.isPresent() ? author.get().getUsername() : "[deleted]");
-        //TODO: SHOULD BE THE ONES THAT ARE CURRENTLY BEING FOLLOWED BY USER OR A FEW RANDOMLY SELECTED
         mav.addObject("communities", communities);
         mav.addObject("posts", ps.getPostsByCommunity(post.getCommunityName()));
         mav.addObject("canDelete", canDelete);
@@ -268,7 +260,7 @@ public class PostController {
     }
 
     @RequestMapping(path = "/post/{postId}/delete", method = RequestMethod.POST)
-    public ModelAndView deletePost(@Valid @ModelAttribute("postDeleteForm") final PostDeleteForm postDeleteForm,final BindingResult errors) throws NoSuchPostException, NoLoggedUserException {
+    public ModelAndView deletePost(@Valid @ModelAttribute("postDeleteForm") final PostDeleteForm postDeleteForm,final BindingResult errors) {
         if (errors.hasErrors()) {
             return new ModelAndView("redirect:/post/" + postDeleteForm.getPostId());
         }
