@@ -102,10 +102,9 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional
     @Override
-    public void editGroovinessOnComment(long commentId, int grooviness, long postId) throws NoSuchCommentException, UserNotFoundException {
+    public void editGroovinessOnComment(long commentId, int grooviness, long postId) throws NoSuchCommentException, NoLoggedUserException {
         Optional<Comment> comment = commentDao.getCommentById(commentId);
-        //TODO : USE NEW EXCEPTION
-        User user = userService.getLoggedUser().orElseThrow(() -> new UserNotFoundException("User not found"));
+        User user = userService.getLoggedUser().orElseThrow(() -> new NoLoggedUserException("User not found"));
 
         if(comment.isEmpty())
             throw new NoSuchCommentException("Comment not found");
@@ -145,7 +144,7 @@ public class CommentServiceImpl implements CommentService {
 
 
     @Override
-    public List<Comment> getUpGroovedComments(long postId) throws NoSuchPostException, UserNotFoundException {
+    public List<Comment> getUpGroovedComments(long postId) throws UserNotFoundException {
         Optional<User> possibleUser = userService.getLoggedUser();
         if(possibleUser.isEmpty())
             throw new UserNotFoundException("User not found");

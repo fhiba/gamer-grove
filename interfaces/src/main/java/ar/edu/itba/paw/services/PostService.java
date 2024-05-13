@@ -29,9 +29,9 @@ public interface PostService {
 
     Post getPostById(long postId) throws NoSuchPostException;
 
-    public Post getPostByIdWithImage(long postId) throws NoSuchPostException;
+    Post getPostByIdWithImage(long postId) throws NoSuchPostException;
 
-    void editGrooviness(int grooviness, long postId) throws UserNotFoundException, NoSuchPostException;
+    void editGrooviness(int grooviness, long postId) throws UserNotFoundException, NoSuchPostException, NoLoggedUserException;
 
     int checkGrooviness(long postId);
 

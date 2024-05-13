@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,7 +39,7 @@ public class CommentController {
     }
 
     @RequestMapping(path="/post/{postId}/+" , method = RequestMethod.POST)
-    public ModelAndView editGroovinessOnComment(@Valid @ModelAttribute("newCommentGroovyForm") final NewCommentGroovyForm newCommentGroovyForm, final BindingResult errors) throws UserNotFoundException, NoSuchCommentException {
+    public ModelAndView editGroovinessOnComment(@Valid @ModelAttribute("newCommentGroovyForm") final NewCommentGroovyForm newCommentGroovyForm, final BindingResult errors) throws UserNotFoundException, NoSuchCommentException, NoLoggedUserException {
         if(errors.hasErrors()) {
             return new ModelAndView("redirect:/post/"+newCommentGroovyForm.getCommentPostId());
         }
@@ -54,7 +53,6 @@ public class CommentController {
         if(errors.hasErrors()) {
             return new ModelAndView("redirect:/post/{postId}");
         }
-        //TODO:agregar un checkeo mas?
         commentService.deleteComment(commentDeleteForm.getCommentId());
         return new ModelAndView("redirect:/post/{postId}");
     }

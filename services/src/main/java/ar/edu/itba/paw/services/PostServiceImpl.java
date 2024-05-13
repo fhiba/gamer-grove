@@ -69,7 +69,6 @@ public class PostServiceImpl implements PostService{
     }
     @Async
     void notifyUsers(Post post, User user) {
-        // TODO: BRING USERS FROM COMMUNITY
         List<User> users = userService.findByCommunity(post.getCommunityName()).stream().filter(u -> u.getId() != user.getId()).toList();
         mailingService.sendNewPostNotifications(users, post, user);
     }
@@ -150,10 +149,9 @@ public class PostServiceImpl implements PostService{
 
     @Transactional
     @Override
-    public void editGrooviness(int grooviness, long postId) throws UserNotFoundException, NoSuchPostException {
+    public void editGrooviness(int grooviness, long postId) throws NoSuchPostException, NoLoggedUserException {
         Optional<Post> post = postDao.findById(postId);
-        //TODO : USE NEW EXCEPTION
-        User user = userService.getLoggedUser().orElseThrow(() -> new UserNotFoundException("User not found"));
+        User user = userService.getLoggedUser().orElseThrow(() -> new NoLoggedUserException("User not found"));
         if(post.isEmpty()) {
             throw new NoSuchPostException("Post not found");
         }
