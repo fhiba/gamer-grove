@@ -85,8 +85,8 @@ public class CommentServiceTest {
         );
 
         // Mock behavior of commentDao methods
-        when(commentDao.getPostCommentsPaginated(eq(1L), anyInt(), anyInt())).thenReturn(mockComments);
-        when(commentDao.getPostCommentsTotalCount(eq(1L))).thenReturn(3);
+        when(commentDao.getPostCommentsPaginated(1L, 10, 0)).thenReturn(mockComments);
+        when(commentDao.getPostCommentsTotalCount(1L)).thenReturn(3);
 
         // Call the method to be tested
         PaginatedDataWrapper<Comment> result = commentService.getPostCommentsPaginated(1L, new PaginationRequest());

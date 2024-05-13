@@ -334,10 +334,6 @@ public class PostServiceImpl implements PostService{
             throw new IllegalArgumentException("Invalid Page number");
         }
         int totalCount = postDao.getTotalPostsByUser(id);
-        if(request.getPageNumber() <1 ){
-            throw new IllegalArgumentException("Invalid Page number");
-        }
-
         int offset = (request.getPageNumber() - 1) * request.getPageSize();
         List<Post> data = postDao.getPostsByUserPaginated(id,request.getPageSize(), offset);
         PaginatedDataWrapper<Post> dataWrapper = new PaginatedDataWrapper<>(data, request.getPageNumber(), totalCount, request.getPageSize());
