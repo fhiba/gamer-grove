@@ -31,7 +31,7 @@
 
             <div class="card border-0 text-decoration-none">
                 <div class="card-body">
-                    <c:if test="${empty communitiesPaginated}">
+                    <c:if test="${empty communitiesPaginated.data}">
                         <div class="d-flex flex-column align-items-center">
                             <h4 class="fw-semi-bold"><spring:message code="Communities.NoCommunitites"/></h4>
                             <c:url value="/communities" var="showAll"/>

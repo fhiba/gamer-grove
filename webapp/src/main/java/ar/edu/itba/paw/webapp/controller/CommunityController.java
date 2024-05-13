@@ -48,24 +48,18 @@ public class CommunityController {
     @RequestMapping(path="/new-community", method = RequestMethod.GET)
     public ModelAndView newCommunity(@ModelAttribute("newCommunityForm") final NewCommunityForm newCommunityForm) {
         ModelAndView mav = new ModelAndView("community/newCommunity");
-        User user = null;
+        Optional<User> maybeUser = us.getLoggedUser();
         List<Community> communities;
         Boolean isAdmin = false;
-
-        //TODO:HACER MAS LINDO ESTO
-        try{
-            user = us.getLoggedUserChecked();
-        }catch (Exception ignored){
-
-        }
-        if(user != null) {
+        if(maybeUser.isPresent()) {
+            User user = maybeUser.get();
             communities = cs.getFollowedCommunities(user);
             isAdmin = us.isUserAdmin(user.getId());
         }else{
             communities = cs.getAllCommunitiesNoCat();
         }
         mav.addObject("isAdmin",isAdmin);
-        mav.addObject("isLogged", user != null);
+        mav.addObject("isLogged", maybeUser.isPresent());
         mav.addObject("communities",communities);
         mav.addObject("categories", Arrays.stream(CommunityCategories.values()).map(CommunityCategories::getCategory).toArray(String[]::new));
         return mav;
@@ -81,7 +75,7 @@ public class CommunityController {
 
 
     @RequestMapping(path="/community/{communityName}", method = RequestMethod.GET)
-    public ModelAndView community(@RequestParam(required = false) Integer pageNumber,@PathVariable("communityName") final String communityName, @ModelAttribute("newPostForm") final NewPostForm newPostForm, @ModelAttribute("followCommunityForm") final FollowCommunityForm followCommunityForm) throws NoSuchCommunityException {
+    public ModelAndView community(@RequestParam(required = false) Integer pageNumber,@PathVariable("communityName") final String communityName, @ModelAttribute("newPostForm") final NewPostForm newPostForm, @ModelAttribute("followCommunityForm") final FollowCommunityForm followCommunityForm) throws NoSuchCommunityException, NoLoggedUserException {
         ModelAndView mav = new ModelAndView("community/community");
         Community community = cs.findByName(communityName);
         PaginatedDataWrapper<Post> posts;
@@ -96,37 +90,26 @@ public class CommunityController {
         mav.addObject("posts",posts);
         Boolean isAdmin = false;
         Boolean isFollowing = false;
-        try {
-            isFollowing = cs.checkIfUserFollowsCommunity((int)community.getId());
-        } catch (NoLoggedUserException e) {
-            //do nothing
-        }
-        User user = null;
+        Optional<User> maybeUser = us.getLoggedUser();
         List<Community> communities;
-        try{
-            user = us.getLoggedUserChecked();
+        boolean canEdit = false;
+        if(maybeUser.isPresent()){
+            User user = maybeUser.get();
             isAdmin = us.isUserAdmin(user.getId());
-        }catch (Exception ignored){
-
-        }
-
-        if(user != null)
+            isFollowing = cs.checkIfUserFollowsCommunity((int)community.getId());
             communities = cs.getFollowedCommunities(user);
+            canEdit = ms.isModderOfCommunity(user.getId(),community.getId());
+        }
         else {
             communities = cs.getAllCommunitiesNoCat();
         }
         mav.addObject("isAdmin",isAdmin);
-        mav.addObject("isLogged", user != null);
+        mav.addObject("isLogged", maybeUser.isPresent());
         mav.addObject("communities", communities);
         mav.addObject("isFollowing",isFollowing);
         mav.addObject("categories", Arrays.stream(PostCategories.values()).map(PostCategories::getCategory).toArray(String[]::new));
         mav.addObject("community",community);
         mav.addObject("posts",posts);
-        Optional<User> possiblyUser = us.getLoggedUser();
-        boolean canEdit = false;
-        if(possiblyUser.isPresent()){
-            canEdit = ms.isModderOfCommunity(possiblyUser.get().getId(),community.getId());
-        }
         mav.addObject("canEdit",canEdit);
         return mav;
     }
@@ -157,22 +140,18 @@ public class CommunityController {
             communities = null;
         }
         Boolean isAdmin = false;
-        User user = null;
+        Optional<User> maybeUser = us.getLoggedUser();
         List<Community> followedCommunities;
-        try{
-            user = us.getLoggedUserChecked();
-            isAdmin = us.isUserAdmin(user.getId());
-        }catch (Exception ignored){
-
-        }
-
-        if(user != null)
+        if(maybeUser.isPresent()) {
+            User user = maybeUser.get();
             followedCommunities = cs.getFollowedCommunities(user);
+            isAdmin = us.isUserAdmin(user.getId());
+        }
         else {
             followedCommunities = cs.getAllCommunitiesNoCat();
         }
         mav.addObject("isAdmin",isAdmin);
-        mav.addObject("isLogged",user != null);
+        mav.addObject("isLogged",maybeUser.isPresent());
         mav.addObject("categories", Arrays.stream(CommunityCategories.values()).map(CommunityCategories::getCategory).toArray(String[]::new));
         mav.addObject("selectedCategories", selectedCategories);
         mav.addObject("searchTerms", searchTerms);
@@ -196,13 +175,9 @@ public class CommunityController {
         ModelAndView mav = new ModelAndView("community/communityInfo");
         Community community = cs.findByName(communityName);
         Boolean isLogged = false;
-        User user = null;
-        try{
-            user = us.getLoggedUserChecked();
-        } catch (NoLoggedUserException e) {
-//do nothing
-        }
-        if(user != null) {
+        Optional<User> maybeUser = us.getLoggedUser();
+        if(maybeUser.isPresent()) {
+            User user = maybeUser.get();
             mav.addObject("isAdmin", us.isUserAdmin(user.getId()));
             isLogged = true;
         }
@@ -219,12 +194,6 @@ public class CommunityController {
             return communityImage(communityName,editCommunityInfoForm);
         cs.editCommunityInfo(communityName,editCommunityInfoForm.getDescription(),editCommunityInfoForm.getPublisher(),editCommunityInfoForm.getDeveloper(), editCommunityInfoForm.getImage(), editCommunityInfoForm.getCategories());
         return new ModelAndView("redirect:/community/"+URLEncoder.encode(communityName,StandardCharsets.UTF_8));
-    }
-    //TODO delete
-    @RequestMapping(path="/seeImages/{imageId}", method = RequestMethod.GET)
-    public ModelAndView getImage(@PathVariable("imageId") final long imageId) {
-        //        mav.addObject("image",fs.getFile(imageId).get());
-        return new ModelAndView("image");
     }
 
     @RequestMapping(value = "/image/{imageId}", method = RequestMethod.GET,

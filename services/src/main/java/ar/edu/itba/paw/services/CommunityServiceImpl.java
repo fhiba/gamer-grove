@@ -36,7 +36,6 @@ public class CommunityServiceImpl implements CommunityService{
     @Override
     public void createCommunity(final String name, final String description, final String categories, String developer, String publisher, LocalDateTime releaseDate, MultipartFile image) throws NoSuchCommunityException {
         Community community = communityDao.createCommunity(name,description,developer,publisher,releaseDate);
-        System.out.println("llegue hasta aca");
         if(!image.isEmpty())
             fileService.uploadCommunityImage(community.getName(), image);
         if(categories != null && !categories.isEmpty()) {

@@ -19,7 +19,7 @@
 <div class="modal fade" id="createPostModal" tabindex="-1" aria-labelledby="createPostModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <c:url var="postUrl" value="/community/${community.name}"/>
+            <c:url var="postUrl" value="/community/${community.encodedName}"/>
             <form:form action="${postUrl}" method="post" modelAttribute="newPostForm" id="postForm" enctype="multipart/form-data">
                 <div class="modal-header">
                     <h5 class="modal-title" id="createPostModalLabel"><spring:message code="Post.Create"/></h5>
