@@ -217,7 +217,7 @@ public class CommunityController {
     public ModelAndView uploadCommunityImage(@PathVariable("communityName") final String communityName, @Valid @ModelAttribute("EditCommunityForm") final EditCommunityInfoForm editCommunityInfoForm, BindingResult errors) throws NoSuchCommunityException {
         if(errors.hasErrors())
             return communityImage(communityName,editCommunityInfoForm);
-        cs.editCommunityInfo(communityName,editCommunityInfoForm.getDescription(),editCommunityInfoForm.getPublisher(),editCommunityInfoForm.getDeveloper(), editCommunityInfoForm.getImage());
+        cs.editCommunityInfo(communityName,editCommunityInfoForm.getDescription(),editCommunityInfoForm.getPublisher(),editCommunityInfoForm.getDeveloper(), editCommunityInfoForm.getImage(), editCommunityInfoForm.getCategories());
         return new ModelAndView("redirect:/community/"+URLEncoder.encode(communityName,StandardCharsets.UTF_8));
     }
     //TODO delete

@@ -12,6 +12,7 @@ import org.springframework.test.jdbc.JdbcTestUtils;
 
 import javax.sql.DataSource;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,6 +30,10 @@ public class CommunityDaoJdbcTest {
     final static String Category2 = "Shooter";
     final static String Category3 = "Action";
     final static String Category4 = "Hack and Slash";
+    final static String developer = "falsedeveloper";
+    final static String publisher = "falsepub";
+    final static LocalDateTime releaseDate = LocalDateTime.now();
+
     @Autowired
     private DataSource ds;
 
@@ -43,14 +48,17 @@ public class CommunityDaoJdbcTest {
         jdbcTemplate = new JdbcTemplate(ds);
     }
 
-//    @Test
-//    public void testCreate() {
-//        final Community community = communityDao.createCommunity(NAME, DESC, developer, publisher, releaseDate);
-//        assertNotNull(community);
-//        assertEquals(NAME, community.getName());
-//        assertEquals(DESC, community.getDescription());
-//        assertEquals(2, JdbcTestUtils.countRowsInTable(jdbcTemplate, "community"));
-//    }
+    @Test
+    public void testCreate() {
+        final Community community = communityDao.createCommunity(NAME, DESC, developer, publisher, releaseDate);
+        assertNotNull(community);
+        assertEquals(NAME, community.getName());
+        assertEquals(DESC, community.getDescription());
+        assertEquals(developer, community.getDeveloper());
+        assertEquals(publisher, community.getPublisher());
+        assertEquals(releaseDate, community.getReleaseDate());
+        assertEquals(4, JdbcTestUtils.countRowsInTable(jdbcTemplate, "community"));
+    }
 
 
     @Test

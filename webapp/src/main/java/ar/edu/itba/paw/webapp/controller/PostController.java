@@ -14,6 +14,7 @@ import ar.edu.itba.paw.services.CommunityService;
 import ar.edu.itba.paw.services.PostService;
 import ar.edu.itba.paw.services.UserService;
 import ar.edu.itba.paw.webapp.form.*;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,26 +72,23 @@ public class PostController {
     @RequestMapping(path = "/post", method = RequestMethod.GET)
     public ModelAndView getNewPost(@ModelAttribute("newPostForm") final NewPostForm newPostForm) {
         ModelAndView mav = new ModelAndView("post/newPost");
-        User user = null;
+        Optional<User> maybeUser = us.getLoggedUser();
         List<Community> followedCommunities;
         Boolean isAdmin = false;
         List<String> categories = ps.getUsedCategories();
-        // TODO:HACER ESTO MAS LINDO
-        try{
-            user = us.getLoggedUserChecked();
-        }catch (Exception ignored){
-
-        }
-        if(user != null) {
+        boolean isLogged = false;
+        if(maybeUser.isPresent()) {
+            User user = maybeUser.get();
             followedCommunities = cs.getFollowedCommunities(user);
             isAdmin = us.isUserAdmin(user.getId());
+            isLogged = true;
         }
         else{
             followedCommunities = cs.getAllCommunitiesNoCat();
         }
         mav.addObject("isAdmin",isAdmin);
         mav.addObject("followedCommunities",followedCommunities);
-        mav.addObject("isLogged", user != null);
+        mav.addObject("isLogged", isLogged);
         //TODO: SHOULD BE THE ONES THAT ARE CURRENTLY BEING FOLLOWED BY USER OR A FEW RANDOMLY SELECTED
         mav.addObject("allCommunities", cs.getAllCommunitiesNoCat());
         mav.addObject("categories", categories);
@@ -106,11 +104,6 @@ public class PostController {
         return new ModelAndView("redirect:/post/" + newPostGroovyForm.getPostId());
     }
 
-//    @RequestMapping(path = "/post/{postId}/up", method = RequestMethod.GET)
-//    public ModelAndView testtest(){
-//        System.out.println("ENTRE");
-//        return new ModelAndView("redirect:/home");
-//    }
 
     @RequestMapping(path = {"/home"}, method = RequestMethod.GET)
     public ModelAndView getHomePosts(@RequestParam(required = false) Integer pageNumber,@RequestParam(value = "category", required = false) final String category) {
@@ -121,6 +114,7 @@ public class PostController {
         Optional<User > userOptional = us.getLoggedUser();
         PaginatedDataWrapper<Post> posts;
         PaginationRequest paginationRequest = new PaginationRequest();
+        boolean isLogged = false;
         if(Objects.nonNull(pageNumber))
             paginationRequest.setPageNumber(pageNumber);
 
@@ -128,6 +122,7 @@ public class PostController {
             User user = userOptional.get();
             communities = cs.getFollowedCommunities(user);
             isAdmin = us.isUserAdmin(user.getId());
+            isLogged = true;
             if (Objects.nonNull(category) &&!category.isEmpty() && !category.equals("all")) {
                 try {
                     posts = ps.getUserFollowedPostsByCategoryPaginated(category,user.getId(),paginationRequest);
@@ -145,10 +140,15 @@ public class PostController {
            return new ModelAndView("redirect:/all/");
         }
         mav.addObject("isAdmin",isAdmin);
-        mav.addObject("isLogged", userOptional.isPresent());
+        mav.addObject("isLogged", true);
         mav.addObject("posts",posts);
         //TODO: SHOULD BE THE ONES THAT ARE CURRENTLY BEING FOLLOWED BY USER OR A FEW RANDOMLY SELECTED
         mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+        return homeAndAllConfig(category, mav, communities, categories, userOptional);
+    }
+
+    @NotNull
+    private ModelAndView homeAndAllConfig(@RequestParam(value = "category", required = false) String category, ModelAndView mav, List<Community> communities, List<String> categories, Optional<User> userOptional) {
         mav.addObject("communities", communities);
         mav.addObject("news", ps.getNewsLimited(5));
         mav.addObject("categories", categories);
@@ -195,12 +195,7 @@ public class PostController {
         mav.addObject("isLogged", optionalUser.isPresent());
         mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
         mav.addObject("posts",posts);
-        mav.addObject("communities", communities);
-        mav.addObject("news", ps.getNewsLimited(5));
-        mav.addObject("categories", categories);
-        mav.addObject("isVerified",optionalUser.isPresent() && optionalUser.get().isVerified());
-        mav.addObject("category",category);
-        return mav;
+        return homeAndAllConfig(category, mav, communities, categories, optionalUser);
     }
 
     @RequestMapping(path = "/post/{postId}", method = RequestMethod.GET)

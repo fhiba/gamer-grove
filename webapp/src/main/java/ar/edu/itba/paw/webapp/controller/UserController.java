@@ -94,7 +94,8 @@ public class UserController {
     @RequestMapping(path="/addMod", method = RequestMethod.GET)
     public ModelAndView getAddMod(@ModelAttribute("newModForm") final NewModForm newModForm,@ModelAttribute("removeModForm") final RemoveModForm removeModForm) {
         ModelAndView mav = new ModelAndView("user/addMod");
-        Boolean isAdmin = false;
+        Boolean isAdmin;
+        //El user esta necesariamente logueado para entrar en esta vista entonces no hace falta chequear si esta presente
         isAdmin = us.isUserAdmin(us.getLoggedUser().get().getId());
         mav.addObject("isAdmin",isAdmin);
         mav.addObject("sidebarcommunities", cs.getFollowedCommunities(us.getLoggedUser().get()));
@@ -199,7 +200,6 @@ public class UserController {
         mav.addObject("posts",likedPosts);
         return mav;
     }
-
 
 
 

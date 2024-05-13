@@ -173,7 +173,7 @@
         categoryPills.appendChild(pill);
         let removeButton = document.createElement("button");
         removeButton.type = "button";
-        removeButton.setAttribute("class", "btn-close-white flex-col");
+        removeButton.setAttribute("class", "btn-close btn-close-white flex-col");
         removeButton.onclick = () => {
             removeCategory(selected);
         };

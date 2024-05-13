@@ -3,7 +3,6 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
 import ar.edu.itba.paw.models.Community;
-import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
 import ar.edu.itba.paw.models.pagination.PaginationRequest;
@@ -18,9 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Transactional(readOnly = true)
 @Service
@@ -162,12 +159,27 @@ public class CommunityServiceImpl implements CommunityService{
 
     @Transactional
     @Override
-    public void editCommunityInfo(String communityName, String description, String publisher, String developer, MultipartFile image) throws NoSuchCommunityException {
+    public void editCommunityInfo(String communityName, String description, String publisher, String developer, MultipartFile image, String categories) throws NoSuchCommunityException {
         String decodedName = URLDecoder.decode(communityName,StandardCharsets.UTF_8);
         communityDao.editCommunityInfo(decodedName,description,publisher,developer);
-
         if(!image.isEmpty())
             fileService.uploadCommunityImage(decodedName, image);
+
+        Community community = findByName(decodedName);
+        List<String> currentCategories = Objects.isNull(community.getCategories())? Collections.emptyList(): new ArrayList<>(community.getCategories());
+        if(!Objects.isNull(categories)) {
+            List<String> newCategories = List.of(categories.split(","));
+            for (String category : newCategories) {
+                if (!currentCategories.contains(category)) {
+                    addCategory(community.getId(), category);
+                } else {
+                    currentCategories.remove(category);
+                }
+            }
+        }
+        for(String category: currentCategories){
+            removeCategory(community.getId(),category);
+        }
     }
 
 

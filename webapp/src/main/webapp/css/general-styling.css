@@ -272,3 +272,16 @@ body {
     max-width: 80%;
     height: auto;
 }
+
+.groovy-pill{
+    background-color: transparent!important;
+    color: white;
+    max-width: fit-content;
+    padding-bottom: 0;
+
+}
+
+.comment-card{
+    background-color: #2d3237;
+    border-color: #2d3237;
+}

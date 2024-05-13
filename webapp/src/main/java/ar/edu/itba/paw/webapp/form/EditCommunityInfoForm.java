@@ -1,15 +1,12 @@
 package ar.edu.itba.paw.webapp.form;
 
-import ar.edu.itba.paw.webapp.validators.interfaces.FileMustBeImageConstraint;
-import ar.edu.itba.paw.webapp.validators.interfaces.FilesMustBeImagesConstraint;
-import ar.edu.itba.paw.webapp.validators.interfaces.NullableImageConstraint;
-import ar.edu.itba.paw.webapp.validators.interfaces.ValidCommunityCategoriesConstraint;
+import ar.edu.itba.paw.webapp.validators.interfaces.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotBlank;
 
 public class EditCommunityInfoForm {
-
+    @MaxFileSizeConstraint
     @NullableImageConstraint
     private MultipartFile image;
 

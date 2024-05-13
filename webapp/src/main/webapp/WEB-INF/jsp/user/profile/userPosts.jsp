@@ -80,7 +80,7 @@
                                     <p class="mt-3 mb-auto"><form:errors path="file" cssStyle="color: red"
                                                                          cssClass="error"/></p>
                                     <div class="w-25">
-                                        <label class="form-label fw-semibold">Language</label>
+                                        <label class="form-label fw-semibold"><spring:message code="Language"/> </label>
                                         <form:select style="" class="form-select" required="true" path="locale">
                                             <form:option selected="true" hidden="true" value="${user.locale}"> <c:out
                                                     value="${user.locale}" escapeXml="true"/> </form:option>
@@ -97,7 +97,7 @@
 
                         </div>
                     </div>
-                    <ul class="nav nav-tabs">
+                    <ul class="nav nav-tabs mb-3">
                         <li class="nav-item">
                             <a class="nav-link active" aria-current="page"><spring:message
                                     code="Profile.UserPosts"/></a>

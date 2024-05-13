@@ -28,7 +28,7 @@
                         <div class="col-3">
                             <c:url value="/community/${community.encodedName}/info" var="editCommunityUrl"/>
                             <form:form method="POST" action="${editCommunityUrl}" enctype="multipart/form-data"
-                                       modelAttribute="EditCommunityForm" id="myForm">
+                                       modelAttribute="EditCommunityForm" id="myForm" onsubmit="addCategoriesToForm()">
                             <c:if test="${community.portrait_id == 0}">
 
                                 <img src="${pageContext.request.contextPath}/images/default-avatar-icon.jpg"
@@ -171,7 +171,7 @@
         categoryPills.appendChild(pill);
         let removeButton = document.createElement("button");
         removeButton.type = "button";
-        removeButton.setAttribute("class", "btn-close-white flex-col");
+        removeButton.setAttribute("class", "btn-close btn-close-white flex-col");
         removeButton.onclick = () => {
             removeCategory(selected);
         };

@@ -137,7 +137,7 @@
             </div>
             <%--COMMENTS--%>
             <div class="card bg-body-secondary">
-                <div class="card-body">
+                <div class="card-body comment-card">
                     <c:url var="commentUrl" value="/comment"/>
                     <form:form action="${commentUrl}" method="post" modelAttribute="newCommentForm">
                         <div class="form-outline form-white mb-4">
@@ -296,13 +296,13 @@
                         <c:if test="${isFollowing}">
                             <button onClick="follow()"
                                     class="rounded-pill  btn-outline-danger follow-button fw-bold"
-                                    id="followButton">Following
+                                    id="followButton"><spring:message code="Following"/>
                             </button>
                         </c:if>
                         <c:if test="${!isFollowing}">
                             <button onClick="follow()"
                                     class="rounded-pill   btn-outline-danger  follow-button fw-bold"
-                                    id="followButton">Follow
+                                    id="followButton"><spring:message code="Follow"/>
                             </button>
                         </c:if>
                     </div>

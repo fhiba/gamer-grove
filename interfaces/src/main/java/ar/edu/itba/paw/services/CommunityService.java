@@ -41,5 +41,5 @@ public interface CommunityService {
 
     void updateCommunityImageId(long id, long imageId);
 
-    void editCommunityInfo(String communityName, String description, String publisher, String developer, MultipartFile image) throws NoSuchCommunityException;
+    void editCommunityInfo(String communityName, String description, String publisher, String developer, MultipartFile image, String categories) throws NoSuchCommunityException;
 }

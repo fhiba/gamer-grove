@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.webapp.form;
 
 import ar.edu.itba.paw.webapp.validators.interfaces.FileMustBeImageConstraint;
+import ar.edu.itba.paw.webapp.validators.interfaces.MaxFileSizeConstraint;
 import org.springframework.web.multipart.MultipartFile;
 
 
@@ -8,7 +9,7 @@ import javax.validation.constraints.*;
 
 public class FileForm {
 
-
+    @MaxFileSizeConstraint
     @FileMustBeImageConstraint
     private MultipartFile file;
 

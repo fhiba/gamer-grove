@@ -8,6 +8,8 @@
     <link href="${pageContext.request.contextPath}/css/general-styling.css" rel="stylesheet"/>
     <script src="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js"></script>
     <link rel="icon" href="${pageContext.request.contextPath}/images/favicon.ico" type="image/x-icon">
+    <%--suppress JSUnresolvedLibraryURL --%>
+    <script src="https://kit.fontawesome.com/002da5939d.js" crossorigin="anonymous"></script>
 </head>
 <body>
 <c:set var="searchTerms" value="${searchTerms}" scope="request"/>

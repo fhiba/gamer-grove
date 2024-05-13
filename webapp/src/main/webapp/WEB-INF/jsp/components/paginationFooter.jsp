@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <jsp:useBean id="paginatedDataWrapper" scope="request" type="ar.edu.itba.paw.models.pagination.PaginatedDataWrapper"/>
 <jsp:useBean id="pageNumberName" scope="request" type="java.lang.String"/>
 
@@ -23,7 +24,7 @@
                         </c:if>
                     </c:forEach>
                 </c:url>
-                <li class="page-item"><a class="page-link" href="${firstPageUrl}">First</a></li>
+                <li class="page-item"><a class="page-link" href="${firstPageUrl}"><<</a></li>
                 <c:url var="prevPageUrl" value="">
                     <c:param name="${pageNumberName}" value="${paginatedDataWrapper.pageNumber -1}"/>
                     <c:forEach var="entry" items="${param}">
@@ -32,7 +33,7 @@
                         </c:if>
                     </c:forEach>
                 </c:url>
-                <li class="page-item"><a class="page-link" href="${prevPageUrl}"> Prev </a></li>
+                <li class="page-item"><a class="page-link" href="${prevPageUrl}"> < </a></li>
             </c:if>
             <c:if test="${paginatedDataWrapper.pageNumber == 1}">
                 <c:url var="prevPageUrl" value="">
@@ -43,7 +44,7 @@
                         </c:if>
                     </c:forEach>
                 </c:url>
-                <li class="page-item"><a class="page-link disabled" href="${prevPageUrl}"> Prev </a></li>
+                <li class="page-item"><a class="page-link disabled" href="${prevPageUrl}"> < </a></li>
             </c:if>
             <c:if test="${paginatedDataWrapper.pageNumber == paginatedDataWrapper.totalPages}">
                 <c:set var="endLoop" value="${paginatedDataWrapper.pageNumber}"/>
@@ -82,7 +83,7 @@
                         </c:if>
                     </c:forEach>
                 </c:url>
-                <li class="page-item"><a class="page-link disabled">Next</a></li>
+                <li class="page-item"><a class="page-link disabled"> > </a></li>
             </c:if>
             <c:if test="${paginatedDataWrapper.pageNumber != paginatedDataWrapper.totalPages}">
                 <c:url var="nextPageUrl" value="">
@@ -93,7 +94,7 @@
                         </c:if>
                     </c:forEach>
                 </c:url>
-                <li class="page-item"><a class="page-link" href="${nextPageUrl}">Next</a></li>
+                <li class="page-item"><a class="page-link" href="${nextPageUrl}"> > </a></li>
                 <c:url var="lastPageUrl" value="">
                     <c:param name="${pageNumberName}" value="${paginatedDataWrapper.totalPages}"/>
                     <c:forEach var="entry" items="${param}">
@@ -102,7 +103,7 @@
                         </c:if>
                     </c:forEach>
                 </c:url>
-                <li class="page-item"><a class="page-link" href="${lastPageUrl}">Last</a></li>
+                <li class="page-item"><a class="page-link" href="${lastPageUrl}"> >> </a></li>
             </c:if>
         </ul>
     </nav>

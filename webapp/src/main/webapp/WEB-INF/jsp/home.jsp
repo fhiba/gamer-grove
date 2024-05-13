@@ -87,13 +87,13 @@
                                         <h4 class="card-title fw-bold"><spring:message code="Post.Deleted"/></h4>
                                         <p class="card-text post-body"><<spring:message code="Post.Deleted"/></p>
                                     </c:if>
-                                    <div class="d-flex row-cols-2 justify-content-between me-5 mt-1">
-                                        <p class="w-100">
+                                    <div class="d-flex row-cols-2 justify-content-between mt-1">
+                                        <p>
                                             <small class="text-body-secondary">
                                                 <c:out value="${post.date.format(format)}" escapeXml="true"/>
                                             </small>
                                         </p>
-                                        <p><c:out value="${post.grooviness}" escapeXml="true"/></p>
+                                        <span class="badge rounded-pill text-bg-primary groovy-pill border-1"><c:out value="${post.grooviness}" escapeXml="true"/></span>
                                     </div>
                                 </div>
                             </div>
