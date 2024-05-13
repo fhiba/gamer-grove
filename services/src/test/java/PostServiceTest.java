@@ -7,6 +7,7 @@ import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
 import ar.edu.itba.paw.models.pagination.PaginationRequest;
 import ar.edu.itba.paw.persistance.PostDao;
 import ar.edu.itba.paw.services.CommunityService;
+import ar.edu.itba.paw.services.MailingService;
 import ar.edu.itba.paw.services.PostServiceImpl;
 import ar.edu.itba.paw.services.UserService;
 import org.junit.Assert;
@@ -25,8 +26,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -42,6 +42,9 @@ public class PostServiceTest {
 
     @Mock
     public PostDao postDao;
+
+    @Mock
+    public MailingService mailingService;
 
     @Mock
     public CommunityService mockCommunityService;
