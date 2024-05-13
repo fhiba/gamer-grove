@@ -9,19 +9,20 @@ import ar.edu.itba.paw.persistance.PostDao;
 import ar.edu.itba.paw.services.CommunityService;
 import ar.edu.itba.paw.services.PostServiceImpl;
 import ar.edu.itba.paw.services.UserService;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.SequencedSet;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -48,44 +49,37 @@ public class PostServiceTest {
     @InjectMocks
     public PostServiceImpl postService = new PostServiceImpl();
 
-//    @Test
-//    public void testCreate() throws NoSuchCommunityException, NoLoggedUserException {
-//        //	1.	Setup!
-//        Community mockCommunity = new Community(1, COMMUNITY_NAME, "description");
-//        mockCommunity.setPortrait_id(0);
-//        when(mockUserService.getLoggedUser()).thenReturn(Optional.of(new User(1,"username", "password", "email",0)));
-//        when(mockCommunityService.findByName(COMMUNITY_NAME)).thenReturn(mockCommunity);
-//
-//        // 	2.	"ejercito"	la	class	under	test
-//        postService.createPost(TITLE, BODY, COMMUNITY_NAME, CATEGORY,null);
-//        // 	3.	Asserts!
-//        //no devulve nada todavia
-//    }
-
-//    @Test(expected = NoLoggedUserException.class)
-//    public void testFailedCreateWithNoUser() throws NoSuchCommunityException, NoLoggedUserException {
-//        //	1.	Setup!
-//        when(mockUserService.getLoggedUser()).thenReturn(Optional.empty());
-//        Community mockCommunity = new Community(1, COMMUNITY_NAME, "description");
-//        mockCommunity.setPortrait_id(0);
-//        when(mockCommunityService.findByName(COMMUNITY_NAME)).thenReturn(mockCommunity);
-//        //when(mockDao.createPost(Mockito.eq(TITLE), Mockito.eq(BODY), Mockito.anyInt(), Mockito.eq(COMMUNITY_NAME), Mockito.anyBoolean(), Mockito.any(LocalDateTime.class), Mockito.eq(CATEGORY))).thenReturn(new Post(1, TITLE, BODY, 1, COMMUNITY_NAME, false,0, LocalDateTime.now(), 0,CATEGORY));
-//        // 	2.	"ejercito"	la	class	under	test
-//
-//        postService.createPost(TITLE, BODY, COMMUNITY_NAME, CATEGORY,null);
-//
-//    }
-
-    @Test(expected = NullPointerException.class)
-    public void testFailedCreateWithNoCommunity() throws NoSuchCommunityException, NoLoggedUserException {
+    @Test
+    public void testCreate() throws NoSuchCommunityException, NoLoggedUserException {
         //	1.	Setup!
-        when(mockUserService.getLoggedUser()).thenReturn(Optional.of(new User(1,"username", "password", "email",0, false)));
-        when(mockCommunityService.findByName(COMMUNITY_NAME)).thenReturn(null);
+        Community mockCommunity = new Community(1, COMMUNITY_NAME, "description","falsedeveloper", "falsepub", LocalDateTime.now());
+        mockCommunity.setPortrait_id(0);
+        when(mockUserService.getLoggedUser()).thenReturn(Optional.of(new User(1,"username", "password", "email",0,false)));
+        when(mockUserService.findByCommunity(anyString())).thenReturn(List.of(new User(1,"username", "password", "email",0,false)));
+        when(mockCommunityService.findByName(COMMUNITY_NAME)).thenReturn(mockCommunity);
+        when(postDao.createPost(Mockito.eq(TITLE), Mockito.eq(BODY), Mockito.anyInt(), Mockito.eq(COMMUNITY_NAME), Mockito.anyBoolean(), Mockito.any(LocalDateTime.class), Mockito.eq(CATEGORY))).thenReturn(new Post(1, TITLE, BODY, 1, COMMUNITY_NAME, false,0, LocalDateTime.now(), 0,false,CATEGORY));
+        // 	2.	"ejercito"	la	class	under	test
+        Post post = postService.createPost(TITLE, BODY, COMMUNITY_NAME, CATEGORY, new MultipartFile[]{});
+        // 	3.	Asserts!
+        Assert.assertEquals(TITLE, post.getTitle());
+        Assert.assertEquals(BODY, post.getBody());
+        Assert.assertEquals(1, post.getAuthorId());
+        Assert.assertEquals(COMMUNITY_NAME, post.getCommunityName());
+        Assert.assertFalse(post.getMedia());
+
+    }
+
+    @Test(expected = NoLoggedUserException.class)
+    public void testFailedCreateWithNoUser() throws NoSuchCommunityException, NoLoggedUserException {
+        //	1.	Setup!
+        when(mockUserService.getLoggedUser()).thenReturn(Optional.empty());
+        Community mockCommunity = new Community(1, COMMUNITY_NAME, "description","falsedeveloper", "falsepub", LocalDateTime.now());
+        mockCommunity.setPortrait_id(0);
 
         // 	2.	"ejercito"	la	class	under	test
 
         postService.createPost(TITLE, BODY, COMMUNITY_NAME, CATEGORY,null);
-        
+
     }
 
     @Test
@@ -124,24 +118,30 @@ public class PostServiceTest {
     @Test
     public void testGetPostsPaginated() {
         // Mock data for testing
+        long userId = 1L;
+        int pageSize = 10;
+        int pageNumber = 1;
+        int offset = 0;
+        PaginationRequest request = new PaginationRequest(pageNumber,pageSize);
+
         List<Post> mockPosts = Arrays.asList(
-                new Post(1L, "Test Post 1", "Body of Test Post 1", 1L, "Test Community", false, -1L, LocalDateTime.now(), 0, false, "Test Category"),
-                new Post(2L, "Test Post 2", "Body of Test Post 2", 2L, "Test Community", false, -1L, LocalDateTime.now(), 0, false, "Test Category"),
-                new Post(3L, "Test Post 3", "Body of Test Post 3", 3L, "Test Community", false, -1L, LocalDateTime.now(), 0, false, "Test Category")
+                new Post(1L, "Test Post 1", "Body of Test Post 1", userId, "Test Community", false, -1L, LocalDateTime.now(), 0, false, "Test Category"),
+                new Post(2L, "Test Post 2", "Body of Test Post 2", userId, "Test Community", false, -1L, LocalDateTime.now(), 0, false, "Test Category"),
+                new Post(3L, "Test Post 3", "Body of Test Post 3", userId, "Test Community", false, -1L, LocalDateTime.now(), 0, false, "Test Category")
         );
 
         // Mock behavior of postDao methods
-        when(postDao.getAllPostsPaginated(1, 0)).thenReturn(mockPosts);
         when(postDao.getTotalPostCount()).thenReturn(mockPosts.size());
+        when(postDao.getAllPostsPaginated(pageSize, offset)).thenReturn(mockPosts);
 
         // Call the method to be tested
-        PaginatedDataWrapper<Post> result = postService.getAllPostsPaginated(new PaginationRequest());
+        PaginatedDataWrapper<Post> result = postService.getAllPostsPaginated(request);
 
         // Verify the result
-        assertEquals(1, result.getPageNumber());
+        assertEquals(pageNumber, result.getPageNumber());
         assertEquals(1, result.getTotalPages());
         assertEquals(mockPosts.size(), result.getTotalCount());
-        assertEquals(10, result.getPageSize());
+        assertEquals(pageSize, result.getPageSize());
         assertEquals(mockPosts, result.getData());
     }
 
@@ -161,11 +161,11 @@ public class PostServiceTest {
         );
 
         // Mock behavior of postDao methods
-        when(postDao.getTotalPostsByUser(userId)).thenReturn(mockPosts.size());
-        when(postDao.getPostsByUserPaginated(userId, pageSize, offset)).thenReturn(mockPosts);
+        when(postDao.getTotalUserLikedPostCount(userId)).thenReturn(mockPosts.size());
+        when(postDao.getUserLikedPostPaginated(userId, pageSize, offset)).thenReturn(mockPosts);
 
         // Call the method to be tested
-        PaginatedDataWrapper<Post> result = postService.getPostsByUserPaginated(userId, request);
+        PaginatedDataWrapper<Post> result = postService.getUserLikedPostsPaginated(userId, request);
 
         // Verify the result
         assertEquals(pageNumber, result.getPageNumber());
