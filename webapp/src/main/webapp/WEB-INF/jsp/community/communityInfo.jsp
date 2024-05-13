@@ -31,7 +31,7 @@
                                        modelAttribute="EditCommunityForm" id="myForm" onsubmit="addCategoriesToForm()">
                             <c:if test="${community.portrait_id == 0}">
 
-                                <img src="${pageContext.request.contextPath}/images/default-avatar-icon.jpg"
+                                <img src="${pageContext.request.contextPath}/images/default-community.png"
                                      class="w-100 h-100 rounded-1" id="imgFile" alt="Profile Picture">
                             </c:if>
                             <c:if test="${community.portrait_id != 0}">

@@ -64,7 +64,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><spring:message code="Close"/> </button>
                     <button type="button" onclick="submit()" class="btn btn-primary" data-bs-dismiss="modal">
                         <spring:message code="Post.CreateButton"/></button>
                     <form:errors cssStyle="color: red" cssClass="error"/>
@@ -112,13 +112,13 @@
                                 <c:if test="${isFollowing}">
                                     <button onClick="follow()"
                                             class="rounded-pill  btn-outline-danger follow-button fw-bold"
-                                            id="followButton">Following
+                                            id="followButton"><spring:message code="Following"/>
                                     </button>
                                 </c:if>
                                 <c:if test="${!isFollowing}">
                                     <button onClick="follow()"
                                             class="rounded-pill   btn-outline-danger  follow-button fw-bold"
-                                            id="followButton">Follow
+                                            id="followButton"><spring:message code="Follow"/>
                                     </button>
                                 </c:if>
                             </div>
@@ -135,8 +135,8 @@
                                     </h2>
                                     <div id="flush-collapseOne" class="accordion-collapse collapse"
                                          data-bs-parent="#accordionFlushExample">
-                                        <h6 class="fw-bold">Developer: ${community.developer}</h6>
-                                        <h6 class="fw-bold">Publisher: ${community.publisher}</h6>
+                                        <h6 class="fw-bold"><spring:message code="Developer"/>:<c:out value="${community.developer}" escapeXml="true"/> </h6>
+                                        <h6 class="fw-bold"><spring:message code="Publisher"/>:<c:out value="${community.publisher}" escapeXml="true"/> </h6>
 <%--                                        <h6 class="fw-bold">Release Date: ${community.releaseDate}</h6>--%>
 
                                     </div>

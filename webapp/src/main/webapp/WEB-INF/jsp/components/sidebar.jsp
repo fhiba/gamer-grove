@@ -51,7 +51,7 @@
                     <div class="card-body-community d-flex align-items-center text-decoration-none mb-3">
                         <div class="d-flex justify-content-start">
                             <c:if test="${community.portrait_id == 0}">
-                                <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
+                                <img src="${pageContext.request.contextPath}/images/default-community.png"
                                      class="very-small-profile-pic mb-1" alt="Profile Picture">
                             </c:if>
                             <c:if test="${community.portrait_id != 0}">

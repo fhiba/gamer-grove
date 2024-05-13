@@ -36,7 +36,7 @@
                     <c:if test="${error != null}">
                         <p class="text-danger">${error}</p>
                     </c:if>
-                    <p>Or</p>
+                    <p><spring:message code="Or"/> </p>
                     <c:url var="registerUrl" value="/register"/>
                     <a href="${registerUrl}" >
                         <spring:message code="Register.Title"/>

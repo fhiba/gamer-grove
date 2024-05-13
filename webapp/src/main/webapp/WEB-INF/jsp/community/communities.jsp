@@ -46,7 +46,7 @@
                                     <div class="card-body d-flex flex-row">
                                         <div class="flex-column">
                                             <c:if test="${community.portrait_id == 0}">
-                                                <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"
+                                                <img src="${pageContext.request.contextPath}/images/default-community.png"
                                                      class="very-small-profile-pic mb-1" alt="Profile Picture">
                                             </c:if>
                                             <c:if test="${community.portrait_id != 0}">

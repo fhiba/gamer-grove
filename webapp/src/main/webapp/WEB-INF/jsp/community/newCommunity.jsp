@@ -74,7 +74,7 @@
                             <p class="mt-3 mb-auto"><form:errors path="image" cssStyle="color: red"
                                                                  cssClass="error"/></p>
                             <form:errors cssStyle="color: red" cssClass="error"/>
-                            <img src="${pageContext.request.contextPath}/images/default-avatar-icon.jpg"
+                            <img src="${pageContext.request.contextPath}/images/default-community.png"
                                  class="w-25 h-25 rounded-1"  id="preview-image" alt="Profile Picture">
                         </div>
                         <form:errors cssStyle="color: red" cssClass="error"/>
