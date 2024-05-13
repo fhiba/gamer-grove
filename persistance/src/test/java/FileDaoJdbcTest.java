@@ -1,6 +1,6 @@
 import ar.edu.itba.paw.models.File;
 import ar.edu.itba.paw.persistance.FileDaoJdbc;
-import ar.edu.itba.paw.persistance.ModderDaoJdbc;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.jdbc.JdbcTestUtils;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.util.HexFormat;
@@ -20,6 +21,7 @@ import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
+@Transactional
 public class FileDaoJdbcTest {
     final static byte[] TEST = HexFormat.ofDelimiter(":")
             .parseHex("e0:4f:d0:20:ea:3a:69:10:a2:d8:08:00:2b:30:30:9d");

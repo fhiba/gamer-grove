@@ -1,9 +1,7 @@
 import ar.edu.itba.paw.models.Comment;
-import ar.edu.itba.paw.models.Community;
-import ar.edu.itba.paw.models.Post;
-import ar.edu.itba.paw.models.User;
+
 import ar.edu.itba.paw.persistance.CommentDao;
-import ar.edu.itba.paw.persistance.PostDao;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
