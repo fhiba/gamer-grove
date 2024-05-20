@@ -73,6 +73,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/login","/register", "/auth/forgotCredentials", "/auth/resetPassword").anonymous()
                 .antMatchers("/profile","/profile/**").authenticated()
                 .antMatchers("/auth/resend-verification").authenticated()
+                .antMatchers("/home").authenticated()
                 .antMatchers("/community/{communityName}/new","/community/{communityName}/follow", "/post").hasRole("VERIFIED")
                 .antMatchers(HttpMethod.POST,"/post/{postId}/+").hasRole("VERIFIED")
                 .antMatchers(HttpMethod.POST,"/post/{postId}/up").hasRole("VERIFIED")
