@@ -1,29 +1,51 @@
 package ar.edu.itba.paw.models;
 
+import javax.persistence.*;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
-
+@Entity
+@Table(name = "post")
 public class Post {
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "post_id_seq")
+    @SequenceGenerator(sequenceName = "post_id_seq", name = "post_id_seq", allocationSize = 1)
+    @Column(name ="id")
     private final long id;
+    @Column(name = "title", nullable = false)
     private final String title;
+    @Column(name = "body", nullable = false)
     private final String body;
-    private final long authorId;
+
+    @ManyToOne(targetEntity = User.class)
+    @JoinColumn(name = "author_id", referencedColumnName = "id")
+    private final User authorId;
+
+    @ManyToOne(targetEntity = Community.class)
+    @JoinColumn(name = "community_name", referencedColumnName = "name")
     private final String communityName;
+
+    @Column(name = "media", nullable = false)
     private final boolean media;
+
     private final long mediaId;
+
+    @Column(name= "post_date", nullable = false)
     private final LocalDateTime date;
+    @Column (name = "grooviness", nullable = false)
     private final int grooviness;
+    @Column(name = "deleted", nullable = false)
     private final boolean deleted;
+
 
     private final String category;
 
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "post_images", joinColumns = {@JoinColumn(name = "post_id")}, inverseJoinColumns = {@JoinColumn(name = "image_id")})
+    private List<File> images;
 
-    private List<Integer> images = null;
-
-
+    
     public long getId() {
         return id;
     }
