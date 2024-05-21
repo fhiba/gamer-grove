@@ -212,7 +212,7 @@ public class CommunityController {
         if(errors.hasErrors())
             return community(null,communityName,new NewPostForm(),followCommunityForm);
         cs.modifyUserOnCommunity(followCommunityForm.getCommunityId(),followCommunityForm.getCommunityName());
-        LOGGER.info(communityName);
+        LOGGER.atDebug().setMessage("Communuty name: {}").addArgument(() -> communityName).log();
         return new ModelAndView("redirect:/community/"+communityName);
     }
 }

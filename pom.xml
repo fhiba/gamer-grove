@@ -22,8 +22,8 @@
         <commons-fileupload>1.5</commons-fileupload>
         <thymeleaf.version>3.0.15.RELEASE</thymeleaf.version>
         <dotenv.version>3.1.0</dotenv.version>
-        <org.slf4j.version>1.7.5</org.slf4j.version>
-        <logback.version>1.1.2</logback.version>
+        <org.slf4j.version>2.0.6</org.slf4j.version>
+        <logback.version>1.5.6</logback.version>
         <logback-ext-spring.version>0.1.1</logback-ext-spring.version>
         <maven-war-plugin.version>2.6</maven-war-plugin.version>
     </properties>

@@ -17,12 +17,16 @@ import java.util.Set;
 
 @Component
 public class PawUserDetailsService implements UserDetailsService {
-    @Autowired
+
     private UserService us;
 
+    @Autowired
+    public PawUserDetailsService(final UserService us){
+        this.us = us;
+    }
     @Override
-    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        final User user = us.findByUsername(s).orElseThrow(() -> new UsernameNotFoundException("User "+ s +" not found"));
+    public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
+        final User user = us.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User "+ username +" not found"));
         final Set<GrantedAuthority> authorities = new HashSet<>();
         authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
         if(user.isVerified()) {
@@ -31,6 +35,6 @@ public class PawUserDetailsService implements UserDetailsService {
         if(us.isUserAdmin(user.getId())) {
             authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
         }
-        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), authorities);
+        return new PawAuthUser(user.getUsername(), user.getPassword(), authorities);
     }
 }
