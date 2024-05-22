@@ -69,7 +69,7 @@ public class Community {
         return name;
     }
 
-    public File getPortrait_id() {
+    public File getPortrait() {
         return portrait;
     }
 
@@ -85,7 +85,7 @@ public class Community {
         return categories;
     }
 
-    public void setPortrait_id(File portrait) {
+    public void setPortrait(File portrait) {
         this.portrait = portrait;
     }
 

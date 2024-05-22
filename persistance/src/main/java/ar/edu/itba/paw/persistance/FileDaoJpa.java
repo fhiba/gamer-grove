@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.persistance;
 
 import ar.edu.itba.paw.models.File;
+import ar.edu.itba.paw.models.Post;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -26,12 +27,10 @@ public class FileDaoJpa implements FileDao {
     }
 
     @Override
-    public Optional<File> updateCommunityImage(long portraidId, byte[] file) {
-        em.createQuery("UPDATE File f SET f.file = :file WHERE f.imageId = :imageId")
-                .setParameter("file", file)
-                .setParameter("imageId", portraidId)
-                .executeUpdate();
-        return Optional.of(new File(portraidId, file));
+    public Optional<File> updateFile(File file, byte[] bytes) {
+        file.setFile(bytes);
+        em.merge(file);
+        return Optional.of(file);
     }
 
     @Override
@@ -42,12 +41,4 @@ public class FileDaoJpa implements FileDao {
                 .executeUpdate();
     }
 
-    @Override
-    public Optional<File> updateUserImage(long userId, byte[] image) {
-        em.createQuery("UPDATE File f SET f.file = :file WHERE f.imageId = :imageId")
-                .setParameter("file", image)
-                .setParameter("imageId", userId)
-                .executeUpdate();
-        return Optional.of(new File(userId, image));
-    }
 }
