@@ -16,19 +16,19 @@ public class Community {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "community_id_seq")
     @SequenceGenerator(sequenceName = "community_id_seq", name = "community_id_seq", allocationSize = 1)
     @Column(name ="id")
-    private long id;
+    private Long id;
     @Column(name = "name", nullable = false, unique = true)
     private String name;
     @Column(name = "description", nullable = false)
     private String description;
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "portrait_id", referencedColumnName = "id")
-    private File portrait = null;
+    private File portrait;
 
     @ElementCollection(targetClass = CommunityCategories.class)
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "communities_categories", joinColumns = @JoinColumn(name = "community_id", nullable = false))
-    private List<CommunityCategories> categories = null;
+    private List<CommunityCategories> categories;
     @Column(name = "publisher")
     private String publisher;
     @Column(name = "developer")
@@ -40,16 +40,16 @@ public class Community {
         //FOR HIBERNATE JPA
     }
 
-    public Community(final long id, final String name, final String description, String publisher, String developer, LocalDateTime releaseDate) {
-        this.id = id;
+    public Community( final String name, final String description, String publisher, String developer, LocalDateTime releaseDate) {
+
         this.name = name;
         this.description = description;
         this.publisher = publisher;
         this.developer = developer;
         this.releaseDate = releaseDate;
     }
-    public Community(final long id, final String name, final String description, List<CommunityCategories> categories, String publisher, String developer, LocalDateTime releaseDate) {
-        this.id = id;
+    public Community( final String name, final String description, List<CommunityCategories> categories, String publisher, String developer, LocalDateTime releaseDate) {
+
         this.name = name;
         this.description = description;
         this.categories = categories;
@@ -57,7 +57,7 @@ public class Community {
         this.developer = developer;
         this.releaseDate = releaseDate;
     }
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
