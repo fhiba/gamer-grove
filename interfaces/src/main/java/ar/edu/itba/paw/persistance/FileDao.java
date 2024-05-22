@@ -10,8 +10,6 @@ public interface FileDao {
 
     Optional<File> uploadImage(byte[] file);
 
-    Optional<File> uploadUserImage(long userId, byte[] file);
-
     Optional<File> updateCommunityImage(long portraidId, byte[] file);
 
 
