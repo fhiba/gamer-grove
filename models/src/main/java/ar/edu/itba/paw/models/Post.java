@@ -5,6 +5,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
+
 @Entity
 @Table(name = "post")
 public class Post {
@@ -91,6 +92,19 @@ public class Post {
     }
     public Post(final long id, final String title, final String body, final User author, final Community community, final boolean media, final long media_id, final LocalDateTime date, final int grooviness, boolean deleted, final String category) {
         this.id = id;
+        this.title = title;
+        this.body = body;
+        this.author = author;
+        this.community = community;
+        this.media = media;
+        this.mediaId = media_id;
+        this.date = date;
+        this.grooviness = grooviness;
+        this.deleted = deleted;
+        this.category = category;
+    }
+
+    public Post( final String title, final String body, final User author, final Community community, final boolean media, final Long media_id, final LocalDateTime date, final int grooviness, boolean deleted, final String category) {
         this.title = title;
         this.body = body;
         this.author = author;
