@@ -145,7 +145,7 @@ public class PostServiceImpl implements PostService{
     }
     @Override
     public Post getPostByIdWithImage(long postId) throws NoSuchPostException{
-        Optional<Post> post = postDao.findByIdWithImage(postId);
+        Optional<Post> post = postDao.findById(postId);
         if(post.isEmpty())
             throw new NoSuchPostException("Post with id:" + postId+ " not found");
         return post.get();

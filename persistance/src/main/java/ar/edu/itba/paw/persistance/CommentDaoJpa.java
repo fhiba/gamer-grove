@@ -85,7 +85,7 @@ public class CommentDaoJpa implements CommentDao{
 
     @Override
     public List<Comment> getGroovedComments(long postId, long id) {
-        return em.createNativeQuery("SELECT comment.* from comment join groovy_comment_history on comment.post_id = groovy_comment_history.post_id and comment.id = groovy_comment_history.comment_id where post_id = ? and user_id = ? and groovy_type = true ", Comment.class)
+        return em.createNativeQuery("SELECT comment.* from comment join groovy_comment_history on comment.post_id = groovy_comment_history.post_id and comment.id = groovy_comment_history.comment_id where comment.post_id = ? and user_id = ? and groovy_type = true ", Comment.class)
                 .setParameter(1,postId)
                 .setParameter(2,id)
                 .getResultList();
@@ -94,7 +94,7 @@ public class CommentDaoJpa implements CommentDao{
 
     @Override
     public List<Comment> getDownGroovedComments(long postId, long id) {
-        return em.createNativeQuery("SELECT comment.* from comment join groovy_comment_history on comment.post_id = groovy_comment_history.post_id and comment.id = groovy_comment_history.comment_id where post_id = ? and user_id = ? and groovy_type = false ", Comment.class)
+        return em.createNativeQuery("SELECT comment.* from comment join groovy_comment_history on comment.post_id = groovy_comment_history.post_id and comment.id = groovy_comment_history.comment_id where comment.post_id = ? and user_id = ? and groovy_type = false ", Comment.class)
                 .setParameter(1,postId)
                 .setParameter(2,id)
                 .getResultList();    }
@@ -117,7 +117,7 @@ public class CommentDaoJpa implements CommentDao{
 
     @Override
     public List<Comment> getPostCommentsPaginated(long postId, int pageSize, int offset) {
-        Query nativeQuery = em.createNativeQuery("SELECT id FROM comment WHERE post_id = :postId ORDER BY post_date DESC");
+        Query nativeQuery = em.createNativeQuery("SELECT id FROM comment WHERE post_id = :postId ORDER BY comment_date DESC");
         nativeQuery.setFirstResult(pageSize * ((offset/pageSize)));
         nativeQuery.setParameter("postId", postId);
         nativeQuery.setMaxResults(pageSize);

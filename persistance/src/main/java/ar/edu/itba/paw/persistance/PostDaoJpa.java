@@ -70,7 +70,7 @@ public class PostDaoJpa implements PostDao {
 
     @Override
     public Optional<Boolean> checkGrooviness(long postId, long userId) {
-        return em.createNativeQuery("SELECT groovy_type FROM groovy_post_history WHERE post_id = :postId AND user_id = :userId", Boolean.class)
+        return em.createNativeQuery("SELECT groovy_type FROM groovy_post_history WHERE post_id = :postId AND user_id = :userId")
                 .setParameter("postId", postId)
                 .setParameter("userId", userId)
                 .getResultList().stream().findFirst();
