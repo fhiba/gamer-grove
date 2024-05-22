@@ -46,35 +46,59 @@ public class UserDaoJPA implements UserDao {
     }
 
     @Override
-    public void updateImageId(long id, long imageId) {
-         em.createNativeQuery("UPDATE users SET portrait_id = ? WHERE id=?")
-                 .setParameter(1,imageId)
-                 .setParameter(2,id)
-                 .executeUpdate();
+    public User updateImageId(User user, Long imageId) {
+        user.setPortraid_id(imageId);
+        return em.merge(user);
     }
 
     @Override
-    public void updatePassword(Long id, String password) {
-        em.createNativeQuery("UPDATE users SET password = ? WHERE id=?")
-                .setParameter(1,password)
-                .setParameter(2,id)
-                .executeUpdate();
+    public User updatePassword(User user, String password) {
+        user.setPassword(password);
+        return em.merge(user);
     }
 
     @Override
-    public void verifyUser(Long id) {
-        em.createNativeQuery("UPDATE users SET verified = ? WHERE id=?")
-                .setParameter(1,true)
-                .setParameter(2,id)
-                .executeUpdate();
+    public User verifyUser(User user) {
+        user.setOwner(true);
+        return em.merge(user);
     }
 
     @Override
-    public void updateLocale(long id, String locale) {
-        em.createNativeQuery("UPDATE users SET locale = ? WHERE id=?")
-                .setParameter(1,locale)
-                .setParameter(2,id)
-                .executeUpdate();
-
+    public User updateLocale(User user, String locale) {
+        user.setLocale(locale);
+        return em.merge(user);
     }
+
+
+//    @Override
+//    public void updateImageId(long id, long imageId) {
+//         em.createNativeQuery("UPDATE users SET portrait_id = ? WHERE id=?")
+//                 .setParameter(1,imageId)
+//                 .setParameter(2,id)
+//                 .executeUpdate();
+//    }
+//
+//    @Override
+//    public void updatePassword(Long id, String password) {
+//        em.createNativeQuery("UPDATE users SET password = ? WHERE id=?")
+//                .setParameter(1,password)
+//                .setParameter(2,id)
+//                .executeUpdate();
+//    }
+//
+//    @Override
+//    public void verifyUser(Long id) {
+//        em.createNativeQuery("UPDATE users SET verified = ? WHERE id=?")
+//                .setParameter(1,true)
+//                .setParameter(2,id)
+//                .executeUpdate();
+//    }
+//
+//    @Override
+//    public void updateLocale(long id, String locale) {
+//        em.createNativeQuery("UPDATE users SET locale = ? WHERE id=?")
+//                .setParameter(1,locale)
+//                .setParameter(2,id)
+//                .executeUpdate();
+//    }
 }

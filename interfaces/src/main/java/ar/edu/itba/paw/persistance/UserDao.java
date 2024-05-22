@@ -14,10 +14,10 @@ public interface UserDao {
 
         List<User> findAll();
 
-        void updateImageId(long id, long imageId);
+        User updateImageId(User user, Long imageId);
 
-        void updatePassword(Long id, String password);
-        void verifyUser(Long id);
+        User updatePassword(User user, String password);
+        User verifyUser(User user);
 
-        void updateLocale(long id, String locale);
+        User updateLocale(User user, String locale);
 }
