@@ -36,6 +36,11 @@ public class TokenDaoJpa implements TokenDao{
     }
 
     @Override
+    public Optional<User> getUserFromToken(String token, String type) {
+        return Optional.ofNullable(em.find(Token.class,token).getUser());
+    }
+
+    @Override
     public Token createValidationToken(User user, String token) {
         Token out = new Token(token,user,"Validation");
         em.persist(out);

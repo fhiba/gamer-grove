@@ -1,3 +1,4 @@
+import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.persistance.UserDao;
 import ar.edu.itba.paw.services.MailingService;
 import ar.edu.itba.paw.services.TokenService;
@@ -12,6 +13,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import ar.edu.itba.paw.models.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Locale;
 import java.util.Optional;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -37,9 +39,9 @@ public class UserServiceTest {
 
 
     @Test
-    public void testCreate() {
+    public void testCreate() throws UserNotFoundException {
         //	1.	Setup!
-        Mockito.when(mockDao.create(Mockito.eq(USERNAME), Mockito.eq(EMAIL), Mockito.eq(PASSWORD))).thenReturn(new User(1, USERNAME, PASSWORD, EMAIL,0, false));
+        Mockito.when(mockDao.create(Mockito.eq(USERNAME), Mockito.eq(EMAIL), Mockito.eq(PASSWORD))).thenReturn(new User( USERNAME, PASSWORD, EMAIL,false, Locale.getDefault().getLanguage()));
         Mockito.when(mockPasswordEncoder.encode(Mockito.anyString())).thenReturn(PASSWORD);
         Mockito.when(mockTokenService.generateValidationToken(Mockito.anyLong())).thenReturn("token");
 //        Mockito.when(mockMailingService.sendValidationEmail(Mockito.anyString(), Mockito.anyString(),"token"))

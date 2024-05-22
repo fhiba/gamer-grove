@@ -43,6 +43,10 @@ public class TokenServiceImpl implements TokenService {
     public Optional<Long> getUserIdFromToken(String token, String type) throws NoSuchTokenException {
         return tokenDao.getIdFromToken(token, type);
     }
+    @Override
+    public Optional<User> getUserFromToken(String token, String type) throws NoSuchTokenException {
+        return tokenDao.getUserFromToken(token, type);
+    }
 
     @Override
     public Boolean verifyResetToken(String token) {

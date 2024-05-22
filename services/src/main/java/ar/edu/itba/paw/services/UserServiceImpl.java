@@ -79,7 +79,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void updateImageId(long id, long imageId) {
-        userDao.updateImageId(id, imageId);
+        userDao.updateImageId(userDao.findById(id).orElseThrow(), imageId);
     }
 
     @Override
@@ -100,20 +100,22 @@ public class UserServiceImpl implements UserService {
             throw new NoSuchTokenException("Token " + token + " does not exist");
         }
 
-        userDao.updatePassword(maybeId.get(), passwordEncoder.encode(password));
+        userDao.updatePassword(userDao.findById(maybeId.orElseThrow()).orElseThrow(), passwordEncoder.encode(password));
         tokenService.deleteResetTokens(maybeId.get());
     }
 
     @Transactional
     @Override
-    public Optional<User> verifyUser(String token) throws NoSuchTokenException{
-        Optional<Long> maybeId = tokenService.getUserIdFromToken(token, "Validation");
-        if (maybeId.isEmpty()) {
+    public User verifyUser(String token) throws NoSuchTokenException{
+        Optional<User> maybeUser = tokenService.getUserFromToken(token, "Validation");
+        if (maybeUser.isEmpty()) {
             LOGGER.debug("Token {} does not exist",token);
             throw new NoSuchTokenException("Token " + token + " does not exist");
+        }else{
+            User user = maybeUser.get();
+            userDao.verifyUser(user);
+            return user;
         }
-        userDao.verifyUser(maybeId.get());
-        return userDao.findById(maybeId.get());
     }
 
     @Transactional
@@ -142,6 +144,6 @@ public class UserServiceImpl implements UserService {
         if(!profilePic.isEmpty() && !Objects.isNull(profilePic)) {
             fs.uploadUserImage(profilePic);
         }
-        userDao.updateLocale(getLoggedUserChecked().getId(), locale);
+        userDao.updateLocale(getLoggedUserChecked(), locale);
     }
 }

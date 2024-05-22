@@ -2,6 +2,7 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.exceptions.NoSuchTokenException;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
+import ar.edu.itba.paw.models.User;
 
 import java.util.Optional;
 
@@ -11,6 +12,8 @@ public interface TokenService {
 
 
     Optional<Long> getUserIdFromToken(String token, String type)throws NoSuchTokenException;
+
+    Optional<User> getUserFromToken(String token, String type) throws NoSuchTokenException;
 
     Boolean verifyResetToken(String token);
 

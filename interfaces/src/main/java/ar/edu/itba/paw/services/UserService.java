@@ -28,7 +28,7 @@ public interface UserService {
 
     void resetPassword(String token, String password) throws NoSuchTokenException;
 
-    Optional<User> verifyUser(String token) throws NoSuchTokenException;
+    User verifyUser(String token) throws NoSuchTokenException;
 
     Boolean startResetPassword(String email) throws UserNotFoundException;
 

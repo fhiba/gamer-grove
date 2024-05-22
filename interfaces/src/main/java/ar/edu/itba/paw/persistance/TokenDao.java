@@ -10,6 +10,8 @@ public interface TokenDao {
     Boolean verifyResetToken(String token);
     Optional<Long> getIdFromToken(String token, String type);
 
+    Optional<User> getUserFromToken(String token, String type);
+
     Token createValidationToken(User user, String token);
     Token createResetToken(User userId, String token);
 
