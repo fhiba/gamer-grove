@@ -1,5 +1,8 @@
 package ar.edu.itba.paw.persistance;
 
+import ar.edu.itba.paw.models.Token;
+import ar.edu.itba.paw.models.User;
+
 import java.util.Optional;
 
 public interface TokenDao {
@@ -7,8 +10,8 @@ public interface TokenDao {
     Boolean verifyResetToken(String token);
     Optional<Long> getIdFromToken(String token, String type);
 
-    Boolean createValidationToken(Long userId, String token);
-    Boolean createResetToken(Long userId, String token);
+    Token createValidationToken(User user, String token);
+    Token createResetToken(User userId, String token);
 
     void deleteValidationTokens(Long userId);
 

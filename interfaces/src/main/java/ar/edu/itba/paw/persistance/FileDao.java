@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.persistance;
-
+import ar.edu.itba.paw.models.Community;
 import ar.edu.itba.paw.models.File;
+import ar.edu.itba.paw.models.Post;
 
 import java.util.Optional;
 
@@ -10,10 +11,7 @@ public interface FileDao {
 
     Optional<File> uploadImage(byte[] file);
 
-    Optional<File> updateCommunityImage(long portraidId, byte[] file);
-
+    Optional<File> updateFile(File file , byte[] bytes);
 
     void uploadPostImage(long postId, long imageId);
-
-    Optional<File> updateUserImage(long userId, byte[] image);
 }

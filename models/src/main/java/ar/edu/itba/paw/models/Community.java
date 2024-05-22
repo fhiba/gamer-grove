@@ -1,16 +1,17 @@
 package ar.edu.itba.paw.models;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
-
+import java.util.Objects;
 
 
 @Entity
 @Table(name = "community")
-public class Community {
+public class Community implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "community_id_seq")
@@ -69,7 +70,7 @@ public class Community {
         return name;
     }
 
-    public File getPortrait_id() {
+    public File getPortrait() {
         return portrait;
     }
 
@@ -85,7 +86,7 @@ public class Community {
         return categories;
     }
 
-    public void setPortrait_id(File portrait) {
+    public void setPortrait(File portrait) {
         this.portrait = portrait;
     }
 
@@ -114,5 +115,18 @@ public class Community {
 
     public void setFollowers(List<User> followers) {
         this.followers = followers;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Community community = (Community) o;
+        return Objects.equals(id, community.id) && Objects.equals(name, community.name) && Objects.equals(description, community.description) && Objects.equals(portrait, community.portrait) && Objects.equals(categories, community.categories) && Objects.equals(publisher, community.publisher) && Objects.equals(developer, community.developer) && Objects.equals(releaseDate, community.releaseDate) && Objects.equals(followers, community.followers);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, description, portrait, categories, publisher, developer, releaseDate, followers);
     }
 }

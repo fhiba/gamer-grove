@@ -2,6 +2,7 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchTokenException;
+import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.models.User;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,11 +14,10 @@ public interface UserService {
     Optional<User> findByEmail(final String email);
 
     Optional<User> findByUsername(final String username);
-    User create(String username, final String email, final String password);
+    User create(String username, final String email, final String password) throws UserNotFoundException;
 
     Optional<User> getLoggedUser();
 
-    Boolean isUserAdmin(final long id);
 
     User getLoggedUserChecked() throws NoLoggedUserException;
 
@@ -25,15 +25,14 @@ public interface UserService {
 
     void updateImageId(long id, long imageId);
 
-    List<User> findByCommunity(String communityName);
 
     void resetPassword(String token, String password) throws NoSuchTokenException;
 
     Optional<User> verifyUser(String token) throws NoSuchTokenException;
 
-    Boolean startResetPassword(String email);
+    Boolean startResetPassword(String email) throws UserNotFoundException;
 
-    void resendVerification() throws NoLoggedUserException;
+    void resendVerification() throws NoLoggedUserException, UserNotFoundException;
 
     void updateProfile(String locale, MultipartFile profilePic) throws NoLoggedUserException;
 }

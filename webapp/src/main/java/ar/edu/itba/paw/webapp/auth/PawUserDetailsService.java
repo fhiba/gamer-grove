@@ -17,6 +17,7 @@ import java.util.Set;
 
 @Component
 public class PawUserDetailsService implements UserDetailsService {
+
     @Autowired
     private UserService us;
 
@@ -28,7 +29,7 @@ public class PawUserDetailsService implements UserDetailsService {
         if(user.isVerified()) {
             authorities.add(new SimpleGrantedAuthority("ROLE_VERIFIED"));
         }
-        if(us.isUserAdmin(user.getId())) {
+        if(user.getOwner()) {
             authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
         }
         return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), authorities);

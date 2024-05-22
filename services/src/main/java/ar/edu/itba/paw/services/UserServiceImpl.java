@@ -2,6 +2,7 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchTokenException;
+import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistance.UserDao;
 import org.slf4j.Logger;
@@ -55,7 +56,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public User create(final String username, final String email, final String password) {
+    public User create(final String username, final String email, final String password) throws UserNotFoundException {
         User user =  userDao.create(username, email, passwordEncoder.encode(password));
         String token = tokenService.generateValidationToken(user.getId());
         mailingService.sendValidationEmail(email, username, token);
@@ -69,10 +70,6 @@ public class UserServiceImpl implements UserService {
                 : Optional.empty();
     }
 
-    @Override
-    public Boolean isUserAdmin(long id) {
-        return userDao.isAdmin(id).orElse(false);
-    }
 
     @Override
     public List<User> findAll() {
@@ -93,10 +90,6 @@ public class UserServiceImpl implements UserService {
         return maybeUser.get();
     }
 
-    @Override
-    public List<User> findByCommunity(String communityName) {
-        return userDao.findByCommunity(communityName);
-    }
 
     @Transactional
     @Override
@@ -125,7 +118,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public Boolean startResetPassword(String email) {
+    public Boolean startResetPassword(String email) throws UserNotFoundException {
         Optional<User> maybeUser = findByEmail(email);
         if(maybeUser.isEmpty())
             return false;
@@ -137,7 +130,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void resendVerification() throws NoLoggedUserException {
+    public void resendVerification() throws NoLoggedUserException, UserNotFoundException {
         User loggedUSer = getLoggedUserChecked();
         String token = tokenService.generateValidationToken(loggedUSer.getId());
         mailingService.sendValidationEmail(loggedUSer.getEmail(), loggedUSer.getUsername(), token);

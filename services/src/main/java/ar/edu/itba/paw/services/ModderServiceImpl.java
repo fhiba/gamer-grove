@@ -49,15 +49,15 @@ public class ModderServiceImpl implements ModderService{
         // Supuestamente el service me dice si existe o no la comunidad
         Community community = cs.findById(communityId);
         //Checkeo si existe el mod
-        if(isModderOfCommunity(newMod.getId(), communityId)){
+        if(isModderOfCommunity(newMod, communityId)){
             throw new AlreadyModException("User with id "+newMod.getId()+" is already a mod of community with id "+communityId);
         }
         return md.addModder(newMod.getId(), communityId);
     }
 
     @Override
-    public boolean isModderOfCommunity(long userId, long communityId) {
-        return md.isModderOfCommunity(userId,communityId) || us.isUserAdmin(userId);
+    public boolean isModderOfCommunity(User user, long communityId) {
+        return md.isModderOfCommunity(user.getId(), communityId) || user.getOwner();
     }
 
     @Transactional
@@ -104,12 +104,12 @@ public class ModderServiceImpl implements ModderService{
     }
 
     @Override
-    public boolean canRemovePost(long userId, long postId) throws NoSuchPostException, NoSuchCommunityException {
+    public boolean canRemovePost(User user, long postId) throws NoSuchPostException, NoSuchCommunityException {
 
         Post toDelete = ps.getPostById(postId);
         Community postFrom = cs.findByName(toDelete.getcommunity().getName());
 
-        return isModderOfCommunity(userId, postFrom.getId());
+        return isModderOfCommunity(user, postFrom.getId());
     }
     @Override
     public boolean canEditCommunityInfo(String encodedCommunityName) throws NoSuchCommunityException, UserNotFoundException {
@@ -123,7 +123,7 @@ public class ModderServiceImpl implements ModderService{
         if (possibleMod.isEmpty()) {
             return false;
         }
-        return isModderOfCommunity(possibleMod.get().getId(), community.getId());
+        return isModderOfCommunity(possibleMod.get(), community.getId());
     }
 
     @Override
@@ -145,6 +145,6 @@ public class ModderServiceImpl implements ModderService{
             return false;
         }
 
-        return isModderOfCommunity(possibleMod.get().getId(), postFrom.getId());
+        return isModderOfCommunity(possibleMod.get(), postFrom.getId());
     }
 }

@@ -20,8 +20,10 @@ public class User {
 
     @Column(name= "verified", nullable = false)
     private  Boolean verified;
-    @Column(name="portrait_id")
-    private  Long portraid_id;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "portrait_id", referencedColumnName = "id")
+    private File image;
     @Column(name = "locale", nullable = false)
     private String locale;
 
@@ -33,10 +35,6 @@ public class User {
         this.verified = verified;
     }
 
-    public void setPortraid_id(Long portraid_id) {
-        this.portraid_id = portraid_id;
-    }
-
     public Boolean getOwner() {
         return Owner;
     }
@@ -45,19 +43,19 @@ public class User {
         Owner = owner;
     }
 
-    public List<Community> getFollowedCommunties() {
-        return followedCommunties;
+    public List<Community> getFollowedCommunities() {
+        return followedCommunities;
     }
 
-    public void setFollowedCommunties(List<Community> followedCommunties) {
-        this.followedCommunties = followedCommunties;
+    public void setFollowedCommunities(List<Community> followedCommunities) {
+        this.followedCommunities = followedCommunities;
     }
 
     @Column(name = "owner")
     private  Boolean Owner;
 
     @ManyToMany
-    private List<Community> followedCommunties;
+    private List<Community> followedCommunities;
 
     @OneToMany(fetch = FetchType.LAZY)
     private List<Community> modderCommunities;
@@ -82,20 +80,18 @@ public class User {
         //FOR HIBERNATE JPA
     }
 
-    public User(final String username, final String password, final String email, Long portraidId, Boolean verified) {
+    public User(final String username, final String password, final String email, Boolean verified) {
         this.username = username;
         this.email = email;
         this.password = password;
-        portraid_id = portraidId;
         this.verified = verified;
         this.locale = "es";
     }
 
-    public User(final String username, final String password, final String email, Long portraidId, Boolean verified, String locale) {
+    public User(final String username, final String password, final String email, Boolean verified, String locale) {
         this.username = username;
         this.email = email;
         this.password = password;
-        portraid_id = portraidId;
         this.verified = verified;
         this.locale = locale;
     }
@@ -104,9 +100,6 @@ public class User {
         return verified;
     }
 
-    public Long getPortraid_id() {
-        return portraid_id;
-    }
 
     public String getLocale() {
         return locale;
@@ -126,5 +119,13 @@ public class User {
 
     public void setLocale(String locale) {
         this.locale = locale;
+    }
+
+    public File getImage() {
+        return image;
+    }
+
+    public void setImage(File file) {
+        this.image = file;
     }
 }
