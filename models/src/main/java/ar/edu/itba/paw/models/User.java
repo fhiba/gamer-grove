@@ -25,6 +25,37 @@ public class User {
     @Column(name = "locale", nullable = false)
     private String locale;
 
+    public Boolean getVerified() {
+        return verified;
+    }
+
+    public void setVerified(Boolean verified) {
+        this.verified = verified;
+    }
+
+    public void setPortraid_id(Long portraid_id) {
+        this.portraid_id = portraid_id;
+    }
+
+    public Boolean getOwner() {
+        return Owner;
+    }
+
+    public void setOwner(Boolean owner) {
+        Owner = owner;
+    }
+
+    public List<Community> getFollowedCommunties() {
+        return followedCommunties;
+    }
+
+    public void setFollowedCommunties(List<Community> followedCommunties) {
+        this.followedCommunties = followedCommunties;
+    }
+
+    @Column(name = "owner")
+    private  Boolean Owner;
+
     @ManyToMany
     private List<Community> followedCommunties;
     public String getUsername() {
