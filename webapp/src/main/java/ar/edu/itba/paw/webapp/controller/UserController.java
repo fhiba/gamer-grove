@@ -182,7 +182,7 @@ public class UserController {
     public ModelAndView getProfileLikedPosts(@RequestParam(required = false) Integer pageNumber, @ModelAttribute("userPfpForm") final UserPfpForm userPfpForm) {
         ModelAndView mav = new ModelAndView("user/profile/likedPosts");
         User user = us.getLoggedUser().orElseThrow();
-        Boolean isAdmin = us.isUserAdmin(user.getId());
+        Boolean isAdmin = us.getLoggedUser().get().getOwner();
         mav.addObject("isAdmin",isAdmin);
         mav.addObject("user",user);
         mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));

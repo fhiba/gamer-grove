@@ -91,7 +91,8 @@ public class PostDaoJpa implements PostDao {
     public void deleteGrooviness(long postId, long id) {
         em.createNativeQuery("DELETE FROM groovy_post_history where post_id = :post_id and user_id = :id")
                 .setParameter("post_id",postId)
-                .setParameter("id",id);
+                .setParameter("id",id)
+                .executeUpdate();
     }
 
     @Override
@@ -99,7 +100,8 @@ public class PostDaoJpa implements PostDao {
         em.createNativeQuery("UPDATE groovy_post_history set groovy_type = :b where post_id =:postId and user_id = :id")
                 .setParameter("b",b)
                 .setParameter("postId",postId)
-                .setParameter("id",id);
+                .setParameter("id",id)
+                .executeUpdate();
     }
 
     @Override

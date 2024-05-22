@@ -95,7 +95,7 @@ public class CommunityController {
         boolean canEdit = false;
         if(maybeUser.isPresent()){
             User user = maybeUser.get();
-            isAdmin = us.isUserAdmin(user.getId());
+            isAdmin = user.getOwner();
             isFollowing = cs.checkIfUserFollowsCommunity(community.getId().intValue());
             communities = cs.getFollowedCommunities(user);
             canEdit = ms.isModderOfCommunity(user.getId(),community.getId());

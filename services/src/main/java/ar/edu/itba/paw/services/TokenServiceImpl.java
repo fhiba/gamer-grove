@@ -63,7 +63,11 @@ public class TokenServiceImpl implements TokenService {
     public String generateValidationToken(Long userId) {
          UUID uuid = UUID.randomUUID();
         String token = uuid.toString();
-        tokenDao.createValidationToken(userId, token);
+        Optional<User> maybeUser = userService.findById(userId);
+        if(maybeUser.isEmpty())
+            throw new UserNotFoundException("User with id " + userId + " does not exist");
+        User user = maybeUser.get();
+        tokenDao.createValidationToken(user, token);
         return token;
     }
 

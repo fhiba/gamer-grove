@@ -69,7 +69,8 @@ public class PostServiceImpl implements PostService{
     }
     @Async
     void notifyUsers(Post post, User user) {
-        List<User> users = userService.findByCommunity(post.getcommunity().getName()).stream().filter(u -> u.getId() != user.getId()).toList();
+        Community community = post.getcommunity();
+        List<User> users = community.getFollowers();
         mailingService.sendNewPostNotifications(users, post, user);
     }
 

@@ -56,8 +56,8 @@ public class ModderServiceImpl implements ModderService{
     }
 
     @Override
-    public boolean isModderOfCommunity(long userId, long communityId) {
-        return md.isModderOfCommunity(userId,communityId) || us.isUserAdmin(userId);
+    public boolean isModderOfCommunity(User user, long communityId) {
+        return md.isModderOfCommunity(user.getId(), communityId) || user.getOwner();
     }
 
     @Transactional
@@ -104,12 +104,12 @@ public class ModderServiceImpl implements ModderService{
     }
 
     @Override
-    public boolean canRemovePost(long userId, long postId) throws NoSuchPostException, NoSuchCommunityException {
+    public boolean canRemovePost(User user, long postId) throws NoSuchPostException, NoSuchCommunityException {
 
         Post toDelete = ps.getPostById(postId);
         Community postFrom = cs.findByName(toDelete.getcommunity().getName());
 
-        return isModderOfCommunity(userId, postFrom.getId());
+        return isModderOfCommunity(user, postFrom.getId());
     }
     @Override
     public boolean canEditCommunityInfo(String encodedCommunityName) throws NoSuchCommunityException, UserNotFoundException {
