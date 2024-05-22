@@ -118,7 +118,7 @@ public class CommentDaoJpa implements CommentDao{
     @Override
     public List<Comment> getPostCommentsPaginated(long postId, int pageSize, int offset) {
         Query nativeQuery = em.createNativeQuery("SELECT id FROM comment WHERE post_id = :postId ORDER BY comment_date DESC");
-        nativeQuery.setFirstResult(pageSize * ((offset/pageSize)));
+        nativeQuery.setFirstResult(offset);
         nativeQuery.setParameter("postId", postId);
         nativeQuery.setMaxResults(pageSize);
 

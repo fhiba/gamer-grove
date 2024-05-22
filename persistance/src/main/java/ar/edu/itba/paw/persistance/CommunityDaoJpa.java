@@ -182,7 +182,12 @@ public class CommunityDaoJpa implements CommunityDao{
 
     @Override
     public void followCommunity(long id, int communityId, String communityName) {
-        em.createNativeQuery("INSERT INTO community_user (user_id, community_id, community_name, community_role) VALUES (:id, :communityId, :communityName, :role)");
+        em.createNativeQuery("INSERT INTO community_user (user_id, community_id, community_name, community_role) VALUES (:id, :communityId, :communityName, :role)")
+                .setParameter("id", id)
+                .setParameter("communityId", communityId)
+                .setParameter("communityName", communityName)
+                .setParameter("role", 0)
+                .executeUpdate();
 
     }
 

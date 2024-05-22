@@ -148,7 +148,7 @@ public class CommunityServiceImpl implements CommunityService{
             communityDao.unfollowCommunity(community, user);
         }
         else{
-            communityDao.followCommunity(community, user);
+            communityDao.followCommunity(user.getId(),communityId,communityName);
         }
     }
 
