@@ -77,7 +77,11 @@ public class Community {
         return description;
     }
 
-    public List<CommunityCategories> getCategories() {
+    public List<String> getCategories() {
+        List<String> categories = null;
+        for(CommunityCategories category : this.categories){
+            categories.add(category.toString());
+        }
         return categories;
     }
 

@@ -26,7 +26,7 @@ public class GroovyCommentHistory {
     @Column(name="groovy_type")
     private  Boolean grooviness;
 
-    public GroovyCommentHistory(User user, Comment comment, Post post, boolean grooviness) {
+    public GroovyCommentHistory(User user, Comment comment, Post post, Boolean grooviness) {
         this.user = user;
         this.comment = comment;
         this.post = post;
@@ -46,7 +46,7 @@ public class GroovyCommentHistory {
         return comment;
     }
 
-    public boolean isGrooviness() {
+    public Boolean isGrooviness() {
         return grooviness;
     }
 

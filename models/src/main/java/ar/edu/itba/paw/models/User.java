@@ -27,6 +27,10 @@ public class User {
 
     @ManyToMany
     private List<Community> followedCommunties;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    private List<Community> modderCommunities;
+
     public String getUsername() {
         return username;
     }

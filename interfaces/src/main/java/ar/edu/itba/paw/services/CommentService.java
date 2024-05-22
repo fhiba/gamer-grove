@@ -11,13 +11,13 @@ import ar.edu.itba.paw.models.pagination.PaginationRequest;
 import java.util.List;
 
 public interface CommentService {
-        Comment createComment(long postId, String body) throws NoLoggedUserException;
+        Comment createComment(long postId, String body) throws NoLoggedUserException, NoSuchPostException;
         List<Comment> getPostComments(long postId);
 
         PaginatedDataWrapper<Comment> getPostCommentsPaginated(long postId, PaginationRequest request);
 
 
-        void editGroovinessOnComment(long commentId, int grooviness, long postId) throws NoSuchCommentException, UserNotFoundException, NoLoggedUserException;
+        void editGroovinessOnComment(long commentId, int grooviness, long postId) throws NoSuchCommentException, UserNotFoundException, NoLoggedUserException, NoSuchPostException;
 
         List<Comment> getUpGroovedComments(long postId) throws NoSuchPostException, UserNotFoundException;
 
