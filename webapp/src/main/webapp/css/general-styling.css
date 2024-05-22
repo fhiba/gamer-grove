@@ -39,6 +39,10 @@ body {
     border:none;
 }
 
+.modal-title-color{
+    color: white!important;
+}
+
 .discussion{
     background-color: #FF5733; /* Change to desired color for Miscellaneous */
 }

@@ -47,7 +47,7 @@
                         <a href="${newPostUrl}" type="button" class="btn  btn-primary  h-25 me-2 mt-1"><spring:message
                                 code="Post.Create"/></a>
                     </div>
-                    <c:if test="${posts.data.size() == 0}">
+                    <c:if test="${empty posts || posts.data.size() == 0}">
                         <c:url var="allUrl" value="/all"/>
                         <div class="align-items-center text-center justify-content-center w-100">
                                 <h6 class="card-title"><spring:message code="Home.NoPosts"/> <a href="${allUrl}"><spring:message code="Home.GoAll"/></a></h6>
@@ -60,14 +60,6 @@
                             <div class="card mb-3">
                                 <div class="card-body">
                                     <div class="title-container">
-                                            <%--                                        <c:if test="${community.portrait_id == 0}">--%>
-                                            <%--                                            <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"--%>
-                                            <%--                                                 class="very-small-profile-pic mb-1" alt="Profile Picture">--%>
-                                            <%--                                        </c:if>--%>
-                                            <%--                                        <c:if test="${community.portrait_id != 0}">--%>
-                                            <%--                                            <img src="<c:url value='/image/${community.portrait_id}'/>"--%>
-                                            <%--                                                 class="very-small-profile-pic mb-1" alt="Profile Picture">--%>
-                                            <%--                                        </c:if>                                            --%>
                                         <p class="fw-semibold card-subtitle">/<c:out value="${post.communityName}"
                                                                                      escapeXml="true"/></p>
                                         <span class="badge rounded-pill mb-1 ${post.category}">${post.category}</span>
@@ -83,27 +75,25 @@
 
                                         </div>
                                     </c:if>
-                                    <c:if test="${post.deleted}">
-                                        <h4 class="card-title fw-bold"><spring:message code="Post.Deleted"/></h4>
-                                        <p class="card-text post-body"><<spring:message code="Post.Deleted"/></p>
-                                    </c:if>
                                     <div class="d-flex row-cols-2 justify-content-between mt-1">
                                         <p>
                                             <small class="text-body-secondary">
                                                 <c:out value="${post.date.format(format)}" escapeXml="true"/>
                                             </small>
                                         </p>
-                                        <span class="badge rounded-pill text-bg-primary groovy-pill border-1"><c:out value="${post.grooviness}" escapeXml="true"/></span>
+                                            <span class="badge rounded-pill text-bg-primary groovy-pill border-1"><c:out value="${post.grooviness}" escapeXml="true"/></span>
                                     </div>
                                 </div>
                             </div>
                         </a>
                     </c:forEach>
-                    <div class="d-flex justify-content-center align-items-center">
-                            <c:set var="paginatedDataWrapper" value="${posts}" scope="request"/>
-                            <c:set var="pageNumberName" value="pageNumber" scope="request"/>
-                            <jsp:include page="/WEB-INF/jsp/components/paginationFooter.jsp"/>
-                    </div>
+                    <c:if test="${not empty posts}">
+                        <div class="d-flex justify-content-center align-items-center">
+                                <c:set var="paginatedDataWrapper" value="${posts}" scope="request"/>
+                                <c:set var="pageNumberName" value="pageNumber" scope="request"/>
+                                <jsp:include page="/WEB-INF/jsp/components/paginationFooter.jsp"/>
+                        </div>
+                    </c:if>
                 </div>
             </div>
         </div>

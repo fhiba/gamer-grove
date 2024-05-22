@@ -72,7 +72,7 @@ public class PostController {
         Optional<User> maybeUser = us.getLoggedUser();
         List<Community> followedCommunities;
         Boolean isAdmin = false;
-        List<String> categories = ps.getUsedCategories();
+        List<String> categories = Arrays.stream(PostCategories.values()).map(PostCategories::getCategory).toList();
         boolean isLogged = false;
         if(maybeUser.isPresent()) {
             User user = maybeUser.get();

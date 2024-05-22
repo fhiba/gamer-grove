@@ -167,20 +167,38 @@
                         <a href="${postUrl}" class="card-link text-decoration-none">
                             <div class="card mb-3">
                                 <div class="card-body">
-                                    <p class="fw-semibold card-subtitle mb-1">
-                                        <c:out value="c/${post.communityName}" escapeXml="true"/>
-                                        <span class="badge rounded-pill ${post.category}">${post.category}</span>
-                                    </p>
+                                    <div class="title-container">
+                                            <%--                                        <c:if test="${community.portrait_id == 0}">--%>
+                                            <%--                                            <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"--%>
+                                            <%--                                                 class="very-small-profile-pic mb-1" alt="Profile Picture">--%>
+                                            <%--                                        </c:if>--%>
+                                            <%--                                        <c:if test="${community.portrait_id != 0}">--%>
+                                            <%--                                            <img src="<c:url value='/image/${community.portrait_id}'/>"--%>
+                                            <%--                                                 class="very-small-profile-pic mb-1" alt="Profile Picture">--%>
+                                            <%--                                        </c:if>                                            --%>
+                                        <p class="fw-semibold card-subtitle">/<c:out value="${post.communityName}"
+                                                                                     escapeXml="true"/></p>
+                                        <span class="badge rounded-pill mb-1 ${post.category}">${post.category}</span>
+                                    </div>
                                     <c:if test="${!post.deleted}">
-                                        <h4 class="card-title fw-bold"><c:out value="${post.title}"
-                                                                              escapeXml="true"/></h4>
-                                        <p class="card-text post-body"><c:out value="${post.body}"
-                                                                              escapeXml="true"/></p>
+                                        <div>
+                                            <h4 class="card-title fw-bold"><c:out value="${post.title}"
+                                                                                  escapeXml="true"/></h4>
+                                            <p class="card-text post-body"><c:out value="${post.body}"
+                                                                                  escapeXml="true"/></p>
+                                        </div>
+                                        <div>
+
+                                        </div>
                                     </c:if>
-                                    <c:if test="${post.deleted}">
-                                        <h4 class="card-title fw-bold"><spring:message code="Post.Deleted"/></h4>
-                                        <p class="card-text post-body"><<spring:message code="Post.Deleted"/></p>
-                                    </c:if>
+                                    <div class="d-flex row-cols-2 justify-content-between mt-1">
+                                        <p>
+                                            <small class="text-body-secondary">
+                                                <c:out value="${post.date.format(format)}" escapeXml="true"/>
+                                            </small>
+                                        </p>
+                                        <span class="badge rounded-pill text-bg-primary groovy-pill border-1"><c:out value="${post.grooviness}" escapeXml="true"/></span>
+                                    </div>
                                 </div>
                             </div>
                         </a>

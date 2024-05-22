@@ -23,6 +23,7 @@ import javax.validation.Valid;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -111,6 +112,7 @@ public class CommunityController {
         mav.addObject("community",community);
         mav.addObject("posts",posts);
         mav.addObject("canEdit",canEdit);
+        mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
         return mav;
     }
 
