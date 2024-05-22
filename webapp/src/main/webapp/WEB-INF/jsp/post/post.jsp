@@ -195,7 +195,7 @@
                                 <li class="list-group-item d-flex justify-content-between align-items-start bg-body-secondary">
                                         <%--suppress CheckImageSize --%>
                                     <img src="${pageContext.request.contextPath}/images/default-avatar-icon.jpg"
-                                         height="50" width="50" class="rounded-5" alt="Profile Picture">
+                                         height="50" width="50" class="rounded-5" alt="Profile Picture" >
                                     <div class="ms-2 me-auto">
                                         <div class="fw-bold"><c:out value="${comment.username}" escapeXml="true"/>
                                         </div>
@@ -251,16 +251,20 @@
                                                 <button onclick="commentGroovyUpdate(false, ${comment.id})" class="btn">
                                                     <i class="fas fa-arrow-down"></i>
                                                 </button>
-                                            </c:if>
+                                                </c:if>
+                                            </div>
+                                        </c:if>
                                         </div>
                                         <div class="d-flex justify-content-center align-items-center">
                                         <c:url value="/comment/${postId}/delete" var="deleteCommentUrl"/>
                                         <c:if test="${canDelete}">
+                                            <c:if test="${!post.deleted}">
                                             <button class="btn btn-danger btn-sm align-content-center"
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#deleteComment${comment.id}Modal">
                                                 <i class="fas fa-solid fa-trash"></i>
                                             </button>
+                                            </c:if>
                                             <!-- Modal -->
                                             <div class="modal fade" id="deleteComment${comment.id}Modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                                 <div class="modal-dialog modal-dialog-centered">
@@ -287,7 +291,6 @@
                                                 </div>
                                             </div>
                                         </c:if>
-                                        </div>
                                     </div>
                                 </li>
                             </c:if>
@@ -319,7 +322,6 @@
                     </ul>
                 </div>
             </div>
-        </div>
         <div class="col-1">
 
         </div>
