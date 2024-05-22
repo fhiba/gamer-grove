@@ -13,7 +13,7 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "post_id_seq")
     @SequenceGenerator(sequenceName = "post_id_seq", name = "post_id_seq", allocationSize = 1)
     @Column(name ="id")
-    private  long id;
+    private  Long id;
     @Column(name = "title", nullable = false)
     private  String title;
     @Column(name = "body", nullable = false)
@@ -27,8 +27,12 @@ public class Post {
     @JoinColumn(name = "community_name", referencedColumnName = "name")
     private Community community;
 
+
+    @OneToMany(mappedBy = "post")
+    private List<Comment> comments;
+
     @Column(name = "media", nullable = false)
-    private  boolean media;
+    private  Boolean media;
 
     @Column(name = "media_id")
     private  Long mediaId;
@@ -36,12 +40,12 @@ public class Post {
     @Column(name= "post_date", nullable = false)
     private  LocalDateTime date;
     @Column (name = "grooviness", nullable = false)
-    private  int grooviness;
+    private  Integer grooviness;
     @Column(name = "deleted", nullable = false)
-    private  boolean deleted;
+    private  Boolean deleted;
 
-    @Column(name = "category")
-    private String category;
+    @Enumerated(EnumType.STRING)
+    private PostCategories category;
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "post_images", joinColumns = {@JoinColumn(name = "post_id")}, inverseJoinColumns = {@JoinColumn(name = "image_id")})
@@ -52,7 +56,20 @@ public class Post {
         //HIBERNATE ONLY
     }
 
-    public long getId() {
+    public Post(final String title, final String body, final User author, final Community community, final Boolean media, final Long media_id, final LocalDateTime date, final Integer grooviness, Boolean deleted, final PostCategories category) {
+        this.title = title;
+        this.body = body;
+        this.author = author;
+        this.community = community;
+        this.media = media;
+        this.mediaId = media_id;
+        this.date = date;
+        this.grooviness = grooviness;
+        this.deleted = deleted;
+        this.category = category;
+    }
+
+    public Long getId() {
         return id;
     }
 
@@ -72,11 +89,11 @@ public class Post {
         return community;
     }
 
-    public boolean getMedia() {
+    public Boolean getMedia() {
         return media;
     }
 
-    public long getMediaId() {
+    public Long getMediaId() {
         return mediaId;
     }
 
@@ -84,40 +101,14 @@ public class Post {
         return date;
     }
 
-    public int getGrooviness() {
+    public Integer getGrooviness() {
         return grooviness;
     }
-    public String getCategory() {
+    public PostCategories getCategory() {
         return category;
     }
-    public Post(final long id, final String title, final String body, final User author, final Community community, final boolean media, final long media_id, final LocalDateTime date, final int grooviness, boolean deleted, final String category) {
-        this.id = id;
-        this.title = title;
-        this.body = body;
-        this.author = author;
-        this.community = community;
-        this.media = media;
-        this.mediaId = media_id;
-        this.date = date;
-        this.grooviness = grooviness;
-        this.deleted = deleted;
-        this.category = category;
-    }
 
-    public Post( final String title, final String body, final User author, final Community community, final boolean media, final Long media_id, final LocalDateTime date, final int grooviness, boolean deleted, final String category) {
-        this.title = title;
-        this.body = body;
-        this.author = author;
-        this.community = community;
-        this.media = media;
-        this.mediaId = media_id;
-        this.date = date;
-        this.grooviness = grooviness;
-        this.deleted = deleted;
-        this.category = category;
-    }
-
-    public boolean isDeleted() {
+    public Boolean isDeleted() {
         return deleted;
     }
 
