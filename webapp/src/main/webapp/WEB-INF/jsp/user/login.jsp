@@ -43,7 +43,7 @@
                     </a>
                     <br/>
                     <c:url var="forgotPassword" value="/auth/forgotCredentials"/>
-                    <a href="${forgotPassword}" class="link-light link-underline-opacity-0">
+                    <a href="${forgotPassword}" class="link link-underline-opacity-0 mt-2">
                         <spring:message code="Login.ForgotPass"/></a>
                 </div>
             </div>

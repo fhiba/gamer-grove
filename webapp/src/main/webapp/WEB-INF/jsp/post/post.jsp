@@ -34,8 +34,11 @@
                            class="text-decoration-none text-light text-body-primary">c/<c:out
                                 value="${post.communityName}"
                                 escapeXml="true"/></a>
-                        <span class="badge rounded-pill ${post.category}"><c:out value="${post.category}"
+                        <c:url value="/all?category=${post.category}" var="categoryFilterURl"/>
+                        <a href="${categoryFilterURl}">
+                        <span class="badge rounded-pill pe-auto ${post.category}"><c:out value="${post.category}"
                                                                                  escapeXml="true"/></span>
+                        </a>
                     </p>
 
                     <c:if test="${post.deleted}">
