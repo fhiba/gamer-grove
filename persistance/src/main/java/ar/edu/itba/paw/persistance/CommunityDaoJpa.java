@@ -2,6 +2,8 @@ package ar.edu.itba.paw.persistance;
 
 
 import ar.edu.itba.paw.models.Community;
+import ar.edu.itba.paw.models.CommunityCategories;
+import ar.edu.itba.paw.models.User;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -38,11 +40,9 @@ public class CommunityDaoJpa implements CommunityDao{
 
     @Override
     public Optional<Community> findByName(String communityName) {
-        return em.createQuery("From Community WHERE name = :name", Community.class)
+        return em.createQuery("from Community as c where c.name = :name", Community.class)
                 .setParameter("name", communityName)
-                .getResultList()
-                .stream()
-                .findFirst();
+                .getResultStream().findFirst();
     }
 
     @Override
@@ -128,11 +128,23 @@ public class CommunityDaoJpa implements CommunityDao{
     }
 
     @Override
+    public Community addCategory(Community community, String category) {
+        community.getCategoriesEnum().add(CommunityCategories.valueOf(category));
+        return em.merge(community);
+    }
+
+    @Override
     public Boolean removeCategory(long id, String category) {
         return em.createNativeQuery("DELETE FROM communities_categories WHERE community_id = :id AND category = :category")
                 .setParameter("id", id)
                 .setParameter("category", category)
                 .executeUpdate() > 0;
+    }
+
+    @Override
+    public Community removeCategory(Community community, String category) {
+        community.getCategoriesEnum().remove(CommunityCategories.valueOf(category));
+        return em.merge(community);
     }
 
     @Override
@@ -149,10 +161,23 @@ public class CommunityDaoJpa implements CommunityDao{
 
     @Override
     public void unfollowCommunity(long id, int communityId) {
+
         em.createNativeQuery("DELETE FROM community_user WHERE user_id = :id AND community_id = :communityId")
                 .setParameter("id", id)
                 .setParameter("communityId", communityId)
                 .executeUpdate();
+    }
+
+    @Override
+    public void followCommunity(Community community, User user) {
+        community.getFollowers().add(user);
+        em.merge(community);
+    }
+
+    @Override
+    public void unfollowCommunity(Community community, User user) {
+        community.getFollowers().remove(user);
+        em.merge(community);
     }
 
     @Override

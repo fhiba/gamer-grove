@@ -100,7 +100,7 @@ public class CommunityServiceImpl implements CommunityService{
         Optional<Community> community = communityDao.findById(id);
         if(community.isEmpty())
             throw new NoSuchCommunityException("Community " + id+ " not found");
-        communityDao.addCategory(id,category);
+        communityDao.addCategory(community.get(), category);
     }
 
     @Transactional
@@ -109,7 +109,7 @@ public class CommunityServiceImpl implements CommunityService{
         Optional<Community> community = communityDao.findById(id);
         if(community.isEmpty())
             throw new NoSuchCommunityException("Community " + id+ " not found");
-        communityDao.removeCategory(id,category);
+        communityDao.removeCategory(community.get(),category);
     }
 
     @Transactional
@@ -138,16 +138,18 @@ public class CommunityServiceImpl implements CommunityService{
 
     @Transactional
     @Override
-    public void modifyUserOnCommunity(int communityId,String communityName) throws NoLoggedUserException {
-        Boolean followsCommunity = checkIfUserFollowsCommunity(communityId);
-        User user = userService.getLoggedUser().get();
-        if(followsCommunity){
-            communityDao.unfollowCommunity(user.getId(), communityId);
+    public void modifyUserOnCommunity(int communityId,String communityName) throws NoLoggedUserException, NoSuchCommunityException {
+        Community community = findById(communityId);
+        Optional<User> maybeUser = userService.getLoggedUser();
+        if (maybeUser.isEmpty())
+            throw new NoLoggedUserException("No logged user");
+        User user = maybeUser.get();
+        if(community.getFollowers().contains(user)){
+            communityDao.unfollowCommunity(community, user);
         }
         else{
-            communityDao.followCommunity(user.getId(), communityId,communityName);
+            communityDao.followCommunity(community, user);
         }
-
     }
 
     @Transactional
@@ -165,7 +167,7 @@ public class CommunityServiceImpl implements CommunityService{
             fileService.uploadCommunityImage(decodedName, image);
 
         Community community = findByName(decodedName);
-        List<String> currentCategories = Objects.isNull(community.getCategories())? Collections.emptyList(): new ArrayList<>(community.getCategories());
+        List<String> currentCategories = Objects.isNull(community.getCategory())? Collections.emptyList(): new ArrayList<>(community.getCategory());
         if(!Objects.isNull(categories)) {
             List<String> newCategories = List.of(categories.split(","));
             for (String category : newCategories) {
@@ -183,12 +185,13 @@ public class CommunityServiceImpl implements CommunityService{
 
 
     @Override
-    public Boolean checkIfUserFollowsCommunity(int communityId) throws NoLoggedUserException {
+    public Boolean checkIfUserFollowsCommunity(int communityId) throws NoLoggedUserException, NoSuchCommunityException {
         Optional<User> maybeUser = userService.getLoggedUser();
         if(maybeUser.isEmpty())
             throw new NoLoggedUserException("No logged user");
         User user = maybeUser.get();
-        return communityDao.checkIfUserFollowsCommunity(user.getId(),communityId);
+        Community community = findById(communityId);
+        return community.getFollowers().contains(user);
     }
 
     @Override
@@ -198,6 +201,4 @@ public class CommunityServiceImpl implements CommunityService{
             return Collections.emptyList();
         return followedCommunities;
     }
-
-
 }

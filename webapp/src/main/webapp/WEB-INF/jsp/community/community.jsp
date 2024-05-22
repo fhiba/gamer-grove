@@ -87,12 +87,12 @@
                 <div class="card-body">
                     <div class="row w-100 mb-2">
                         <div class="col-4">
-                            <c:if test="${community.portrait_id == 0}">
+                            <c:if test="${ empty community.portrait}">
                                 <img src="${pageContext.request.contextPath}/images/default-community.png"
                                      class="w-100 rounded-1 img-thumbnail img-com" alt="Profile Picture">
                             </c:if>
-                            <c:if test="${community.portrait_id != 0}">
-                                <img src="<c:url value='/image/${community.portrait_id}'/>"
+                            <c:if test="${not empty community.portrait}">
+                                <img src="<c:url value='/image/${community.portrait.imageId}'/>"
                                      class="w-100 rounded-1 img-thumbnail img-com" alt="Profile Picture">
                             </c:if>
 
@@ -122,8 +122,8 @@
                                     </button>
                                 </c:if>
                             </div>
-                            <c:forEach var="category" items="${community.categories}">
-                                <span class="fs-6 cat-badge p-1 badge">${category}</span>
+                            <c:forEach var="category" items="${community.category}">
+                                <span class="fs-6 cat-badge p-1 badge">${category.toString()}</span>
                             </c:forEach>
                             <div class="accordion accordion-flush justify-content-end">
 

@@ -51,10 +51,10 @@ public class CommunityController {
         Boolean isAdmin = false;
         if(maybeUser.isPresent()) {
             User user = maybeUser.get();
-            communities = cs.getFollowedCommunities(user);
+            communities = user.getFollowedCommunities();
             isAdmin = user.getOwner();
         }else{
-            communities = cs.getAllCommunitiesNoCat();
+            communities = cs.getAllCommunities();
         }
         mav.addObject("isAdmin",isAdmin);
         mav.addObject("isLogged", maybeUser.isPresent());
@@ -95,11 +95,11 @@ public class CommunityController {
             User user = maybeUser.get();
             isAdmin = user.getOwner();
             isFollowing = cs.checkIfUserFollowsCommunity(community.getId().intValue());
-            communities = cs.getFollowedCommunities(user);
+            communities = user.getFollowedCommunities();
             canEdit = ms.isModderOfCommunity(user,community.getId());
         }
         else {
-            communities = cs.getAllCommunitiesNoCat();
+            communities = cs.getAllCommunities();
         }
         mav.addObject("isAdmin",isAdmin);
         mav.addObject("isLogged", maybeUser.isPresent());
@@ -142,11 +142,11 @@ public class CommunityController {
         List<Community> followedCommunities;
         if(maybeUser.isPresent()) {
             User user = maybeUser.get();
-            followedCommunities = cs.getFollowedCommunities(user);
+            followedCommunities = user.getFollowedCommunities();
             isAdmin = user.getOwner();
         }
         else {
-            followedCommunities = cs.getAllCommunitiesNoCat();
+            followedCommunities = cs.getAllCommunities();
         }
         mav.addObject("isAdmin",isAdmin);
         mav.addObject("isLogged",maybeUser.isPresent());
@@ -177,10 +177,10 @@ public class CommunityController {
         if(maybeUser.isPresent()) {
             User user = maybeUser.get();
             mav.addObject("isAdmin", user.getOwner());
-            mav.addObject("communities",cs.getFollowedCommunities(user));
+            mav.addObject("communities",user.getFollowedCommunities());
             isLogged = true;
         }else{
-            mav.addObject("communities",cs.getAllCommunitiesNoCat());
+            mav.addObject("communities",cs.getAllCommunities());
         }
         mav.addObject("isLogged",isLogged);
         mav.addObject("categories", Arrays.stream(CommunityCategories.values()).map(CommunityCategories::getCategory).toArray(String[]::new));

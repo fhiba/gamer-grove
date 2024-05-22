@@ -54,7 +54,7 @@ public class User {
     @Column(name = "owner")
     private  Boolean Owner;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "followers")
     private List<Community> followedCommunities;
 
     @OneToMany(fetch = FetchType.LAZY)

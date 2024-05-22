@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.persistance;
 
 import ar.edu.itba.paw.models.Community;
+import ar.edu.itba.paw.models.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,14 +20,19 @@ public interface CommunityDao {
     List<Community> find(int pageSize,int offset,String searchTerms, List<String> categories);
 
     Boolean addCategory(final long id, String category);
+    Community addCategory(Community community, String category);
 
     Boolean removeCategory(final long id, String category);
+    Community removeCategory(Community community, String category);
 
     List<String> getCategoriesOfCommunity(final long id);
 
     Boolean checkIfUserFollowsCommunity(long userId, int communityId);
 
     void unfollowCommunity(long id, int communityId);
+
+    void followCommunity(Community community, User user);
+    void unfollowCommunity(Community community, User user);
 
     void followCommunity(long id, int communityId,String communityName);
 
