@@ -16,7 +16,7 @@ public class GroovyPostHistory {
     @JoinColumn(name = "post_id", referencedColumnName = "id")
     private Post post;
     @Column(name="groovy_type")
-    private boolean groovyType;
+    private Boolean groovyType;
 
 
     public GroovyPostHistory(User user, Post post, boolean groovyType) {
@@ -45,11 +45,11 @@ public class GroovyPostHistory {
         this.post = post;
     }
 
-    public boolean isGroovyType() {
+    public Boolean isGroovyType() {
         return groovyType;
     }
 
-    public void setGroovyType(boolean groovyType) {
+    public void setGroovyType(Boolean groovyType) {
         this.groovyType = groovyType;
     }
 }
