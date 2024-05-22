@@ -1,20 +1,20 @@
 package ar.edu.itba.paw.models;
 
 public enum CommunityCategories {
-    ACTION("Action"),
-    ADVENTURE("Adventure"),
-    CARDS("Cards"),
-    STRATEGY("Strategy"),
-    SPORTS("Sports"),
-    SIMULATION("Simulation"),
+    Action("Action"),
+    Adventure("Adventure"),
+    Cards("Cards"),
+    Strategy("Strategy"),
+    Sports("Sports"),
+    Simulation("Simulation"),
     RPG("RPG"),
-    PUZZLE("Puzzle"),
-    PLATFORMER("Platformer"),
-    SHOOTER("Shooter"),
-    HACK_AND_SLASH("Hack and Slash"),
-    PVP("PvP"),
-    PVE("PvE"),
-    OPEN_WORLD("Open World");
+    Puzzle("Puzzle"),
+    Platformer("Platformer"),
+    Shooter("Shooter"),
+    Hack_and_Slash("Hack and Slash"),
+    PvP("PvP"),
+    PvE("PvE"),
+    Open_World("Open World");
 
     private final String category;
 

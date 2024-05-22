@@ -98,7 +98,7 @@ public class UserController {
         //El user esta necesariamente logueado para entrar en esta vista entonces no hace falta chequear si esta presente
 
         mav.addObject("isAdmin",true);
-        mav.addObject("sidebarcommunities", cs.getFollowedCommunities(us.getLoggedUser().get()));
+        mav.addObject("sidebarcommunities", us.getLoggedUser().get().getFollowedCommunities());
         mav.addObject("allCommunities", cs.getAllCommunities());
         mav.addObject("isLogged",true);
         return mav;
@@ -161,7 +161,7 @@ public class UserController {
         mav.addObject("isAdmin",user.getOwner());
         mav.addObject("user",user);
         mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
-        mav.addObject("communities",cs.getFollowedCommunities(user));
+        mav.addObject("communities",user.getFollowedCommunities());
         mav.addObject("isVerified",user.isVerified());
 
         PaginatedDataWrapper<Post> posts;
@@ -185,7 +185,7 @@ public class UserController {
         mav.addObject("isAdmin",isAdmin);
         mav.addObject("user",user);
         mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
-        mav.addObject("communities",cs.getFollowedCommunities(user));
+        mav.addObject("communities",user.getFollowedCommunities());
         mav.addObject("isVerified",user.isVerified());
         PaginatedDataWrapper<Post> likedPosts;
         PaginationRequest paginationRequestLikedPosts = new PaginationRequest(5);

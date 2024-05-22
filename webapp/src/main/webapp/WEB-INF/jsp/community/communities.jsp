@@ -45,12 +45,12 @@
                                 <div class="card mb-3">
                                     <div class="card-body d-flex flex-row">
                                         <div class="flex-column">
-                                            <c:if test="${community.portrait_id == 0}">
+                                            <c:if test="${empty community.portrait}">
                                                 <img src="${pageContext.request.contextPath}/images/default-community.png"
                                                      class="very-small-profile-pic mb-1" alt="Profile Picture">
                                             </c:if>
-                                            <c:if test="${community.portrait_id != 0}">
-                                                <img src="<c:url value='/image/${community.portrait_id}'/>"
+                                            <c:if test="${not empty community.portrait}">
+                                                <img src="<c:url value='/image/${community.portrait.imageId}'/>"
                                                      class="very-small-profile-pic mb-1" alt="Profile Picture">
                                             </c:if>
                                         </div>
@@ -61,8 +61,8 @@
                                                 </h2>
                                                 <div class="justify-content-end">
                                                     <c:forEach var="communityCategories"
-                                                               items="${community.categories}">
-                                                        <span class="fs-6 cat-badge p-1 badge bg-dark-subtle text-dark">${communityCategories}</span>
+                                                               items="${community.category}">
+                                                        <span class="fs-6 cat-badge p-1 badge bg-dark-subtle text-dark">${communityCategories.toString()}</span>
                                                     </c:forEach>
                                                 </div>
                                             </div>

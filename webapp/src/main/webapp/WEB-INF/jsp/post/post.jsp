@@ -49,12 +49,12 @@
                         <h4 class="card-title fw-bold mb-0"><c:out value="${post.title}" escapeXml="true"/></h4>
                         <p class="card-subtitle mb-4">u/<c:out value="${author}" escapeXml="true"/></p>
                         <p class="card-text"><c:out value="${post.body}" escapeXml="true"/></p>
-                        <c:if test="${post.images.size() > 0}">
+                        <c:if test="${not empty post.images}">
                             <div id="carouselExample" class="carousel slide ">
                                 <div class="carousel-inner bg-dark">
                                     <c:forEach var="image" items="${post.images}" varStatus="loop">
                                         <div class="carousel-item  <c:if test="${loop.index == 0}"> active</c:if>">
-                                            <img src="<c:url value='/image/${image}'/>"
+                                            <img src="<c:url value='/image/${image.imageId}'/>"
                                                  class="d-block m-auto carousel-img"
                                                  alt="...">
                                         </div>
@@ -304,8 +304,8 @@
                             </button>
                         </c:if>
                     </div>
-                    <c:forEach var="category" items="${community.categories}">
-                        <span class="cat-badge badge">${category}</span>
+                    <c:forEach var="category" items="${community.category}">
+                        <span class="cat-badge badge">${category.toString()}</span>
                     </c:forEach>
                     <div class="card-subtitle text-body-secondary mt-3">
                         <c:out value="${community.description}" escapeXml="true"/>

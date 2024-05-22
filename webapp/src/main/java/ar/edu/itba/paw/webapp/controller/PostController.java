@@ -76,17 +76,17 @@ public class PostController {
         boolean isLogged = false;
         if(maybeUser.isPresent()) {
             User user = maybeUser.get();
-            followedCommunities = cs.getFollowedCommunities(user);
+            followedCommunities = user.getFollowedCommunities();
             isAdmin = user.getOwner();
             isLogged = true;
         }
         else{
-            followedCommunities = cs.getAllCommunitiesNoCat();
+            followedCommunities = cs.getAllCommunities();
         }
         mav.addObject("isAdmin",isAdmin);
         mav.addObject("followedCommunities",followedCommunities);
         mav.addObject("isLogged", isLogged);
-        mav.addObject("allCommunities", cs.getAllCommunitiesNoCat());
+        mav.addObject("allCommunities", cs.getAllCommunities());
         mav.addObject("categories", categories);
         mav.addObject("news", ps.getByCategory(PostCategories.NEWS.getCategory()));
 
@@ -115,7 +115,7 @@ public class PostController {
 
         if(userOptional.isPresent()) {
             User user = userOptional.get();
-            communities = cs.getFollowedCommunities(user);
+            communities = user.getFollowedCommunities();
             isAdmin = user.getOwner();
             if (Objects.nonNull(category) &&!category.isEmpty() && !category.equals("all")) {
                 try {
@@ -166,10 +166,10 @@ public class PostController {
 
         if(optionalUser.isPresent()) {
             User user = optionalUser.get();
-            communities = cs.getFollowedCommunities(user);
+            communities = user.getFollowedCommunities();
             isAdmin = user.getOwner();
         }else{
-            communities = cs.getAllCommunitiesNoCat();
+            communities = cs.getAllCommunities();
         }
         if (Objects.nonNull(category) && !category.isEmpty() && !category.equals("all")) {
             try {
@@ -230,7 +230,7 @@ public class PostController {
             comments = null;
         }
         if(user != null) {
-            communities = cs.getFollowedCommunities(user);
+            communities = user.getFollowedCommunities();
             grooviedComments = commentService.getUpGroovedComments(postId);
             negativeGrooviedComments = commentService.getDownGroovedComments(postId);
             isGrooved = ps.checkGrooviness(postId);
@@ -238,7 +238,7 @@ public class PostController {
             isAdmin = user.getOwner();
             isFollowing = cs.checkIfUserFollowsCommunity(community.getId().intValue());
         } else {
-            communities = cs.getAllCommunitiesNoCat();
+            communities = cs.getAllCommunities();
         }
         mav.addObject("isAdmin",isAdmin);
         mav.addObject("isFollowing",isFollowing);

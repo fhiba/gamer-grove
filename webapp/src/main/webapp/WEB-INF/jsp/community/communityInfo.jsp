@@ -29,14 +29,14 @@
                             <c:url value="/community/${community.encodedName}/info" var="editCommunityUrl"/>
                             <form:form method="POST" action="${editCommunityUrl}" enctype="multipart/form-data"
                                        modelAttribute="EditCommunityForm" id="myForm" onsubmit="addCategoriesToForm()">
-                            <c:if test="${community.portrait_id == 0}">
+                            <c:if test="${empty community.portrait }">
 
                                 <img src="${pageContext.request.contextPath}/images/default-community.png"
                                      class="w-100 h-100 rounded-1" id="imgFile" alt="Profile Picture">
                             </c:if>
-                            <c:if test="${community.portrait_id != 0}">
+                            <c:if test="${not empty community.portrait }">
 
-                                <img src="<c:url value='/image/${community.portrait_id}'/>"
+                                <img src="<c:url value='/image/${community.portrait.imageId}'/>"
                                      class="w-100 h-100 rounded-1" id="imgFile" alt="Profile Picture">
                             </c:if>
                             <label class="form-label fw-semibold"><spring:message
@@ -99,8 +99,8 @@
     let selectArray = [];
     let aux = [];
     document.getElementById('descriptionTextArea').value = '<c:out value="${community.description}" escapeXml="true"/>'
-    <c:forEach var="category" items="${community.categories}">
-    aux.push("${category}");
+    <c:forEach var="category" items="${community.category}">
+    aux.push("${category.toString()}");
     </c:forEach>
     console.log(aux);
     let addOptionToSelect = (category) => {
