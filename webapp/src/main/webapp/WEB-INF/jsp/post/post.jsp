@@ -78,14 +78,37 @@
                         </c:if>
                         <c:url value="/post/${postId}/delete" var="deletePostUrl"/>
                         <c:if test="${canDelete}">
-                            <form:form action="${deletePostUrl}" var="deletePostUrl" method="post"
-                                       modelAttribute="postDeleteForm">
-                                <form:hidden path="postId" value="${post.id}"/>
-                                <button class="btn btn-danger btn-sm" type="submit">
-                                    <spring:message code="Post.DeleteButton"/>
-                                </button>
-                            </form:form>
+                            <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                                    data-bs-target="#deletePostModal">
+                                <spring:message code="Post.DeleteButton" />
+                            </button>
+                            <!-- Modal -->
+                            <div class="modal fade" id="deletePostModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel"><spring:message code="Post.DeleteConfirmation"/> </h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button data-bs-dismiss="modal" class="btn btn-secondary btn-sm">
+                                                <spring:message code="Post.CancelDelete"/>
+                                            </button>
+                                            <c:url value="/post/${postId}/delete" var="deletePostUrl"/>
+                                            <form:form action="${deletePostUrl}" var="deletePostUrl" method="post"
+                                                       modelAttribute="postDeleteForm">
+                                                <form:hidden path="postId" value="${post.id}"/>
+
+                                                <button class="btn btn-danger btn-sm" type="submit">
+                                                    <spring:message code="Post.DeletePost"/>
+                                                </button>
+                                            </form:form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </c:if>
+
                         <div class="d-flex align-items-center">
                             <p class="card-text mb-0"><small
                                     class="text-body-secondary"><c:out value="${post.date.format(format)}"
@@ -227,15 +250,36 @@
                                         <div class="d-flex justify-content-center align-items-center">
                                         <c:url value="/comment/${postId}/delete" var="deleteCommentUrl"/>
                                         <c:if test="${canDelete}">
-                                            <form:form action="${deleteCommentUrl}" var="deleteCommenttUrl"
-                                                       method="post"
-                                                       modelAttribute="commentDeleteForm" cssClass="m-auto">
-                                                <form:hidden path="commentId" value="${comment.id}"/>
-                                                <button class="btn btn-danger btn-sm align-content-center"
-                                                        type="submit">
-                                                    <i class="fas fa-solid fa-trash"></i>
-                                                </button>
-                                            </form:form>
+                                            <button class="btn btn-danger btn-sm align-content-center"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#deleteComment${comment.id}Modal">
+                                                <i class="fas fa-solid fa-trash"></i>
+                                            </button>
+                                            <!-- Modal -->
+                                            <div class="modal fade" id="deleteComment${comment.id}Modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog modal-dialog-centered">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h1 class="modal-title fs-5 modal-title-color" ><spring:message code="Comment.DeleteConfirmation"/> </h1>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button data-bs-dismiss="modal" class="btn btn-secondary btn-sm">
+                                                                <spring:message code="Post.CancelDelete"/>
+                                                            </button>
+                                                            <form:form action="${deleteCommentUrl}" var="deleteCommenttUrl"
+                                                                       method="post"
+                                                                       modelAttribute="commentDeleteForm" >
+                                                                <form:hidden path="commentId" value="${comment.id}"/>
+
+                                                                <button class="btn btn-danger btn-sm" type="submit">
+                                                                    <spring:message code="Comment.DeleteComment"/>
+                                                                </button>
+                                                            </form:form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </c:if>
                                         </div>
                                     </div>
@@ -256,7 +300,7 @@
                                 </li>
                             </c:if>
                         </c:forEach>
-                        <div class="d-flex justify-content-center align-items-center">
+                        <div class="d-flex justify-content-center align-items-center mt-3">
                             <c:if test="${not empty invalidPageNumber && not empty comments}">
                                 <span class="badge bg-danger">Invalid page number</span>
                             </c:if>
