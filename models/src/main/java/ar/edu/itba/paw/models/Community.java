@@ -21,8 +21,9 @@ public class Community {
     private String name;
     @Column(name = "description", nullable = false)
     private String description;
-    @Column(name = "portrait_id")
-    private long portrait_id = -1;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "portrait_id", referencedColumnName = "id")
+    private File portrait = null;
 
     @ElementCollection(targetClass = CommunityCategories.class)
     @Enumerated(EnumType.STRING)
@@ -64,8 +65,8 @@ public class Community {
         return name;
     }
 
-    public long getPortrait_id() {
-        return portrait_id;
+    public File getPortrait_id() {
+        return portrait;
     }
 
     public String getDescription() {
@@ -76,8 +77,8 @@ public class Community {
         return categories;
     }
 
-    public void setPortrait_id(long portrait_id) {
-        this.portrait_id = portrait_id;
+    public void setPortrait_id(File portrait) {
+        this.portrait = portrait;
     }
 
     public void setCategories(List<CommunityCategories> categories) {
