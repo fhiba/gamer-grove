@@ -25,4 +25,5 @@ public enum CommunityCategories {
     public String getCategory() {
         return category;
     }
+
 }
