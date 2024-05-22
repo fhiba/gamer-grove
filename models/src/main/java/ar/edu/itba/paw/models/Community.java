@@ -36,6 +36,10 @@ public class Community {
     @Column(name = "release_date")
     private LocalDateTime releaseDate;
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "community_user", joinColumns = @JoinColumn(name = "community_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private List<User> followers;
+
     public Community() {
         //FOR HIBERNATE JPA
     }
@@ -73,7 +77,11 @@ public class Community {
         return description;
     }
 
-    public List<CommunityCategories> getCategories() {
+    public List<String> getCategories() {
+        List<String> categories = null;
+        for(CommunityCategories category : this.categories){
+            categories.add(category.toString());
+        }
         return categories;
     }
 
@@ -99,5 +107,12 @@ public class Community {
 
     public String getEncodedName(){
         return URLEncoder.encode(name, StandardCharsets.UTF_8);
+    }
+    public List<User> getFollowers() {
+        return followers;
+    }
+
+    public void setFollowers(List<User> followers) {
+        this.followers = followers;
     }
 }

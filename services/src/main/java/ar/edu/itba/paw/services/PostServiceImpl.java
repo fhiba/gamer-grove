@@ -53,13 +53,13 @@ public class PostServiceImpl implements PostService{
     @Transactional
     @Override
     public Post createPost(final String title, final String body, final String communityName, final String category, final MultipartFile[] files) throws NoLoggedUserException, NoSuchCommunityException {
-        Optional<User> user = userService.getLoggedUser();
-        if(user.isEmpty())
+        Optional<User> maybeUser = userService.getLoggedUser();
+        if(maybeUser.isEmpty())
             throw new NoLoggedUserException("User not logged");
-        long userId = user.get().getId();
+        User user = maybeUser.get();
         Community community = communityService.findByName(communityName);
-        Post post = postDao.createPost(title,body,(int)userId,community.getName(),false, LocalDateTime.now(), category);
-        notifyUsers(post, user.get());
+        Post post = postDao.createPost(title,body,user,community,false, LocalDateTime.now(), category);
+        notifyUsers(post, user);
         for (MultipartFile file : files) {
             if (!file.isEmpty())
                 fs.uploadPostImage(file, post.getId());
@@ -69,7 +69,7 @@ public class PostServiceImpl implements PostService{
     }
     @Async
     void notifyUsers(Post post, User user) {
-        List<User> users = userService.findByCommunity(post.getCommunityName()).stream().filter(u -> u.getId() != user.getId()).toList();
+        List<User> users = userService.findByCommunity(post.getcommunity().getName()).stream().filter(u -> u.getId() != user.getId()).toList();
         mailingService.sendNewPostNotifications(users, post, user);
     }
 

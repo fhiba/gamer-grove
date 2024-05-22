@@ -236,7 +236,7 @@ public class PostController {
             isGrooved = ps.checkGrooviness(postId);
             canDelete = ms.canRemovePost(us.getLoggedUser().get().getId(), postId);
             isAdmin = us.isUserAdmin(user.getId());
-            isFollowing = cs.checkIfUserFollowsCommunity((int)community.getId());
+            isFollowing = cs.checkIfUserFollowsCommunity(community.getId().intValue());
         } else {
             communities = cs.getAllCommunitiesNoCat();
         }

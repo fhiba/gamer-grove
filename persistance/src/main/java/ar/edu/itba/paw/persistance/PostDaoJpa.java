@@ -1,9 +1,7 @@
 package ar.edu.itba.paw.persistance;
 
-import ar.edu.itba.paw.models.Community;
-import ar.edu.itba.paw.models.GroovyPostHistory;
-import ar.edu.itba.paw.models.Post;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -16,6 +14,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 @Repository
+@Primary
 public class PostDaoJpa implements PostDao {
 
     @PersistenceContext
@@ -23,9 +22,8 @@ public class PostDaoJpa implements PostDao {
 
     @Override
     public Optional<Post> findById(long id) {
-        TypedQuery<Post> query = em.createQuery("from Post where id= :id", Post.class);
-        query.setParameter("id", id);
-        return query.getResultList().stream().findFirst();
+        return Optional.ofNullable(em.find(Post.class, id));
+
     }
 
     @Override
@@ -36,7 +34,7 @@ public class PostDaoJpa implements PostDao {
 
     @Override
     public Post createPost(String title, String body, User author, Community community, boolean media, LocalDateTime now, String category) {
-        final Post post = new Post(title, body, author, community, media, null, now, 0, false, category);
+        final Post post = new Post(title, body, author, community, media, null, now, 0, false, PostCategories.valueOf(category));
         em.persist(post);
         return post;
     }
@@ -83,11 +81,11 @@ public class PostDaoJpa implements PostDao {
 
     }
 
-    @Override
-    public void insertIntoGroovyHistory(Post post, long id, boolean grooviness) {
+//    @Override
+//    public void insertIntoGroovyHistory(Post post, long id, boolean grooviness) {
 //        GroovyPostHistory gph = new GroovyPostHistory((int) post.getAuthor().getId(), (int) id, grooviness);
 //        em.persist(gph);
-    }
+//    }
 
     @Override
     public void deleteGrooviness(long postId, long id) {
@@ -159,7 +157,7 @@ public class PostDaoJpa implements PostDao {
     @Override
     public List<Post> getAllPostsPaginated(int pageSize, int offset) {
         Query nativeQuery = em.createNativeQuery("SELECT id FROM post WHERE deleted = false ORDER BY post_date DESC");
-        nativeQuery.setFirstResult(pageSize * ((offset/pageSize) -1));
+        nativeQuery.setFirstResult(pageSize * ((offset/pageSize)));
         nativeQuery.setMaxResults(pageSize);
 
         List<Long> resultList = ((Stream<Integer>) nativeQuery.getResultStream()).map(Integer::longValue).toList();
@@ -181,7 +179,7 @@ public class PostDaoJpa implements PostDao {
     @Override
     public List<Post> getAllPostsByCategoryPaginated(String category, int pageSize, int offset) {
         Query nativeQuery = em.createNativeQuery("SELECT id FROM post WHERE deleted = false and category = :category ORDER BY post_date DESC");
-        nativeQuery.setFirstResult(pageSize * ((offset/pageSize) -1));
+        nativeQuery.setFirstResult(pageSize * ((offset/pageSize)));
         nativeQuery.setParameter("category",category);
         nativeQuery.setMaxResults(pageSize);
 
@@ -202,7 +200,7 @@ public class PostDaoJpa implements PostDao {
     @Override
     public List<Post> getPostsByCommunityPaginated(String communityName, int pageSize, int offset) {
         Query nativeQuery = em.createNativeQuery("SELECT id FROM post WHERE deleted = false and community_name = :name ORDER BY post_date DESC");
-        nativeQuery.setFirstResult(pageSize * ((offset/pageSize) -1));
+        nativeQuery.setFirstResult(pageSize * ((offset/pageSize)));
         nativeQuery.setParameter("name",communityName);
         nativeQuery.setMaxResults(pageSize);
 
@@ -224,7 +222,7 @@ public class PostDaoJpa implements PostDao {
     @Override
     public List<Post> getFollowedPostsByUserPaginated(long userId, int pageSize, int offset) {
         Query nativeQuery = em.createNativeQuery("SELECT id FROM post WHERE deleted = false AND community_name IN (SELECT community_name FROM community_user WHERE user_id = :userId)");
-        nativeQuery.setFirstResult(pageSize * ((offset/pageSize) -1));
+        nativeQuery.setFirstResult(pageSize * ((offset/pageSize)));
         nativeQuery.setParameter("userId",userId);
         nativeQuery.setMaxResults(pageSize);
 
@@ -247,7 +245,7 @@ public class PostDaoJpa implements PostDao {
     @Override
     public List<Post> getUserFollowedPostsByCategoryPaginated(long userId, String category, int pageSize, int offset) {
         Query nativeQuery = em.createNativeQuery("SELECT id FROM post WHERE deleted = false AND category = :category AND community_name IN (SELECT community_name FROM community_user WHERE user_id = :userId)");
-        nativeQuery.setFirstResult(pageSize * ((offset/pageSize) -1));
+        nativeQuery.setFirstResult(pageSize * ((offset/pageSize)));
         nativeQuery.setParameter("category",category);
         nativeQuery.setParameter("userId",userId);
         nativeQuery.setMaxResults(pageSize);
@@ -270,7 +268,7 @@ public class PostDaoJpa implements PostDao {
     @Override
     public List<Post> getUserLikedPostPaginated(long userId, int pageSize, int offset) {
         Query nativeQuery = em.createNativeQuery("SELECT post_id FROM groovy_post_history WHERE user_id = ? and groovy_type = true");
-        nativeQuery.setFirstResult(pageSize * ((offset/pageSize) -1));
+        nativeQuery.setFirstResult(pageSize * ((offset/pageSize)));
         nativeQuery.setParameter("1",userId);
         nativeQuery.setMaxResults(pageSize);
 
@@ -292,7 +290,7 @@ public class PostDaoJpa implements PostDao {
     @Override
     public List<Post> getPostsByUserPaginated(long id, int pageSize, int offset) {
         Query nativeQuery = em.createNativeQuery("SELECT id FROM post where author_id = ?");
-        nativeQuery.setFirstResult(pageSize * ((offset/pageSize) -1));
+        nativeQuery.setFirstResult(pageSize * ((offset/pageSize)));
         nativeQuery.setParameter("1",id);
         nativeQuery.setMaxResults(pageSize);
 

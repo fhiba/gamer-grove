@@ -96,7 +96,7 @@ public class CommunityController {
         if(maybeUser.isPresent()){
             User user = maybeUser.get();
             isAdmin = us.isUserAdmin(user.getId());
-            isFollowing = cs.checkIfUserFollowsCommunity((int)community.getId());
+            isFollowing = cs.checkIfUserFollowsCommunity(community.getId().intValue());
             communities = cs.getFollowedCommunities(user);
             canEdit = ms.isModderOfCommunity(user.getId(),community.getId());
         }
@@ -202,7 +202,7 @@ public class CommunityController {
     @RequestMapping(value = "/image/{imageId}", method = RequestMethod.GET,
             produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_GIF_VALUE})
     @ResponseBody
-    public byte[] getImage(@PathVariable Integer imageId) {
+    public Byte[] getImage(@PathVariable Integer imageId) {
         //File image = fs.getFile(doctorId).orElse(null);
         return fs.getFile(imageId).map(File::getFile).orElse(null);
     }

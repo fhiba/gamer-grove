@@ -12,31 +12,33 @@ public class File {
     private Long imageId;
 
     @Column(name = "bytes", nullable = false)
-    private Byte[] file;
+    private byte[] file;
 
 
     public File() {
         // HIBERNATE ONLY
     }
 
-    public File(Byte[] file) {
-        this.imageId = imageId;
+    public File(byte[] file) {
         this.file = file;
     }
-
-    public long getImageId() {
+    public File(Long id, byte[] file) {
+        this.imageId = id;
+        this.file = file;
+    }
+    public Long getImageId() {
         return imageId;
     }
 
-    public void setImageId(long imageId) {
+    public void setImageId(Long imageId) {
         this.imageId = imageId;
     }
 
-    public Byte[] getFile() {
+    public byte[] getFile() {
         return file;
     }
 
-    public void setFile(Byte[] file) {
+    public void setFile(byte[] file) {
         this.file = file;
     }
 }

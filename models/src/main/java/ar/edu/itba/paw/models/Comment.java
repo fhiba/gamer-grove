@@ -140,4 +140,11 @@ public class Comment {
         this.deleted = deleted;
     }
 
+    public String getUsername() {
+        return author.getUsername();
+    }
+
+    public Long getPostId() {
+        return post.getId();
+    }
 }
