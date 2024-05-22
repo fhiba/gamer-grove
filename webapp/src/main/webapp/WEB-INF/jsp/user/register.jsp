@@ -26,6 +26,12 @@
                             <form:input path="username" class="form-control" id="titleInput"/>
                             <form:errors path="username" cssStyle="color: red" cssClass="error"/>
                         </div>
+
+                        <div class="mb-3">
+                            <label for="titleInput" class="form-label"><spring:message code="Register.Email"/></label>
+                            <form:input path="email" class="form-control" id="titleInput"/>
+                            <form:errors path="email" cssStyle="color: red" cssClass="error"/>
+                        </div>
                         <div class="mb-3">
                             <label for="titleInput" class="form-label"><spring:message code="Login.Password"/></label>
                             <form:password path="password" class="form-control" id="titleInput"/>
@@ -36,11 +42,6 @@
                                     code="Register.RepeatPassword"/></label>
                             <form:password path="repeatPassword" class="form-control" id="titleInput"/>
                             <form:errors path="repeatPassword" cssStyle="color: red" cssClass="error"/>
-                        </div>
-                        <div class="mb-3">
-                            <label for="titleInput" class="form-label"><spring:message code="Register.Email"/></label>
-                            <form:input path="email" class="form-control" id="titleInput"/>
-                            <form:errors path="email" cssStyle="color: red" cssClass="error"/>
                         </div>
                         <button class="btn btn-primary" type="submit" value="Register">
                             <spring:message code="Register.Title"/>

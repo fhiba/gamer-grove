@@ -34,13 +34,14 @@ public class CommunityServiceImpl implements CommunityService{
 
     @Transactional
     @Override
-    public void createCommunity(final String name, final String description, final String categories, String developer, String publisher, LocalDateTime releaseDate, MultipartFile image) throws NoSuchCommunityException {
+    public Optional<Community> createCommunity(final String name, final String description, final String categories, String developer, String publisher, LocalDateTime releaseDate, MultipartFile image) throws NoSuchCommunityException {
         Community community = communityDao.createCommunity(name,description,developer,publisher,releaseDate);
         if(!image.isEmpty())
             fileService.uploadCommunityImage(community.getName(), image);
         if(categories != null && !categories.isEmpty()) {
             addCategories(community.getId(), List.of(categories.split(",")));
         }
+        return Optional.of(community);
     }
 
     @Override

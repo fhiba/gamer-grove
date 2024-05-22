@@ -1,9 +1,7 @@
 package ar.edu.itba.paw.webapp.controller;
 
 
-import ar.edu.itba.paw.exceptions.NoLoggedUserException;
-import ar.edu.itba.paw.exceptions.NoSuchCommentException;
-import ar.edu.itba.paw.exceptions.UserNotFoundException;
+import ar.edu.itba.paw.exceptions.*;
 import ar.edu.itba.paw.services.CommentService;
 import ar.edu.itba.paw.webapp.form.CommentDeleteForm;
 import ar.edu.itba.paw.webapp.form.NewCommentForm;
@@ -29,7 +27,7 @@ public class CommentController {
 
 
     @RequestMapping(path="/comment", method = RequestMethod.POST)
-    public ModelAndView newComment(@Valid @ModelAttribute("newCommentForm") final NewCommentForm newCommentForm, final BindingResult errors) throws NoLoggedUserException {
+    public ModelAndView newComment(@Valid @ModelAttribute("newCommentForm") final NewCommentForm newCommentForm, final BindingResult errors) throws NoLoggedUserException, PostIsDeletedException, NoSuchPostException {
         if(errors.hasErrors()) {
             return new ModelAndView("redirect:/post/"+newCommentForm.getPostId());
         }
@@ -49,7 +47,7 @@ public class CommentController {
     }
 
     @RequestMapping(path="/comment/{postId}/delete", method = RequestMethod.POST)
-    public ModelAndView deleteComment(@Valid @ModelAttribute("commentDeleteForm") final CommentDeleteForm commentDeleteForm, final BindingResult errors) throws NoSuchCommentException {
+    public ModelAndView deleteComment(@Valid @ModelAttribute("commentDeleteForm") final CommentDeleteForm commentDeleteForm, final BindingResult errors) throws NoSuchCommentException, PostIsDeletedException, NoSuchPostException {
         if(errors.hasErrors()) {
             return new ModelAndView("redirect:/post/{postId}");
         }

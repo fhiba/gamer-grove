@@ -10,10 +10,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 
 public interface CommunityService {
-    void createCommunity(final String name, final String description, String categories, String developer, String publisher, LocalDateTime releaseDate, MultipartFile image) throws NoSuchCommunityException;
+    Optional<Community> createCommunity(final String name, final String description, String categories, String developer, String publisher, LocalDateTime releaseDate, MultipartFile image) throws NoSuchCommunityException;
 
     List<Community> getAllCommunities();
 

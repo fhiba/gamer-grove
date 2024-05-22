@@ -1,8 +1,6 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.exceptions.NoLoggedUserException;
-import ar.edu.itba.paw.exceptions.NoSuchPostException;
-import ar.edu.itba.paw.exceptions.UserNotFoundException;
+import ar.edu.itba.paw.exceptions.*;
 import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
 import ar.edu.itba.paw.models.Post;
@@ -14,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import ar.edu.itba.paw.exceptions.NoSuchCommentException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -45,10 +42,14 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional
     @Override
-    public Comment createComment(long postId, String body) throws NoLoggedUserException{
+    public Comment createComment(long postId, String body) throws NoLoggedUserException, NoSuchPostException, PostIsDeletedException {
         Optional<User> user = userService.getLoggedUser();
         if(user.isEmpty())
             throw new NoLoggedUserException("User not logged");
+        Post post = postService.getPostById(postId);
+        if(post.isDeleted()){
+            throw new PostIsDeletedException("Post is deleted");
+        }
         long userId = user.get().getId();
         String username = user.get().getUsername();
         LocalDateTime date = LocalDateTime.now();
@@ -165,10 +166,14 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional
     @Override
-    public int deleteComment(long commentId) throws NoSuchCommentException {
+    public int deleteComment(long commentId) throws NoSuchCommentException, NoSuchPostException, PostIsDeletedException {
         Optional<Comment> comment = commentDao.getCommentById(commentId);
         if(comment.isEmpty())
             throw new NoSuchCommentException("Comment not found");
+        Post post = postService.getPostById(comment.get().getPostId());
+        if(post.isDeleted())
+            throw new PostIsDeletedException("Post not found");
+
         int ret = commentDao.deleteComment(commentId);
         notifyCommentDeletion(comment.get());
         return  ret;

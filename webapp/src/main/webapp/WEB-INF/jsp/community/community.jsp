@@ -122,6 +122,7 @@
                                     </button>
                                 </c:if>
                             </div>
+
                             <c:forEach var="category" items="${community.categories}">
                                 <span class="fs-6 cat-badge p-1 badge">${category}</span>
                             </c:forEach>

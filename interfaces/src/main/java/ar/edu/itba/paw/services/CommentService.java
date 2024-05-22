@@ -1,9 +1,6 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.exceptions.NoLoggedUserException;
-import ar.edu.itba.paw.exceptions.NoSuchCommentException;
-import ar.edu.itba.paw.exceptions.NoSuchPostException;
-import ar.edu.itba.paw.exceptions.UserNotFoundException;
+import ar.edu.itba.paw.exceptions.*;
 import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
 import ar.edu.itba.paw.models.pagination.PaginationRequest;
@@ -11,7 +8,7 @@ import ar.edu.itba.paw.models.pagination.PaginationRequest;
 import java.util.List;
 
 public interface CommentService {
-        Comment createComment(long postId, String body) throws NoLoggedUserException;
+        Comment createComment(long postId, String body) throws NoLoggedUserException, NoSuchPostException, PostIsDeletedException;
         List<Comment> getPostComments(long postId);
 
         PaginatedDataWrapper<Comment> getPostCommentsPaginated(long postId, PaginationRequest request);
@@ -23,5 +20,5 @@ public interface CommentService {
 
         List<Comment> getDownGroovedComments(long postId) throws UserNotFoundException;
 
-        int deleteComment(long commentId) throws NoSuchCommentException;
+        int deleteComment(long commentId) throws NoSuchCommentException, NoSuchPostException, PostIsDeletedException;
 }
