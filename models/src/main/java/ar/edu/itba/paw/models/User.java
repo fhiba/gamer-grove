@@ -128,4 +128,8 @@ public class User {
     public void setImage(File file) {
         this.image = file;
     }
+
+    public long getPortraid_id() {
+        return image.getImageId();
+    }
 }
