@@ -1,6 +1,8 @@
 package ar.edu.itba.paw.persistance;
 
+import ar.edu.itba.paw.models.Community;
 import ar.edu.itba.paw.models.Post;
+import ar.edu.itba.paw.models.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,7 +14,7 @@ public interface PostDao {
 
     List<Post>  findAllPosts();
 
-    Post createPost(String title, String body, int author_id, String community_name, boolean media, LocalDateTime now, String category);
+    Post createPost(String title, String body, User author, Community community, boolean media, LocalDateTime now, String category);
 
     List<Post> findPostsByCommunity(String communityId);
     List<Post> findByCategory(String category);

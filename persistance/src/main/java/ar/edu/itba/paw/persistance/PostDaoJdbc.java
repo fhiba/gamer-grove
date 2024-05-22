@@ -81,21 +81,21 @@ public class PostDaoJdbc implements PostDao {
         return jdbcTemplate.query("SELECT * FROM post WHERE deleted = false ORDER BY post_date DESC", ROW_MAPPER);
     }
 
-    @Override
-    public Post createPost(final String title, final String body, final int author_id, final String community_name, final boolean media, final LocalDateTime now, final String category) {
-        final Map<String, Object> values = new HashMap<>();
-        values.put("title", title);
-        values.put("body", body);
-        values.put("author_id", author_id);
-        values.put("community_name", community_name);
-        values.put("media", media);
-        values.put("post_date", now);
-        values.put("grooviness", 0);
-        values.put("category", category);
-        values.put("deleted", false);
-        Number id = jdbcInsert.executeAndReturnKey(values);
-        return new Post(id.longValue(), title, body, author_id, community_name, media, 0, now, 0, false, category);
-    }
+//    @Override
+//    public Post createPost(final String title, final String body, final int author_id, final String community_name, final boolean media, final LocalDateTime now, final String category) {
+//        final Map<String, Object> values = new HashMap<>();
+//        values.put("title", title);
+//        values.put("body", body);
+//        values.put("author_id", author_id);
+//        values.put("community_name", community_name);
+//        values.put("media", media);
+//        values.put("post_date", now);
+//        values.put("grooviness", 0);
+//        values.put("category", category);
+//        values.put("deleted", false);
+//        Number id = jdbcInsert.executeAndReturnKey(values);
+//        return new Post(id.longValue(), title, body, author_id, community_name, media, 0, now, 0, false, category);
+//    }
 
     @Override
     public List<Post> findPostsByCommunity(String communityName) {
