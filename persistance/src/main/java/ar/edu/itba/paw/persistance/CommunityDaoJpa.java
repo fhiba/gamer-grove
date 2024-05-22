@@ -38,7 +38,11 @@ public class CommunityDaoJpa implements CommunityDao{
 
     @Override
     public Optional<Community> findByName(String communityName) {
-        return Optional.ofNullable(em.find(Community.class, communityName));
+        return em.createQuery("From Community WHERE name = :name", Community.class)
+                .setParameter("name", communityName)
+                .getResultList()
+                .stream()
+                .findFirst();
     }
 
     @Override

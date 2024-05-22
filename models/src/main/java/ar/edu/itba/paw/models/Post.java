@@ -129,4 +129,8 @@ public class Post {
     public String getCommunityName() {
         return community.getName();
     }
+
+    public String getEncodedCommunityName() {
+        return community.getEncodedName();
+    }
 }
