@@ -29,12 +29,6 @@ public class CommentDaoJdbc implements CommentDao{
             rs.getBoolean("deleted")
     );
 
-    private static final RowMapper<GroovyCommentHistory> ROW_MAPPER_HISTORY = (rs, rowNum) -> new GroovyCommentHistory(
-            rs.getInt("comment_id"),
-            rs.getInt("user_id"),
-            rs.getInt("post_id"),
-            rs.getBoolean("grooviness")
-    );
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;

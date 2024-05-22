@@ -39,6 +39,7 @@ public class CommunityDaoJdbc implements CommunityDao {
         return community;
     };
 
+//    TODO:SAFE DELETE COMMUNITY USER
     private static final RowMapper<CommunityUser> ROW_MAPPER_USER = (rs, rowNum) -> new CommunityUser(rs.getInt("user_id"),
             rs.getInt("community_id"),
             rs.getInt("community_role"),

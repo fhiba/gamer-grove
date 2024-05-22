@@ -1,5 +1,6 @@
 import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchPostException;
+import ar.edu.itba.paw.exceptions.PostIsDeletedException;
 import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
@@ -47,7 +48,7 @@ public class CommentServiceTest {
 
 
     @Test
-    public void testCreateComment() throws NoLoggedUserException, NoSuchPostException {
+    public void testCreateComment() throws NoLoggedUserException, NoSuchPostException, PostIsDeletedException {
         // Mocking user service to return a dummy user
         when(mockUserService.getLoggedUser()).thenReturn(Optional.of(new User(1,"username", "password", "email",0, false)));
         when(mockUserService.findById(anyLong())).thenReturn(Optional.of(new User(1,"username", "password", "email",0, false)));
@@ -71,7 +72,7 @@ public class CommentServiceTest {
     }
 
     @Test(expected = NoLoggedUserException.class)
-    public void testFailedCreateWithNoUser() throws NoLoggedUserException {
+    public void testFailedCreateWithNoUser() throws NoLoggedUserException, NoSuchPostException, PostIsDeletedException {
         //	1.	Setup!
         when(mockUserService.getLoggedUser()).thenReturn(Optional.empty());
         //when(mockDao.createPost(Mockito.eq(TITLE), Mockito.eq(BODY), Mockito.anyInt(), Mockito.eq(COMMUNITY_NAME), Mockito.anyBoolean(), Mockito.any(LocalDateTime.class), Mockito.eq(CATEGORY))).thenReturn(new Post(1, TITLE, BODY, 1, COMMUNITY_NAME, false,0, LocalDateTime.now(), 0,CATEGORY));

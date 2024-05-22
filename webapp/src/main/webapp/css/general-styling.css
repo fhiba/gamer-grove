@@ -44,27 +44,33 @@ body {
 }
 
 .discussion{
+    color:black;
     background-color: #FF5733; /* Change to desired color for Miscellaneous */
 }
 
 .review {
+    color:black;
     background-color: #FFC300; /* Change to desired color for Review */
 }
 
 .help {
+    color:black;
     background-color: #3498DB; /* Change to desired color for Help */
 }
 
 .guide {
+    color:black;
     background-color: #27AE60; /* Change to desired color for Guide */
 }
 
 .news {
-    background-color: #9B59B6; /* Change to desired color for News */
+    color:black;
+    background-color: #b400ff; /* Change to desired color for News */
 }
 
 .recommendation {
-    background-color: #34495E; /* Change to desired color for Recommendation */
+    color:black;
+    background-color: #1d28ff; /* Change to desired color for Recommendation */
 }
 
 .navbar {
@@ -170,8 +176,8 @@ body {
 
 .follow-button {
     background-color:transparent;
-    color: #ff0000;
-    border-color: #ff0000;
+    color: #1aff00!important;
+    border-color: #1aff00!important;
     font-size: 20px; /* Adjust as needed */
     max-height: 2.5rem;
     max-width: min-content;
@@ -183,6 +189,7 @@ body {
     text-underline: none;
     background-color: lightslategrey;
     margin-bottom: 0.5rem;
+    pointer-events: auto;
 }
 
 .community-accordion{

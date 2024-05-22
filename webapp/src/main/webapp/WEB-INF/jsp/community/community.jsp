@@ -111,19 +111,23 @@
                                 </div>
                                 <c:if test="${isFollowing}">
                                     <button onClick="follow()"
-                                            class="rounded-pill  btn-outline-danger follow-button fw-bold"
+                                            class="rounded-pill  btn-outline-info follow-button fw-bold"
                                             id="followButton"><spring:message code="Following"/>
                                     </button>
                                 </c:if>
                                 <c:if test="${!isFollowing}">
                                     <button onClick="follow()"
-                                            class="rounded-pill   btn-outline-danger  follow-button fw-bold"
+                                            class="rounded-pill   btn-outline-info  follow-button fw-bold"
                                             id="followButton"><spring:message code="Follow"/>
                                     </button>
                                 </c:if>
                             </div>
+
                             <c:forEach var="category" items="${community.categories}">
-                                <span class="fs-6 cat-badge p-1 badge">${category}</span>
+                                <c:url value="/communities?searchTerms=&categories=${category}" var="categorySearchUrl"/>
+                                <a href="${categorySearchUrl}">
+                                <span class="fs-6 pe-auto btn btn-secondary cat-badge p-1 badge">${category}</span>
+                                </a>
                             </c:forEach>
                             <div class="accordion accordion-flush justify-content-end">
 

@@ -70,8 +70,8 @@ public class CommunityController {
     public ModelAndView createCommunity(@Valid @ModelAttribute("newCommunityForm") final NewCommunityForm newCommunityForm, BindingResult errors) throws NoSuchCommunityException{
         if(errors.hasErrors())
             return newCommunity(newCommunityForm);
-        cs.createCommunity(newCommunityForm.getName(), newCommunityForm.getDescription(), newCommunityForm.getCategories(), newCommunityForm.getDeveloper(),newCommunityForm.getPublisher(), LocalDateTime.now(), newCommunityForm.getImage());
-        return new ModelAndView("redirect:/");
+        Optional<Community> newCom = cs.createCommunity(newCommunityForm.getName(), newCommunityForm.getDescription(), newCommunityForm.getCategories(), newCommunityForm.getDeveloper(),newCommunityForm.getPublisher(), LocalDateTime.now(), newCommunityForm.getImage());
+        return new ModelAndView("redirect:/community/" + newCom.get().getEncodedName());
     }
 
 

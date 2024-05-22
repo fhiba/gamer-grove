@@ -53,17 +53,17 @@ public class PostController {
 
     @RequestMapping(path = "/post", method = RequestMethod.POST)
     public ModelAndView newPost(@Valid @ModelAttribute("newPostForm") final NewPostForm newPostForm, final BindingResult errors) throws NoLoggedUserException, NoSuchCommunityException {
-
+        Post post;
         if (errors.hasErrors()) {
             return getNewPost(newPostForm);
         }
         try {
-            ps.createPost(newPostForm.getTitle(), newPostForm.getBody(), newPostForm.getCommunity(), newPostForm.getCategory(),newPostForm.getFiles());
+            post = ps.createPost(newPostForm.getTitle(), newPostForm.getBody(), newPostForm.getCommunity(), newPostForm.getCategory(),newPostForm.getFiles());
         } catch (NoLoggedUserException | NoSuchCommunityException e) {
             LOGGER.debug("No logged user", e);
             throw e;
         }
-        return new ModelAndView("redirect:/home");
+        return new ModelAndView("redirect:/post/"+ post.getId());
     }
 
     @RequestMapping(path = "/post", method = RequestMethod.GET)
