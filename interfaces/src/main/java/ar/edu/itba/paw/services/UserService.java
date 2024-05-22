@@ -3,6 +3,7 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchTokenException;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
+import ar.edu.itba.paw.models.File;
 import ar.edu.itba.paw.models.User;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,7 +24,6 @@ public interface UserService {
 
     List<User> findAll();
 
-    void updateImageId(long id, long imageId);
 
 
     void resetPassword(String token, String password) throws NoSuchTokenException;
@@ -35,4 +35,6 @@ public interface UserService {
     void resendVerification() throws NoLoggedUserException, UserNotFoundException;
 
     void updateProfile(String locale, MultipartFile profilePic) throws NoLoggedUserException;
+
+    User updateImage(User user, File value);
 }

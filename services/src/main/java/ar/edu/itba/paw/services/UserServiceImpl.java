@@ -3,6 +3,7 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchTokenException;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
+import ar.edu.itba.paw.models.File;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistance.UserDao;
 import org.slf4j.Logger;
@@ -78,8 +79,8 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void updateImageId(long id, long imageId) {
-        userDao.updateImageId(userDao.findById(id).orElseThrow(), imageId);
+    public User updateImage(User user, File image) {
+        return userDao.updateImage(user, image);
     }
 
     @Override

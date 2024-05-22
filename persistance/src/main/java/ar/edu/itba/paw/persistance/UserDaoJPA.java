@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.persistance;
 
+import ar.edu.itba.paw.models.File;
 import ar.edu.itba.paw.models.User;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
@@ -50,8 +51,8 @@ public class UserDaoJPA implements UserDao {
     }
 
     @Override
-    public User updateImageId(User user, Long imageId) {
-        user.setPortraid_id(imageId);
+    public User updateImage(User user, File image) {
+        user.setImage(image);
         return em.merge(user);
     }
 

@@ -78,7 +78,7 @@ public class FileServiceImpl implements FileService{
             try {
                 image = fd.uploadImage(file.getBytes());
                 //TODO MAYBE CAN BE REFACTORED
-                image.ifPresent(value -> us.updateImageId(user.getId(), value.getImageId()));
+                image.ifPresent(value -> us.updateImage(user, value));
             } catch (IOException e) {
                 LOGGER.debug("Error uploading image",e);
                 throw new RuntimeException(e);

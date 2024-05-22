@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.persistance;
 
+import ar.edu.itba.paw.models.File;
 import ar.edu.itba.paw.models.User;
 
 import java.util.Optional;
@@ -14,10 +15,10 @@ public interface UserDao {
 
         List<User> findAll();
 
-        User updateImageId(User user, Long imageId);
-
         User updatePassword(User user, String password);
         User verifyUser(User user);
 
         User updateLocale(User user, String locale);
+
+        User updateImage(User user, File image);
 }
