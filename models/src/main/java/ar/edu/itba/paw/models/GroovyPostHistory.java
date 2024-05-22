@@ -9,19 +9,19 @@ public class GroovyPostHistory {
     @Id
     @ManyToOne(targetEntity = User.class)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private int userId;
+    private User user;
 
     @Id
     @OneToOne(targetEntity = Post.class)
     @JoinColumn(name = "post_id", referencedColumnName = "id")
-    private int postId;
+    private Post post;
     @Column(name="groovy_type")
     private boolean groovyType;
 
 
-    public GroovyPostHistory(int userId, int postId, boolean groovyType) {
-        this.userId = userId;
-        this.postId = postId;
+    public GroovyPostHistory(User user, Post post, boolean groovyType) {
+        this.user = user;
+        this.post = post;
         this.groovyType = groovyType;
     }
 
@@ -29,20 +29,20 @@ public class GroovyPostHistory {
         //HIBERNATE ONLY
     }
 
-    public int getUserId() {
-        return userId;
+    public User getUserId() {
+        return user;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setUserId(User user) {
+        this.user = user;
     }
 
-    public int getPostId() {
-        return postId;
+    public Post getPostId() {
+        return post;
     }
 
-    public void setPostId(int postId) {
-        this.postId = postId;
+    public void setPostId(Post postId) {
+        this.post = post;
     }
 
     public boolean isGroovyType() {
