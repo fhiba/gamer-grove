@@ -1,5 +1,4 @@
 package ar.edu.itba.paw.models;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -22,7 +21,7 @@ public class Comment {
     @ManyToOne
     private User author;
 
-    @OneToOne
+    @OneToOne(optional = false)
     private Comment parent;
 
     @Column(nullable = false,name = "body")
@@ -41,7 +40,7 @@ public class Comment {
         //For JPA
     }
 
-    public Comment( Post post, User author, String body, LocalDateTime date, int grooviness, boolean deleted) {
+    public Comment( Post post, User author, String body, LocalDateTime date, Integer grooviness, Boolean deleted) {
         this.post = post;
         this.author = author;
         this.parent = null;
@@ -51,7 +50,7 @@ public class Comment {
         this.deleted = deleted;
     }
 
-    public Comment( Post post,Comment parent, User author, String body, LocalDateTime date, int grooviness, boolean deleted) {
+    public Comment( Post post,Comment parent, User author, String body, LocalDateTime date, Integer grooviness, Boolean deleted) {
         this.post = post;
         this.author = author;
         this.parent = parent;
@@ -61,7 +60,7 @@ public class Comment {
         this.date = date;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -111,10 +110,10 @@ public class Comment {
         return Objects.hashCode(id);
     }
 
-    public int getGrooviness() {
+    public Integer getGrooviness() {
         return grooviness;
     }
-    public boolean isDeleted() {
+    public Boolean isDeleted() {
         return deleted;
     }
     public void setId(Long id) {
