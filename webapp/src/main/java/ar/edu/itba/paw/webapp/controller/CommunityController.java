@@ -20,8 +20,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -54,7 +52,7 @@ public class CommunityController {
         if(maybeUser.isPresent()) {
             User user = maybeUser.get();
             communities = cs.getFollowedCommunities(user);
-            isAdmin = us.isUserAdmin(user.getId());
+            isAdmin = user.getOwner();
         }else{
             communities = cs.getAllCommunitiesNoCat();
         }
@@ -98,7 +96,7 @@ public class CommunityController {
             isAdmin = user.getOwner();
             isFollowing = cs.checkIfUserFollowsCommunity(community.getId().intValue());
             communities = cs.getFollowedCommunities(user);
-            canEdit = ms.isModderOfCommunity(user.getId(),community.getId());
+            canEdit = ms.isModderOfCommunity(user,community.getId());
         }
         else {
             communities = cs.getAllCommunitiesNoCat();
@@ -145,7 +143,7 @@ public class CommunityController {
         if(maybeUser.isPresent()) {
             User user = maybeUser.get();
             followedCommunities = cs.getFollowedCommunities(user);
-            isAdmin = us.isUserAdmin(user.getId());
+            isAdmin = user.getOwner();
         }
         else {
             followedCommunities = cs.getAllCommunitiesNoCat();
@@ -178,7 +176,7 @@ public class CommunityController {
         Optional<User> maybeUser = us.getLoggedUser();
         if(maybeUser.isPresent()) {
             User user = maybeUser.get();
-            mav.addObject("isAdmin", us.isUserAdmin(user.getId()));
+            mav.addObject("isAdmin", user.getOwner());
             mav.addObject("communities",cs.getFollowedCommunities(user));
             isLogged = true;
         }else{
@@ -202,7 +200,7 @@ public class CommunityController {
     @RequestMapping(value = "/image/{imageId}", method = RequestMethod.GET,
             produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_GIF_VALUE})
     @ResponseBody
-    public Byte[] getImage(@PathVariable Integer imageId) {
+    public byte[] getImage(@PathVariable Integer imageId) {
         //File image = fs.getFile(doctorId).orElse(null);
         return fs.getFile(imageId).map(File::getFile).orElse(null);
     }

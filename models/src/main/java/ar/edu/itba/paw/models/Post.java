@@ -44,8 +44,9 @@ public class Post {
     @Column(name = "deleted", nullable = false)
     private  Boolean deleted;
 
-    @Enumerated(EnumType.STRING)
-    private PostCategories category;
+    //@Enumerated(EnumType.STRING)
+    @Column(name = "category", nullable = false)
+    private String category;
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "post_images", joinColumns = {@JoinColumn(name = "post_id")}, inverseJoinColumns = {@JoinColumn(name = "image_id")})
@@ -56,7 +57,7 @@ public class Post {
         //HIBERNATE ONLY
     }
 
-    public Post(final String title, final String body, final User author, final Community community, final Boolean media, final Long media_id, final LocalDateTime date, final Integer grooviness, Boolean deleted, final PostCategories category) {
+    public Post(final String title, final String body, final User author, final Community community, final Boolean media, final Long media_id, final LocalDateTime date, final Integer grooviness, Boolean deleted, final String category) {
         this.title = title;
         this.body = body;
         this.author = author;
@@ -104,11 +105,11 @@ public class Post {
     public Integer getGrooviness() {
         return grooviness;
     }
-    public PostCategories getCategory() {
+    public String getCategory() {
         return category;
     }
 
-    public Boolean isDeleted() {
+    public Boolean getDeleted() {
         return deleted;
     }
 
@@ -123,5 +124,9 @@ public class Post {
 
     public String getEncodedcommunity(){
         return URLEncoder.encode(community.getName(), StandardCharsets.UTF_8);
+    }
+
+    public String getCommunityName() {
+        return community.getName();
     }
 }

@@ -21,7 +21,7 @@ public class FileDaoJpa implements FileDao {
 
     @Override
     public Optional<File> uploadImage(byte[] file) {
-        File newFile = new File(file);
+        File newFile = new File();
         em.persist(newFile);
         return Optional.of(newFile);
     }

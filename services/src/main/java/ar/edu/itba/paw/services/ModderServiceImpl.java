@@ -49,7 +49,7 @@ public class ModderServiceImpl implements ModderService{
         // Supuestamente el service me dice si existe o no la comunidad
         Community community = cs.findById(communityId);
         //Checkeo si existe el mod
-        if(isModderOfCommunity(newMod.getId(), communityId)){
+        if(isModderOfCommunity(newMod, communityId)){
             throw new AlreadyModException("User with id "+newMod.getId()+" is already a mod of community with id "+communityId);
         }
         return md.addModder(newMod.getId(), communityId);
@@ -123,7 +123,7 @@ public class ModderServiceImpl implements ModderService{
         if (possibleMod.isEmpty()) {
             return false;
         }
-        return isModderOfCommunity(possibleMod.get().getId(), community.getId());
+        return isModderOfCommunity(possibleMod.get(), community.getId());
     }
 
     @Override
@@ -145,6 +145,6 @@ public class ModderServiceImpl implements ModderService{
             return false;
         }
 
-        return isModderOfCommunity(possibleMod.get().getId(), postFrom.getId());
+        return isModderOfCommunity(possibleMod.get(), postFrom.getId());
     }
 }
