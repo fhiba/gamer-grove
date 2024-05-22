@@ -3,6 +3,7 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.exceptions.*;
 import ar.edu.itba.paw.models.Community;
 import ar.edu.itba.paw.models.Post;
+import ar.edu.itba.paw.models.PostCategories;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
 import ar.edu.itba.paw.models.pagination.PaginationRequest;
@@ -18,9 +19,11 @@ import org.springframework.web.multipart.MultipartFile;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Transactional(readOnly = true)
 @Service
@@ -299,7 +302,19 @@ public class PostServiceImpl implements PostService{
     @Override
     public List<String> getUsedCategories() {
         List<String> categories = postDao.getUsedCategories();
-        return categories.isEmpty()? Collections.emptyList(): categories;
+
+//        System.out.println("LAs CAT SON:");
+//        for (PostCategories category : categories) {
+//            System.out.println(category.getCategory());
+//        }
+
+
+
+//        List<String> categoryNames = categories.stream().map(PostCategories::getCategory).toList();
+        return categories.isEmpty() ? Collections.emptyList() : categories;
+
+
+//        return categoryNames.isEmpty() ? Collections.emptyList() : categoryNames;
     }
 
     @Override

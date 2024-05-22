@@ -77,7 +77,7 @@ public class PostController {
         if(maybeUser.isPresent()) {
             User user = maybeUser.get();
             followedCommunities = cs.getFollowedCommunities(user);
-            isAdmin = us.isUserAdmin(user.getId());
+            isAdmin = user.getOwner();
             isLogged = true;
         }
         else{
@@ -116,7 +116,7 @@ public class PostController {
         if(userOptional.isPresent()) {
             User user = userOptional.get();
             communities = cs.getFollowedCommunities(user);
-            isAdmin = us.isUserAdmin(user.getId());
+            isAdmin = user.getOwner();
             if (Objects.nonNull(category) &&!category.isEmpty() && !category.equals("all")) {
                 try {
                     posts = ps.getUserFollowedPostsByCategoryPaginated(category,user.getId(),paginationRequest);
@@ -167,7 +167,7 @@ public class PostController {
         if(optionalUser.isPresent()) {
             User user = optionalUser.get();
             communities = cs.getFollowedCommunities(user);
-            isAdmin = us.isUserAdmin(user.getId());
+            isAdmin = user.getOwner();
         }else{
             communities = cs.getAllCommunitiesNoCat();
         }
@@ -234,8 +234,8 @@ public class PostController {
             grooviedComments = commentService.getUpGroovedComments(postId);
             negativeGrooviedComments = commentService.getDownGroovedComments(postId);
             isGrooved = ps.checkGrooviness(postId);
-            canDelete = ms.canRemovePost(us.getLoggedUser().get().getId(), postId);
-            isAdmin = us.isUserAdmin(user.getId());
+            canDelete = ms.canRemovePost(user, postId);
+            isAdmin = user.getOwner();
             isFollowing = cs.checkIfUserFollowsCommunity(community.getId().intValue());
         } else {
             communities = cs.getAllCommunitiesNoCat();

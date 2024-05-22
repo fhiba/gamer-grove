@@ -18,6 +18,6 @@ public interface TokenService {
 
     void deleteResetTokens(Long userId);
 
-    String generateValidationToken(Long userId);
-    String generateResetToken(Long userId);
+    String generateValidationToken(Long userId) throws UserNotFoundException;
+    String generateResetToken(Long userId) throws UserNotFoundException;
 }

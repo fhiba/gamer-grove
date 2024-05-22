@@ -78,7 +78,7 @@ public class UserController {
     }
 
     @RequestMapping(path = "/register", method = RequestMethod.POST)
-    public ModelAndView postRegister(@Valid @ModelAttribute("registerForm") final RegisterUserForm registerUserForm, final BindingResult errors) {
+    public ModelAndView postRegister(@Valid @ModelAttribute("registerForm") final RegisterUserForm registerUserForm, final BindingResult errors) throws UserNotFoundException {
         if(errors.hasErrors()) {
             return getRegister(registerUserForm);
 
@@ -96,8 +96,8 @@ public class UserController {
         ModelAndView mav = new ModelAndView("user/addMod");
         Boolean isAdmin;
         //El user esta necesariamente logueado para entrar en esta vista entonces no hace falta chequear si esta presente
-        isAdmin = us.isUserAdmin(us.getLoggedUser().get().getId());
-        mav.addObject("isAdmin",isAdmin);
+
+        mav.addObject("isAdmin",true);
         mav.addObject("sidebarcommunities", cs.getFollowedCommunities(us.getLoggedUser().get()));
         mav.addObject("allCommunities", cs.getAllCommunities());
         mav.addObject("isLogged",true);
@@ -158,8 +158,7 @@ public class UserController {
     public ModelAndView getProfileUserPosts(@RequestParam(required = false) Integer pageNumber, @ModelAttribute("userPfpForm") final UserPfpForm userPfpForm) {
         ModelAndView mav = new ModelAndView("user/profile/userPosts");
         User user = us.getLoggedUser().orElseThrow();
-        Boolean isAdmin = us.isUserAdmin(user.getId());
-        mav.addObject("isAdmin",isAdmin);
+        mav.addObject("isAdmin",user.getOwner());
         mav.addObject("user",user);
         mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
         mav.addObject("communities",cs.getFollowedCommunities(user));

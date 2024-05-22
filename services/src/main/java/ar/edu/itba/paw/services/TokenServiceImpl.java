@@ -25,6 +25,9 @@ public class TokenServiceImpl implements TokenService {
     @Autowired
     TokenDao tokenDao;
 
+    @Autowired
+    UserService userService;
+
     @Transactional
     @Override
     public void verifyUser(String token) throws NoSuchTokenException, UserNotFoundException {
@@ -60,7 +63,7 @@ public class TokenServiceImpl implements TokenService {
 
     @Transactional
     @Override
-    public String generateValidationToken(Long userId) {
+    public String generateValidationToken(Long userId) throws UserNotFoundException {
          UUID uuid = UUID.randomUUID();
         String token = uuid.toString();
         Optional<User> maybeUser = userService.findById(userId);
@@ -74,10 +77,13 @@ public class TokenServiceImpl implements TokenService {
 
     @Transactional
     @Override
-    public String generateResetToken(Long userId) {
+    public String generateResetToken(Long userId) throws UserNotFoundException {
         UUID uuid = UUID.randomUUID();
         String token = uuid.toString();
-        tokenDao.createResetToken(userId, token);
+        Optional<User> maybeUser = userService.findById(userId);
+        if(maybeUser.isEmpty())
+            throw new UserNotFoundException("User with id " + userId + " does not exist");
+        tokenDao.createResetToken(maybeUser.get(), token);
         return token;
     }
 

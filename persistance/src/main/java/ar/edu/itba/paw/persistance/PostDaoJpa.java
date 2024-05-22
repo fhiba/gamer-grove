@@ -34,7 +34,7 @@ public class PostDaoJpa implements PostDao {
 
     @Override
     public Post createPost(String title, String body, User author, Community community, boolean media, LocalDateTime now, String category) {
-        final Post post = new Post(title, body, author, community, media, null, now, 0, false, PostCategories.valueOf(category));
+        final Post post = new Post(title, body, author, community, media, null, now, 0, false, category);
         em.persist(post);
         return post;
     }
@@ -143,9 +143,23 @@ public class PostDaoJpa implements PostDao {
 
     @Override
     public List<String> getUsedCategories() {
-        String hql = "SELECT DISTINCT p.category FROM Post p WHERE p.category IS NOT NULL";
-        TypedQuery<String> query = em.createQuery(hql, String.class);
-        return query.getResultList();
+//        return em.createNativeQuery("SELECT p.category FROM post as p WHERE p.category is not null GROUP BY p.category").getResultList();
+//        String hql = "SELECT Distinct category from Post where deleted = false and category IS NOT NULL";
+//        TypedQuery<PostCategories> query = em.createQuery(hql, PostCategories.class);
+//        return query.getResultList();
+//        return em.createQuery("SELECT p.category FROM Post as p WHERE p.deleted = false GROUP BY p.category", PostCategories.class).getResultList();
+        String sql = "SELECT p.category FROM post p WHERE p.category IS NOT NULL GROUP BY p.category";
+        List<String> categoryStrings = em.createNativeQuery(sql).getResultList();
+
+        // Print out the categoryStrings list
+        System.out.println(categoryStrings);
+
+        // Convert the list of strings to a list of PostCategory enums
+//        List<PostCategories> categories = categoryStrings.stream()
+//                .map(PostCategories::valueOf)
+//                .collect(Collectors.toList());
+        return categoryStrings;
+        // Native SQL query to select the category field from the Post entity
 
     }
 

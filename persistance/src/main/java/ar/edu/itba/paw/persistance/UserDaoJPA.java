@@ -1,6 +1,8 @@
 package ar.edu.itba.paw.persistance;
 
 import ar.edu.itba.paw.models.User;
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -8,6 +10,8 @@ import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.Optional;
 
+@Repository
+@Primary
 public class UserDaoJPA implements UserDao {
 
     @PersistenceContext
@@ -33,7 +37,7 @@ public class UserDaoJPA implements UserDao {
 
     @Override
     public User create(String username, String email, String password) {
-        User newUser = new User(username,password,email,null,false);
+        User newUser = new User(username,password,email,false,"en");
         em.persist(newUser);
         return newUser;
     }
