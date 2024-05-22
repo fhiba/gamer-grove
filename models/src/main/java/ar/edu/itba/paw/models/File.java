@@ -9,17 +9,17 @@ public class File {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "media_id_seq")
     @SequenceGenerator(sequenceName = "media_id_seq", name = "media_id_seq", allocationSize = 1)
     @Column(name ="id")
-    private long imageId;
+    private Long imageId;
 
     @Column(name = "bytes", nullable = false)
-    private byte[] file;
+    private Byte[] file;
 
 
     public File() {
         // HIBERNATE ONLY
     }
 
-    public File(long imageId, byte[] file) {
+    public File(Byte[] file) {
         this.imageId = imageId;
         this.file = file;
     }
@@ -32,11 +32,11 @@ public class File {
         this.imageId = imageId;
     }
 
-    public byte[] getFile() {
+    public Byte[] getFile() {
         return file;
     }
 
-    public void setFile(byte[] file) {
+    public void setFile(Byte[] file) {
         this.file = file;
     }
 }

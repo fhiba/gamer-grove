@@ -24,7 +24,7 @@ public class GroovyCommentHistory {
     @OneToOne(targetEntity = Post.class)
     private Post post;
     @Column(name="groovy_type")
-    private  boolean grooviness;
+    private  Boolean grooviness;
 
     public GroovyCommentHistory(User user, Comment comment, Post post, boolean grooviness) {
         this.user = user;
