@@ -92,7 +92,7 @@ public class ModderServiceImpl implements ModderService{
             LOGGER.debug("Post not found");
             return;
         }
-        long authorId = post.getAuthorId();
+        long authorId = post.getAuthor().getId();
         Optional<User> author = us.findById(authorId);
 
         if(author.isEmpty()){
@@ -100,14 +100,14 @@ public class ModderServiceImpl implements ModderService{
             return;
         }
         User authorUser = author.get();
-        mailingService.notifyPostDeletion(authorUser.getEmail(), authorUser.getUsername(), post.getId(), post.getTitle(), post.getCommunityName());
+        mailingService.notifyPostDeletion(authorUser.getEmail(), authorUser.getUsername(), post.getId(), post.getTitle(), post.getcommunity().getName());
     }
 
     @Override
     public boolean canRemovePost(long userId, long postId) throws NoSuchPostException, NoSuchCommunityException {
 
         Post toDelete = ps.getPostById(postId);
-        Community postFrom = cs.findByName(toDelete.getCommunityName());
+        Community postFrom = cs.findByName(toDelete.getcommunity().getName());
 
         return isModderOfCommunity(userId, postFrom.getId());
     }
@@ -136,7 +136,7 @@ public class ModderServiceImpl implements ModderService{
         }
         Community postFrom;
         try {
-            postFrom = cs.findByName(toDelete.getCommunityName());
+            postFrom = cs.findByName(toDelete.getcommunity().getName());
         } catch (NoSuchCommunityException e) {
             return false;
         }

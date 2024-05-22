@@ -217,7 +217,7 @@ public class PostController {
         try {
             post = ps.getPostByIdWithImage(postId);
             mav.addObject("post", post);
-            community = cs.findByName(post.getCommunityName());
+            community = cs.findByName(post.getcommunity().getName());
         } catch (NoSuchPostException e) {
             LOGGER.debug("No such post", e);
             throw e;
@@ -250,10 +250,10 @@ public class PostController {
         mav.addObject("downComments", negativeGrooviedComments);
         mav.addObject("newCommentForm", newCommentForm);
         mav.addObject("comments", comments);
-        Optional<User> author = us.findById(post.getAuthorId());
+        Optional<User> author = us.findById(post.getAuthor().getId());
         mav.addObject("author", author.isPresent() ? author.get().getUsername() : "[deleted]");
         mav.addObject("communities", communities);
-        mav.addObject("posts", ps.getPostsByCommunity(post.getCommunityName()));
+        mav.addObject("posts", ps.getPostsByCommunity(post.getcommunity().getName()));
         mav.addObject("canDelete", canDelete);
 
         return mav;
