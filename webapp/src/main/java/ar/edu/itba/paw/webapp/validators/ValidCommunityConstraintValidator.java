@@ -18,6 +18,8 @@ public class ValidCommunityConstraintValidator  implements ConstraintValidator<V
 
     @Override
     public boolean isValid(String s, javax.validation.ConstraintValidatorContext constraintValidatorContext) {
+        if(s == null || s.isEmpty())
+            return false;
         try {
             communityService.findByName(s);
         } catch (NoSuchCommunityException e) {

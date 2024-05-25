@@ -125,27 +125,16 @@
 
                             <c:forEach var="category" items="${community.categories}">
                                 <c:url value="/communities?searchTerms=&categories=${category}" var="categorySearchUrl"/>
-                                <a href="${categorySearchUrl}">
+                                <a class="text-decoration-none" href="${categorySearchUrl}">
                                 <span class="fs-6 pe-auto btn btn-secondary cat-badge p-1 badge">${category}</span>
                                 </a>
                             </c:forEach>
-                            <div class="accordion accordion-flush justify-content-end">
-
-                                    <h2 class="accordion-header justify-content-end">
-                                        <button class="expand-btn" type="button"
-                                                data-bs-toggle="collapse" data-bs-target="#flush-collapseOne"
-                                                aria-expanded="false" aria-controls="flush-collapseOne"><i class="fa-solid fa-caret-down expand-btn"></i>
-                                        </button>
-                                    </h2>
-                                    <div id="flush-collapseOne" class="accordion-collapse collapse"
-                                         data-bs-parent="#accordionFlushExample">
-                                        <h6 class="fw-bold"><spring:message code="Developer"/>:<c:out value="${community.developer}" escapeXml="true"/> </h6>
-                                        <h6 class="fw-bold"><spring:message code="Publisher"/>:<c:out value="${community.publisher}" escapeXml="true"/> </h6>
+                                    <div >
+                                        <h6 class="fw-bold"><spring:message code="Developer"/>: <c:out value="${community.developer}" escapeXml="true"/> </h6>
+                                        <h6 class="fw-bold"><spring:message code="Publisher"/>: <c:out value="${community.publisher}" escapeXml="true"/> </h6>
 <%--                                        <h6 class="fw-bold">Release Date: ${community.releaseDate}</h6>--%>
 
                                     </div>
-
-                            </div>
                             <h5 class="card-subtitle text-secondary mt-3 mb-1"><c:out value="${community.description}"
                                                                                       escapeXml="true"/></h5>
                         </div>
