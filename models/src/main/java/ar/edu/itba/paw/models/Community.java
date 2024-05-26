@@ -82,7 +82,7 @@ public class Community implements Serializable {
     public List<String> getCategory() {
         List<String> categories = new ArrayList<>();
         for(CommunityCategories category : this.category){
-            categories.add(category.toString());
+                categories.add(category.toString());
         }
         return categories;
     }

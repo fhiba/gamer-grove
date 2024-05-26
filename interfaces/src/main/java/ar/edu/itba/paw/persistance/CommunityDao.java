@@ -29,6 +29,8 @@ public interface CommunityDao {
 
     Boolean checkIfUserFollowsCommunity(long userId, int communityId);
 
+    List<String> getAllCategories();
+
     void unfollowCommunity(long id, int communityId);
 
     void followCommunity(Community community, User user);

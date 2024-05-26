@@ -38,7 +38,7 @@ public class UserDaoJPA implements UserDao {
 
     @Override
     public User create(String username, String email, String password) {
-        User newUser = new User(username,password,email,false,"en");
+        User newUser = new User(username,password,email,false,"en",false);
         em.persist(newUser);
         return newUser;
     }

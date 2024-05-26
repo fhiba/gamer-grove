@@ -8,11 +8,13 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @Repository
 public class CommunityDaoJpa implements CommunityDao{
@@ -47,20 +49,22 @@ public class CommunityDaoJpa implements CommunityDao{
 
     @Override
     public List<Community> find(int pageSize, int offset, String searchTerms, List<String> categories) {
-        List<Integer> idList = new QueryBuilder()
+        List<Long> idList = new QueryBuilder()
                 .withSearchTerms(searchTerms)
                 .withCategories(categories)
                 .build(pageSize, offset);
+        System.out.println("Los ID son:");
+        System.out.println(idList);
         TypedQuery<Community> query = em.createQuery("SELECT c FROM Community c WHERE c.id IN :ids", Community.class);
         query.setParameter("ids", idList);
         return query.getResultList();
     }
 
     private class QueryBuilder {
-        private static final String SELECT = "SELECT c.id FROM Community c ";
-        private static final String COUNT = "SELECT COUNT(c.id) FROM Community c ";
-        private static final String SEARCH_TERM = "WHERE c.name ILIKE :searchTerms ";
-        private static final String CATEGORY = "AND c.id IN (SELECT cc.community_id FROM communities_categories cc WHERE cc.category in :categories) ";
+        private static final String SELECT = "SELECT c.id FROM Community c WHERE TRUE ";
+        private static final String COUNT = "SELECT COUNT(c.id) FROM Community c WHERE TRUE ";
+        private static final String SEARCH_TERM = "AND c.name ILIKE :searchTerms ";
+        private static final String CATEGORY = "AND c.id IN (SELECT cc.community_id FROM communities_categories cc WHERE cc.category in :categories GROUP BY cc.community_id HAVING COUNT(cc.community_id) = :help) ";
         private final List<String> categories = new ArrayList<>();
         private String searchTerms = "";
 
@@ -79,7 +83,7 @@ public class CommunityDaoJpa implements CommunityDao{
             return this;
         }
 
-        List<Integer> build(Integer pageSize, Integer offset) {
+        List<Long> build(Integer pageSize, Integer offset) {
             StringBuilder query = new StringBuilder(SELECT);
             if (!searchTerms.isEmpty()) {
                 query.append(SEARCH_TERM);
@@ -87,16 +91,17 @@ public class CommunityDaoJpa implements CommunityDao{
             if (!categories.isEmpty()) {
                 query.append(CATEGORY);
             }
-            TypedQuery<Integer> q = em.createQuery(query.toString(), Integer.class);
+            Query q = em.createNativeQuery(query.toString());
             if (!searchTerms.isEmpty()) {
                 q.setParameter("searchTerms", "%" + searchTerms + "%");
             }
             if (!categories.isEmpty()) {
                 q.setParameter("categories", categories);
+                q.setParameter("help", categories.size());
             }
-            q.setFirstResult((offset - 1) * pageSize);
+            q.setFirstResult(offset);
             q.setMaxResults(pageSize);
-            return q.getResultList();
+            return ((Stream<Integer>) q.getResultStream()).map(Integer::longValue).toList();
         }
 
         Integer buildCount() {
@@ -107,14 +112,17 @@ public class CommunityDaoJpa implements CommunityDao{
             if (!categories.isEmpty()) {
                 query.append(CATEGORY);
             }
-            TypedQuery<Integer> q = em.createQuery(query.toString(), Integer.class);
+            Query q = em.createNativeQuery(query.toString());
             if (!searchTerms.isEmpty()) {
                 q.setParameter("searchTerms", "%" + searchTerms + "%");
             }
             if (!categories.isEmpty()) {
                 q.setParameter("categories", categories);
+                q.setParameter("help", categories.size());
             }
-            return q.getSingleResult();
+            System.out.println("la query fue" + query);
+
+            return ((Number) q.getSingleResult()).intValue();
         }
     }
 
@@ -155,6 +163,11 @@ public class CommunityDaoJpa implements CommunityDao{
     @Override
     public Boolean checkIfUserFollowsCommunity(long userId, int communityId) {
         return null;
+    }
+
+    @Override
+    public List<String> getAllCategories() {
+        return em.createNativeQuery("SELECT DISTINCT category FROM communities_categories").getResultList();
     }
 
 
@@ -211,8 +224,8 @@ public class CommunityDaoJpa implements CommunityDao{
 
     @Override
     public void editCommunityInfo(String communityName, String description, String publisher, String developer) {
-        em.createQuery("UPDATE Community SET name = :name, description = :description, publisher = :publisher, developer = :developer WHERE name = :communityName")
-                .setParameter("name", communityName)
+        em.createQuery("UPDATE Community SET  description = :description, publisher = :publisher, developer = :developer WHERE name = :communityName")
+                .setParameter("communityName", communityName)
                 .setParameter("description", description)
                 .setParameter("publisher", publisher)
                 .setParameter("developer", developer)
