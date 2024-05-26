@@ -46,7 +46,7 @@ public class ModderDaoJpa implements ModderDao{
 
     @Override
     public int removePost(long postId) {
-        String sql = "DELETE FROM post WHERE id = ?";
+        String sql = "UPDATE post SET deleted = true WHERE id = ?";
         Query query = em.createNativeQuery(sql);
         query.setParameter(1, postId);
         return query.executeUpdate();

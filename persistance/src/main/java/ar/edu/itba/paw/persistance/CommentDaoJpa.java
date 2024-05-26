@@ -124,7 +124,7 @@ public class CommentDaoJpa implements CommentDao{
 
         List<Long> resultList = ((Stream<Integer>) nativeQuery.getResultStream()).map(Integer::longValue).toList();
 
-        TypedQuery<Comment> query = em.createQuery("from Comment as c where c.id IN :ids", Comment.class);
+        TypedQuery<Comment> query = em.createQuery("from Comment as c where c.id IN :ids ORDER BY c.date DESC", Comment.class);
         query.setParameter("ids", resultList);
         return query.getResultList();
     }

@@ -88,12 +88,13 @@ public class User {
         this.locale = "es";
     }
 
-    public User(final String username, final String password, final String email, Boolean verified, String locale) {
+    public User(final String username, final String password, final String email, Boolean verified, String locale,Boolean owner) {
         this.username = username;
         this.email = email;
         this.password = password;
         this.verified = verified;
         this.locale = locale;
+        this.Owner=owner;
     }
 
     public Boolean isVerified() {
