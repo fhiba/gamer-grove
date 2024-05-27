@@ -4,6 +4,8 @@ import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.GroovyCommentHistory;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 
@@ -12,7 +14,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -20,6 +21,9 @@ import java.util.stream.Stream;
 @Repository
 @Primary
 public class CommentDaoJpa implements CommentDao{
+
+    Logger LOGGER = LoggerFactory.getLogger(CommentDaoJpa.class);
+
     @PersistenceContext
     private EntityManager em;
     @Override
@@ -41,8 +45,9 @@ public class CommentDaoJpa implements CommentDao{
 
     @Override
     public Optional<Comment> getCommentById(long commentId) {
-        return Optional.ofNullable(em.find(Comment.class, commentId));
-
+        return Optional.ofNullable(em.createQuery("from Comment as c where c.id = :id", Comment.class)
+                .setParameter("id", commentId)
+                .getSingleResult());
     }
 
 
@@ -55,7 +60,7 @@ public class CommentDaoJpa implements CommentDao{
     @Override
     public Optional<Boolean> getGroovyTypeFromComment(Comment comment, User user, Post post) {
         GroovyCommentHistory.GroovyCommentHistoryId groovyCommentHistoryId = new GroovyCommentHistory.GroovyCommentHistoryId(user,comment,post);
-        return Optional.of(em.find(GroovyCommentHistory.class, groovyCommentHistoryId).isGrooviness());
+        return Optional.of(em.find(GroovyCommentHistory.class, groovyCommentHistoryId).isGroovy());
     }
 
     @Override

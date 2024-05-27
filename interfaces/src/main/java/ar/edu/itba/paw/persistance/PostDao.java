@@ -22,7 +22,7 @@ public interface PostDao {
     void editGrooviness(long postId, int i);
 
     void addToGroovy(long userId, long postId, boolean grooviness);
-
+    void addToGroovy(User user, Post post, boolean grooviness);
     Optional<Boolean> checkGrooviness(long postId, long userId);
 
     void insertIntoGroovyHistory(long postId, long id, boolean grooviness);

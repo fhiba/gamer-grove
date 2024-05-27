@@ -57,6 +57,15 @@ public class UserDaoJPA implements UserDao {
     }
 
     @Override
+    public List<User> getFollowersOfCommunity(long communityId) {
+        @SuppressWarnings("unchecked")
+        List<User> list = em.createNativeQuery("SELECT * FROM users WHERE id IN (SELECT user_id FROM community_user WHERE community_id = :communityId)")
+                .setParameter("communityId",communityId)
+                .getResultList();
+        return list;
+    }
+
+    @Override
     public User updatePassword(User user, String password) {
         user.setPassword(password);
         return em.merge(user);
@@ -64,7 +73,7 @@ public class UserDaoJPA implements UserDao {
 
     @Override
     public User verifyUser(User user) {
-        user.setOwner(true);
+        user.setVerified(true);
         return em.merge(user);
     }
 

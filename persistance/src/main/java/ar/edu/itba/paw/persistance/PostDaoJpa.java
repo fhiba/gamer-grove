@@ -1,6 +1,8 @@
 package ar.edu.itba.paw.persistance;
 
 import ar.edu.itba.paw.models.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 
@@ -20,6 +22,7 @@ public class PostDaoJpa implements PostDao {
     @PersistenceContext
     private EntityManager em;
 
+    Logger LOGGER = LoggerFactory.getLogger(PostDaoJpa.class);
     @Override
     public Optional<Post> findById(long id) {
         return Optional.ofNullable(em.find(Post.class, id));
@@ -63,17 +66,27 @@ public class PostDaoJpa implements PostDao {
     }
 
     @Override
+    public void addToGroovy(User user, Post post, boolean grooviness) {
+        GroovyPostHistory gph = new GroovyPostHistory(user, post, grooviness);
+        em.persist(gph);
+    }
+
+    @Override
     public void addToGroovy(long userId, long postId, boolean grooviness) {
-//        GroovyPostHistory gph = new GroovyPostHistory((int) post.getAuthor().getId(), (int) id, grooviness);
-//        em.persist(gph);
+/*
+       GroovyPostHistory gph = new GroovyPostHistory((int) userId, (int) id, grooviness);
+       em.persist(gph);
+*/
     }
 
     @Override
     public Optional<Boolean> checkGrooviness(long postId, long userId) {
-        return em.createNativeQuery("SELECT groovy_type FROM groovy_post_history WHERE post_id = :postId AND user_id = :userId")
+        @SuppressWarnings("unchecked")
+        Optional<Boolean> result = em.createNativeQuery("SELECT groovy_type FROM groovy_post_history WHERE post_id = :postId AND user_id = :userId")
                 .setParameter("postId", postId)
                 .setParameter("userId", userId)
                 .getResultList().stream().findFirst();
+        return result;
     }
 
     @Override
@@ -178,7 +191,7 @@ public class PostDaoJpa implements PostDao {
 
         List<Long> resultList = ((Stream<Integer>) nativeQuery.getResultStream()).map(Integer::longValue).toList();
 
-        TypedQuery<Post> query = em.createQuery("from Post as p where p.id IN :ids", Post.class);
+        TypedQuery<Post> query = em.createQuery("from Post as p where p.id IN :ids order by p.date desc ", Post.class);
         query.setParameter("ids", resultList);
         return query.getResultList();
     }
@@ -201,7 +214,7 @@ public class PostDaoJpa implements PostDao {
 
         List<Long> resultList = ((Stream<Integer>) nativeQuery.getResultStream()).map(Integer::longValue).toList();
 
-        TypedQuery<Post> query = em.createQuery("from Post as p where p.id IN :ids", Post.class);
+        TypedQuery<Post> query = em.createQuery("from Post as p where p.id IN :ids order by p.date desc ", Post.class);
         query.setParameter("ids", resultList);
         return query.getResultList();
     }
@@ -222,7 +235,7 @@ public class PostDaoJpa implements PostDao {
 
         List<Long> resultList = ((Stream<Integer>) nativeQuery.getResultStream()).map(Integer::longValue).toList();
 
-        TypedQuery<Post> query = em.createQuery("from Post as p where p.id IN :ids", Post.class);
+        TypedQuery<Post> query = em.createQuery("from Post as p where p.id IN :ids order by p.date desc", Post.class);
         query.setParameter("ids", resultList);
         return query.getResultList();
     }
@@ -237,14 +250,14 @@ public class PostDaoJpa implements PostDao {
 
     @Override
     public List<Post> getFollowedPostsByUserPaginated(long userId, int pageSize, int offset) {
-        Query nativeQuery = em.createNativeQuery("SELECT id FROM post WHERE deleted = false AND community_name IN (SELECT community_name FROM community_user WHERE user_id = :userId)");
+        Query nativeQuery = em.createNativeQuery("SELECT id FROM post WHERE deleted = false AND community_name IN (SELECT community_name FROM community_user WHERE user_id = :userId) ORDER BY post_date DESC");
         nativeQuery.setFirstResult(pageSize * ((offset/pageSize)));
         nativeQuery.setParameter("userId",userId);
         nativeQuery.setMaxResults(pageSize);
 
         List<Long> resultList = ((Stream<Integer>) nativeQuery.getResultStream()).map(Integer::longValue).toList();
 
-        TypedQuery<Post> query = em.createQuery("from Post as p where p.id IN :ids", Post.class);
+        TypedQuery<Post> query = em.createQuery("from Post as p where p.id IN :ids order by p.date desc", Post.class);
         query.setParameter("ids", resultList);
         return query.getResultList();
     }
@@ -260,7 +273,7 @@ public class PostDaoJpa implements PostDao {
 
     @Override
     public List<Post> getUserFollowedPostsByCategoryPaginated(long userId, String category, int pageSize, int offset) {
-        Query nativeQuery = em.createNativeQuery("SELECT id FROM post WHERE deleted = false AND category = :category AND community_name IN (SELECT community_name FROM community_user WHERE user_id = :userId)");
+        Query nativeQuery = em.createNativeQuery("SELECT id FROM post WHERE deleted = false AND category = :category AND community_name IN (SELECT community_name FROM community_user WHERE user_id = :userId) ORDER BY post_date DESC");
         nativeQuery.setFirstResult(pageSize * ((offset/pageSize)));
         nativeQuery.setParameter("category",category);
         nativeQuery.setParameter("userId",userId);
@@ -268,29 +281,30 @@ public class PostDaoJpa implements PostDao {
 
         List<Long> resultList = ((Stream<Integer>) nativeQuery.getResultStream()).map(Integer::longValue).toList();
 
-        TypedQuery<Post> query = em.createQuery("from Post as p where p.id IN :ids", Post.class);
+        TypedQuery<Post> query = em.createQuery("from Post as p where p.id IN :ids order by p.date desc ", Post.class);
         query.setParameter("ids", resultList);
         return query.getResultList();
     }
 
     @Override
     public int getTotalUserLikedPostCount(long userId) {
-        String sql = "SELECT COUNT(*) FROM groovy_post_history WHERE user_id = ? and groovy_type = true";
+        String sql = "SELECT COUNT(*) FROM groovy_post_history WHERE user_id = :userId and groovy_type = true";
         Query query = em.createNativeQuery(sql);
-        query.setParameter(1, userId);
+        query.setParameter("userId", userId);
+        LOGGER.info("Total user liked posts: {}" , ((Number) query.getSingleResult()).intValue());
         return ((Number) query.getSingleResult()).intValue();
     }
 
     @Override
     public List<Post> getUserLikedPostPaginated(long userId, int pageSize, int offset) {
-        Query nativeQuery = em.createNativeQuery("SELECT post_id FROM groovy_post_history WHERE user_id = ? and groovy_type = true");
+        Query nativeQuery = em.createNativeQuery("SELECT post_id FROM groovy_post_history WHERE user_id = :userId and groovy_type = true");
         nativeQuery.setFirstResult(pageSize * ((offset/pageSize)));
-        nativeQuery.setParameter("1",userId);
+        nativeQuery.setParameter("userId",userId);
         nativeQuery.setMaxResults(pageSize);
 
         List<Long> resultList = ((Stream<Integer>) nativeQuery.getResultStream()).map(Integer::longValue).toList();
 
-        TypedQuery<Post> query = em.createQuery("from Post as p where p.id IN :ids", Post.class);
+        TypedQuery<Post> query = em.createQuery("from Post as p where p.id IN :ids order by p.date desc", Post.class);
         query.setParameter("ids", resultList);
         return query.getResultList();
     }
@@ -305,23 +319,22 @@ public class PostDaoJpa implements PostDao {
 
     @Override
     public List<Post> getPostsByUserPaginated(long id, int pageSize, int offset) {
-        Query nativeQuery = em.createNativeQuery("SELECT id FROM post where author_id = ?");
+        Query nativeQuery = em.createNativeQuery("SELECT id FROM post where author_id = :authorId");
+        nativeQuery.setParameter("authorId",id);
         nativeQuery.setFirstResult(pageSize * ((offset/pageSize)));
-        nativeQuery.setParameter("1",id);
         nativeQuery.setMaxResults(pageSize);
 
         List<Long> resultList = ((Stream<Integer>) nativeQuery.getResultStream()).map(Integer::longValue).toList();
 
-        TypedQuery<Post> query = em.createQuery("from Post as p where p.id IN :ids", Post.class);
+        TypedQuery<Post> query = em.createQuery("from Post as p where p.id IN :ids order by p.date desc", Post.class);
         query.setParameter("ids", resultList);
         return query.getResultList();
     }
 
     @Override
     public int getTotalPostsByUser(long id) {
-        String sql = "SELECT COUNT(*) FROM post where author_id = ?";
-        Query query = em.createNativeQuery(sql);
-        query.setParameter(1, id);
-        return ((Number) query.getSingleResult()).intValue();
+        Query query= em.createQuery("select count(*) from Post as p where p.author.id = :id")
+                .setParameter("id", id);
+        return((Number) query.getSingleResult()).intValue();
     }
 }

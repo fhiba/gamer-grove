@@ -21,4 +21,6 @@ public interface UserDao {
         User updateLocale(User user, String locale);
 
         User updateImage(User user, File image);
+
+        List<User> getFollowersOfCommunity(long communityId);
 }

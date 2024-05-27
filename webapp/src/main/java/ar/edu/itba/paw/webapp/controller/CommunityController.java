@@ -51,7 +51,7 @@ public class CommunityController {
         Boolean isAdmin = false;
         if(maybeUser.isPresent()) {
             User user = maybeUser.get();
-            communities = user.getFollowedCommunities();
+            communities = cs.getFollowedCommunities(user);
             isAdmin = user.getOwner();
         }else{
             communities = cs.getAllCommunities();
@@ -95,7 +95,7 @@ public class CommunityController {
             User user = maybeUser.get();
             isAdmin = user.getOwner();
             isFollowing = cs.checkIfUserFollowsCommunity(community.getId().intValue());
-            communities = user.getFollowedCommunities();
+            communities = cs.getFollowedCommunities(user);
             canEdit = ms.isModderOfCommunity(user,community.getId());
         }
         else {
@@ -142,7 +142,7 @@ public class CommunityController {
         List<Community> followedCommunities;
         if(maybeUser.isPresent()) {
             User user = maybeUser.get();
-            followedCommunities = user.getFollowedCommunities();
+            followedCommunities = cs.getFollowedCommunities(user);
             isAdmin = user.getOwner();
         }
         else {
@@ -177,7 +177,7 @@ public class CommunityController {
         if(maybeUser.isPresent()) {
             User user = maybeUser.get();
             mav.addObject("isAdmin", user.getOwner());
-            mav.addObject("communities",user.getFollowedCommunities());
+            mav.addObject("communities",cs.getFollowedCommunities(user));
             isLogged = true;
         }else{
             mav.addObject("communities",cs.getAllCommunities());

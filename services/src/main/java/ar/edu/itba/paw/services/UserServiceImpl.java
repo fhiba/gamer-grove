@@ -84,6 +84,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<User> getFollowersOfCommunity(long communityId) {
+        return userDao.getFollowersOfCommunity(communityId);
+    }
+
+    @Override
     public User getLoggedUserChecked() throws NoLoggedUserException {
         Optional<User> maybeUser = getLoggedUser();
         if(maybeUser.isEmpty())
@@ -115,6 +120,7 @@ public class UserServiceImpl implements UserService {
         }else{
             User user = maybeUser.get();
             userDao.verifyUser(user);
+            tokenService.deleteVerifyTokens(user.getId());
             return user;
         }
     }

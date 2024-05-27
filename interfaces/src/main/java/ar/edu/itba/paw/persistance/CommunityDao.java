@@ -33,12 +33,12 @@ public interface CommunityDao {
 
     void unfollowCommunity(long id, int communityId);
 
-    void followCommunity(Community community, User user);
-    void unfollowCommunity(Community community, User user);
 
     void followCommunity(long id, int communityId,String communityName);
 
-    List<Community> getFollowedCommunities(long userId);
+    List<Community> getFollowedCommunitiesPaginated(Integer pageSize, Integer offset, Long userId);
+
+    List<Community> getFollowedCommunitiesLimitedBy(Long userId, Integer limit);
     void updateCommunityImageId(long id, long imageId);
 
     List<Community> getAllCommunitiesNoCat();
@@ -46,5 +46,8 @@ public interface CommunityDao {
     void editCommunityInfo(String communityName, String description, String publisher, String developer);
 
     int findCount(String searchTerms, List<String> categories);
+
+    Integer getFollowedCommunitiesCount(Long userId);
+
 
 }

@@ -13,6 +13,7 @@ import javax.persistence.TypedQuery;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -64,7 +65,7 @@ public class CommunityDaoJpa implements CommunityDao{
         private static final String SELECT = "SELECT c.id FROM Community c WHERE TRUE ";
         private static final String COUNT = "SELECT COUNT(c.id) FROM Community c WHERE TRUE ";
         private static final String SEARCH_TERM = "AND c.name ILIKE :searchTerms ";
-        private static final String CATEGORY = "AND c.id IN (SELECT cc.community_id FROM communities_categories cc WHERE cc.category in :categories GROUP BY cc.community_id HAVING COUNT(cc.community_id) = :help) ";
+        private static final String CATEGORY = "AND c.id IN (SELECT cc.community_id FROM communities_categories cc WHERE cc.category in :categories GROUP BY cc.community_id HAVING COUNT(cc.community_id) = :categoriesCount) ";
         private final List<String> categories = new ArrayList<>();
         private String searchTerms = "";
 
@@ -97,7 +98,7 @@ public class CommunityDaoJpa implements CommunityDao{
             }
             if (!categories.isEmpty()) {
                 q.setParameter("categories", categories);
-                q.setParameter("help", categories.size());
+                q.setParameter("categoriesCount", categories.size());
             }
             q.setFirstResult(offset);
             q.setMaxResults(pageSize);
@@ -118,10 +119,8 @@ public class CommunityDaoJpa implements CommunityDao{
             }
             if (!categories.isEmpty()) {
                 q.setParameter("categories", categories);
-                q.setParameter("help", categories.size());
+                q.setParameter("categoriesCount", categories.size());
             }
-            System.out.println("la query fue" + query);
-
             return ((Number) q.getSingleResult()).intValue();
         }
     }
@@ -137,8 +136,12 @@ public class CommunityDaoJpa implements CommunityDao{
 
     @Override
     public Community addCategory(Community community, String category) {
-        community.getCategoriesEnum().add(CommunityCategories.valueOf(category));
-        return em.merge(community);
+        List<CommunityCategories> list = community.getCategoriesEnum();
+        if(Objects.isNull(list))
+            list = new ArrayList<>();
+        list.add(CommunityCategories.fromString(category));
+        community.setCategory(list);
+        return community;
     }
 
     @Override
@@ -162,7 +165,10 @@ public class CommunityDaoJpa implements CommunityDao{
 
     @Override
     public Boolean checkIfUserFollowsCommunity(long userId, int communityId) {
-        return null;
+       return em.createNativeQuery("SELECT 1 FROM community_user WHERE user_id = :userId AND community_id = :communityId")
+                .setParameter("userId", userId)
+                .setParameter("communityId", communityId)
+                .getResultStream().findFirst().isPresent();
     }
 
     @Override
@@ -174,26 +180,13 @@ public class CommunityDaoJpa implements CommunityDao{
 
     @Override
     public void unfollowCommunity(long id, int communityId) {
-
         em.createNativeQuery("DELETE FROM community_user WHERE user_id = :id AND community_id = :communityId")
                 .setParameter("id", id)
                 .setParameter("communityId", communityId)
                 .executeUpdate();
     }
 
-    @Override
-    public void followCommunity(Community community, User user) {
-        community.getFollowers().add(user);
-        em.merge(community);
-    }
-
-    @Override
-    public void unfollowCommunity(Community community, User user) {
-        community.getFollowers().remove(user);
-        em.merge(community);
-    }
-
-    @Override
+       @Override
     public void followCommunity(long id, int communityId, String communityName) {
         em.createNativeQuery("INSERT INTO community_user (user_id, community_id, community_name, community_role) VALUES (:id, :communityId, :communityName, :role)")
                 .setParameter("id", id)
@@ -205,9 +198,34 @@ public class CommunityDaoJpa implements CommunityDao{
     }
 
     @Override
-    public List<Community> getFollowedCommunities(long userId) {
-        return List.of();
+    public List<Community> getFollowedCommunitiesPaginated(Integer pageSize, Integer offset, Long userId) {
+        Query nativeQuery = em.createNativeQuery("SELECT community_id FROM community_user WHERE user_id = :userId")
+                .setParameter("userId", userId)
+                .setFirstResult(pageSize * ((offset/pageSize)))
+                .setMaxResults(pageSize);
+
+        @SuppressWarnings("unchecked")
+        List<Long> resultList = ((Stream<Integer>) nativeQuery.getResultStream()).map(Integer::longValue).toList();
+
+        TypedQuery<Community> query = em.createQuery("from Community as c where c.id IN :ids", Community.class);
+        query.setParameter("ids", resultList);
+        return query.getResultList();
     }
+
+    @Override
+    public List<Community> getFollowedCommunitiesLimitedBy(Long userId, Integer limit) {
+        Query nativeQuery = em.createNativeQuery("SELECT community_id FROM community_user WHERE user_id = :userId")
+                .setParameter("userId", userId)
+                .setMaxResults(limit);
+
+        @SuppressWarnings("unchecked")
+        List<Long> resultList = ((Stream<Integer>) nativeQuery.getResultStream()).map(Integer::longValue).toList();
+
+        TypedQuery<Community> query = em.createQuery("from Community as c where c.id IN :ids", Community.class);
+        query.setParameter("ids", resultList);
+        return query.getResultList();
+    }
+
 
     @Override
     public void updateCommunityImageId(long id, long imageId) {
@@ -239,4 +257,12 @@ public class CommunityDaoJpa implements CommunityDao{
                 .withCategories(categories)
                 .buildCount();
     }
+
+    @Override
+    public Integer getFollowedCommunitiesCount(Long userId) {
+        Query query = em.createNativeQuery("SELECT COUNT(*) FROM community_user WHERE user_id = :userId")
+                .setParameter("userId", userId);
+        return ((Long) query.getSingleResult()).intValue();
+    }
+
 }

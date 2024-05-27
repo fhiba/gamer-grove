@@ -15,13 +15,16 @@ public class Comment {
     private Long id;
 
 
-    @ManyToOne
+    @ManyToOne(targetEntity = Post.class)
+    @JoinColumn(name = "post_id", referencedColumnName = "id")
     private Post post;
 
-    @ManyToOne
+    @ManyToOne(targetEntity = User.class)
+    @JoinColumn(name = "author_id", referencedColumnName = "id")
     private User author;
 
-    @OneToOne(optional = false)
+    @OneToOne(optional = false, targetEntity = Comment.class)
+    @JoinColumn(name = "parent_id", referencedColumnName = "id")
     private Comment parent;
 
     @Column(nullable = false,name = "body")

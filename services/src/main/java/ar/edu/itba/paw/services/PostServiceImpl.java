@@ -8,6 +8,7 @@ import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
 import ar.edu.itba.paw.models.pagination.PaginationRequest;
 import ar.edu.itba.paw.persistance.PostDao;
+import org.apache.commons.logging.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,7 +74,8 @@ public class PostServiceImpl implements PostService{
     @Async
     void notifyUsers(Post post, User user) {
         Community community = post.getcommunity();
-        List<User> users = community.getFollowers();
+
+        List<User> users = userService.getFollowersOfCommunity(community.getId());
         mailingService.sendNewPostNotifications(users, post, user);
     }
 
@@ -162,12 +164,10 @@ public class PostServiceImpl implements PostService{
         //checks whether the user has already grooved the comment
         Optional<Boolean> isGroovy = postDao.checkGrooviness(postId, user.getId());
         if(isGroovy.isEmpty()) {
-            postDao.insertIntoGroovyHistory(postId, user.getId(),(grooviness == 1));
+            postDao.addToGroovy(user, post.get(),(grooviness == 1));
             postDao.editGrooviness(postId,grooviness);
             return;
         }
-
-
         switch (grooviness){
             case 1:
                 if(isGroovy.get()) {
@@ -342,9 +342,11 @@ public class PostServiceImpl implements PostService{
     @Override
     public PaginatedDataWrapper<Post> getPostsByUserPaginated(long id, PaginationRequest request) {
         if( request.getPageSize() < 1){
+            LOGGER.error("Invalid Page size");
             throw new IllegalArgumentException("Invalid Page size");
         }
         if(request.getPageNumber() <1 ){
+            LOGGER.error("Invalid Page Number");
             throw new IllegalArgumentException("Invalid Page number");
         }
         int totalCount = postDao.getTotalPostsByUser(id);
@@ -352,6 +354,7 @@ public class PostServiceImpl implements PostService{
         List<Post> data = postDao.getPostsByUserPaginated(id,request.getPageSize(), offset);
         PaginatedDataWrapper<Post> dataWrapper = new PaginatedDataWrapper<>(data, request.getPageNumber(), totalCount, request.getPageSize());
         if(request.getPageNumber() > dataWrapper.getTotalPages() && dataWrapper.getTotalPages() != 0){
+            LOGGER.error("Invalid Page number");
             throw new IllegalArgumentException("Invalid Page number");
         }
         return dataWrapper;

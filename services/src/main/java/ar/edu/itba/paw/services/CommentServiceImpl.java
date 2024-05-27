@@ -4,6 +4,7 @@ import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchPostException;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.models.Comment;
+import ar.edu.itba.paw.models.GroovyCommentHistory;
 import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
@@ -42,6 +43,9 @@ public class CommentServiceImpl implements CommentService {
 
     @Autowired
     private ModderService modderService;
+
+    @Autowired
+    private GroovyCommentHistoryService groovyCommentHistoryService;
 
     @Transactional
     @Override
@@ -111,31 +115,35 @@ public class CommentServiceImpl implements CommentService {
             throw new NoSuchCommentException("Comment not found");
         //checks whether the user has already grooved the comment
         Post post = postService.getPostById(postId);
-        Optional<Boolean> isGroovy = commentDao.getGroovyTypeFromComment(comment.get(), user, post);
-        if(isGroovy.isEmpty()) {
-            commentDao.insertGroovinessIntoComment(comment.get(), user, post, (grooviness == 1));
+
+        LOGGER.info("params: " + commentId + " " + grooviness + " " + postId);
+        Optional<GroovyCommentHistory> maybeGCH = groovyCommentHistoryService.findGroovyCommentHistory(user, comment.get(), post);
+        LOGGER.info("maybeGCH: " + maybeGCH);
+        if(maybeGCH.isEmpty()) {
+            groovyCommentHistoryService.createGroovyCommentHistory(user, comment.get(), post, grooviness == 1);
             commentDao.editGrooviness(comment.get(),grooviness);
             return;
         }
 
 
+        Boolean isGroovy = maybeGCH.get().isGroovy();
         switch (grooviness){
             case 1:
-                if(isGroovy.get()) {
-                    commentDao.deleteGrooviness(post, user,comment.get());
+                if(isGroovy) {
+                    groovyCommentHistoryService.deleteGroovyCommentHistory(user, comment.get());
                     commentDao.editGrooviness(comment.get(), -1);
                 } else {
                     commentDao.editGrooviness(comment.get(),2);
-                    commentDao.updateGroovyHistory(post, user,comment.get(), true);
+                    groovyCommentHistoryService.updateGroovyCommentHistory(maybeGCH.get(), true);
                 }
                 break;
             case -1:
-                if(isGroovy.get()) {
+                if(isGroovy) {
                     commentDao.editGrooviness(comment.get(),-2);
-                    commentDao.updateGroovyHistory(post, user,comment.get(), false);
+                    groovyCommentHistoryService.updateGroovyCommentHistory(maybeGCH.get(), false);
                 }
                 else {
-                    commentDao.deleteGrooviness(post, user,comment.get());
+                    groovyCommentHistoryService.deleteGroovyCommentHistory(user, comment.get());
                     commentDao.editGrooviness(comment.get(),1);
                 }
                 break;

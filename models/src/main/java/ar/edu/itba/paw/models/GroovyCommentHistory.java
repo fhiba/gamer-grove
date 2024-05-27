@@ -10,33 +10,33 @@ import java.util.Objects;
 public class GroovyCommentHistory {
 
     @Id
-    @JoinColumn(name = "user_id")
     @OneToOne(targetEntity = User.class)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
     @Id
-    @JoinColumn(name = "comment_id")
     @OneToOne(targetEntity = Comment.class)
+    @JoinColumn(name = "comment_id", referencedColumnName = "id")
     private Comment comment;
 
     @Id
-    @JoinColumn(name = "post_id")
     @OneToOne(targetEntity = Post.class)
+    @JoinColumn(name = "post_id", referencedColumnName = "id")
     private Post post;
+
     @Column(name="groovy_type")
-    private  Boolean grooviness;
+    private  Boolean groovy;
 
     public GroovyCommentHistory(User user, Comment comment, Post post, Boolean grooviness) {
         this.user = user;
         this.comment = comment;
         this.post = post;
-        this.grooviness = grooviness;
+        this.groovy = grooviness;
     }
 
     public GroovyCommentHistory() {
 
     }
-
 
     public User getUser() {
         return user;
@@ -46,8 +46,8 @@ public class GroovyCommentHistory {
         return comment;
     }
 
-    public Boolean isGrooviness() {
-        return grooviness;
+    public Boolean isGroovy() {
+        return groovy;
     }
 
     public Post getPost() {
@@ -66,10 +66,11 @@ public class GroovyCommentHistory {
         this.post = post;
     }
 
-    public void setGrooviness(boolean grooviness) {
-        this.grooviness = grooviness;
+    public void setGroovy(boolean grooviness) {
+        this.groovy = grooviness;
     }
 
+    @Embeddable
     public static class GroovyCommentHistoryId implements Serializable {
         private User user;
 
@@ -86,18 +87,17 @@ public class GroovyCommentHistory {
         public GroovyCommentHistoryId() {
         }
 
-
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             GroovyCommentHistoryId that = (GroovyCommentHistoryId) o;
-            return Objects.equals(user, that.user) && Objects.equals(comment, that.comment) && Objects.equals(post, that.post);
+            return Objects.equals(user.getId(), that.user.getId()) && Objects.equals(comment.getId(), that.comment.getId()) && Objects.equals(post.getId(), that.post.getId());
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(user, comment, post);
+            return Objects.hash(user.getId(), comment.getId(), post.getId());
         }
 
         public User getUser() {

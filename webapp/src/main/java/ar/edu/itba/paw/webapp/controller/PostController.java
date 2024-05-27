@@ -76,7 +76,7 @@ public class PostController {
         boolean isLogged = false;
         if(maybeUser.isPresent()) {
             User user = maybeUser.get();
-            followedCommunities = user.getFollowedCommunities();
+            followedCommunities = cs.getFollowedCommunities(user);
             isAdmin = user.getOwner();
             isLogged = true;
         }
@@ -115,7 +115,7 @@ public class PostController {
 
         if(userOptional.isPresent()) {
             User user = userOptional.get();
-            communities = user.getFollowedCommunities();
+            communities = cs.getFollowedCommunities(user);
             isAdmin = user.getOwner();
             if (Objects.nonNull(category) &&!category.isEmpty() && !category.equals("all")) {
                 try {
@@ -166,7 +166,7 @@ public class PostController {
 
         if(optionalUser.isPresent()) {
             User user = optionalUser.get();
-            communities = user.getFollowedCommunities();
+            communities = cs.getFollowedCommunities(user);
             isAdmin = user.getOwner();
         }else{
             communities = cs.getAllCommunities();
@@ -230,7 +230,7 @@ public class PostController {
             comments = null;
         }
         if(user != null) {
-            communities = user.getFollowedCommunities();
+            communities = cs.getFollowedCommunities(user);
             grooviedComments = commentService.getUpGroovedComments(postId);
             negativeGrooviedComments = commentService.getDownGroovedComments(postId);
             isGrooved = ps.checkGrooviness(postId);

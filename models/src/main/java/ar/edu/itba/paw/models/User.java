@@ -27,54 +27,13 @@ public class User {
     @Column(name = "locale", nullable = false)
     private String locale;
 
-    public Boolean getVerified() {
-        return verified;
-    }
-
-    public void setVerified(Boolean verified) {
-        this.verified = verified;
-    }
-
-    public Boolean getOwner() {
-        return Owner;
-    }
-
-    public void setOwner(Boolean owner) {
-        Owner = owner;
-    }
-
-    public List<Community> getFollowedCommunities() {
-        return followedCommunities;
-    }
-
-    public void setFollowedCommunities(List<Community> followedCommunities) {
-        this.followedCommunities = followedCommunities;
-    }
-
     @Column(name = "owner")
     private  Boolean Owner;
 
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "followers")
-    private List<Community> followedCommunities;
-
-    @OneToMany(fetch = FetchType.LAZY)
+        @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "modders", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "community_id"))
     private List<Community> modderCommunities;
 
-    public String getUsername() {
-        return username;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getEmail() {
-        return email;
-    }
 
     public User() {
         //FOR HIBERNATE JPA
@@ -95,6 +54,22 @@ public class User {
         this.verified = verified;
         this.locale = locale;
         this.Owner=owner;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     public Boolean isVerified() {
@@ -133,4 +108,28 @@ public class User {
     public long getPortraid_id() {
         return image.getImageId();
     }
+    public List<Community> getModderCommunities() {
+        return modderCommunities;
+    }
+
+    public void setModderCommunities(List<Community> modderCommunities) {
+        this.modderCommunities = modderCommunities;
+    }
+
+    public Boolean getVerified() {
+        return verified;
+    }
+
+    public void setVerified(Boolean verified) {
+        this.verified = verified;
+    }
+
+    public Boolean getOwner() {
+        return Owner;
+    }
+
+    public void setOwner(Boolean owner) {
+        Owner = owner;
+    }
+
 }

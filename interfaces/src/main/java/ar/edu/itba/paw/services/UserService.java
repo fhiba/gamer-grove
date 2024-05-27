@@ -37,4 +37,6 @@ public interface UserService {
     void updateProfile(String locale, MultipartFile profilePic) throws NoLoggedUserException;
 
     User updateImage(User user, File value);
+
+    List<User> getFollowersOfCommunity(long communityId);
 }

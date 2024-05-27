@@ -60,7 +60,6 @@ public class FileServiceImpl implements FileService{
                 throw new RuntimeException(e);
             }
         }
-
         return image;
     }
 

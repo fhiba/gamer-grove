@@ -1,5 +1,7 @@
 package ar.edu.itba.paw.models;
 
+
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.net.URLEncoder;
@@ -27,8 +29,8 @@ public class Community implements Serializable {
     @JoinColumn(name = "portrait_id", referencedColumnName = "id")
     private File portrait;
 
+    @Convert(converter = CommunityCategoryConverter.class)
     @ElementCollection(targetClass = CommunityCategories.class)
-    @Enumerated(EnumType.STRING)
     @CollectionTable(name = "communities_categories", joinColumns = @JoinColumn(name = "community_id", nullable = false))
     private List<CommunityCategories> category;
     @Column(name = "publisher")
@@ -38,16 +40,14 @@ public class Community implements Serializable {
     @Column(name = "release_date")
     private LocalDateTime releaseDate;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "community_user", joinColumns = @JoinColumn(name = "community_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private List<User> followers;
+    @ManyToMany(mappedBy = "modderCommunities")
+    private List<User> modders;
 
     public Community() {
         //FOR HIBERNATE JPA
     }
 
     public Community( final String name, final String description, String publisher, String developer, LocalDateTime releaseDate) {
-
         this.name = name;
         this.description = description;
         this.publisher = publisher;
@@ -55,7 +55,6 @@ public class Community implements Serializable {
         this.releaseDate = releaseDate;
     }
     public Community( final String name, final String description, List<CommunityCategories> categories, String publisher, String developer, LocalDateTime releaseDate) {
-
         this.name = name;
         this.description = description;
         this.category = categories;
@@ -82,7 +81,7 @@ public class Community implements Serializable {
     public List<String> getCategory() {
         List<String> categories = new ArrayList<>();
         for(CommunityCategories category : this.category){
-                categories.add(category.toString());
+                categories.add(category.getCategory());
         }
         return categories;
     }
@@ -114,24 +113,25 @@ public class Community implements Serializable {
     public String getEncodedName(){
         return URLEncoder.encode(name, StandardCharsets.UTF_8);
     }
-    public List<User> getFollowers() {
-        return followers;
-    }
-
-    public void setFollowers(List<User> followers) {
-        this.followers = followers;
-    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Community community = (Community) o;
-        return Objects.equals(id, community.id) && Objects.equals(name, community.name) && Objects.equals(description, community.description) && Objects.equals(portrait, community.portrait) && Objects.equals(category, community.category) && Objects.equals(publisher, community.publisher) && Objects.equals(developer, community.developer) && Objects.equals(releaseDate, community.releaseDate) && Objects.equals(followers, community.followers);
+        return Objects.equals(id, community.id) && Objects.equals(name, community.name) && Objects.equals(description, community.description) && Objects.equals(portrait, community.portrait) && Objects.equals(category, community.category) && Objects.equals(publisher, community.publisher) && Objects.equals(developer, community.developer) && Objects.equals(releaseDate, community.releaseDate) ;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description, portrait, category, publisher, developer, releaseDate, followers);
+        return Objects.hash(id, name);
+    }
+
+    public List<User> getModders() {
+        return modders;
+    }
+
+    public void setModders(List<User> modders) {
+        this.modders = modders;
     }
 }
