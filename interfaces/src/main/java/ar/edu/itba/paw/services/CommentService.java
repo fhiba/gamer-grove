@@ -8,7 +8,7 @@ import ar.edu.itba.paw.models.pagination.PaginationRequest;
 import java.util.List;
 
 public interface CommentService {
-        Comment createComment(long postId, String body) throws NoLoggedUserException, NoSuchPostException;
+        Comment createComment(long postId, String body) throws NoLoggedUserException, NoSuchPostException, PostIsDeletedException;
         List<Comment> getPostComments(long postId);
 
         PaginatedDataWrapper<Comment> getPostCommentsPaginated(long postId, PaginationRequest request);

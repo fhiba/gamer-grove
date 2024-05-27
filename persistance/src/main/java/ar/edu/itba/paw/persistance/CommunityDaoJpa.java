@@ -154,7 +154,7 @@ public class CommunityDaoJpa implements CommunityDao{
 
     @Override
     public Community removeCategory(Community community, String category) {
-        community.getCategoriesEnum().remove(CommunityCategories.valueOf(category));
+        community.getCategoriesEnum().remove(CommunityCategories.fromString(category));
         return em.merge(community);
     }
 

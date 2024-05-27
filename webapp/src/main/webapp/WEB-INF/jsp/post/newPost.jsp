@@ -114,7 +114,7 @@
             elem.setAttribute('style', 'width: 100px; height: 100px; object-fit: cover; margin-top:10px;')
             const removeButton = document.createElement('button');
             removeButton.setAttribute('type', 'button');
-            removeButton.setAttribute('class', 'btn-close delete');
+            removeButton.setAttribute('class', 'btn btn-close btn-close-white delete');
             removeButton.classList.add('delete');
             removeButton.dataset.filename = selectedFiles[i].name;
                 // removeButton.innerHTML = '<span>&times;</span>'

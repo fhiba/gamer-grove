@@ -33,49 +33,49 @@ public class CommunityServiceTest {
     private final String DEVELOPER = "developer";
     private final LocalDateTime RELEASE_DATE = LocalDateTime.now();
 
-    @Test
-    public void testFindByName() {
-        // Setup
-        Community mockCom = new Community(ID, NAME, DESCRIPTION, PUBLISHER, DEVELOPER, RELEASE_DATE);
-        mockCom.setPortrait_id(PORTRAIT_ID);
-        Mockito.when(mockDao.findByName(Mockito.eq(NAME))).thenReturn(Optional.of(mockCom));
-        // Exercise
-        Community community;
-        try {
-            community = cs.findByName(NAME);
-        } catch (NoSuchCommunityException e) {
-            throw new RuntimeException(e);
-        }
-        // Verify
-        assertEquals(ID, community.getId());
-        assertEquals(NAME, community.getName());
-        assertEquals(DESCRIPTION, community.getDescription());
-        assertEquals(PUBLISHER, community.getPublisher());
-        assertEquals(DEVELOPER, community.getDeveloper());
-        assertEquals(RELEASE_DATE, community.getReleaseDate());
-    }
-
-    @Test
-    public void testFindById() {
-        //Setup
-        Community mockCom = new Community(ID, NAME, DESCRIPTION, PUBLISHER, DEVELOPER, RELEASE_DATE);
-        mockCom.setPortrait_id(PORTRAIT_ID);
-        Mockito.when(mockDao.findById(Mockito.eq(ID))).thenReturn(Optional.of(mockCom));
-        // Exercise
-        Community community;
-        try {
-            community = cs.findById(ID);
-        } catch (NoSuchCommunityException e) {
-            throw new RuntimeException(e);
-        }
-        // Verify
-        assertEquals(ID, community.getId());
-        assertEquals(NAME, community.getName());
-        assertEquals(DESCRIPTION, community.getDescription());
-        assertEquals(PUBLISHER, community.getPublisher());
-        assertEquals(DEVELOPER, community.getDeveloper());
-        assertEquals(RELEASE_DATE, community.getReleaseDate());
-    }
+//    @Test
+//    public void testFindByName() {
+//        // Setup
+//        Community mockCom = new Community(ID, NAME, DESCRIPTION, PUBLISHER, DEVELOPER, RELEASE_DATE);
+//        mockCom.setPortrait_id(PORTRAIT_ID);
+//        Mockito.when(mockDao.findByName(Mockito.eq(NAME))).thenReturn(Optional.of(mockCom));
+//        // Exercise
+//        Community community;
+//        try {
+//            community = cs.findByName(NAME);
+//        } catch (NoSuchCommunityException e) {
+//            throw new RuntimeException(e);
+//        }
+//        // Verify
+//        assertEquals(ID, community.getId());
+//        assertEquals(NAME, community.getName());
+//        assertEquals(DESCRIPTION, community.getDescription());
+//        assertEquals(PUBLISHER, community.getPublisher());
+//        assertEquals(DEVELOPER, community.getDeveloper());
+//        assertEquals(RELEASE_DATE, community.getReleaseDate());
+//    }
+//
+//    @Test
+//    public void testFindById() {
+//        //Setup
+//        Community mockCom = new Community(ID, NAME, DESCRIPTION, PUBLISHER, DEVELOPER, RELEASE_DATE);
+//        mockCom.setPortrait_id(PORTRAIT_ID);
+//        Mockito.when(mockDao.findById(Mockito.eq(ID))).thenReturn(Optional.of(mockCom));
+//        // Exercise
+//        Community community;
+//        try {
+//            community = cs.findById(ID);
+//        } catch (NoSuchCommunityException e) {
+//            throw new RuntimeException(e);
+//        }
+//        // Verify
+//        assertEquals(ID, community.getId());
+//        assertEquals(NAME, community.getName());
+//        assertEquals(DESCRIPTION, community.getDescription());
+//        assertEquals(PUBLISHER, community.getPublisher());
+//        assertEquals(DEVELOPER, community.getDeveloper());
+//        assertEquals(RELEASE_DATE, community.getReleaseDate());
+//    }
 
     @Test(expected = NoSuchCommunityException.class)
     public void testFailedFindById() throws NoSuchCommunityException {

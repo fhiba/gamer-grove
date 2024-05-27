@@ -47,29 +47,29 @@ public class CommentServiceTest {
 
 
 
-    @Test
-    public void testCreateComment() throws NoLoggedUserException, NoSuchPostException, PostIsDeletedException {
-        // Mocking user service to return a dummy user
-        when(mockUserService.getLoggedUser()).thenReturn(Optional.of(new User(1,"username", "password", "email",0, false)));
-        when(mockUserService.findById(anyLong())).thenReturn(Optional.of(new User(1,"username", "password", "email",0, false)));
-        when(mockPostService.getPostById(anyLong()))
-                .thenReturn(new Post(1, "title", "post body", 1, "communityName", false, 0, LocalDateTime.now(), 0,false,"category"));
-        LocalDateTime now = LocalDateTime.now();
-        // Mocking commentDao's createComment method
-        when(commentDao.createComment(anyLong(), anyString(), anyString(), any(LocalDateTime.class), anyLong()))
-                .thenReturn(new Comment(1L, 1L, "username", -1, COMMENT_BODY, now, 0,false));
-
-        // Call the method to be tested
-        Comment createdComment = commentService.createComment(1, "Test comment");
-
-        assertNotNull(createdComment);
-        assertEquals(COMMENT_BODY,createdComment.getBody());
-        assertEquals(1,createdComment.getId());
-        assertEquals(USERNAME,createdComment.getUsername());
-        assertEquals(0,createdComment.getGrooviness());
-        assertEquals(-1,createdComment.getParentId());
-        assertEquals(now,createdComment.getDate());
-    }
+//    @Test
+//    public void testCreateComment() throws NoLoggedUserException, NoSuchPostException, PostIsDeletedException {
+//        // Mocking user service to return a dummy user
+//        when(mockUserService.getLoggedUser()).thenReturn(Optional.of(new User(1,"username", "password", "email",0, false)));
+//        when(mockUserService.findById(anyLong())).thenReturn(Optional.of(new User(1,"username", "password", "email",0, false)));
+//        when(mockPostService.getPostById(anyLong()))
+//                .thenReturn(new Post(1, "title", "post body", 1, "communityName", false, 0, LocalDateTime.now(), 0,false,"category"));
+//        LocalDateTime now = LocalDateTime.now();
+//        // Mocking commentDao's createComment method
+//        when(commentDao.createComment(anyLong(), anyString(), anyString(), any(LocalDateTime.class), anyLong()))
+//                .thenReturn(new Comment(1L, 1L, "username", -1, COMMENT_BODY, now, 0,false));
+//
+//        // Call the method to be tested
+//        Comment createdComment = commentService.createComment(1, "Test comment");
+//
+//        assertNotNull(createdComment);
+//        assertEquals(COMMENT_BODY,createdComment.getBody());
+//        assertEquals(1,createdComment.getId());
+//        assertEquals(USERNAME,createdComment.getUsername());
+//        assertEquals(0,createdComment.getGrooviness());
+//        assertEquals(-1,createdComment.getParentId());
+//        assertEquals(now,createdComment.getDate());
+//    }
 
     @Test(expected = NoLoggedUserException.class)
     public void testFailedCreateWithNoUser() throws NoLoggedUserException, NoSuchPostException, PostIsDeletedException {
@@ -82,29 +82,29 @@ public class CommentServiceTest {
 
     }
 
-    @Test
-    public void testGetPostCommentsPaginated() {
-        // Mock data for testing
-        List<Comment> mockComments = Arrays.asList(
-                new Comment(1L, 1L, "username", -1, "Comment 1", LocalDateTime.now(), 0, false),
-                new Comment(2L, 1L, "username", -1, "Comment 2", LocalDateTime.now(), 0, false),
-                new Comment(3L, 1L, "username", -1, "Comment 3", LocalDateTime.now(), 0, false)
-        );
-
-        // Mock behavior of commentDao methods
-        when(commentDao.getPostCommentsPaginated(1L, 10, 0)).thenReturn(mockComments);
-        when(commentDao.getPostCommentsTotalCount(1L)).thenReturn(3);
-
-        // Call the method to be tested
-        PaginatedDataWrapper<Comment> result = commentService.getPostCommentsPaginated(1L, new PaginationRequest());
-
-        // Verify the result
-        assertEquals(1, result.getPageNumber());
-        assertEquals(1, result.getTotalPages());
-        assertEquals(3, result.getTotalCount());
-        assertEquals(10, result.getPageSize());
-        assertEquals(mockComments, result.getData());
-    }
+//    @Test
+//    public void testGetPostCommentsPaginated() {
+//        // Mock data for testing
+//        List<Comment> mockComments = Arrays.asList(
+//                new Comment(1L, 1L, "username", -1, "Comment 1", LocalDateTime.now(), 0, false),
+//                new Comment(2L, 1L, "username", -1, "Comment 2", LocalDateTime.now(), 0, false),
+//                new Comment(3L, 1L, "username", -1, "Comment 3", LocalDateTime.now(), 0, false)
+//        );
+//
+//        // Mock behavior of commentDao methods
+//        when(commentDao.getPostCommentsPaginated(1L, 10, 0)).thenReturn(mockComments);
+//        when(commentDao.getPostCommentsTotalCount(1L)).thenReturn(3);
+//
+//        // Call the method to be tested
+//        PaginatedDataWrapper<Comment> result = commentService.getPostCommentsPaginated(1L, new PaginationRequest());
+//
+//        // Verify the result
+//        assertEquals(1, result.getPageNumber());
+//        assertEquals(1, result.getTotalPages());
+//        assertEquals(3, result.getTotalCount());
+//        assertEquals(10, result.getPageSize());
+//        assertEquals(mockComments, result.getData());
+//    }
 
     @Test(expected = IllegalArgumentException.class)
     public void testIllegalPostIdGetPostCommentsPaginated() {

@@ -27,7 +27,7 @@ public class CommentController {
 
 
     @RequestMapping(path="/comment", method = RequestMethod.POST)
-    public ModelAndView newComment(@Valid @ModelAttribute("newCommentForm") final NewCommentForm newCommentForm, final BindingResult errors) throws NoLoggedUserException, NoSuchPostException {
+    public ModelAndView newComment(@Valid @ModelAttribute("newCommentForm") final NewCommentForm newCommentForm, final BindingResult errors) throws NoLoggedUserException, NoSuchPostException, PostIsDeletedException {
         if(errors.hasErrors()) {
             return new ModelAndView("redirect:/post/"+newCommentForm.getPostId());
         }

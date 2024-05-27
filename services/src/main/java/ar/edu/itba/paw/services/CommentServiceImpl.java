@@ -51,7 +51,7 @@ public class CommentServiceImpl implements CommentService {
         if(user.isEmpty())
             throw new NoLoggedUserException("User not logged");
         Post post = postService.getPostById(postId);
-        if(post.isDeleted()){
+        if(post.getDeleted()){
             throw new PostIsDeletedException("Post is deleted");
         }
         long userId = user.get().getId();
@@ -180,7 +180,7 @@ public class CommentServiceImpl implements CommentService {
         if(comment.isEmpty())
             throw new NoSuchCommentException("Comment not found");
         Post post = postService.getPostById(comment.get().getPostId());
-        if(post.isDeleted())
+        if(post.getDeleted())
             throw new PostIsDeletedException("Post not found");
 
         int ret = commentDao.deleteComment(comment.get());

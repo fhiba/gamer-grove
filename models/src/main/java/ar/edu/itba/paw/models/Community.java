@@ -28,7 +28,6 @@ public class Community implements Serializable {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "portrait_id", referencedColumnName = "id")
     private File portrait;
-
     @Convert(converter = CommunityCategoryConverter.class)
     @ElementCollection(targetClass = CommunityCategories.class)
     @CollectionTable(name = "communities_categories", joinColumns = @JoinColumn(name = "community_id", nullable = false))
