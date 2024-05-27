@@ -88,7 +88,7 @@ public class UserController {
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(registerUserForm.getUsername(), registerUserForm.getPassword());
         Authentication auth = authenticationManager.authenticate(authToken);
         SecurityContextHolder.getContext().setAuthentication(auth);
-        return new ModelAndView("redirect:/").addObject("registerSuccess", true);
+        return new ModelAndView("redirect:/communities").addObject("registerSuccess", true);
     }
 
     @RequestMapping(path="/addMod", method = RequestMethod.GET)

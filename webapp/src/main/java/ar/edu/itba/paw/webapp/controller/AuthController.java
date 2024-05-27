@@ -3,7 +3,6 @@ package ar.edu.itba.paw.webapp.controller;
 import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.exceptions.NoSuchTokenException;
-import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.services.TokenService;
 import ar.edu.itba.paw.services.UserService;
 import ar.edu.itba.paw.webapp.form.EmailForm;
@@ -23,15 +22,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.RedirectView;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.servlet.http.HttpServletRequest;
+
+
 import javax.validation.Valid;
-import java.net.http.HttpRequest;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 public class AuthController {
@@ -48,7 +44,7 @@ public class AuthController {
     @RequestMapping(value = "/auth/resend-verification", method = RequestMethod.GET)
     public ModelAndView resendVerification() throws NoLoggedUserException {
         userService.resendVerification();
-        return new ModelAndView("redirect:/home").addObject("resendVerification", true);
+        return new ModelAndView("redirect:/communities").addObject("resendVerification", true);
     }
 
     @RequestMapping(value = "/verify", method = RequestMethod.GET)

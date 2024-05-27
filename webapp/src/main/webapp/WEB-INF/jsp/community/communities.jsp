@@ -18,13 +18,17 @@
 <div class="container-fluid">
     <div class="row min-vh-100">
         <%--COMMUNITY LIST--%>
-            <%--COMMUNITY LIST--%>
+        <c:if test="${!empty followedCommunities}">
             <c:set var="isAdmin" value="${isAdmin}" scope="request"/>
             <c:set var="isLogged" value="${isLogged}" scope="request"/>
             <c:set var="communities" value="${followedCommunities}" scope="request"/>
             <jsp:include page="/WEB-INF/jsp/components/sidebar.jsp"/>
-
-            <div class="col-1">
+        </c:if>
+        <c:if test="${empty followedCommunities}">
+            <div class="col-2">
+            </div>
+        </c:if>
+        <div class="col-1">
         </div>
         <%--LISTA DE COMMUNITIES--%>
         <div class="col-6">
@@ -35,7 +39,8 @@
                         <div class="d-flex flex-column align-items-center">
                             <h4 class="fw-semi-bold"><spring:message code="Communities.NoCommunitites"/></h4>
                             <c:url value="/communities" var="showAll"/>
-                            <a href="${showAll}" class="btn btn-primary"><spring:message code="Communities.searchAll"/></a>
+                            <a href="${showAll}" class="btn btn-primary"><spring:message
+                                    code="Communities.searchAll"/></a>
                         </div>
                     </c:if>
                     <c:if test="${not empty communitiesPaginated}">
@@ -66,7 +71,8 @@
                                                     </c:forEach>
                                                 </div>
                                             </div>
-                                            <h6 class="card-title text-secondary"><c:out value="${community.description}" escapeXml="true"/></h6>
+                                            <h6 class="card-title text-secondary"><c:out
+                                                    value="${community.description}" escapeXml="true"/></h6>
                                         </div>
                                     </div>
                                 </div>
@@ -75,7 +81,7 @@
                         <div class="d-flex justify-content-center align-items-center">
 
                             <div class="d-flex justify-content-center align-items-center">
-                                <c:set var="paginatedDataWrapper" value="${communitiesPaginated}" scope="request" />
+                                <c:set var="paginatedDataWrapper" value="${communitiesPaginated}" scope="request"/>
                                 <c:set var="pageNumberName" value="pageNumber" scope="request"/>
                                 <jsp:include page="/WEB-INF/jsp/components/paginationFooter.jsp"/>
                             </div>
@@ -97,7 +103,9 @@
                         <div class="accordion accordion-flush w-100" id="accordionFlushExample">
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="flush-headingOne">
-                                    <button id="addCategoryButton" class="accordion-button btn-light collapsed bg-dark text-light" type="button"
+                                    <button id="addCategoryButton"
+                                            class="accordion-button btn-light collapsed bg-dark text-light"
+                                            type="button"
                                             data-bs-toggle="collapse" data-bs-target="#flush-collapseOne"
                                             aria-expanded="false" aria-controls="flush-collapseOne">
                                         <spring:message code="Category.Add"/>
@@ -108,7 +116,8 @@
                                      aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
                                     <div id="categoriesBody" class="accordion-body">
 
-                                        <p class="text-dark-emphasis m-1" hidden="hidden" id="emptyCatText"><spring:message code="Category.NoMore"/></p>
+                                        <p class="text-dark-emphasis m-1" hidden="hidden" id="emptyCatText">
+                                            <spring:message code="Category.NoMore"/></p>
                                     </div>
                                 </div>
                             </div>
@@ -116,7 +125,36 @@
                     </div>
                 </div>
             </div>
+            <div id="toastBox" class=" position-fixed bottom-0 end-0 m-3" style="display: none" data-bs-autohide="false">
+                <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
+                    <div class="toast-header">
+                        <strong id="toast_header" class="me-auto"></strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                    <div class="toast-body text-dark" id="toast_body">
+
+                    </div>
+                </div>
+            </div>
+            <c:if test="${isLogged && !isVerified }">
+                <c:url value="auth/resend-verification" var="verifyUrl"/>
+                <div class="toast show position-fixed bottom-0 end-0 m-3" role="alert" aria-live="assertive"
+                     aria-atomic="true" id="verifyToastBox">
+                    <div class="toast-body text-dark">
+                        <spring:message code="VerifyAccount.Verify"/>
+                        <div class="mt-2 pt-2 border-top">
+                            <a href="${verifyUrl}">
+                                <button type="button" class="btn btn-primary btn-sm"><spring:message
+                                        code="VerifyAccount.Resend"/></button>
+                            </a>
+                            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="toast"><spring:message
+                                    code="Close"/></button>
+                        </div>
+                    </div>
+                </div>
+            </c:if>
         </div>
+
     </div>
 </div>
 
@@ -203,5 +241,35 @@
         form.appendChild(input);
 
         document.getElementById("searchButton").click();
+    }
+
+    let hasToast = document.URL.includes("verifySuccess");
+    const successMessage = "<spring:message code="VerifyAccount.Success"/>";
+    const errorMessage = " <spring:message code="VerifyAccount.Error"/>";
+    if (hasToast) {
+        let toastMessage = document.URL.split("verifySuccess=")[1];
+        console.log(toastMessage);
+        document.getElementById('toast_header').innerText = "<spring:message code="Toast.Title.Notification"/>";
+        document.getElementById('toast_body').innerText = toastMessage === 'true' ? successMessage : errorMessage;
+        document.getElementById('toastBox').style.display = 'block';
+        new bootstrap.Toast(document.querySelector('.toast')).show();
+    }
+    let hasRegistered = document.URL.includes("registerSuccess");
+    if (hasRegistered) {
+        document.getElementById('verifyToastBox').style.display = 'none';
+        document.getElementById('toast_header').innerText = "<spring:message code="Toast.Title.Welcome"/>";
+        document.getElementById('toast_body').innerText = "<spring:message code="Register.Success"/>";
+        document.getElementById('toastBox').style.display = 'block';
+        new bootstrap.Toast(document.querySelector('.toast')).show();
+    }
+    let resendVerification = document.URL.includes("resendVerification");
+
+    if (resendVerification) {
+
+        document.getElementById('verifyToastBox').style.display = 'none';
+        document.getElementById('toast_header').innerText = "<spring:message code="Toast.Title.Notification"/>";
+        document.getElementById('toast_body').innerText = "<spring:message code="VerifyAccount.EmailSent"/>";
+        document.getElementById('toastBox').style.display = 'block';
+        new bootstrap.Toast(document.querySelector('.toast')).show();
     }
 </script>

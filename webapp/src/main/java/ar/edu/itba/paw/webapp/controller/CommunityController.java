@@ -20,8 +20,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -159,6 +157,8 @@ public class CommunityController {
         mav.addObject("searchTerms", searchTerms);
         mav.addObject("communitiesPaginated",communities);
         mav.addObject("followedCommunities",followedCommunities);
+        mav.addObject("isVerified", maybeUser.isPresent() && maybeUser.get().isVerified());
+
         return mav;
     }
 
