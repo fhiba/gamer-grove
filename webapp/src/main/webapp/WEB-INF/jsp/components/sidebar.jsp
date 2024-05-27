@@ -50,12 +50,12 @@
                 <a href="${communityUrl}" class="text-light text-decoration-none">
                     <div class="card-body-community d-flex align-items-center text-decoration-none mb-3">
                         <div class="d-flex justify-content-start">
-                            <c:if test="${community.portrait_id == 0}">
+                            <c:if test="${empty community.portrait}">
                                 <img src="${pageContext.request.contextPath}/images/default-community.png"
                                      class="very-small-profile-pic mb-1" alt="Profile Picture">
                             </c:if>
-                            <c:if test="${community.portrait_id != 0}">
-                                <img src="<c:url value='/image/${community.portrait_id}'/>"
+                            <c:if test="${not empty community.portrait}">
+                                <img src="<c:url value='/image/${community.portrait.imageId}'/>"
                                      class="very-small-profile-pic mb-1" alt="Profile Picture">
                             </c:if>
                         </div>

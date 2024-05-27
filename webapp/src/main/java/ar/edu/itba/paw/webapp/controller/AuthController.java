@@ -46,7 +46,7 @@ public class AuthController {
 
 
     @RequestMapping(value = "/auth/resend-verification", method = RequestMethod.GET)
-    public ModelAndView resendVerification() throws NoLoggedUserException {
+    public ModelAndView resendVerification() throws NoLoggedUserException, UserNotFoundException {
         userService.resendVerification();
         return new ModelAndView("redirect:/home").addObject("resendVerification", true);
     }

@@ -2,6 +2,7 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.exceptions.*;
 import ar.edu.itba.paw.models.Comment;
+import ar.edu.itba.paw.models.GroovyCommentHistory;
 import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
@@ -40,6 +41,9 @@ public class CommentServiceImpl implements CommentService {
     @Autowired
     private ModderService modderService;
 
+    @Autowired
+    private GroovyCommentHistoryService groovyCommentHistoryService;
+
     @Transactional
     @Override
     public Comment createComment(long postId, String body) throws NoLoggedUserException, NoSuchPostException, PostIsDeletedException {
@@ -51,9 +55,9 @@ public class CommentServiceImpl implements CommentService {
             throw new PostIsDeletedException("Post is deleted");
         }
         long userId = user.get().getId();
-        String username = user.get().getUsername();
+        User username = user.get();
         LocalDateTime date = LocalDateTime.now();
-        Comment comment = commentDao.createComment(postId,body,username,date,userId);
+        Comment comment = commentDao.createComment(post,body,username,date,userId);
         sendMailToPostOwner(postId,date);
         return comment;
     }
@@ -67,7 +71,7 @@ public class CommentServiceImpl implements CommentService {
             return;
         }
 
-        Optional<User> user = userService.findById(post.getAuthorId());
+        Optional<User> user = userService.findById(post.getAuthor().getId());
         if(user.isEmpty())
             return;
         mailingService.sendNewCommentNotification(user.get(), post, date);
@@ -103,39 +107,44 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional
     @Override
-    public void editGroovinessOnComment(long commentId, int grooviness, long postId) throws NoSuchCommentException, NoLoggedUserException {
+    public void editGroovinessOnComment(long commentId, int grooviness, long postId) throws NoSuchCommentException, NoLoggedUserException, NoSuchPostException {
         Optional<Comment> comment = commentDao.getCommentById(commentId);
         User user = userService.getLoggedUser().orElseThrow(() -> new NoLoggedUserException("User not found"));
 
         if(comment.isEmpty())
             throw new NoSuchCommentException("Comment not found");
         //checks whether the user has already grooved the comment
-        Optional<Boolean> isGroovy = commentDao.getGroovyTypeFromComment(commentId, user.getId(), postId);
-        if(isGroovy.isEmpty()) {
-            commentDao.insertGroovinessIntoComment(commentId, user.getId(), postId, (grooviness == 1));
-            commentDao.editGrooviness(commentId,grooviness);
+        Post post = postService.getPostById(postId);
+
+        LOGGER.info("params: " + commentId + " " + grooviness + " " + postId);
+        Optional<GroovyCommentHistory> maybeGCH = groovyCommentHistoryService.findGroovyCommentHistory(user, comment.get(), post);
+        LOGGER.info("maybeGCH: " + maybeGCH);
+        if(maybeGCH.isEmpty()) {
+            groovyCommentHistoryService.createGroovyCommentHistory(user, comment.get(), post, grooviness == 1);
+            commentDao.editGrooviness(comment.get(),grooviness);
             return;
         }
 
 
+        Boolean isGroovy = maybeGCH.get().isGroovy();
         switch (grooviness){
             case 1:
-                if(isGroovy.get()) {
-                    commentDao.deleteGrooviness(commentId, user.getId(), postId);
-                    commentDao.editGrooviness(commentId, -1);
+                if(isGroovy) {
+                    groovyCommentHistoryService.deleteGroovyCommentHistory(user, comment.get());
+                    commentDao.editGrooviness(comment.get(), -1);
                 } else {
-                    commentDao.editGrooviness(commentId,2);
-                    commentDao.updateGroovyHistory(commentId, user.getId(), postId, true);
+                    commentDao.editGrooviness(comment.get(),2);
+                    groovyCommentHistoryService.updateGroovyCommentHistory(maybeGCH.get(), true);
                 }
                 break;
             case -1:
-                if(isGroovy.get()) {
-                    commentDao.editGrooviness(commentId,-2);
-                    commentDao.updateGroovyHistory(commentId, user.getId(), postId, false);
+                if(isGroovy) {
+                    commentDao.editGrooviness(comment.get(),-2);
+                    groovyCommentHistoryService.updateGroovyCommentHistory(maybeGCH.get(), false);
                 }
                 else {
-                    commentDao.deleteGrooviness(commentId, user.getId(), postId);
-                    commentDao.editGrooviness(commentId,1);
+                    groovyCommentHistoryService.deleteGroovyCommentHistory(user, comment.get());
+                    commentDao.editGrooviness(comment.get(),1);
                 }
                 break;
             default:
@@ -174,7 +183,7 @@ public class CommentServiceImpl implements CommentService {
         if(post.isDeleted())
             throw new PostIsDeletedException("Post not found");
 
-        int ret = commentDao.deleteComment(commentId);
+        int ret = commentDao.deleteComment(comment.get());
         notifyCommentDeletion(comment.get());
         return  ret;
     }
@@ -191,6 +200,6 @@ public class CommentServiceImpl implements CommentService {
         } catch (NoSuchPostException e) {
             return;
         }
-        mailingService.notifyCommentDeletion(user.get().getEmail(), user.get().getUsername(), comment.getPostId(), post.getTitle(), post.getCommunityName(), comment.getBody());
+        mailingService.notifyCommentDeletion(user.get().getEmail(), user.get().getUsername(), comment.getPostId(), post.getTitle(), post.getcommunity().getName(), comment.getBody());
     }
 }

@@ -78,7 +78,7 @@ public class UserController {
     }
 
     @RequestMapping(path = "/register", method = RequestMethod.POST)
-    public ModelAndView postRegister(@Valid @ModelAttribute("registerForm") final RegisterUserForm registerUserForm, final BindingResult errors) {
+    public ModelAndView postRegister(@Valid @ModelAttribute("registerForm") final RegisterUserForm registerUserForm, final BindingResult errors) throws UserNotFoundException {
         if(errors.hasErrors()) {
             return getRegister(registerUserForm);
 
@@ -92,20 +92,20 @@ public class UserController {
     }
 
     @RequestMapping(path="/addMod", method = RequestMethod.GET)
-    public ModelAndView getAddMod(@ModelAttribute("newModForm") final NewModForm newModForm,@ModelAttribute("removeModForm") final RemoveModForm removeModForm) {
+    public ModelAndView getAddMod(@ModelAttribute("newModForm") final NewModForm newModForm,@ModelAttribute("removeModForm") final RemoveModForm removeModForm) throws NoLoggedUserException {
         ModelAndView mav = new ModelAndView("user/addMod");
         Boolean isAdmin;
         //El user esta necesariamente logueado para entrar en esta vista entonces no hace falta chequear si esta presente
-        isAdmin = us.isUserAdmin(us.getLoggedUser().get().getId());
-        mav.addObject("isAdmin",isAdmin);
-        mav.addObject("sidebarcommunities", cs.getFollowedCommunities(us.getLoggedUser().get()));
+
+        mav.addObject("isAdmin",true);
+        mav.addObject("sidebarcommunities", cs.getFollowedCommunities(us.getLoggedUserChecked()));
         mav.addObject("allCommunities", cs.getAllCommunities());
         mav.addObject("isLogged",true);
         return mav;
     }
 
     @RequestMapping(path="/addMod", method = RequestMethod.POST)
-    public ModelAndView postAddMod(@ModelAttribute("removeModForm") final RemoveModForm removeModForm,@Valid @ModelAttribute("newModForm") final NewModForm newModForm, final BindingResult errors) throws UserNotFoundException, NoSuchCommunityException {
+    public ModelAndView postAddMod(@ModelAttribute("removeModForm") final RemoveModForm removeModForm,@Valid @ModelAttribute("newModForm") final NewModForm newModForm, final BindingResult errors) throws UserNotFoundException, NoSuchCommunityException, NoLoggedUserException {
 
         if(errors.hasErrors()) {
             return  getAddMod(newModForm,removeModForm);
@@ -121,7 +121,7 @@ public class UserController {
     }
 
     @RequestMapping(path="/removeMod", method = RequestMethod.POST)
-    public ModelAndView postRemoveMod(@ModelAttribute("newModForm") final NewModForm newModForm,@Valid @ModelAttribute("removeModForm") final RemoveModForm removeModForm, final BindingResult errors) throws UserNotFoundException {
+    public ModelAndView postRemoveMod(@ModelAttribute("newModForm") final NewModForm newModForm,@Valid @ModelAttribute("removeModForm") final RemoveModForm removeModForm, final BindingResult errors) throws UserNotFoundException, NoLoggedUserException {
 
         if(errors.hasErrors()) {
             return getAddMod(newModForm,removeModForm);
@@ -158,8 +158,7 @@ public class UserController {
     public ModelAndView getProfileUserPosts(@RequestParam(required = false) Integer pageNumber, @ModelAttribute("userPfpForm") final UserPfpForm userPfpForm) {
         ModelAndView mav = new ModelAndView("user/profile/userPosts");
         User user = us.getLoggedUser().orElseThrow();
-        Boolean isAdmin = us.isUserAdmin(user.getId());
-        mav.addObject("isAdmin",isAdmin);
+        mav.addObject("isAdmin",user.getOwner());
         mav.addObject("user",user);
         mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
         mav.addObject("communities",cs.getFollowedCommunities(user));
@@ -172,6 +171,8 @@ public class UserController {
         try {
             posts = ps.getPostsByUserPaginated(user.getId(),paginationRequest);
         }catch (IllegalArgumentException e){
+
+            LOGGER.error("Error getting created posts", e);
             posts = null;
         }
         mav.addObject("posts",posts);
@@ -182,7 +183,7 @@ public class UserController {
     public ModelAndView getProfileLikedPosts(@RequestParam(required = false) Integer pageNumber, @ModelAttribute("userPfpForm") final UserPfpForm userPfpForm) {
         ModelAndView mav = new ModelAndView("user/profile/likedPosts");
         User user = us.getLoggedUser().orElseThrow();
-        Boolean isAdmin = us.isUserAdmin(user.getId());
+        Boolean isAdmin = us.getLoggedUser().get().getOwner();
         mav.addObject("isAdmin",isAdmin);
         mav.addObject("user",user);
         mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
@@ -195,6 +196,7 @@ public class UserController {
         try {
             likedPosts = ps.getUserLikedPostsPaginated(user.getId(),paginationRequestLikedPosts);
         }catch (IllegalArgumentException e){
+            LOGGER.error("Error getting liked posts", e);
             likedPosts = null;
         }
         mav.addObject("posts",likedPosts);

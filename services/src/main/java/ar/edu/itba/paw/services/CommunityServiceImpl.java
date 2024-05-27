@@ -70,6 +70,34 @@ public class CommunityServiceImpl implements CommunityService{
     }
 
 
+    public PaginatedDataWrapper<Community> followedCommunities(PaginationRequest request, Long userId) {
+        if( request.getPageSize() < 1){
+            throw new IllegalArgumentException("Invalid Page size");
+        }
+
+        if(request.getPageNumber() <1 ){
+            throw new IllegalArgumentException("Invalid Page number");
+        }
+
+        Integer totalCount = communityDao.getFollowedCommunitiesCount(userId);
+
+        int offset = (request.getPageNumber() - 1) * request.getPageSize();
+
+        List<Community> data = communityDao.getFollowedCommunitiesPaginated(request.getPageSize(), offset, userId);
+
+        PaginatedDataWrapper<Community> dataWrapper = new PaginatedDataWrapper<>(data, request.getPageNumber(), totalCount, request.getPageSize());
+
+        if(request.getPageNumber() > dataWrapper.getTotalPages() && dataWrapper.getTotalPages() != 0){
+            throw new IllegalArgumentException("Invalid Page number");
+        }
+        return dataWrapper;
+
+    }
+
+    public List<Community> getFollowedCommunitiesLimitedBy(Long userId, Integer limit) {
+        return communityDao.getFollowedCommunitiesLimitedBy(userId, limit);
+    }
+
 
     @Override
     public PaginatedDataWrapper<Community> find(PaginationRequest request, final String searchTerms, List<String> categories) {
@@ -101,7 +129,7 @@ public class CommunityServiceImpl implements CommunityService{
         Optional<Community> community = communityDao.findById(id);
         if(community.isEmpty())
             throw new NoSuchCommunityException("Community " + id+ " not found");
-        communityDao.addCategory(id,category);
+        communityDao.addCategory(community.get().getId(), category);
     }
 
     @Transactional
@@ -110,7 +138,7 @@ public class CommunityServiceImpl implements CommunityService{
         Optional<Community> community = communityDao.findById(id);
         if(community.isEmpty())
             throw new NoSuchCommunityException("Community " + id+ " not found");
-        communityDao.removeCategory(id,category);
+        communityDao.removeCategory(community.get(),category);
     }
 
     @Transactional
@@ -139,16 +167,17 @@ public class CommunityServiceImpl implements CommunityService{
 
     @Transactional
     @Override
-    public void modifyUserOnCommunity(int communityId,String communityName) throws NoLoggedUserException {
-        Boolean followsCommunity = checkIfUserFollowsCommunity(communityId);
-        User user = userService.getLoggedUser().get();
-        if(followsCommunity){
+    public void modifyUserOnCommunity(int communityId,String communityName) throws NoLoggedUserException, NoSuchCommunityException {
+        Community community = findById(communityId);
+        Optional<User> maybeUser = userService.getLoggedUser();
+        if (maybeUser.isEmpty())
+            throw new NoLoggedUserException("No logged user");
+        User user = maybeUser.get();
+        if(communityDao.checkIfUserFollowsCommunity(user.getId(),communityId)){
             communityDao.unfollowCommunity(user.getId(), communityId);
+        } else{
+            communityDao.followCommunity(user.getId(), communityId, communityName);
         }
-        else{
-            communityDao.followCommunity(user.getId(), communityId,communityName);
-        }
-
     }
 
     @Transactional
@@ -166,7 +195,7 @@ public class CommunityServiceImpl implements CommunityService{
             fileService.uploadCommunityImage(decodedName, image);
 
         Community community = findByName(decodedName);
-        List<String> currentCategories = Objects.isNull(community.getCategories())? Collections.emptyList(): new ArrayList<>(community.getCategories());
+        List<String> currentCategories = Objects.isNull(community.getCategory())? Collections.emptyList(): new ArrayList<>(community.getCategory());
         if(!Objects.isNull(categories)) {
             List<String> newCategories = List.of(categories.split(","));
             for (String category : newCategories) {
@@ -184,21 +213,20 @@ public class CommunityServiceImpl implements CommunityService{
 
 
     @Override
-    public Boolean checkIfUserFollowsCommunity(int communityId) throws NoLoggedUserException {
+    public Boolean checkIfUserFollowsCommunity(int communityId) throws NoLoggedUserException, NoSuchCommunityException {
         Optional<User> maybeUser = userService.getLoggedUser();
         if(maybeUser.isEmpty())
             throw new NoLoggedUserException("No logged user");
         User user = maybeUser.get();
+        Community community = findById(communityId);
         return communityDao.checkIfUserFollowsCommunity(user.getId(),communityId);
     }
 
     @Override
     public List<Community> getFollowedCommunities(User user) {
-        List<Community> followedCommunities = communityDao.getFollowedCommunities(user.getId());
+        List<Community> followedCommunities = communityDao.getFollowedCommunitiesLimitedBy(user.getId(), 15);
         if(followedCommunities.isEmpty())
             return Collections.emptyList();
         return followedCommunities;
     }
-
-
 }

@@ -29,14 +29,14 @@
                 <div class="card-body">
                     <div class="mb-3 row">
                         <div class="col-3">
-                            <c:if test="${user.portraid_id == 0}">
+                            <c:if test="${empty user.image}">
 
                                 <img src="${pageContext.request.contextPath}/images/default-avatar-icon.jpg"
                                      class="w-100 h-100 rounded-1 img-com" id="imgFile" alt="Profile Picture">
                             </c:if>
-                            <c:if test="${user.portraid_id != 0}">
+                            <c:if test="${not empty user.image}">
 
-                                <img src="<c:url value='/image/${user.portraid_id}'/>"
+                                <img src="<c:url value='/image/${user.image.imageId}'/>"
                                      class="w-100 h-100 rounded-1 img-com" id="imgFile" alt="Profile Picture">
                             </c:if>
 

@@ -27,7 +27,7 @@ public class CommentController {
 
 
     @RequestMapping(path="/comment", method = RequestMethod.POST)
-    public ModelAndView newComment(@Valid @ModelAttribute("newCommentForm") final NewCommentForm newCommentForm, final BindingResult errors) throws NoLoggedUserException, PostIsDeletedException, NoSuchPostException {
+    public ModelAndView newComment(@Valid @ModelAttribute("newCommentForm") final NewCommentForm newCommentForm, final BindingResult errors) throws NoLoggedUserException, NoSuchPostException {
         if(errors.hasErrors()) {
             return new ModelAndView("redirect:/post/"+newCommentForm.getPostId());
         }
@@ -37,7 +37,7 @@ public class CommentController {
     }
 
     @RequestMapping(path="/post/{postId}/+" , method = RequestMethod.POST)
-    public ModelAndView editGroovinessOnComment(@Valid @ModelAttribute("newCommentGroovyForm") final NewCommentGroovyForm newCommentGroovyForm, final BindingResult errors) throws UserNotFoundException, NoSuchCommentException, NoLoggedUserException {
+    public ModelAndView editGroovinessOnComment(@Valid @ModelAttribute("newCommentGroovyForm") final NewCommentGroovyForm newCommentGroovyForm, final BindingResult errors) throws UserNotFoundException, NoSuchCommentException, NoLoggedUserException, NoSuchPostException {
         if(errors.hasErrors()) {
             return new ModelAndView("redirect:/post/"+newCommentGroovyForm.getCommentPostId());
         }

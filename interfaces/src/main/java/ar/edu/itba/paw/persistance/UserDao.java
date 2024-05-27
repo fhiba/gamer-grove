@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.persistance;
 
+import ar.edu.itba.paw.models.File;
 import ar.edu.itba.paw.models.User;
 
 import java.util.Optional;
@@ -12,16 +13,14 @@ public interface UserDao {
         Optional<User> findByUsername(final String username);
         User create(final String username, final String email, final String password);
 
-        Optional<Boolean> isAdmin(final long id);
-
-        List<User> findByCommunity(String communityName);
-
         List<User> findAll();
 
-        void updateImageId(long id, long imageId);
+        User updatePassword(User user, String password);
+        User verifyUser(User user);
 
-        void updatePassword(Long id, String password);
-        void verifyUser(Long id);
+        User updateLocale(User user, String locale);
 
-        void updateLocale(long id, String locale);
+        User updateImage(User user, File image);
+
+        List<User> getFollowersOfCommunity(long communityId);
 }

@@ -18,6 +18,8 @@ import java.util.Set;
 @Component
 public class PawUserDetailsService implements UserDetailsService {
 
+
+    @Autowired
     private UserService us;
 
     @Autowired
@@ -32,7 +34,7 @@ public class PawUserDetailsService implements UserDetailsService {
         if(user.isVerified()) {
             authorities.add(new SimpleGrantedAuthority("ROLE_VERIFIED"));
         }
-        if(us.isUserAdmin(user.getId())) {
+        if(user.getOwner()) {
             authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
         }
         return new PawAuthUser(user.getUsername(), user.getPassword(), authorities);

@@ -22,9 +22,9 @@ public interface CommunityService {
 
     Community findById(final long communityId)throws NoSuchCommunityException;
 
-    void modifyUserOnCommunity(int communityId,String communityName) throws NoLoggedUserException;
+    void modifyUserOnCommunity(int communityId,String communityName) throws NoLoggedUserException, NoSuchCommunityException;
 
-    Boolean checkIfUserFollowsCommunity(int communityId) throws NoLoggedUserException;
+    Boolean checkIfUserFollowsCommunity(int communityId) throws NoLoggedUserException, NoSuchCommunityException;
 
     List<Community> getFollowedCommunities(User user);
 

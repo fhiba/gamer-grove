@@ -87,12 +87,12 @@
                 <div class="card-body">
                     <div class="row w-100 mb-2">
                         <div class="col-4">
-                            <c:if test="${community.portrait_id == 0}">
+                            <c:if test="${ empty community.portrait}">
                                 <img src="${pageContext.request.contextPath}/images/default-community.png"
                                      class="w-100 rounded-1 img-thumbnail img-com" alt="Profile Picture">
                             </c:if>
-                            <c:if test="${community.portrait_id != 0}">
-                                <img src="<c:url value='/image/${community.portrait_id}'/>"
+                            <c:if test="${not empty community.portrait}">
+                                <img src="<c:url value='/image/${community.portrait.imageId}'/>"
                                      class="w-100 rounded-1 img-thumbnail img-com" alt="Profile Picture">
                             </c:if>
 
@@ -123,10 +123,10 @@
                                 </c:if>
                             </div>
 
-                            <c:forEach var="category" items="${community.categories}">
-                                <c:url value="/communities?searchTerms=&categories=${category}" var="categorySearchUrl"/>
+                            <c:forEach var="category" items="${community.category}">
+                                <c:url value="/communities?searchTerms=&categories=${category.toString()}" var="categorySearchUrl"/>
                                 <a class="text-decoration-none" href="${categorySearchUrl}">
-                                <span class="fs-6 pe-auto btn btn-secondary cat-badge p-1 badge">${category}</span>
+                                <span class="fs-6 pe-auto btn btn-secondary cat-badge p-1 badge">${category.toString()}</span>
                                 </a>
                             </c:forEach>
                                     <div >

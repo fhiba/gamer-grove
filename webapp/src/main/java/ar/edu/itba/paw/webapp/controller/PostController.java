@@ -77,16 +77,16 @@ public class PostController {
         if(maybeUser.isPresent()) {
             User user = maybeUser.get();
             followedCommunities = cs.getFollowedCommunities(user);
-            isAdmin = us.isUserAdmin(user.getId());
+            isAdmin = user.getOwner();
             isLogged = true;
         }
         else{
-            followedCommunities = cs.getAllCommunitiesNoCat();
+            followedCommunities = cs.getAllCommunities();
         }
         mav.addObject("isAdmin",isAdmin);
         mav.addObject("followedCommunities",followedCommunities);
         mav.addObject("isLogged", isLogged);
-        mav.addObject("allCommunities", cs.getAllCommunitiesNoCat());
+        mav.addObject("allCommunities", cs.getAllCommunities());
         mav.addObject("categories", categories);
         mav.addObject("news", ps.getByCategory(PostCategories.NEWS.getCategory()));
 
@@ -116,7 +116,7 @@ public class PostController {
         if(userOptional.isPresent()) {
             User user = userOptional.get();
             communities = cs.getFollowedCommunities(user);
-            isAdmin = us.isUserAdmin(user.getId());
+            isAdmin = user.getOwner();
             if (Objects.nonNull(category) &&!category.isEmpty() && !category.equals("all")) {
                 try {
                     posts = ps.getUserFollowedPostsByCategoryPaginated(category,user.getId(),paginationRequest);
@@ -167,9 +167,9 @@ public class PostController {
         if(optionalUser.isPresent()) {
             User user = optionalUser.get();
             communities = cs.getFollowedCommunities(user);
-            isAdmin = us.isUserAdmin(user.getId());
+            isAdmin = user.getOwner();
         }else{
-            communities = cs.getAllCommunitiesNoCat();
+            communities = cs.getAllCommunities();
         }
         if (Objects.nonNull(category) && !category.isEmpty() && !category.equals("all")) {
             try {
@@ -217,7 +217,7 @@ public class PostController {
         try {
             post = ps.getPostByIdWithImage(postId);
             mav.addObject("post", post);
-            community = cs.findByName(post.getCommunityName());
+            community = cs.findByName(post.getcommunity().getName());
         } catch (NoSuchPostException e) {
             LOGGER.debug("No such post", e);
             throw e;
@@ -234,11 +234,11 @@ public class PostController {
             grooviedComments = commentService.getUpGroovedComments(postId);
             negativeGrooviedComments = commentService.getDownGroovedComments(postId);
             isGrooved = ps.checkGrooviness(postId);
-            canDelete = ms.canRemovePost(us.getLoggedUser().get().getId(), postId);
-            isAdmin = us.isUserAdmin(user.getId());
-            isFollowing = cs.checkIfUserFollowsCommunity((int)community.getId());
+            canDelete = ms.canRemovePost(user, postId);
+            isAdmin = user.getOwner();
+            isFollowing = cs.checkIfUserFollowsCommunity(community.getId().intValue());
         } else {
-            communities = cs.getAllCommunitiesNoCat();
+            communities = cs.getAllCommunities();
         }
         mav.addObject("isAdmin",isAdmin);
         mav.addObject("isFollowing",isFollowing);
@@ -250,10 +250,10 @@ public class PostController {
         mav.addObject("downComments", negativeGrooviedComments);
         mav.addObject("newCommentForm", newCommentForm);
         mav.addObject("comments", comments);
-        Optional<User> author = us.findById(post.getAuthorId());
+        Optional<User> author = us.findById(post.getAuthor().getId());
         mav.addObject("author", author.isPresent() ? author.get().getUsername() : "[deleted]");
         mav.addObject("communities", communities);
-        mav.addObject("posts", ps.getPostsByCommunity(post.getCommunityName()));
+        mav.addObject("posts", ps.getPostsByCommunity(post.getcommunity().getName()));
         mav.addObject("canDelete", canDelete);
 
         return mav;

@@ -2,6 +2,8 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchTokenException;
+import ar.edu.itba.paw.exceptions.UserNotFoundException;
+import ar.edu.itba.paw.models.File;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistance.UserDao;
 import org.slf4j.Logger;
@@ -55,7 +57,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public User create(final String username, final String email, final String password) {
+    public User create(final String username, final String email, final String password) throws UserNotFoundException {
         User user =  userDao.create(username, email, passwordEncoder.encode(password));
         String token = tokenService.generateValidationToken(user.getId());
         mailingService.sendValidationEmail(email, username, token);
@@ -69,10 +71,6 @@ public class UserServiceImpl implements UserService {
                 : Optional.empty();
     }
 
-    @Override
-    public Boolean isUserAdmin(long id) {
-        return userDao.isAdmin(id).orElse(false);
-    }
 
     @Override
     public List<User> findAll() {
@@ -81,8 +79,13 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void updateImageId(long id, long imageId) {
-        userDao.updateImageId(id, imageId);
+    public User updateImage(User user, File image) {
+        return userDao.updateImage(user, image);
+    }
+
+    @Override
+    public List<User> getFollowersOfCommunity(long communityId) {
+        return userDao.getFollowersOfCommunity(communityId);
     }
 
     @Override
@@ -93,10 +96,6 @@ public class UserServiceImpl implements UserService {
         return maybeUser.get();
     }
 
-    @Override
-    public List<User> findByCommunity(String communityName) {
-        return userDao.findByCommunity(communityName);
-    }
 
     @Transactional
     @Override
@@ -107,25 +106,28 @@ public class UserServiceImpl implements UserService {
             throw new NoSuchTokenException("Token " + token + " does not exist");
         }
 
-        userDao.updatePassword(maybeId.get(), passwordEncoder.encode(password));
+        userDao.updatePassword(userDao.findById(maybeId.orElseThrow()).orElseThrow(), passwordEncoder.encode(password));
         tokenService.deleteResetTokens(maybeId.get());
     }
 
     @Transactional
     @Override
-    public Optional<User> verifyUser(String token) throws NoSuchTokenException{
-        Optional<Long> maybeId = tokenService.getUserIdFromToken(token, "Validation");
-        if (maybeId.isEmpty()) {
+    public User verifyUser(String token) throws NoSuchTokenException{
+        Optional<User> maybeUser = tokenService.getUserFromToken(token, "Validation");
+        if (maybeUser.isEmpty()) {
             LOGGER.debug("Token {} does not exist",token);
             throw new NoSuchTokenException("Token " + token + " does not exist");
+        }else{
+            User user = maybeUser.get();
+            userDao.verifyUser(user);
+            tokenService.deleteVerifyTokens(user.getId());
+            return user;
         }
-        userDao.verifyUser(maybeId.get());
-        return userDao.findById(maybeId.get());
     }
 
     @Transactional
     @Override
-    public Boolean startResetPassword(String email) {
+    public Boolean startResetPassword(String email) throws UserNotFoundException {
         Optional<User> maybeUser = findByEmail(email);
         if(maybeUser.isEmpty())
             return false;
@@ -137,7 +139,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void resendVerification() throws NoLoggedUserException {
+    public void resendVerification() throws NoLoggedUserException, UserNotFoundException {
         User loggedUSer = getLoggedUserChecked();
         String token = tokenService.generateValidationToken(loggedUSer.getId());
         mailingService.sendValidationEmail(loggedUSer.getEmail(), loggedUSer.getUsername(), token);
@@ -149,6 +151,6 @@ public class UserServiceImpl implements UserService {
         if(!profilePic.isEmpty() && !Objects.isNull(profilePic)) {
             fs.uploadUserImage(profilePic);
         }
-        userDao.updateLocale(getLoggedUserChecked().getId(), locale);
+        userDao.updateLocale(getLoggedUserChecked(), locale);
     }
 }

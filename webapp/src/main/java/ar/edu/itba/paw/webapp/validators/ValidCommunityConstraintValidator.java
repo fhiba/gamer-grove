@@ -6,6 +6,7 @@ import ar.edu.itba.paw.webapp.validators.interfaces.ValidCommunityConstraint;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.validation.ConstraintValidator;
+import java.util.Objects;
 
 public class ValidCommunityConstraintValidator  implements ConstraintValidator<ValidCommunityConstraint, String>{
 
@@ -18,7 +19,7 @@ public class ValidCommunityConstraintValidator  implements ConstraintValidator<V
 
     @Override
     public boolean isValid(String s, javax.validation.ConstraintValidatorContext constraintValidatorContext) {
-        if(s == null || s.isEmpty())
+        if(Objects.isNull(s) || s.isEmpty())
             return false;
         try {
             communityService.findByName(s);

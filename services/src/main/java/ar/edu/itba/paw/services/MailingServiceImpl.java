@@ -114,7 +114,7 @@ public class MailingServiceImpl implements MailingService {
 
     private void sendNewPostNotification(String to, String name, Post post, User postAuthor) {
         Map<String,Object> vars = new HashMap<>();
-        vars.put("community", post.getCommunityName());
+        vars.put("community", post.getcommunity().getName());
         vars.put("username", name);
         vars.put("post_title", post.getTitle());
         vars.put("post_id", post.getId());

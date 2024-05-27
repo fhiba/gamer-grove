@@ -20,8 +20,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -55,9 +53,9 @@ public class CommunityController {
         if(maybeUser.isPresent()) {
             User user = maybeUser.get();
             communities = cs.getFollowedCommunities(user);
-            isAdmin = us.isUserAdmin(user.getId());
+            isAdmin = user.getOwner();
         }else{
-            communities = cs.getAllCommunitiesNoCat();
+            communities = cs.getAllCommunities();
         }
         mav.addObject("isAdmin",isAdmin);
         mav.addObject("isLogged", maybeUser.isPresent());
@@ -96,13 +94,13 @@ public class CommunityController {
         boolean canEdit = false;
         if(maybeUser.isPresent()){
             User user = maybeUser.get();
-            isAdmin = us.isUserAdmin(user.getId());
-            isFollowing = cs.checkIfUserFollowsCommunity((int)community.getId());
+            isAdmin = user.getOwner();
+            isFollowing = cs.checkIfUserFollowsCommunity(community.getId().intValue());
             communities = cs.getFollowedCommunities(user);
-            canEdit = ms.isModderOfCommunity(user.getId(),community.getId());
+            canEdit = ms.isModderOfCommunity(user,community.getId());
         }
         else {
-            communities = cs.getAllCommunitiesNoCat();
+            communities = cs.getAllCommunities();
         }
         mav.addObject("isAdmin",isAdmin);
         mav.addObject("isLogged", maybeUser.isPresent());
@@ -147,10 +145,10 @@ public class CommunityController {
         if(maybeUser.isPresent()) {
             User user = maybeUser.get();
             followedCommunities = cs.getFollowedCommunities(user);
-            isAdmin = us.isUserAdmin(user.getId());
+            isAdmin = user.getOwner();
         }
         else {
-            followedCommunities = cs.getAllCommunitiesNoCat();
+            followedCommunities = cs.getAllCommunities();
         }
         mav.addObject("isAdmin",isAdmin);
         mav.addObject("isLogged",maybeUser.isPresent());
@@ -180,11 +178,11 @@ public class CommunityController {
         Optional<User> maybeUser = us.getLoggedUser();
         if(maybeUser.isPresent()) {
             User user = maybeUser.get();
-            mav.addObject("isAdmin", us.isUserAdmin(user.getId()));
+            mav.addObject("isAdmin", user.getOwner());
             mav.addObject("communities",cs.getFollowedCommunities(user));
             isLogged = true;
         }else{
-            mav.addObject("communities",cs.getAllCommunitiesNoCat());
+            mav.addObject("communities",cs.getAllCommunities());
         }
         mav.addObject("isLogged",isLogged);
         mav.addObject("categories", Arrays.stream(CommunityCategories.values()).map(CommunityCategories::getCategory).toArray(String[]::new));
