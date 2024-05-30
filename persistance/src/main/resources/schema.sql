@@ -151,8 +151,8 @@ ALTER TABLE users ADD COLUMN locale VARCHAR(2) DEFAULT 'en' NOT NULL;
 
 ---- Sprint 5
 
-ALTER TABLE community ADD COLUMN total_rating FLOAT DEFAULT 0.0;
-ALTER TABLE community ADD COLUMN total_rating_count INT DEFAULT 0;
+ALTER TABLE community ADD COLUMN total_rating FLOAT NOT NULL DEFAULT 0.0;
+ALTER TABLE community ADD COLUMN rating_count INT NOT NULL DEFAULT 0;
 
 CREATE TABLE IF NOT EXISTS ratings (
                                        user_id INT NOT NULL,

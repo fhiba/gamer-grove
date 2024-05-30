@@ -17,6 +17,9 @@ public interface CommunityDao {
 
     Optional<Community> findByName(String communityName);
 
+    Community updateRating(Community community, float rating);
+
+
     List<Community> find(int pageSize,int offset,String searchTerms, List<String> categories);
 
     Boolean addCategory(final long id, String category);

@@ -10,15 +10,13 @@ import java.util.Objects;
 public class Rating {
 
     @Id
-    @ManyToOne
-    @Column(name = "user_id")
+    @ManyToOne(targetEntity = User.class)
     private User user;
 
     @Id
-    @ManyToOne
-    @Column(name = "community_id")
+    @ManyToOne(targetEntity = Community.class)
     private Community community;
-    @Column(name = "rating")
+    @Column(name = "rating", nullable = false)
     private Float rating;
 
     public Rating(User user, Community community, Float rating) {

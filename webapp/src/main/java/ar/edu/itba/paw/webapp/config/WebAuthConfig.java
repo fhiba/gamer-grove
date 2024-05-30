@@ -74,7 +74,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/profile","/profile/**").authenticated()
                 .antMatchers("/auth/resend-verification").authenticated()
                 .antMatchers("/home").authenticated()
-                .antMatchers("/community/{communityName}/new","/community/{communityName}/follow", "/post").hasRole("VERIFIED")
+                .antMatchers("/community/{communityName}/new","/community/{communityName}/follow", "/post","/community/{communityName}/rate").hasRole("VERIFIED")
                 .antMatchers(HttpMethod.POST,"/post/{postId}/+").hasRole("VERIFIED")
                 .antMatchers(HttpMethod.POST,"/post/{postId}/up").hasRole("VERIFIED")
                 .antMatchers(HttpMethod.POST,"/post").hasRole("VERIFIED")

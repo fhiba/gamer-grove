@@ -31,6 +31,8 @@ public class CommunityServiceImpl implements CommunityService{
     private UserService userService;
     @Autowired
     private FileService fileService;
+    @Autowired
+    private RatingService ratingService;
 
     @Transactional
     @Override
@@ -67,6 +69,17 @@ public class CommunityServiceImpl implements CommunityService{
         if(maybeCommunity.isEmpty())
             throw new NoSuchCommunityException("Community " + communityId+ " not found");
         return maybeCommunity.get();
+    }
+
+    @Override
+    @Transactional
+    public Community updateRating(Long communityId, float rating) throws NoSuchCommunityException, NoLoggedUserException {
+        Community community = findById(communityId);
+        Optional<User> user = userService.getLoggedUser();
+        if(user.isEmpty())
+            throw new NoLoggedUserException("No logged user");
+        ratingService.createRating(user.get(), community, rating);
+        return communityDao.updateRating(community, rating);
     }
 
 

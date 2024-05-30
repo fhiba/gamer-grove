@@ -11,6 +11,7 @@
     <link rel="icon" href="${pageContext.request.contextPath}/images/favicon.ico" type="image/x-icon">
     <%--suppress JSUnresolvedLibraryURL --%>
     <script src="https://kit.fontawesome.com/002da5939d.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/rateYo/2.3.2/jquery.rateyo.min.js"></script>
 </head>
 <body>
 <%@ include file="/WEB-INF/jsp/components/header.jsp" %>
@@ -20,7 +21,8 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <c:url var="postUrl" value="/community/${community.encodedName}"/>
-            <form:form action="${postUrl}" method="post" modelAttribute="newPostForm" id="postForm" enctype="multipart/form-data">
+            <form:form action="${postUrl}" method="post" modelAttribute="newPostForm" id="postForm"
+                       enctype="multipart/form-data">
                 <div class="modal-header">
                     <h5 class="modal-title" id="createPostModalLabel"><spring:message code="Post.Create"/></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -64,7 +66,8 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><spring:message code="Close"/> </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><spring:message
+                            code="Close"/></button>
                     <button type="button" onclick="submit()" class="btn btn-primary" data-bs-dismiss="modal">
                         <spring:message code="Post.CreateButton"/></button>
                     <form:errors cssStyle="color: red" cssClass="error"/>
@@ -73,6 +76,51 @@
         </div>
     </div>
 </div>
+<!-- Rating Modal -->
+<div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <c:if test="${rating == null}">
+                <c:url var="ratingUrl" value="/community/${community.encodedName}/rate"/>
+                <form:form action="${ratingUrl}" method="post" modelAttribute="newRatingForm" id="ratingForm">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="ratingModalLabel"><spring:message code="RateCommunity"/> </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="ratingInput" class="form-label"><spring:message code="Rating"/></label>
+                            <form:input path="rating" type="number" min="1" max="5" step="0.1" class="form-control"
+                                        id="ratingInput"/>
+                            <form:errors path="rating" cssStyle="color: red" cssClass="error"/>
+                        </div>
+                        <form:hidden path="communityId" value="${community.id}"/>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary"><spring:message code="RateSumbit"/></button>
+                    </div>
+                </form:form>
+            </c:if>
+            <c:if test="${rating != null}">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ratingModalLabel"><spring:message code="RateCommunity"/></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="ratingInput" class="form-label"><spring:message code="YourRateCommunity"/></label>
+                        <c:out value="${rating.rating}" escapeXml="true"/>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </c:if>
+        </div>
+    </div>
+</div>
+
 <div class=" container-fluid">
     <div class="row  min-vh-100">
         <%--COMMUNITY LIST--%>
@@ -124,17 +172,29 @@
                             </div>
 
                             <c:forEach var="category" items="${community.category}">
-                                <c:url value="/communities?searchTerms=&categories=${category.toString()}" var="categorySearchUrl"/>
+                                <c:url value="/communities?searchTerms=&categories=${category.toString()}"
+                                       var="categorySearchUrl"/>
                                 <a class="text-decoration-none" href="${categorySearchUrl}">
-                                <span class="fs-6 pe-auto btn btn-secondary cat-badge p-1 badge">${category.toString()}</span>
+                                    <span class="fs-6 pe-auto btn btn-secondary cat-badge p-1 badge">${category.toString()}</span>
                                 </a>
                             </c:forEach>
-                                    <div >
-                                        <h6 class="fw-bold"><spring:message code="Developer"/>: <c:out value="${community.developer}" escapeXml="true"/> </h6>
-                                        <h6 class="fw-bold"><spring:message code="Publisher"/>: <c:out value="${community.publisher}" escapeXml="true"/> </h6>
-<%--                                        <h6 class="fw-bold">Release Date: ${community.releaseDate}</h6>--%>
+                            <div>
+                                <h6 class="fw-bold"><spring:message code="Developer"/>: <c:out
+                                        value="${community.developer}" escapeXml="true"/></h6>
+                                <h6 class="fw-bold"><spring:message code="Publisher"/>: <c:out
+                                        value="${community.publisher}" escapeXml="true"/></h6>
+                                <%--                                        <h6 class="fw-bold">Release Date: ${community.releaseDate}</h6>--%>
+                                <c:if test="${community.ratingCount == 0}">
+                                    <h6 class="fw-bold"><spring:message code="Rating"/>: <spring:message
+                                            code="NoRating"/></h6>
+                                </c:if>
+                                <c:if test="${community.ratingCount != 0}">
+                                    <h6 class="fw-bold"><spring:message code="Rating"/>: <c:out
+                                            value="${community.totalRating/community.ratingCount}" escapeXml="true"/>
+                                        (<c:out value="${community.ratingCount}" escapeXml="true"/>) </h6>
+                                </c:if>
 
-                                    </div>
+                            </div>
                             <h5 class="card-subtitle text-secondary mt-3 mb-1"><c:out value="${community.description}"
                                                                                       escapeXml="true"/></h5>
                         </div>
@@ -147,13 +207,19 @@
                                 </button>
                             </a>
                         </c:if>
-                        <button type="button" class="btn btn-primary round-btn" data-bs-toggle="modal"
-                                data-bs-target="#createPostModal">
-                            <i class="fa-solid fa-plus"></i>
-                        </button>
+                        <div>
+                            <button type="button" class="btn btn-primary round-btn" data-bs-toggle="modal"
+                                    data-bs-target="#ratingModal">
+                                <i class="fa-solid fa-star"></i>
+                            </button>
+                            <button type="button" class="btn btn-primary round-btn" data-bs-toggle="modal"
+                                    data-bs-target="#createPostModal">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
                     </div>
                     <c:if test="${empty posts.data}">
-                        <h3 class="text-center mt-5"><spring:message code="Community.NoPost" /> </h3>
+                        <h3 class="text-center mt-5"><spring:message code="Community.NoPost"/></h3>
                     </c:if>
                     <c:forEach var="post" items="${posts.data}">
                         <c:url value="/post/${post.id}" var="postUrl"/>
@@ -190,16 +256,17 @@
                                                 <c:out value="${post.date.format(format)}" escapeXml="true"/>
                                             </small>
                                         </p>
-                                        <span class="badge rounded-pill text-bg-primary groovy-pill border-1"><c:out value="${post.grooviness}" escapeXml="true"/></span>
+                                        <span class="badge rounded-pill text-bg-primary groovy-pill border-1"><c:out
+                                                value="${post.grooviness}" escapeXml="true"/></span>
                                     </div>
                                 </div>
                             </div>
                         </a>
                     </c:forEach>
                     <div class="d-flex justify-content-center align-items-center">
-                            <c:set var="paginatedDataWrapper" value="${posts}" scope="request"/>
-                            <c:set var="pageNumberName" value="pageNumber" scope="request"/>
-                            <jsp:include page="/WEB-INF/jsp/components/paginationFooter.jsp"/>
+                        <c:set var="paginatedDataWrapper" value="${posts}" scope="request"/>
+                        <c:set var="pageNumberName" value="pageNumber" scope="request"/>
+                        <jsp:include page="/WEB-INF/jsp/components/paginationFooter.jsp"/>
                     </div>
                 </div>
             </div>
@@ -257,7 +324,7 @@
         photoPreviewContainer.childNodes.forEach(child => child.remove());
         const elemContainer = previewImage(e, selectedFiles, item_images);
         photoPreviewContainer.appendChild(elemContainer);
-        photoPreviewContainer.setAttribute("class","d-flex flex-row")
+        photoPreviewContainer.setAttribute("class", "d-flex flex-row")
     });
 
     document.getElementById('photo-upload__preview').addEventListener('click', (e) => {

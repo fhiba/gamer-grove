@@ -49,6 +49,13 @@ public class CommunityDaoJpa implements CommunityDao{
     }
 
     @Override
+    public Community updateRating(Community community, float rating) {
+        community.setTotalRating(community.getTotalRating() + rating);
+        community.setRatingCount(community.getRatingCount() + 1);
+        return community;
+    }
+
+    @Override
     public List<Community> find(int pageSize, int offset, String searchTerms, List<String> categories) {
         List<Long> idList = new QueryBuilder()
                 .withSearchTerms(searchTerms)
