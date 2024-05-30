@@ -148,3 +148,17 @@ CREATE TABLE IF NOT EXISTS token(
 
 ALTER TABLE users ADD COLUMN verified BOOLEAN DEFAULT FALSE NOT NULL;
 ALTER TABLE users ADD COLUMN locale VARCHAR(2) DEFAULT 'en' NOT NULL;
+
+---- Sprint 5
+
+ALTER TABLE community ADD COLUMN total_rating FLOAT DEFAULT 0.0;
+ALTER TABLE community ADD COLUMN total_rating_count INT DEFAULT 0;
+
+CREATE TABLE IF NOT EXISTS ratings (
+                                       user_id INT NOT NULL,
+                                       community_id INT NOT NULL,
+                                       rating FLOAT NOT NULL,
+                                       PRIMARY KEY (user_id, community_id),
+                                       FOREIGN KEY (user_id) REFERENCES users(id),
+                                       FOREIGN KEY (community_id) REFERENCES community(id)
+);
