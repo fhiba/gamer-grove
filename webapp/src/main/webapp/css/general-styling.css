@@ -296,3 +296,9 @@ body {
     background-color: #2d3237;
     border-color: #2d3237;
 }
+
+.card-hover:hover, .card-hover:focus {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transform: scale(1.02);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}

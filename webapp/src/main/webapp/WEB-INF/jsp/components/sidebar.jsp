@@ -14,9 +14,9 @@
             <jsp:useBean id="isAdmin" scope="request" type="java.lang.Boolean"/>
             <c:if test="${isAdmin}">
                 <div class="d-flex flex-column justify-content-center align-items-center">
-                    <c:url value="/addMod" var="addModUrl"/>
+                    <c:url value="/manageMods" var="addModUrl"/>
                     <a href="${addModUrl}" class="w-100">
-                        <button class="btn btn-outline-primary mb-2 w-100"><spring:message code="Mod.Add"/></button>
+                        <button class="btn btn-outline-primary mb-2 w-100"><spring:message code="Mod.Manage"/></button>
                     </a>
                     <c:url value="/new-community" var="newCommunityUrl"/>
                     <a href="${newCommunityUrl}" class="w-100">

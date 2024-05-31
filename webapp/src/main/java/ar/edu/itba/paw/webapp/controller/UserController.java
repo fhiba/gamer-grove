@@ -91,9 +91,9 @@ public class UserController {
         return new ModelAndView("redirect:/").addObject("registerSuccess", true);
     }
 
-    @RequestMapping(path="/addMod", method = RequestMethod.GET)
-    public ModelAndView getAddMod(@ModelAttribute("newModForm") final NewModForm newModForm,@ModelAttribute("removeModForm") final RemoveModForm removeModForm) throws NoLoggedUserException {
-        ModelAndView mav = new ModelAndView("user/addMod");
+    @RequestMapping(path="/manageMods", method = RequestMethod.GET)
+    public ModelAndView manageMods(@ModelAttribute("newModForm") final NewModForm newModForm, @ModelAttribute("removeModForm") final RemoveModForm removeModForm) throws NoLoggedUserException {
+        ModelAndView mav = new ModelAndView("/user/manageMods");
         Boolean isAdmin;
         //El user esta necesariamente logueado para entrar en esta vista entonces no hace falta chequear si esta presente
 
@@ -108,29 +108,29 @@ public class UserController {
     public ModelAndView postAddMod(@ModelAttribute("removeModForm") final RemoveModForm removeModForm,@Valid @ModelAttribute("newModForm") final NewModForm newModForm, final BindingResult errors) throws UserNotFoundException, NoSuchCommunityException, NoLoggedUserException {
 
         if(errors.hasErrors()) {
-            return  getAddMod(newModForm,removeModForm);
+            return  manageMods(newModForm,removeModForm);
         }
 
         try {
             md.addModder(newModForm.getUsername(), newModForm.getCommunityId());
         }catch (AlreadyModException e) {
             LOGGER.debug("User is already a mod");
-            return getAddMod(newModForm,removeModForm).addObject("isAlreadyMod", true);
+            return manageMods(newModForm,removeModForm).addObject("isAlreadyMod", true);
         }
-        return new ModelAndView("redirect:/addMod");
+        return new ModelAndView("redirect:/manageMods");
     }
 
     @RequestMapping(path="/removeMod", method = RequestMethod.POST)
     public ModelAndView postRemoveMod(@ModelAttribute("newModForm") final NewModForm newModForm,@Valid @ModelAttribute("removeModForm") final RemoveModForm removeModForm, final BindingResult errors) throws UserNotFoundException, NoLoggedUserException {
 
         if(errors.hasErrors()) {
-            return getAddMod(newModForm,removeModForm);
+            return manageMods(newModForm,removeModForm);
         }
         int mod = md.removeModder(removeModForm.getRemoveUsername(), removeModForm.getFromCommunityId());
         if(mod == 0) {
-            return getAddMod(newModForm,removeModForm).addObject("notAMod", true);
+            return manageMods(newModForm,removeModForm).addObject("notAMod", true);
         }
-        return new ModelAndView("redirect:/addMod");
+        return new ModelAndView("redirect:/manageMods");
     }
 
     @RequestMapping("/loginFailed")
