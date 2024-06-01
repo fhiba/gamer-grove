@@ -15,23 +15,74 @@
 <c:set var="searchTerms" value="${searchTerms}" scope="request"/>
 <%@ include file="/WEB-INF/jsp/components/header.jsp" %>
 
+
+<!-- Modal -->
+<div class="modal fade" id="onboardingModalVerified" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <c:if test="${!isVerified}">
+                <c:url value="auth/resend-verification" var="verifyUrl"/>
+
+                        <spring:message code="VerifyAccount.Verify"/>
+                        <div class="mt-2 pt-2 border-top">
+                            <a href="${verifyUrl}">
+                                <button type="button" class="btn btn-primary btn-sm"><spring:message
+                                        code="VerifyAccount.Resend"/></button>
+                            </a>
+                            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
+                                <spring:message
+                                        code="Close"/></button>
+                        </div>
+            </c:if>
+            <c:if test="${isVerified}">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel"><spring:message code="VerifyAccount.Success"/></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <p>Choose some categories you like to start filtering the communities!</p>
+                    </div>
+                    <div id="onboardingPills" class="d-flex flex-row flex-wrap mb-3"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="addCategoriesToForm()">Done</button>
+                </div>
+            </c:if>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="unverifiedModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    You need to verify your account!
+                </h5>
+            </div>
+            <div class="modal-body">
+                <p>Check your email and verify your account before continuing</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Done</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="container-fluid">
     <div class="row min-vh-100">
         <%--COMMUNITY LIST--%>
-        <c:if test="${!empty followedCommunities}">
-            <c:set var="isAdmin" value="${isAdmin}" scope="request"/>
-            <c:set var="isLogged" value="${isLogged}" scope="request"/>
-            <c:set var="communities" value="${followedCommunities}" scope="request"/>
-            <jsp:include page="/WEB-INF/jsp/components/sidebar.jsp"/>
-        </c:if>
-        <c:if test="${empty followedCommunities}">
-            <div class="col-2">
-            </div>
-        </c:if>
+        <c:set var="isAdmin" value="${isAdmin}" scope="request"/>
+        <c:set var="isLogged" value="${isLogged}" scope="request"/>
+        <c:set var="communities" value="${followedCommunities}" scope="request"/>
+        <jsp:include page="/WEB-INF/jsp/components/sidebar.jsp"/>
         <div class="col-1">
         </div>
         <%--LISTA DE COMMUNITIES--%>
-        <div class="col-6">
+        <div class="col-5">
 
             <div class="card border-0 text-decoration-none">
                 <div class="card-body">
@@ -125,7 +176,8 @@
                     </div>
                 </div>
             </div>
-            <div id="toastBox" class=" position-fixed bottom-0 end-0 m-3" style="display: none" data-bs-autohide="false">
+            <div id="toastBox" class=" position-fixed bottom-0 end-0 m-3" style="display: none"
+                 data-bs-autohide="false">
                 <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
                     <div class="toast-header">
                         <strong id="toast_header" class="me-auto"></strong>
@@ -147,8 +199,9 @@
                                 <button type="button" class="btn btn-primary btn-sm"><spring:message
                                         code="VerifyAccount.Resend"/></button>
                             </a>
-                            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="toast"><spring:message
-                                    code="Close"/></button>
+                            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="toast">
+                                <spring:message
+                                        code="Close"/></button>
                         </div>
                     </div>
                 </div>
@@ -161,10 +214,26 @@
 </body>
 </html>
 <script>
+    let hasToast = document.URL.includes("verifySuccess");
+    let hasCategories = document.URL.includes("&categories=");
+    console.log("has categories es " + hasCategories);
+    let isVerified = ${isVerified};
+    let noTerms = ${noTerms};
+    if (isVerified && !hasCategories && noTerms) {
+        var myModal1 = new bootstrap.Modal(document.getElementById('onboardingModalVerified'))
+        myModal1.show()
+    }
+    let hasRegistered = document.URL.includes("registerSuccess");
+    if (hasRegistered) {
+        var myModal2 = new bootstrap.Modal(document.getElementById('unverifiedModal'))
+        myModal2.show()
+    }
+
     const buttonToShowString = "btn btn-outline-dark";
     const buttonToHideString = "btn btn-outline-danger";
     let applyFilterArray = [];
     let selectArray = [];
+    let auxArray = [];
     let addCategoryToBody = (category) => {
         let body = document.getElementById("categoriesBody");
         let button = document.createElement("button");
@@ -183,6 +252,43 @@
         addCategoriesToForm();
     }
 
+    let selectCategory = (category) => {
+        let selectedPill = document.getElementById(category + 'Pill');
+        auxArray.push(category);
+        applyFilterArray.push(category);
+        selectedPill.classList.remove("class","border-light");
+        selectedPill.classList.add("class","border-primary");
+    }
+
+    let deselectCategory = (category) => {
+        let selectedPill = document.getElementById(category + 'Pill');
+        auxArray = auxArray.filter(cat => cat !== category);
+        applyFilterArray = applyFilterArray.filter(cat => cat !== category);
+        selectedPill.classList.remove("class","border-primary");
+        selectedPill.classList.add("class","border-light");
+    }
+
+    let createOnboardingPill = (selected) => {
+        let onboardingPills = document.getElementById("onboardingPills");
+        let pill = document.createElement("div");
+        pill.id = selected + 'Pill';
+        pill.setAttribute("class", "card flex-row align-items-center border-light justify-content-center m-1 btn p-0");
+        let innerDiv = document.createElement("div");
+        innerDiv.setAttribute("class", "card-body d-flex flex-row p-2 align-items-center justify-content-center");
+        pill.appendChild(innerDiv);
+        let p = document.createElement("p");
+        p.setAttribute("class", "m-0 me-1");
+        p.innerHTML = selected;
+        innerDiv.appendChild(p);
+        onboardingPills.appendChild(pill);
+        pill.onclick = () => {
+            if(auxArray.includes(selected)){
+                deselectCategory(selected);
+            }else{
+                selectCategory(selected);
+            }
+        };
+    }
 
     let createPill = (selected) => {
         let categoryPills = document.getElementById("categoryPills");
@@ -214,6 +320,11 @@
             createPill("${category}");
         }
         </c:forEach>
+        if(auxArray.length !== 0) {
+            for (let i = 0; i < auxArray.length; i++) {
+                createPill(auxArray[i]);
+            }
+        }
         <c:forEach var="category" items="${categories}">
         if (!applyFilterArray.includes("${category}")) {
             selectArray.push("${category}");
@@ -224,8 +335,15 @@
             document.getElementById("emptyCatText").hidden = false;
         }
     }
-    initializeArray();
 
+    let initializeModalArray = () =>{
+        <c:forEach var="category" items="${categories}">
+            createOnboardingPill("${category}");
+        </c:forEach>
+    }
+
+    initializeArray();
+    initializeModalArray();
     let removeCategory = (category) => {
         applyFilterArray = applyFilterArray.filter(cat => cat !== category);
         addCategoriesToForm();
@@ -243,7 +361,6 @@
         document.getElementById("searchButton").click();
     }
 
-    let hasToast = document.URL.includes("verifySuccess");
     const successMessage = "<spring:message code="VerifyAccount.Success"/>";
     const errorMessage = " <spring:message code="VerifyAccount.Error"/>";
     if (hasToast) {
@@ -254,7 +371,6 @@
         document.getElementById('toastBox').style.display = 'block';
         new bootstrap.Toast(document.querySelector('.toast')).show();
     }
-    let hasRegistered = document.URL.includes("registerSuccess");
     if (hasRegistered) {
         document.getElementById('verifyToastBox').style.display = 'none';
         document.getElementById('toast_header').innerText = "<spring:message code="Toast.Title.Welcome"/>";

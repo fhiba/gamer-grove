@@ -158,7 +158,7 @@ public class CommunityController {
         mav.addObject("communitiesPaginated",communities);
         mav.addObject("followedCommunities",followedCommunities);
         mav.addObject("isVerified", maybeUser.isPresent() && maybeUser.get().isVerified());
-
+        mav.addObject("noTerms", searchTerms.isEmpty());
         return mav;
     }
 
