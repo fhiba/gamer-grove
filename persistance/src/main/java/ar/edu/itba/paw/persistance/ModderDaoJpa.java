@@ -73,7 +73,7 @@ public class ModderDaoJpa implements ModderDao{
 
     @Override
     public List<Mod> getModdersPaginatedByCommunity(Long communityId, int pageSize, int offset) {
-        Query nativeQuery = em.createNativeQuery("SELECT user_id FROM modders WHERE community_id = :communityId");
+        Query nativeQuery = em.createNativeQuery("SELECT user_id FROM modders WHERE community_id = :communityId order by since_date desc");
         nativeQuery.setFirstResult(offset);
         nativeQuery.setMaxResults(pageSize);
         nativeQuery.setParameter("communityId",communityId);
