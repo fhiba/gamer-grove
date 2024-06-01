@@ -97,7 +97,7 @@ public class CommunityController {
             isAdmin = user.getOwner();
             isFollowing = cs.checkIfUserFollowsCommunity(community.getId().intValue());
             communities = cs.getFollowedCommunities(user);
-            canEdit = ms.isModderOfCommunity(user,community.getId());
+            canEdit = ms.isModderOfCommunity(user,community);
         }
         else {
             communities = cs.getAllCommunities();

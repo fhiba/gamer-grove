@@ -17,6 +17,7 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet"/>
     <%--suppress JSUnresolvedLibraryURL --%>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+    <script src="https://kit.fontawesome.com/002da5939d.js" crossorigin="anonymous"></script>
 
 </head>
 
@@ -33,15 +34,20 @@
             <div class="d-flex flex-row w-100 justify-content-between">
                 <h3 class="mb-3"><spring:message code="Mod.Modderators"/></h3>
                 <div class="mb-3">
-                    <select class="form-select" aria-label="Default select example" id="communities" >
-                        <option><spring:message code="Mod.FilterByCommunty" /></option>
-                        <c:forEach items="${communities}" var="communty">
+                    <select onchange="filterMods()" class="form-select" aria-label="Default select example" id="filterByCommunities">
+                        <option selected disabled><spring:message code="Mod.FilterByCommunty"/></option>
+                        <c:forEach items="${allCommunities}" var="communty">
                             <option>${communty.name}</option>
                         </c:forEach>
                     </select>
+                    <c:url var="manageModUrl" value="/manageMods"/>
+                    <a href="${manageModUrl}" id="clearButton"><button class="btn btn-outline-secondary btn-sm">
+                        <i class="fa fa-x" aria-hidden="true"></i>
+                    </button></a>
+
                 </div>
             </div>
-            <table class="table table-dark w-100">
+            <table class="table table-dark background-of-modders w-100">
                 <thead>
                 <tr>
                     <th class="w-auto" scope="col"><spring:message code="Mod.Username"/></th>
@@ -52,53 +58,64 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <td>mark</td>
-                    <td>mark@mail.com</td>
-                    <td>Fifa 10</td>
-                    <td>15/05/2024</td>
-                    <td>
-                        <button class="btn btn-danger btn-sm align-content-center"
-                                data-bs-toggle="modal"
-                                data-bs-target="#removeModModal">
-                            <i class="fas fa-solid fa-trash"></i>
-                        </button>
-                        <!-- Modal -->
-                        <div class="modal fade" id="removeModModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-                             aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h1 class="modal-title fs-5 modal-title-color"><spring:message
-                                                code="Mod.RemoveConfirmation"/></h1>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <h2 class="fs-5"><spring:message code="Mod.Username"/>: username</h2>
-                                        <h2 class="fs-5"><spring:message code="Post.Community"/> : community</h2>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button data-bs-dismiss="modal" class="btn btn-secondary btn-sm">
-                                            <spring:message code="Post.CancelDelete"/>
-                                        </button>
-                                        <c:url var="removeModUrl" value="/removeMod"/>
-                                        <form:form action="${removeModUrl}" method="post"
-                                                   modelAttribute="removeModForm">
-                                            <form:hidden path="removeUsername" value="test"/>
-                                            <form:hidden path="fromCommunityId" value="test"/>
-                                            <button class="btn btn-danger btn-sm" type="submit">
-                                                <spring:message code="Mod.Remove"/>
-                                            </button>
-                                        </form:form>
+                <c:forEach var="moderator" items="${modders.data}">
+                        <tr>
+                            <td><c:out value="${ moderator.user.username}" escapeXml="true"/> </td>
+                            <td><c:out value="${moderator.user.email}" escapeXml="true"/></td>
+                            <td><c:out value="${moderator.community.name}" escapeXml="true"/></td>
+                            <td><c:out value="${moderator.sinceDate.format(format)}" escapeXml="true"/></td>
+                            <td>
+                                <button class="btn btn-outline-danger btn-sm align-content-center"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#removeMod${moderator.user.id}${moderator.community.id}Modal">
+                                    <i class="fas fa-solid fa-trash"></i>
+                                </button>
+                                <!-- Modal -->
+                                <div class="modal fade" id="removeMod${moderator.user.id}${moderator.community.id}Modal" tabindex="-1"
+                                     aria-labelledby="exampleModalLabel"
+                                     aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title fs-5 modal-title-color"><spring:message
+                                                        code="Mod.RemoveConfirmation"/></h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                        aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <h2 class="fs-5"><spring:message code="Mod.Username"/>: <c:out value="${moderator.user.username}" escapeXml="true"/></h2>
+                                                <h2 class="fs-5"><spring:message code="Post.Community"/> : <c:out value="${moderator.community.name}" escapeXml="true"/></h2>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button data-bs-dismiss="modal" class="btn btn-secondary btn-sm">
+                                                    <spring:message code="Post.CancelDelete"/>
+                                                </button>
+                                                <c:url var="removeModUrl" value="/removeMod"/>
+                                                <form:form action="${removeModUrl}" method="post"
+                                                           modelAttribute="removeModForm">
+                                                    <form:hidden path="removeUsername" value="${moderator.user.username}"/>
+                                                    <form:hidden path="fromCommunityId" value="${moderator.community.id}"/>
+                                                    <button class="btn btn-danger btn-sm" type="submit">
+                                                        <spring:message code="Mod.Remove"/>
+                                                    </button>
+                                                </form:form>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
+                            </td>
+                        </tr>
+                </c:forEach>
                 </tbody>
             </table>
+            <c:if test="${empty modders.data}">
+                <h3 class="text-center w-100"><spring:message code="Mod.Empty" /> </h3>
+            </c:if>
+            <div class="d-flex justify-content-center align-items-center">
+                <c:set var="paginatedDataWrapper" value="${modders}" scope="request"/>
+                <c:set var="pageNumberName" value="pageNumber" scope="request"/>
+                <jsp:include page="/WEB-INF/jsp/components/paginationFooter.jsp"/>
+            </div>
         </div>
         <div class="col-2 d-flex flex-column ms-5 mt-5 mb-4">
             <div class="card" style="background-color: #212529">
@@ -129,22 +146,6 @@
                 </div>
             </div>
         </div>
-        <div class="modal fade" id="NotaMod" tabindex="-1" aria-labelledby="alreadyModModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="NotaModLabel">Error</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        This user is not a mod in this community.
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
     <div class="modal fade" id="alreadyModModal" tabindex="-1" aria-labelledby="alreadyModModalLabel"
          aria-hidden="true">
@@ -155,7 +156,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    This user is already a mod in this community.
+                    <spring:message code="Mod.AlreadyMod"/>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -194,10 +195,25 @@
 <%--    </div>--%>
 <%--</div>--%>
 <script>
+
+
+    const filterMods = () => {
+        let url = document.URL;
+        let community = document.getElementById('filterByCommunities').value;
+        let newUrl = new URL(url);
+        newUrl.searchParams.set('community', community);
+        window.location.search = newUrl.search;
+    }
+
     $(document).ready(function () {
         $('#addModSelect').select2({
             placeholder: "Select a community",
             allowClear: true,
+            color: "black!important",
+        });
+    });
+    $(document).ready(function () {
+        $('#filterByCommunities').select2({
             color: "black!important",
         });
     });
@@ -218,5 +234,12 @@
         $('#NotaMod').modal('show');
         </c:if>
     });
+    let urlParams = new URLSearchParams(window.location.search);
+    let community = urlParams.get('community');
+    if (community) {
+        document.getElementById('filterByCommunities').value = community;
+    }else{
+        document.getElementById('clearButton').style.display = 'none'
+    }
 </script>
 </html>

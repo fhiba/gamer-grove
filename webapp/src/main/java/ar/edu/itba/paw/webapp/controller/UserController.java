@@ -40,6 +40,7 @@ import org.springframework.validation.BindingResult;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Objects;
 
 @Controller
@@ -79,7 +80,7 @@ public class UserController {
 
     @RequestMapping(path = "/register", method = RequestMethod.POST)
     public ModelAndView postRegister(@Valid @ModelAttribute("registerForm") final RegisterUserForm registerUserForm, final BindingResult errors) throws UserNotFoundException {
-        if(errors.hasErrors()) {
+        if (errors.hasErrors()) {
             return getRegister(registerUserForm);
 
         }
@@ -91,44 +92,64 @@ public class UserController {
         return new ModelAndView("redirect:/").addObject("registerSuccess", true);
     }
 
-    @RequestMapping(path="/manageMods", method = RequestMethod.GET)
-    public ModelAndView manageMods(@ModelAttribute("newModForm") final NewModForm newModForm, @ModelAttribute("removeModForm") final RemoveModForm removeModForm) throws NoLoggedUserException {
+    @RequestMapping(path = "/manageMods", method = RequestMethod.GET)
+    public ModelAndView manageMods(@RequestParam(value = "community", required = false) final String community, @RequestParam(required = false) Integer pageNumber, @ModelAttribute("newModForm") final NewModForm newModForm, @ModelAttribute("removeModForm") final RemoveModForm removeModForm) throws NoLoggedUserException {
         ModelAndView mav = new ModelAndView("/user/manageMods");
-        Boolean isAdmin;
+        PaginatedDataWrapper<Mod> modders;
+        List<Community> allCommunities = cs.getAllCommunities();
+        PaginationRequest paginationRequest = new PaginationRequest();
+        if (Objects.nonNull(pageNumber))
+            paginationRequest.setPageNumber(pageNumber);
+        if(Objects.nonNull(community) && !community.isEmpty()){
+            try {
+                modders = md.getModsByCommunityPaginated(allCommunities.stream().filter(community1 -> community1.getName().equals(community)).findFirst().orElseThrow().getId(), paginationRequest);
+            } catch (IllegalArgumentException e) {
+                LOGGER.error("Error getting moderators filter by "+community, e);
+                modders = null;
+            }
+        }else{
+            try {
+                modders = md.getAllModPaginated(paginationRequest);
+            } catch (IllegalArgumentException e) {
+                LOGGER.error("Error getting moderators", e);
+                modders = null;
+            }
+        }
+        mav.addObject("modders", modders);
+        mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
         //El user esta necesariamente logueado para entrar en esta vista entonces no hace falta chequear si esta presente
-
-        mav.addObject("isAdmin",true);
+        mav.addObject("isAdmin", true);
         mav.addObject("sidebarcommunities", cs.getFollowedCommunities(us.getLoggedUserChecked()));
-        mav.addObject("allCommunities", cs.getAllCommunities());
-        mav.addObject("isLogged",true);
+        mav.addObject("allCommunities", allCommunities);
+        mav.addObject("isLogged", true);
         return mav;
     }
 
-    @RequestMapping(path="/addMod", method = RequestMethod.POST)
-    public ModelAndView postAddMod(@ModelAttribute("removeModForm") final RemoveModForm removeModForm,@Valid @ModelAttribute("newModForm") final NewModForm newModForm, final BindingResult errors) throws UserNotFoundException, NoSuchCommunityException, NoLoggedUserException {
+    @RequestMapping(path = "/addMod", method = RequestMethod.POST)
+    public ModelAndView postAddMod(@ModelAttribute("removeModForm") final RemoveModForm removeModForm, @Valid @ModelAttribute("newModForm") final NewModForm newModForm, final BindingResult errors) throws UserNotFoundException, NoSuchCommunityException, NoLoggedUserException {
 
-        if(errors.hasErrors()) {
-            return  manageMods(newModForm,removeModForm);
+        if (errors.hasErrors()) {
+            return manageMods(null,null, newModForm, removeModForm);
         }
 
         try {
             md.addModder(newModForm.getUsername(), newModForm.getCommunityId());
-        }catch (AlreadyModException e) {
+        } catch (AlreadyModException e) {
             LOGGER.debug("User is already a mod");
-            return manageMods(newModForm,removeModForm).addObject("isAlreadyMod", true);
+            return manageMods(null,null, newModForm, removeModForm).addObject("isAlreadyMod", true);
         }
         return new ModelAndView("redirect:/manageMods");
     }
 
-    @RequestMapping(path="/removeMod", method = RequestMethod.POST)
-    public ModelAndView postRemoveMod(@ModelAttribute("newModForm") final NewModForm newModForm,@Valid @ModelAttribute("removeModForm") final RemoveModForm removeModForm, final BindingResult errors) throws UserNotFoundException, NoLoggedUserException {
+    @RequestMapping(path = "/removeMod", method = RequestMethod.POST)
+    public ModelAndView postRemoveMod(@ModelAttribute("newModForm") final NewModForm newModForm, @Valid @ModelAttribute("removeModForm") final RemoveModForm removeModForm, final BindingResult errors) throws UserNotFoundException, NoLoggedUserException, NoSuchCommunityException {
 
-        if(errors.hasErrors()) {
-            return manageMods(newModForm,removeModForm);
+        if (errors.hasErrors()) {
+            return manageMods(null,null, newModForm, removeModForm);
         }
-        int mod = md.removeModder(removeModForm.getRemoveUsername(), removeModForm.getFromCommunityId());
-        if(mod == 0) {
-            return manageMods(newModForm,removeModForm).addObject("notAMod", true);
+        Boolean removedSuccess = md.removeModder(removeModForm.getRemoveUsername(), removeModForm.getFromCommunityId());
+        if (removedSuccess) {
+            return manageMods(null,null, newModForm, removeModForm).addObject("notAMod", true);
         }
         return new ModelAndView("redirect:/manageMods");
     }
@@ -137,7 +158,7 @@ public class UserController {
     public void loginFailed(HttpServletRequest request) {
         AuthenticationException authenticationException = (AuthenticationException) request.getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
         if (authenticationException != null) {
-            if(authenticationException.getCause() != null) {
+            if (authenticationException.getCause() != null) {
                 throw (AuthenticationException) authenticationException.getCause();
             } else {
                 throw authenticationException;
@@ -147,35 +168,35 @@ public class UserController {
 
     @RequestMapping(path = "/user/update", method = RequestMethod.POST)
     public ModelAndView updateUser(@Valid @ModelAttribute("userPfpForm") final UserPfpForm userPfpForm, final BindingResult errors) throws NoLoggedUserException {
-        if(errors.hasErrors()) {
-            return getProfileUserPosts(null,userPfpForm);
+        if (errors.hasErrors()) {
+            return getProfileUserPosts(null, userPfpForm);
         }
-        us.updateProfile(userPfpForm.getLocale(),userPfpForm.getFile());
+        us.updateProfile(userPfpForm.getLocale(), userPfpForm.getFile());
         return new ModelAndView("redirect:/profile");
     }
 
-    @RequestMapping(path = {"/profile/userPosts","/profile"}, method = RequestMethod.GET)
+    @RequestMapping(path = {"/profile/userPosts", "/profile"}, method = RequestMethod.GET)
     public ModelAndView getProfileUserPosts(@RequestParam(required = false) Integer pageNumber, @ModelAttribute("userPfpForm") final UserPfpForm userPfpForm) {
         ModelAndView mav = new ModelAndView("user/profile/userPosts");
         User user = us.getLoggedUser().orElseThrow();
-        mav.addObject("isAdmin",user.getOwner());
-        mav.addObject("user",user);
+        mav.addObject("isAdmin", user.getOwner());
+        mav.addObject("user", user);
         mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
-        mav.addObject("communities",cs.getFollowedCommunities(user));
-        mav.addObject("isVerified",user.isVerified());
+        mav.addObject("communities", cs.getFollowedCommunities(user));
+        mav.addObject("isVerified", user.isVerified());
 
         PaginatedDataWrapper<Post> posts;
         PaginationRequest paginationRequest = new PaginationRequest(5);
-        if(Objects.nonNull(pageNumber))
+        if (Objects.nonNull(pageNumber))
             paginationRequest.setPageNumber(pageNumber);
         try {
-            posts = ps.getPostsByUserPaginated(user.getId(),paginationRequest);
-        }catch (IllegalArgumentException e){
+            posts = ps.getPostsByUserPaginated(user.getId(), paginationRequest);
+        } catch (IllegalArgumentException e) {
 
             LOGGER.error("Error getting created posts", e);
             posts = null;
         }
-        mav.addObject("posts",posts);
+        mav.addObject("posts", posts);
         return mav;
     }
 
@@ -184,25 +205,24 @@ public class UserController {
         ModelAndView mav = new ModelAndView("user/profile/likedPosts");
         User user = us.getLoggedUser().orElseThrow();
         Boolean isAdmin = us.getLoggedUser().get().getOwner();
-        mav.addObject("isAdmin",isAdmin);
-        mav.addObject("user",user);
+        mav.addObject("isAdmin", isAdmin);
+        mav.addObject("user", user);
         mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
-        mav.addObject("communities",cs.getFollowedCommunities(user));
-        mav.addObject("isVerified",user.isVerified());
+        mav.addObject("communities", cs.getFollowedCommunities(user));
+        mav.addObject("isVerified", user.isVerified());
         PaginatedDataWrapper<Post> likedPosts;
         PaginationRequest paginationRequestLikedPosts = new PaginationRequest(5);
-        if(Objects.nonNull(pageNumber))
+        if (Objects.nonNull(pageNumber))
             paginationRequestLikedPosts.setPageNumber(pageNumber);
         try {
-            likedPosts = ps.getUserLikedPostsPaginated(user.getId(),paginationRequestLikedPosts);
-        }catch (IllegalArgumentException e){
+            likedPosts = ps.getUserLikedPostsPaginated(user.getId(), paginationRequestLikedPosts);
+        } catch (IllegalArgumentException e) {
             LOGGER.error("Error getting liked posts", e);
             likedPosts = null;
         }
-        mav.addObject("posts",likedPosts);
+        mav.addObject("posts", likedPosts);
         return mav;
     }
-
 
 
 }

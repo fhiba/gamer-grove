@@ -186,7 +186,7 @@ public class PostDaoJpa implements PostDao {
     @Override
     public List<Post> getAllPostsPaginated(int pageSize, int offset) {
         Query nativeQuery = em.createNativeQuery("SELECT id FROM post WHERE deleted = false ORDER BY post_date DESC");
-        nativeQuery.setFirstResult(pageSize * ((offset/pageSize)));
+        nativeQuery.setFirstResult(offset);
         nativeQuery.setMaxResults(pageSize);
 
         List<Long> resultList = ((Stream<Integer>) nativeQuery.getResultStream()).map(Integer::longValue).toList();
@@ -208,7 +208,7 @@ public class PostDaoJpa implements PostDao {
     @Override
     public List<Post> getAllPostsByCategoryPaginated(String category, int pageSize, int offset) {
         Query nativeQuery = em.createNativeQuery("SELECT id FROM post WHERE deleted = false and category = :category ORDER BY post_date DESC");
-        nativeQuery.setFirstResult(pageSize * ((offset/pageSize)));
+        nativeQuery.setFirstResult(offset);
         nativeQuery.setParameter("category",category);
         nativeQuery.setMaxResults(pageSize);
 
@@ -229,7 +229,7 @@ public class PostDaoJpa implements PostDao {
     @Override
     public List<Post> getPostsByCommunityPaginated(String communityName, int pageSize, int offset) {
         Query nativeQuery = em.createNativeQuery("SELECT id FROM post WHERE deleted = false and community_name = :name ORDER BY post_date DESC");
-        nativeQuery.setFirstResult(pageSize * ((offset/pageSize)));
+        nativeQuery.setFirstResult(offset);
         nativeQuery.setParameter("name",communityName);
         nativeQuery.setMaxResults(pageSize);
 
@@ -251,7 +251,7 @@ public class PostDaoJpa implements PostDao {
     @Override
     public List<Post> getFollowedPostsByUserPaginated(long userId, int pageSize, int offset) {
         Query nativeQuery = em.createNativeQuery("SELECT id FROM post WHERE deleted = false AND community_name IN (SELECT community_name FROM community_user WHERE user_id = :userId) ORDER BY post_date DESC");
-        nativeQuery.setFirstResult(pageSize * ((offset/pageSize)));
+        nativeQuery.setFirstResult(offset);
         nativeQuery.setParameter("userId",userId);
         nativeQuery.setMaxResults(pageSize);
 
@@ -274,7 +274,7 @@ public class PostDaoJpa implements PostDao {
     @Override
     public List<Post> getUserFollowedPostsByCategoryPaginated(long userId, String category, int pageSize, int offset) {
         Query nativeQuery = em.createNativeQuery("SELECT id FROM post WHERE deleted = false AND category = :category AND community_name IN (SELECT community_name FROM community_user WHERE user_id = :userId) ORDER BY post_date DESC");
-        nativeQuery.setFirstResult(pageSize * ((offset/pageSize)));
+        nativeQuery.setFirstResult(offset);
         nativeQuery.setParameter("category",category);
         nativeQuery.setParameter("userId",userId);
         nativeQuery.setMaxResults(pageSize);
@@ -298,7 +298,7 @@ public class PostDaoJpa implements PostDao {
     @Override
     public List<Post> getUserLikedPostPaginated(long userId, int pageSize, int offset) {
         Query nativeQuery = em.createNativeQuery("SELECT post_id FROM groovy_post_history WHERE user_id = :userId and groovy_type = true");
-        nativeQuery.setFirstResult(pageSize * ((offset/pageSize)));
+        nativeQuery.setFirstResult(offset);
         nativeQuery.setParameter("userId",userId);
         nativeQuery.setMaxResults(pageSize);
 
@@ -321,11 +321,9 @@ public class PostDaoJpa implements PostDao {
     public List<Post> getPostsByUserPaginated(long id, int pageSize, int offset) {
         Query nativeQuery = em.createNativeQuery("SELECT id FROM post where author_id = :authorId");
         nativeQuery.setParameter("authorId",id);
-        nativeQuery.setFirstResult(pageSize * ((offset/pageSize)));
+        nativeQuery.setFirstResult(offset);
         nativeQuery.setMaxResults(pageSize);
-
         List<Long> resultList = ((Stream<Integer>) nativeQuery.getResultStream()).map(Integer::longValue).toList();
-
         TypedQuery<Post> query = em.createQuery("from Post as p where p.id IN :ids order by p.date desc", Post.class);
         query.setParameter("ids", resultList);
         return query.getResultList();
@@ -336,5 +334,10 @@ public class PostDaoJpa implements PostDao {
         Query query= em.createQuery("select count(*) from Post as p where p.author.id = :id")
                 .setParameter("id", id);
         return((Number) query.getSingleResult()).intValue();
+    }
+
+    @Override
+    public void removePost(Post post) {
+        post.setDeleted(true);
     }
 }

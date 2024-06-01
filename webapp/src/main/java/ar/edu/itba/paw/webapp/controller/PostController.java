@@ -260,11 +260,11 @@ public class PostController {
     }
 
     @RequestMapping(path = "/post/{postId}/delete", method = RequestMethod.POST)
-    public ModelAndView deletePost(@Valid @ModelAttribute("postDeleteForm") final PostDeleteForm postDeleteForm,final BindingResult errors) {
+    public ModelAndView deletePost(@Valid @ModelAttribute("postDeleteForm") final PostDeleteForm postDeleteForm,final BindingResult errors) throws NoSuchPostException {
         if (errors.hasErrors()) {
             return new ModelAndView("redirect:/post/" + postDeleteForm.getPostId());
         }
-            ms.removePost(postDeleteForm.getPostId());
+            ps.removePost(postDeleteForm.getPostId());
         return new ModelAndView("redirect:/post/" + postDeleteForm.getPostId());
     }
 

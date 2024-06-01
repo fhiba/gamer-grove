@@ -5,8 +5,11 @@ import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
 import ar.edu.itba.paw.exceptions.NoSuchPostException;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.models.Community;
+import ar.edu.itba.paw.models.Mod;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
+import ar.edu.itba.paw.models.pagination.PaginationRequest;
 import ar.edu.itba.paw.persistance.ModderDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Transactional(readOnly = true)
@@ -40,7 +46,7 @@ public class ModderServiceImpl implements ModderService{
 
     @Transactional
     @Override
-    public int addModder(String username, long communityId) throws UserNotFoundException, NoSuchCommunityException, AlreadyModException {
+    public Boolean addModder(String username, long communityId) throws UserNotFoundException, NoSuchCommunityException, AlreadyModException {
         Optional<User> possibleNewMod = us.findByUsername(username);
         if(possibleNewMod.isEmpty()){
             throw new UserNotFoundException("User with username "+username+" not found");
@@ -49,70 +55,43 @@ public class ModderServiceImpl implements ModderService{
         // Supuestamente el service me dice si existe o no la comunidad
         Community community = cs.findById(communityId);
         //Checkeo si existe el mod
-        if(isModderOfCommunity(newMod, communityId)){
+        if(isModderOfCommunity(newMod, community)){
             throw new AlreadyModException("User with id "+newMod.getId()+" is already a mod of community with id "+communityId);
         }
-        return md.addModder(newMod.getId(), communityId);
+        return Objects.nonNull(md.addModder(newMod, community));
     }
 
     @Override
-    public boolean isModderOfCommunity(User user, long communityId) {
-        return md.isModderOfCommunity(user.getId(), communityId) || user.getOwner();
+    public Boolean isModderOfCommunity(User user, Community community) {
+        return md.isModderOfCommunity(user, community) || user.getOwner();
     }
 
     @Transactional
     @Override
-    public int removeModder(String username, long communityId) throws UserNotFoundException {
+    public Boolean removeModder(String username, long communityId) throws UserNotFoundException, NoSuchCommunityException {
         Optional<User> possibleNewMod = us.findByUsername(username);
         if(possibleNewMod.isEmpty()){
             throw new UserNotFoundException("User with id "+username+" not found");
         }
         User newMod = possibleNewMod.get();
-        if(md.isModderOfCommunity(newMod.getId(), communityId)){
-            return md.removeModder(newMod.getId(), communityId);
+        Community community = cs.findById(communityId);
+        if(md.isModderOfCommunity(newMod, community)){
+            md.removeModder(md.findByid(newMod,community).orElseThrow());
+            return true;
         }
-        return 0;
-    }
-
-    @Transactional
-    @Override
-    public int removePost(long postId) {
-        int toRet = md.removePost(postId);
-        notifyDeletion(postId);
-        return toRet;
-    }
-
-
-    @Async
-    public void notifyDeletion(Long postId) {
-        Post post;
-        try {
-            post = ps.getPostById(postId);
-        } catch (NoSuchPostException e) {
-            LOGGER.debug("Post not found");
-            return;
-        }
-        long authorId = post.getAuthor().getId();
-        Optional<User> author = us.findById(authorId);
-
-        if(author.isEmpty()){
-            LOGGER.debug("Author not found");
-            return;
-        }
-        User authorUser = author.get();
-        mailingService.notifyPostDeletion(authorUser.getEmail(), authorUser.getUsername(), post.getId(), post.getTitle(), post.getcommunity().getName());
+        return false;
     }
 
     @Override
-    public boolean canRemovePost(User user, long postId) throws NoSuchPostException, NoSuchCommunityException {
+    public Boolean canRemovePost(User user, long postId) throws NoSuchPostException, NoSuchCommunityException {
 
         Post toDelete = ps.getPostById(postId);
-        Community postFrom = cs.findByName(toDelete.getcommunity().getName());
+        Community community = cs.findByName(toDelete.getcommunity().getName());
 
-        return isModderOfCommunity(user, postFrom.getId());
+        return isModderOfCommunity(user, community);
     }
     @Override
-    public boolean canEditCommunityInfo(String encodedCommunityName) throws NoSuchCommunityException, UserNotFoundException {
+    public Boolean canEditCommunityInfo(String encodedCommunityName) throws NoSuchCommunityException, UserNotFoundException {
         Community community;
         try {
             community = cs.findByName(URLDecoder.decode(encodedCommunityName, StandardCharsets.UTF_8));
@@ -123,11 +102,53 @@ public class ModderServiceImpl implements ModderService{
         if (possibleMod.isEmpty()) {
             return false;
         }
-        return isModderOfCommunity(possibleMod.get(), community.getId());
+        return isModderOfCommunity(possibleMod.get(), community);
     }
 
     @Override
-    public boolean canRemovePostAlternative(long postId) throws NoSuchPostException, NoSuchCommunityException, UserNotFoundException {
+    public PaginatedDataWrapper<Mod> getAllModPaginated(PaginationRequest request) {
+        if( request.getPageSize() < 1){
+            throw new IllegalArgumentException("Invalid Page size");
+        }
+        if(request.getPageNumber() <1 ){
+            throw new IllegalArgumentException("Invalid Page number");
+        }
+        int totalCount = md.getTotalModders();
+        if(request.getPageNumber() <1 ){
+            throw new IllegalArgumentException("Invalid Page number");
+        }
+        int offset = (request.getPageNumber() - 1) * request.getPageSize();
+        List<Mod> data = md.getAllModdersPaginated(request.getPageSize() , offset);
+        PaginatedDataWrapper<Mod> dataWrapper = new PaginatedDataWrapper<>(data, request.getPageNumber(), totalCount, request.getPageSize());
+        if(request.getPageNumber() > dataWrapper.getTotalPages() && dataWrapper.getTotalPages() != 0){
+            throw new IllegalArgumentException("Invalid Page number");
+        }
+        return dataWrapper;
+    }
+    @Override
+    public PaginatedDataWrapper<Mod> getModsByCommunityPaginated(Long communityId, PaginationRequest request) {
+        if( request.getPageSize() < 1){
+            throw new IllegalArgumentException("Invalid Page size");
+        }
+        if(request.getPageNumber() <1 ){
+            throw new IllegalArgumentException("Invalid Page number");
+        }
+        int totalCount = md.getTotalModdersByCommunity(communityId);
+        if(request.getPageNumber() <1 ){
+            throw new IllegalArgumentException("Invalid Page number");
+        }
+        int offset = (request.getPageNumber() - 1) * request.getPageSize();
+        List<Mod> data = md.getModdersPaginatedByCommunity(communityId,request.getPageSize() , offset);
+        PaginatedDataWrapper<Mod> dataWrapper = new PaginatedDataWrapper<>(data, request.getPageNumber(), totalCount, request.getPageSize());
+        if(request.getPageNumber() > dataWrapper.getTotalPages() && dataWrapper.getTotalPages() != 0){
+            throw new IllegalArgumentException("Invalid Page number");
+        }
+        return dataWrapper;
+    }
+
+
+    @Override
+    public Boolean canRemovePostAlternative(long postId) throws NoSuchPostException, NoSuchCommunityException, UserNotFoundException {
         Post toDelete;
         try {
             toDelete = ps.getPostById(postId);
@@ -145,6 +166,6 @@ public class ModderServiceImpl implements ModderService{
             return false;
         }
 
-        return isModderOfCommunity(possibleMod.get(), postFrom.getId());
+        return isModderOfCommunity(possibleMod.get(), postFrom);
     }
 }

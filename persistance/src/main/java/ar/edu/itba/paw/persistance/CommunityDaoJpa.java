@@ -201,7 +201,7 @@ public class CommunityDaoJpa implements CommunityDao{
     public List<Community> getFollowedCommunitiesPaginated(Integer pageSize, Integer offset, Long userId) {
         Query nativeQuery = em.createNativeQuery("SELECT community_id FROM community_user WHERE user_id = :userId")
                 .setParameter("userId", userId)
-                .setFirstResult(pageSize * ((offset/pageSize)))
+                .setFirstResult(offset)
                 .setMaxResults(pageSize);
 
         @SuppressWarnings("unchecked")

@@ -52,6 +52,8 @@ public interface PostService {
     PaginatedDataWrapper<Post> getUserLikedPostsPaginated(long userId, PaginationRequest request);
 
     List<String> getUsedCategories();
+    void removePost(final long postId) throws NoSuchPostException;
+
 
     PaginatedDataWrapper<Post> getAllPostsPaginated(PaginationRequest paginationRequest);
 

@@ -28,8 +28,7 @@ public class Post {
     private Community community;
 
 
-    @OneToMany(mappedBy = "post")
-    private List<Comment> comments;
+
 
     @Column(name = "media", nullable = false)
     private  Boolean media;
@@ -41,6 +40,8 @@ public class Post {
     private  LocalDateTime date;
     @Column (name = "grooviness", nullable = false)
     private  Integer grooviness;
+
+
     @Column(name = "deleted", nullable = false)
     private  Boolean deleted;
 
@@ -111,6 +112,9 @@ public class Post {
 
     public Boolean getDeleted() {
         return deleted;
+    }
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 
 
