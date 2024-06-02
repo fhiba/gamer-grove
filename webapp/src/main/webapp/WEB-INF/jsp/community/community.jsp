@@ -11,7 +11,11 @@
     <link rel="icon" href="${pageContext.request.contextPath}/images/favicon.ico" type="image/x-icon">
     <%--suppress JSUnresolvedLibraryURL --%>
     <script src="https://kit.fontawesome.com/002da5939d.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/rateYo/2.3.2/jquery.rateyo.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/rateYo/2.3.2/jquery.rateyo.min.css">
 </head>
 <body>
 <%@ include file="/WEB-INF/jsp/components/header.jsp" %>
@@ -84,7 +88,7 @@
                 <c:url var="ratingUrl" value="/community/${community.encodedName}/rate"/>
                 <form:form action="${ratingUrl}" method="post" modelAttribute="newRatingForm" id="ratingForm">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="ratingModalLabel"><spring:message code="RateCommunity"/> </h5>
+                        <h5 class="modal-title" id="ratingModalLabel"><spring:message code="RateCommunity"/></h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -110,7 +114,7 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="ratingInput" class="form-label"><spring:message code="YourRateCommunity"/></label>
-                        <c:out value="${rating.rating}" escapeXml="true"/>
+                        <div id="rateYoSelf"></div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -184,15 +188,20 @@
                                 <h6 class="fw-bold"><spring:message code="Publisher"/>: <c:out
                                         value="${community.publisher}" escapeXml="true"/></h6>
                                 <%--                                        <h6 class="fw-bold">Release Date: ${community.releaseDate}</h6>--%>
-                                <c:if test="${community.ratingCount == 0}">
-                                    <h6 class="fw-bold"><spring:message code="Rating"/>: <spring:message
-                                            code="NoRating"/></h6>
-                                </c:if>
-                                <c:if test="${community.ratingCount != 0}">
-                                    <h6 class="fw-bold"><spring:message code="Rating"/>: <c:out
-                                            value="${community.totalRating/community.ratingCount}" escapeXml="true"/>
-                                        (<c:out value="${community.ratingCount}" escapeXml="true"/>) </h6>
-                                </c:if>
+                                <div class="d-flex flex-row w-100">
+                                    <c:if test="${community.ratingCount == 0}">
+                                        <h6 class="fw-bold"><spring:message code="Rating"/>: <spring:message
+                                                code="NoRating"/></h6>
+                                    </c:if>
+                                    <c:if test="${community.ratingCount != 0}">
+
+                                        <h6 class="fw-bold"><spring:message code="Rating"/>:
+                                            <div id="rateYo"></div>
+                                            (<c:out value="${community.ratingCount}" escapeXml="true"/>)
+                                        </h6>
+                                    </c:if>
+                                </div>
+
 
                             </div>
                             <h5 class="card-subtitle text-secondary mt-3 mb-1"><c:out value="${community.description}"
@@ -210,7 +219,7 @@
                         <div>
                             <button type="button" class="btn btn-primary round-btn" data-bs-toggle="modal"
                                     data-bs-target="#ratingModal">
-                                <i class="fa-solid fa-star"></i>
+                                <i class="fa fa-star"></i>
                             </button>
                             <button type="button" class="btn btn-primary round-btn" data-bs-toggle="modal"
                                     data-bs-target="#createPostModal">
@@ -339,4 +348,26 @@
     let follow = () => {
         document.getElementById('followForm').submit();
     }
+
+    $(document).ready(function () {
+        $("#rateYo").rateYo({
+            numStars: 5,
+            halfStar: true,
+            precision: 2,
+            rating: ${community.totalRating/community.ratingCount},
+            readOnly: true,
+            starWidth: "20px"
+        });
+    });
+
+    $(document).ready(function () {
+        $("#rateYoSelf").rateYo({
+            numStars: 5,
+            halfStar: true,
+            precision: 2,
+            rating: ${rating.rating},
+            readOnly: true,
+            starWidth: "20px"
+        });
+    });
 </script>
