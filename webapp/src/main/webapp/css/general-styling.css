@@ -296,3 +296,8 @@ body {
     background-color: #2d3237;
     border-color: #2d3237;
 }
+
+.sidebar-nav:hover{
+    margin-left: 10px;
+    font-weight: bold;
+}

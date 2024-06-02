@@ -1,10 +1,7 @@
 package ar.edu.itba.paw.webapp.controller;
 
 
-import ar.edu.itba.paw.exceptions.NoLoggedUserException;
-import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
-import ar.edu.itba.paw.exceptions.NoSuchPostException;
-import ar.edu.itba.paw.exceptions.UserNotFoundException;
+import ar.edu.itba.paw.exceptions.*;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
 import ar.edu.itba.paw.models.pagination.PaginationRequest;
@@ -257,6 +254,16 @@ public class PostController {
         mav.addObject("canDelete", canDelete);
 
         return mav;
+    }
+
+    @RequestMapping(path="/comment", method = RequestMethod.POST)
+    public ModelAndView newComment(@RequestParam(required = false) Integer pageNumber, @ModelAttribute("newPostGroovyForm") final NewPostGroovyForm newPostGroovyForm,  @ModelAttribute("newCommentGroovyForm") final NewCommentGroovyForm newCommentGroovyForm, @ModelAttribute("postDeleteForm") final PostDeleteForm postDeleteForm, @ModelAttribute("commentDeleteForm") final CommentDeleteForm commentDeleteForm,@ModelAttribute("followCommunityForm") final FollowCommunityForm followCommunityForm, @Valid @ModelAttribute("newCommentForm") final NewCommentForm newCommentForm, final BindingResult errors) throws NoLoggedUserException, NoSuchPostException, PostIsDeletedException, UserNotFoundException, NoSuchCommunityException {
+        if(errors.hasErrors()) {
+            return singlePost( newCommentForm.getPostId(),pageNumber,newPostGroovyForm,newCommentForm,newCommentGroovyForm,postDeleteForm,commentDeleteForm,followCommunityForm);
+        }
+
+        commentService.createComment(newCommentForm.getPostId(), newCommentForm.getBody());
+        return new ModelAndView("redirect:/post/"+newCommentForm.getPostId());
     }
 
     @RequestMapping(path = "/post/{postId}/delete", method = RequestMethod.POST)

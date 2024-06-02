@@ -25,17 +25,19 @@
                 </div>
             </c:if>
             <hr>
-            <c:url value="/home" var="homeUrl"/>
-            <a href="${homeUrl}" class="text-decoration-none card-title text-light mb-3">
-                <h5><spring:message code="Navbar.Home"/></h5>
-            </a>
-            <hr>
+            <div class="d-flex flex-column">
 
-            <c:url value="/all" var="allUrl"/>
-            <a href="${allUrl}" class="text-decoration-none card-title text-light mb-3">
-                <h5><spring:message code="All"/></h5>
-            </a>
-            <hr>
+                    <c:url value="/home" var="homeUrl"/>
+                <a id="home_anchor" href="${homeUrl}" class="fs-5  text-light sidebar-nav">
+                   <spring:message code="Navbar.Home"/>
+                </a>
+                <hr>
+                    <c:url value="/all" var="allUrl"/>
+                <a id="all_anchor" href="${allUrl}" class=" fs-5 text-light link sidebar-nav">
+                    <spring:message code="All"/>
+                </a>
+            </div>
+<hr class="mt-3">
             <jsp:useBean id="isLogged" scope="request" type="java.lang.Boolean"/>
             <c:if test="${!isLogged}">
                 <div class="h5 card-title text-light mb-3"><spring:message code="Communities.Title"/></div>
@@ -78,3 +80,18 @@
         </div>
     </div>
 </div>
+<script>
+    let url = window.location.href;
+    let home = document.getElementById("home_anchor");
+    let all = document.getElementById("all_anchor");
+    if (url.includes("home")) {
+        home.classList.add("fw-bold");
+        all.classList.add("text-decoration-none");
+    } else if (url.includes("all") || url.endsWith('/')) {
+        all.classList.add("fw-bold");
+        home.classList.add("text-decoration-none");
+    } else {
+        home.classList.add("text-decoration-none");
+        all.classList.add("text-decoration-none");
+    }
+</script>

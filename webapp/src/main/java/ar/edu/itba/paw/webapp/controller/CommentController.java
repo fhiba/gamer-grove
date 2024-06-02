@@ -26,15 +26,7 @@ public class CommentController {
     private static final Logger LOGGER = LoggerFactory.getLogger(PostController.class);
 
 
-    @RequestMapping(path="/comment", method = RequestMethod.POST)
-    public ModelAndView newComment(@Valid @ModelAttribute("newCommentForm") final NewCommentForm newCommentForm, final BindingResult errors) throws NoLoggedUserException, NoSuchPostException, PostIsDeletedException {
-        if(errors.hasErrors()) {
-            return new ModelAndView("redirect:/post/"+newCommentForm.getPostId());
-        }
 
-        commentService.createComment(newCommentForm.getPostId(), newCommentForm.getBody());
-        return new ModelAndView("redirect:/post/"+newCommentForm.getPostId());
-    }
 
     @RequestMapping(path="/post/{postId}/+" , method = RequestMethod.POST)
     public ModelAndView editGroovinessOnComment(@Valid @ModelAttribute("newCommentGroovyForm") final NewCommentGroovyForm newCommentGroovyForm, final BindingResult errors) throws UserNotFoundException, NoSuchCommentException, NoLoggedUserException, NoSuchPostException {
