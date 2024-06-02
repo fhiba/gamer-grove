@@ -14,6 +14,31 @@
 </head>
 <body>
 
+<div class="modal fade" id="unverifiedModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <spring:message code="VerifyAccount.Resend"/>
+                </h5>
+            </div>
+            <div class="modal-body">
+                <c:url value="auth/resend-verification" var="resendUrl"/>
+                <spring:message code="VerifyAccount.Verify"/>
+                <a href="${resendUrl}">
+                    <button type="button" class="p-0 btn btn-link"><spring:message
+                            code="email.validateAccount.action"/></button>
+                </a>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><spring:message
+                        code="Close"/></button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <%@ include file="/WEB-INF/jsp/components/header.jsp" %>
 <div class="container-fluid min-vh-100">
     <div class="row min-vh-100">
@@ -153,6 +178,12 @@
 </body>
 </html>
 <script lang="javascript">
+    let verified = ${user.isVerified()};
+    console.log(${isVerified});
+    if(!verified){
+        var myModal2 = new bootstrap.Modal(document.getElementById('unverifiedModal'))
+        myModal2.show()
+    }
     $('.dropdown-toggle').dropdown();
 
 </script>
