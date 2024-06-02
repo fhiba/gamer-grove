@@ -83,15 +83,16 @@ public class CommunityServiceImpl implements CommunityService{
         return communityDao.updateRating(community, rating, 1);
     }
 
+    @Transactional
     @Override
-    public Community discountRating(Long community_id, Float rating) throws NoSuchCommunityException, NoLoggedUserException {
-        Community community = findById(community_id);
+    public Community discountRating(String communityName, Float rating) throws NoSuchCommunityException, NoLoggedUserException {
+        Community community = findByName(communityName);
         Optional<User> user = userService.getLoggedUser();
         if (user.isEmpty())
             throw new NoLoggedUserException("No logged user");
-
-        communityDao.updateRating(community, -rating, -1);
-        ratingService.deleteRating(user.get(), community);
+        Boolean deleted = ratingService.deleteRating(user.get(), community);
+        if(deleted)
+            communityDao.updateRating(community, -rating, -1);
         return community;
     }
 

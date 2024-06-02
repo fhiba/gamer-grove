@@ -28,8 +28,12 @@ public class RatingServiceImpl implements RatingService{
     }
 
     @Override
-    public void deleteRating(User user, Community community) {
-        getRatingById(user, community).ifPresent(ratingDao::deleteRating);
-
+    public Boolean deleteRating(User user, Community community) {
+        Optional<Rating> maybeRating = getRatingById(user,community);
+        if(maybeRating.isPresent()) {
+            ratingDao.deleteRating(maybeRating.get());
+            return true;
+        }
+        return false;
     }
 }

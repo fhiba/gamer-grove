@@ -82,7 +82,7 @@
     </div>
 </div>
 <!-- Rating Modal -->
-<div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">
+<div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="ratingModalLabel">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <c:if test="${rating == null}">
@@ -105,7 +105,7 @@
                     </div>
                 </form:form>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><spring:message code="Confirm"/></button>
 
                         <button id="submitButtonRatingForm" class="btn btn-primary"><spring:message code="RateSumbit"/></button>
                     </div>
@@ -115,14 +115,22 @@
                     <h5 class="modal-title" id="ratingModalLabel"><spring:message code="RateCommunity"/></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body d-flex flex-row justify-content-between align-items-center">
                     <div class="mb-3">
                         <label for="ratingInput" class="form-label"><spring:message code="YourRateCommunity"/></label>
                         <div id="rateYoSelf"></div>
                     </div>
+                    <div>
+                    <c:url var="deleteRatingUrl" value="/community/${community.encodedName}/deleteRating"/>
+                    <form:form action="${deleteRatingUrl}" method="post" modelAttribute="newRatingForm" id="deleteRating">
+                        <form:hidden path="rating" value="${rating.rating}"/>
+                        <form:hidden path="communityId" value="${community.id}"/>
+                        <button class="btn btn-danger fa-solid fa-trash"></button>
+                    </form:form>
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><spring:message code="Confirm"/></button>
                 </div>
             </c:if>
         </div>
@@ -198,12 +206,12 @@
                                                 code="NoRating"/></h6>
                                     </c:if>
                                     <c:if test="${community.ratingCount != 0}">
-
                                         <h6 class="fw-bold"><spring:message code="Rating"/>:</h6>
-                                            <div id="rateYo"></div>
+                                        <div id="rateYo"></div>
                                         <p>
                                             (<c:out value="${community.ratingCount}" escapeXml="true"/>)
                                         </p>
+
                                     </c:if>
                                 </div>
 
@@ -222,7 +230,7 @@
                             </a>
                         </c:if>
                         <div>
-                            <button type="button" class="btn btn-primary round-btn" data-bs-toggle="modal"
+                            <button type="button" class="btn btn-primary rounded-5" data-bs-toggle="modal"
                                     data-bs-target="#ratingModal">
                                 <i class="fa fa-star"></i>
                             </button>
@@ -303,6 +311,10 @@
         if (postBody[i].innerText.length > 100) {
             postBody[i].innerText = postBody[i].innerText.substring(0, 100) + '...';
         }
+    }
+
+    let deleteSubmit = () => {
+        document.getElementById('deleteRating').submit();
     }
 
     let submit = () => {

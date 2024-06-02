@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -229,6 +230,14 @@ public class CommunityController {
         System.out.println("El id de la comunidad es: " + newRatingForm.getCommunityId());
         System.out.println("El rating es: " + newRatingForm.getRating());
         cs.updateRating(newRatingForm.getCommunityId(),newRatingForm.getRating());
+        return new ModelAndView("redirect:/community/"+communityName);
+    }
+
+    @RequestMapping(path = "/community/{communityName}/deleteRating", method = RequestMethod.POST)
+    public ModelAndView deleteRating(@PathVariable("communityName") final String communityName,@Valid @ModelAttribute("newRatingForm")final NewRatingForm newRatingForm, BindingResult errors) throws NoSuchCommunityException, NoLoggedUserException {
+        if(errors.hasErrors())
+            return community(null,communityName,new NewPostForm(),new FollowCommunityForm(),newRatingForm);
+        cs.discountRating(communityName,newRatingForm.getRating());
         return new ModelAndView("redirect:/community/"+communityName);
     }
 }

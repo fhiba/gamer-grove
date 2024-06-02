@@ -80,6 +80,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST,"/post").hasRole("VERIFIED")
                 .antMatchers(HttpMethod.POST,"/comment").hasRole("VERIFIED")
                 .antMatchers(HttpMethod.POST,"/community/{communityName}").hasRole("VERIFIED")
+                .antMatchers(HttpMethod.POST,"/community/{communityName}/deleteRating").hasRole("VERIFIED")
                 .antMatchers(HttpMethod.POST,"/profile").authenticated()
                 .antMatchers(HttpMethod.POST,"/new-community").hasRole("ADMIN")
                 .antMatchers("/community/{communityName}/info").access("@modderServiceImpl.canEditCommunityInfo(#communityName) or hasRole('ADMIN')")

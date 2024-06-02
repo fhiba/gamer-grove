@@ -12,5 +12,5 @@ public interface RatingService {
 
     Optional<Rating> getRatingById(User user, Community community);
 
-    void deleteRating(User user, Community community);
+    Boolean deleteRating(User user, Community community);
 }
