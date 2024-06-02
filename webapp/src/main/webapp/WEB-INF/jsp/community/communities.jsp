@@ -23,17 +23,14 @@
         <div class="modal-content">
             <c:if test="${!isVerified}">
                 <c:url value="auth/resend-verification" var="verifyUrl"/>
-
-                        <spring:message code="VerifyAccount.Verify"/>
-                        <div class="mt-2 pt-2 border-top">
-                            <a href="${verifyUrl}">
-                                <button type="button" class="btn btn-primary btn-sm"><spring:message
-                                        code="VerifyAccount.Resend"/></button>
-                            </a>
-                            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
-                                <spring:message
-                                        code="Close"/></button>
-                        </div>
+                <spring:message code="VerifyAccount.Verify"/>
+                <a href="${verifyUrl}">
+                    <button type="button" class="btn btn-primary btn-sm"><spring:message
+                            code="VerifyAccount.Resend"/></button>
+                </a>
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
+                    <spring:message
+                            code="Close"/></button>
             </c:if>
             <c:if test="${isVerified}">
                 <div class="modal-header">
@@ -42,7 +39,7 @@
                 </div>
                 <div class="modal-body">
                     <div>
-                        <p>Choose some categories you like to start filtering the communities!</p>
+                        <p><spring:message code="WelcomeMessage"/></p>
                     </div>
                     <div id="onboardingPills" class="d-flex flex-row flex-wrap mb-3"></div>
                 </div>
@@ -53,9 +50,10 @@
         </div>
     </div>
 </div>
+
 <div class="modal fade" id="unverifiedModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
      aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">

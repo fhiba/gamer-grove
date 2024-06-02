@@ -52,7 +52,7 @@ public class AuthController {
         if(token == null || token.isEmpty())
             throw new NoSuchTokenException("token is empty or null");
 
-        ModelAndView mav = new ModelAndView("redirect:/home");
+        ModelAndView mav = new ModelAndView("redirect:/communities");
 
         try {
             userService.verifyUser(token);
