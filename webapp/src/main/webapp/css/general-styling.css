@@ -296,3 +296,9 @@ body {
     background-color: #2d3237;
     border-color: #2d3237;
 }
+
+
+.rate {
+    border-bottom-right-radius: 12px;
+    border-bottom-left-radius: 12px
+}

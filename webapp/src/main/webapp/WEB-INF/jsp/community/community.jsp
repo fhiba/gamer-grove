@@ -14,8 +14,9 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
             integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
             crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/rateYo/2.3.2/jquery.rateyo.min.js"></script>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/rateYo/2.3.2/jquery.rateyo.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/rateYo/2.3.2/jquery.rateyo.min.js"></script>
 </head>
 <body>
 <%@ include file="/WEB-INF/jsp/components/header.jsp" %>
@@ -82,7 +83,7 @@
 </div>
 <!-- Rating Modal -->
 <div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <c:if test="${rating == null}">
                 <c:url var="ratingUrl" value="/community/${community.encodedName}/rate"/>
@@ -94,17 +95,20 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="ratingInput" class="form-label"><spring:message code="Rating"/></label>
-                            <form:input path="rating" type="number" min="1" max="5" step="0.1" class="form-control"
+                            <form:hidden path="rating"
                                         id="ratingInput"/>
+                            <div id="rateYoInput"></div>
+
                             <form:errors path="rating" cssStyle="color: red" cssClass="error"/>
                         </div>
                         <form:hidden path="communityId" value="${community.id}"/>
                     </div>
+                </form:form>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary"><spring:message code="RateSumbit"/></button>
+
+                        <button id="submitButtonRatingForm" class="btn btn-primary"><spring:message code="RateSumbit"/></button>
                     </div>
-                </form:form>
             </c:if>
             <c:if test="${rating != null}">
                 <div class="modal-header">
@@ -188,17 +192,18 @@
                                 <h6 class="fw-bold"><spring:message code="Publisher"/>: <c:out
                                         value="${community.publisher}" escapeXml="true"/></h6>
                                 <%--                                        <h6 class="fw-bold">Release Date: ${community.releaseDate}</h6>--%>
-                                <div class="d-flex flex-row w-100">
+                                <div class="d-flex w-100">
                                     <c:if test="${community.ratingCount == 0}">
                                         <h6 class="fw-bold"><spring:message code="Rating"/>: <spring:message
                                                 code="NoRating"/></h6>
                                     </c:if>
                                     <c:if test="${community.ratingCount != 0}">
 
-                                        <h6 class="fw-bold"><spring:message code="Rating"/>:
+                                        <h6 class="fw-bold"><spring:message code="Rating"/>:</h6>
                                             <div id="rateYo"></div>
+                                        <p>
                                             (<c:out value="${community.ratingCount}" escapeXml="true"/>)
-                                        </h6>
+                                        </p>
                                     </c:if>
                                 </div>
 
@@ -287,6 +292,7 @@
 </body>
 </html>
 <script>
+
     if (document.getElementsByClassName("error").length > 0) {
         var myModal = new bootstrap.Modal(document.getElementById('createPostModal'))
         myModal.show()
@@ -335,6 +341,13 @@
         photoPreviewContainer.appendChild(elemContainer);
         photoPreviewContainer.setAttribute("class", "d-flex flex-row")
     });
+    <c:if test="${rating == null}">
+    document.getElementById('submitButtonRatingForm').addEventListener('click',(e)=>{
+        var $rateYo = $("#rateYoInput").rateYo();
+        document.getElementById('ratingInput').value = $rateYo.rateYo("rating");
+        document.getElementById('ratingForm').submit();
+    })
+    </c:if>
 
     document.getElementById('photo-upload__preview').addEventListener('click', (e) => {
         const tgt = e.target.closest('button');
@@ -350,6 +363,12 @@
     }
 
     $(document).ready(function () {
+        <c:if test="${rating == null}">
+        $("#rateYoInput").rateYo({
+            fullStar: true,
+            rating: 0,
+        })
+        </c:if>
         $("#rateYo").rateYo({
             numStars: 5,
             halfStar: true,
@@ -358,16 +377,28 @@
             readOnly: true,
             starWidth: "20px"
         });
+        <c:if test="${rating != null}">
+            $("#rateYoSelf").rateYo({
+                numStars: 5,
+                halfStar: true,
+                precision: 2,
+                rating: ${rating.rating},
+                readOnly: true,
+                starWidth: "20px"
+            });
+        </c:if>
     });
+    console.log("adnksjnkdajskjn")
+    <%--$(document).ready(function () {--%>
+    <%--    $("#rateYoSelf").rateYo({--%>
+    <%--        numStars: 5,--%>
+    <%--        halfStar: true,--%>
+    <%--        precision: 2,--%>
+    <%--        rating: ${rating.rating},--%>
+    <%--        readOnly: true,--%>
+    <%--        starWidth: "20px"--%>
+    <%--    });--%>
+    <%--});--%>
 
-    $(document).ready(function () {
-        $("#rateYoSelf").rateYo({
-            numStars: 5,
-            halfStar: true,
-            precision: 2,
-            rating: ${rating.rating},
-            readOnly: true,
-            starWidth: "20px"
-        });
-    });
+
 </script>
