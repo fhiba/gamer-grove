@@ -3,6 +3,7 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
 import ar.edu.itba.paw.models.Community;
+import ar.edu.itba.paw.models.Rating;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
 import ar.edu.itba.paw.models.pagination.PaginationRequest;
@@ -79,7 +80,19 @@ public class CommunityServiceImpl implements CommunityService{
         if(user.isEmpty())
             throw new NoLoggedUserException("No logged user");
         ratingService.createRating(user.get(), community, rating);
-        return communityDao.updateRating(community, rating);
+        return communityDao.updateRating(community, rating, 1);
+    }
+
+    @Override
+    public Community discountRating(Long community_id, Float rating) throws NoSuchCommunityException, NoLoggedUserException {
+        Community community = findById(community_id);
+        Optional<User> user = userService.getLoggedUser();
+        if (user.isEmpty())
+            throw new NoLoggedUserException("No logged user");
+
+        communityDao.updateRating(community, -rating, -1);
+        ratingService.deleteRating(user.get(), community);
+        return community;
     }
 
 

@@ -24,6 +24,8 @@ public interface CommunityService {
 
     Community updateRating(Long community_id, float rating) throws NoSuchCommunityException, NoLoggedUserException;
 
+    Community discountRating(Long community_id, Float rating) throws NoSuchCommunityException, NoLoggedUserException;
+
     void modifyUserOnCommunity(int communityId,String communityName) throws NoLoggedUserException, NoSuchCommunityException;
 
     Boolean checkIfUserFollowsCommunity(int communityId) throws NoLoggedUserException, NoSuchCommunityException;

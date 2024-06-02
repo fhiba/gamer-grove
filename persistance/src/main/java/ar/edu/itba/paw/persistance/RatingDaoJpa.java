@@ -29,4 +29,15 @@ public class RatingDaoJpa implements RatingDao{
         Optional<Rating> rating = Optional.ofNullable(em.find(Rating.class, new Rating.RatingKey(user, community)));
         return rating;
     }
+
+    @Override
+    public void deleteRating(Rating rating) {
+        em.remove(rating);
+    }
+
+    @Override
+    public Rating updateRating(Rating rating, Float newValue) {
+        rating.setRating(newValue);
+        return rating;
+    }
 }

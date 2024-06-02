@@ -26,4 +26,10 @@ public class RatingServiceImpl implements RatingService{
     public Optional<Rating> getRatingById(User user, Community community) {
         return ratingDao.getRatingById(user, community);
     }
+
+    @Override
+    public void deleteRating(User user, Community community) {
+        getRatingById(user, community).ifPresent(ratingDao::deleteRating);
+
+    }
 }
