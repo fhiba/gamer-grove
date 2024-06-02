@@ -34,4 +34,10 @@ public class RatingDaoJpa implements RatingDao{
     public void deleteRating(Rating rating) {
         em.remove(rating);
     }
+
+    @Override
+    public Rating updateRating(Rating rating, Float newValue) {
+        rating.setRating(newValue);
+        return rating;
+    }
 }

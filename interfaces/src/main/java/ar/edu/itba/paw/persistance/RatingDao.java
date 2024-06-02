@@ -13,4 +13,7 @@ public interface RatingDao {
     Optional<Rating> getRatingById(User user, Community community);
 
     void deleteRating(Rating rating);
+
+    Rating updateRating(Rating rating, Float newValue);
+
 }
