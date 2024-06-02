@@ -133,4 +133,8 @@ public class Community implements Serializable {
     public void setModders(List<User> modders) {
         this.modders = modders;
     }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 }

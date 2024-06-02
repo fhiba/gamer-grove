@@ -29,3 +29,5 @@ VALUES (12, 10, 10, null, 'Comment 3', CURRENT_TIMESTAMP, 0,false);
 
 INSERT INTO token (value, user_id, type) values ('vaaa', 10, 'Validation');
 INSERT INTO token (value, user_id, type) values ('raaa', 10, 'ResetPass');
+
+INSERT INTO media (id,bytes) values (10, HEXTORAW('e04fd020ea3a6910a2d808002b30309d'));

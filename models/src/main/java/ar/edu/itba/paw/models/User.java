@@ -132,4 +132,7 @@ public class User {
         Owner = owner;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
 }

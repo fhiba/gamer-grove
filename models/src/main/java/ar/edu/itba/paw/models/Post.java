@@ -133,4 +133,8 @@ public class Post {
     public String getEncodedCommunityName() {
         return community.getEncodedName();
     }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 }
