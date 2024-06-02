@@ -12,6 +12,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.sql.DataSource;
 
+import java.util.List;
+import java.util.Optional;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -35,6 +38,8 @@ public class UserDaoTest {
     private static final String EMAIL = "mail@mail";
     private static final String PASSWORD = "Password";
 
+    private static final byte[] byteBlob = {0, 1, 2, 3, 4};
+
     @Test
     @Rollback
     public void testCreate() {
@@ -46,5 +51,42 @@ public class UserDaoTest {
         assertEquals(PASSWORD, user.getPassword());
         assertEquals(1,user.getId().intValue());
     }
+    //Pedro', 'curti', 'pedro@curti.com'
+    @Test
+    public void testFindById() {
+        final Optional<User> user = userDao.findById(10);
+        assertNotNull(user);
+        assertEquals("Pedro", user.get().getUsername());
+        assertEquals("curti", user.get().getPassword());
+        assertEquals("pedro@curti.com", user.get().getEmail());
+    }
+
+    @Test
+    public void testFindByEmail() {
+        final Optional<User> user = userDao.findByEmail("pedro@curti.com");
+        assertNotNull(user);
+        assertEquals("Pedro", user.get().getUsername());
+        assertEquals("curti", user.get().getPassword());
+        assertEquals("pedro@curti.com", user.get().getEmail());
+    }
+
+    @Test
+    public void testFindByUsername() {
+        final Optional<User> user = userDao.findByUsername("Pedro");
+        assertNotNull(user);
+        assertEquals("Pedro", user.get().getUsername());
+        assertEquals("curti", user.get().getPassword());
+        assertEquals("pedro@curti.com", user.get().getEmail());
+    }
+
+
+
+    @Test
+    public void testGetFollowersOfCommunity() {
+        List<User> followers = userDao.getFollowersOfCommunity(10);
+        assertEquals(1,followers.size());
+    }
+
+
 
 }
