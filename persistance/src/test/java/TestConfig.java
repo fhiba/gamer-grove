@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
+import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
 import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
@@ -35,12 +36,13 @@ public class TestConfig {
 
     @Bean
     public DataSource dataSource() {
-        final SimpleDriverDataSource ds = new SimpleDriverDataSource();
-
-        ds.setDriverClass(JDBCDriver.class);
+        final SingleConnectionDataSource ds = new SingleConnectionDataSource();
+        ds.setDriverClassName(JDBCDriver.class.getName());
         ds.setUrl("jdbc:hsqldb:mem:paw");
         ds.setUsername("hs");
         ds.setPassword("");
+        ds.setSuppressClose(true);
+
 
         return ds;
     }
@@ -72,9 +74,9 @@ public class TestConfig {
         final JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         factoryBean.setJpaVendorAdapter(vendorAdapter);
         final Properties properties = new Properties();
-        properties.setProperty("hibernate.hbm2ddl.auto", "none");
+        properties.setProperty("hibernate.hbm2ddl.auto", "update");
         properties.setProperty("hibernate.dialect",
-                "org.hibernate.dialect.PostgreSQL94Dialect");
+                "org.hibernate.dialect.HSQLDialect");
         // FIXME: Change this to false in production
         properties.setProperty("hibernate.show_sql", "true");
         properties.setProperty("format_sql", "true");
@@ -86,7 +88,5 @@ public class TestConfig {
     public PlatformTransactionManager transactionManager(final EntityManagerFactory emf) {
         return new JpaTransactionManager(emf);
     }
-
-
 }
 

@@ -23,8 +23,8 @@ public class Comment {
     @JoinColumn(name = "author_id", referencedColumnName = "id")
     private User author;
 
-    @OneToOne(optional = false, targetEntity = Comment.class)
-    @JoinColumn(name = "parent_id", referencedColumnName = "id")
+    @OneToOne(targetEntity = Comment.class)
+    @JoinColumn(name = "parent_id", referencedColumnName = "id", nullable = true)
     private Comment parent;
 
     @Column(nullable = false,name = "body")

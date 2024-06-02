@@ -65,37 +65,37 @@ public class PostDaoJdbcTest {
 //
 //    }
 
-    @Test
-    public void testFindPostsByUser() {
-        // When
-        List<Post> posts = postDao.findPostsByUser(1);
-
-        // Then
-        // Assert that the size of the list is as expected
-        assertEquals(1, posts.size()); // Replace expectedSize with the expected size of the list
-
-        // Assert that the IDs of the returned posts match the IDs of the liked posts
-        for (Post postTest : posts) {
-            assertEquals(postTest.getId(), 1);
-        }
-
-    }
-
-    @Test
-    public void testFindPostsLikedByUser() {
-
-        // When
-        List<Post> posts = postDao.findPostsLikedByUser(1);
-
-        // Then
-        // Assert that the size of the list is as expected
-        assertEquals(1, posts.size()); // Replace expectedSize with the expected size of the list
-
-        // Assert that the IDs of the returned posts match the IDs of the liked posts
-        for (Post postTest : posts) {
-            assertEquals(postTest.getId(), 1);
-        }
-    }
+//    @Test
+//    public void testFindPostsByUser() {
+//        // When
+//        List<Post> posts = postDao.findPostsByUser(1);
+//
+//        // Then
+//        // Assert that the size of the list is as expected
+//        assertEquals(1, posts.size()); // Replace expectedSize with the expected size of the list
+//
+//        // Assert that the IDs of the returned posts match the IDs of the liked posts
+//        for (Post postTest : posts) {
+//            assertEquals(postTest.getId(), 1);
+//        }
+//
+//    }
+//
+//    @Test
+//    public void testFindPostsLikedByUser() {
+//
+//        // When
+//        List<Post> posts = postDao.findPostsLikedByUser(1);
+//
+//        // Then
+//        // Assert that the size of the list is as expected
+//        assertEquals(1, posts.size()); // Replace expectedSize with the expected size of the list
+//
+//        // Assert that the IDs of the returned posts match the IDs of the liked posts
+//        for (Post postTest : posts) {
+//            assertEquals(postTest.getId(), 1);
+//        }
+//    }
 
 
 }

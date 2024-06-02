@@ -1,0 +1,50 @@
+import ar.edu.itba.paw.models.User;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
+import ar.edu.itba.paw.persistance.UserDao;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.sql.DataSource;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = TestConfig.class)
+@Transactional
+public class UserDaoTest {
+
+    @Autowired
+    private UserDao userDao;
+
+    @Autowired
+    private DataSource ds;
+
+    @PersistenceContext
+    private EntityManager em;
+
+
+    private static final String USERNAME = "Username";
+    private static final String EMAIL = "mail@mail";
+    private static final String PASSWORD = "Password";
+
+    @Test
+    @Rollback
+    public void testCreate() {
+        final User user = userDao.create(USERNAME, EMAIL, PASSWORD);
+
+        em.flush();
+        assertNotNull(user);
+        assertEquals(USERNAME, user.getUsername());
+        assertEquals(PASSWORD, user.getPassword());
+        assertEquals(1,user.getId().intValue());
+    }
+
+}

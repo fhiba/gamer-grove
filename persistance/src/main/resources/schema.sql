@@ -3,7 +3,9 @@ CREATE TABLE IF NOT EXISTS users(
                       username VARCHAR(50) UNIQUE NOT NULL,
                       email VARCHAR(50) UNIQUE NOT NULL,
                       password TEXT NOT NULL,
-                      owner boolean NOT null default false
+                      owner boolean NOT null default false,
+                      portrait_id INT DEFAULT NULL,
+    CONSTRAINT fk_users_portrait_id FOREIGN KEY (portrait_id) REFERENCES media(id)
 );
 
 CREATE TABLE IF NOT EXISTS media(
@@ -68,7 +70,7 @@ INSERT INTO post_categories (category) VALUES('Recommendation');
 INSERT INTO post_categories (category) VALUES('Guide');
 INSERT INTO post_categories (category) VALUES('News');
 
-ALTER TABLE post ADD COLUMN category TEXT DEFAULT 'Miscellaneous';
+ALTER TABLE post ADD COLUMN IF NOT EXISTS category TEXT DEFAULT 'Miscellaneous';
 ALTER TABLE post ADD FOREIGN KEY (category) REFERENCES post_categories(category);
 
 DROP TABLE IF EXISTS groovy_history;
@@ -117,12 +119,12 @@ create table if not exists modders(
                                    foreign key(community_id) references community(id)
 );
 
-ALTER TABLE post ADD COLUMN deleted boolean DEFAULT false NOT NULL;
-ALTER TABLE comment ADD COLUMN deleted boolean DEFAULT false NOT NULL;
+ALTER TABLE post ADD COLUMN IF NOT EXISTS deleted boolean DEFAULT false NOT NULL;
+ALTER TABLE comment ADD COLUMN IF NOT EXISTS deleted boolean DEFAULT false NOT NULL;
 
-ALTER TABLE community ADD COLUMN publisher text DEFAULT 'Not specified' NOT NULL;
-ALTER TABLE community ADD COLUMN developer text DEFAULT 'Not specified' NOT NULL;
-ALTER TABLE community ADD COLUMN release_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL;
+ALTER TABLE community ADD COLUMN IF NOT EXISTS publisher text DEFAULT 'Not specified' NOT NULL;
+ALTER TABLE community ADD COLUMN IF NOT EXISTS developer text DEFAULT 'Not specified' NOT NULL;
+ALTER TABLE community ADD COLUMN IF NOT EXISTS release_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL;
 
 CREATE TABLE IF NOT EXISTS post_images (
                                            post_id INT NOT NULL ,
@@ -132,9 +134,9 @@ CREATE TABLE IF NOT EXISTS post_images (
                                            FOREIGN KEY (image_id) REFERENCES media(id)
 );
 
-ALTER TABLE users ADD COLUMN portrait_id int DEFAULT null;
+--ALTER TABLE users ADD COLUMN IF NOT EXISTS portrait_id int DEFAULT null;
 
-ALTER TABLE users ADD CONSTRAINT fk_users_portrait_id FOREIGN KEY (portrait_id) REFERENCES media(id);
+--ALTER TABLE users ADD CONSTRAINT  fk_users_portrait_id FOREIGN KEY  (portrait_id)  REFERENCES media(id);
 
 CREATE TABLE IF NOT EXISTS token(
     value CHAR(50) NOT NULL,
@@ -146,5 +148,5 @@ CREATE TABLE IF NOT EXISTS token(
 
 --- Sprint 3
 
-ALTER TABLE users ADD COLUMN verified BOOLEAN DEFAULT FALSE NOT NULL;
-ALTER TABLE users ADD COLUMN locale VARCHAR(2) DEFAULT 'en' NOT NULL;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS verified BOOLEAN DEFAULT FALSE NOT NULL;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS locale VARCHAR(2) DEFAULT 'en' NOT NULL;
