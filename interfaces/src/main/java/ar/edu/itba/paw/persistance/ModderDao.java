@@ -1,14 +1,25 @@
 package ar.edu.itba.paw.persistance;
 
+import ar.edu.itba.paw.models.Community;
+import ar.edu.itba.paw.models.Mod;
+import ar.edu.itba.paw.models.User;
+
 import java.util.List;
+import java.util.Optional;
 
 public interface ModderDao {
 
-    int addModder(final long userId,final long communityId);
+    Mod addModder(User user, Community community);
 
-    boolean isModderOfCommunity(final long userId, final long communityId);
+    Boolean isModderOfCommunity(User user, Community community);
 
-    int removeModder(final long userId, final long communityId);
+    Optional<Mod> findByid(User user, Community community);
 
-    int removePost(long postId);
+    void removeModder(Mod mod);
+
+    List<Mod> getAllModdersPaginated(int pageSize, int offset);
+
+    List<Mod> getModdersPaginatedByCommunity(Long community_id, int pageSize, int offset);
+    int getTotalModders();
+    int getTotalModdersByCommunity(Long communityId);
 }

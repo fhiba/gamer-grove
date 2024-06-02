@@ -359,6 +359,32 @@ public class PostServiceImpl implements PostService{
         }
         return dataWrapper;
     }
+    @Transactional
+    @Override
+    public void removePost(long postId) throws NoSuchPostException {
+        Post post = getPostById(postId);
+        postDao.removePost(post);
+        notifyDeletion(postId);
+    }
 
+    @Async
+    public void notifyDeletion(Long postId) {
+        Post post;
+        try {
+            post = getPostById(postId);
+        } catch (NoSuchPostException e) {
+            LOGGER.debug("Post not found");
+            return;
+        }
+        long authorId = post.getAuthor().getId();
+        Optional<User> author = userService.findById(authorId);
+
+        if(author.isEmpty()){
+            LOGGER.debug("Author not found");
+            return;
+        }
+        User authorUser = author.get();
+        mailingService.notifyPostDeletion(authorUser.getEmail(), authorUser.getUsername(), post.getId(), post.getTitle(), post.getcommunity().getName());
+    }
 
 }

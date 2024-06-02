@@ -4,20 +4,29 @@ import ar.edu.itba.paw.exceptions.AlreadyModException;
 import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
 import ar.edu.itba.paw.exceptions.NoSuchPostException;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
+import ar.edu.itba.paw.models.Community;
+import ar.edu.itba.paw.models.Mod;
+import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
+import ar.edu.itba.paw.models.pagination.PaginationRequest;
 
 public interface ModderService {
 
-    int addModder(final String username,final long communityId) throws UserNotFoundException, NoSuchCommunityException, AlreadyModException;
+    Boolean addModder(final String username,final long communityId) throws UserNotFoundException, NoSuchCommunityException, AlreadyModException;
 
-    boolean isModderOfCommunity(final User user, final long communityId);
+    Boolean isModderOfCommunity(final User user,final Community community);
 
-    int removeModder(final String username, final long communityId) throws UserNotFoundException;
+    Boolean removeModder(final String username, final long communityId) throws UserNotFoundException, NoSuchCommunityException;
 
-    int removePost(final long postId);
-    boolean canRemovePost(final User userId, final long postId) throws NoSuchPostException, NoSuchCommunityException;// fijar si el post pertenece a la comnunidad y el mod tiene los perm necesarios
 
-    boolean canRemovePostAlternative(long postId) throws NoSuchPostException, NoSuchCommunityException, UserNotFoundException;
+    Boolean canRemovePost(final User userId, final long postId) throws NoSuchPostException, NoSuchCommunityException;// fijar si el post pertenece a la comnunidad y el mod tiene los perm necesarios
 
-    public boolean canEditCommunityInfo(String encodedCommunityName) throws NoSuchCommunityException, UserNotFoundException;
+    Boolean canRemovePostAlternative(long postId) throws NoSuchPostException, NoSuchCommunityException, UserNotFoundException;
+
+    Boolean canEditCommunityInfo(String encodedCommunityName) throws NoSuchCommunityException, UserNotFoundException;
+    PaginatedDataWrapper<Mod> getAllModPaginated(PaginationRequest paginationRequest);
+
+    public PaginatedDataWrapper<Mod> getModsByCommunityPaginated(Long communityId, PaginationRequest request);
+
 }
