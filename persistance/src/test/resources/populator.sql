@@ -19,7 +19,7 @@ INSERT INTO groovy_post_history(user_id, post_id, groovy_type) VALUES (10,10,fal
 INSERT INTO community_user(community_id, user_id,community_role,community_name) VALUES (10, 10, 0,'test');
 
 INSERT INTO comment ( id, post_id, author_id, parent_id, body, comment_date, grooviness,deleted)
-VALUES (10, 10, 10, null, 'Comment 1', CURRENT_TIMESTAMP, 0, false);
+VALUES (10, 10, 10, null, 'Comment 1', '2024-05-05 20:30:00', 0, false);
 
 INSERT INTO comment (id, post_id, author_id, parent_id, body, comment_date, grooviness,deleted)
 VALUES ( 11, 10, 10, null, 'Comment 2', CURRENT_TIMESTAMP, 0, false);
