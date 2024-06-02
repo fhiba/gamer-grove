@@ -25,7 +25,7 @@ public class TokenDaoJpa implements TokenDao{
 
     @Override
     public Boolean verifyResetToken(String token) {
-        TypedQuery<Token> query = em.createQuery("from Token where value = :value and type = 'ReserPass'",Token.class);
+        TypedQuery<Token> query = em.createQuery("from Token where value = :value and type = 'ResetPass'",Token.class);
         query.setParameter("value",token);
         return query.getResultList().stream().findFirst().isPresent();
     }
