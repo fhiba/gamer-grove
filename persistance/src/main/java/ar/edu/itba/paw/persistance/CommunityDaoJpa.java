@@ -49,9 +49,9 @@ public class CommunityDaoJpa implements CommunityDao{
     }
 
     @Override
-    public Community updateRating(Community community, float rating) {
+    public Community updateRating(Community community, float rating, Integer ratingCount) {
         community.setTotalRating(community.getTotalRating() + rating);
-        community.setRatingCount(community.getRatingCount() + 1);
+        community.setRatingCount(community.getRatingCount() + ratingCount);
         return community;
     }
 

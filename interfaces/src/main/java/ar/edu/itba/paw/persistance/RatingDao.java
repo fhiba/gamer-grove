@@ -11,4 +11,6 @@ public interface RatingDao {
     Rating createRating(User user, Community community, Float rating);
 
     Optional<Rating> getRatingById(User user, Community community);
+
+    void deleteRating(Rating rating);
 }
