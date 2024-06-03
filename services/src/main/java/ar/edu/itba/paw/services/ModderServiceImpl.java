@@ -58,7 +58,13 @@ public class ModderServiceImpl implements ModderService{
         if(isModderOfCommunity(newMod, community)){
             throw new AlreadyModException("User with id "+newMod.getId()+" is already a mod of community with id "+communityId);
         }
+        sendNewModNotification(newMod, community);
         return Objects.nonNull(md.addModder(newMod, community));
+    }
+
+    @Async
+    void sendNewModNotification(User to, Community community) {
+        mailingService.notifyNewModerator(to.getEmail(), to.getUsername(), community.getName(), community.getEncodedName());
     }
 
     @Override
@@ -77,9 +83,15 @@ public class ModderServiceImpl implements ModderService{
         Community community = cs.findById(communityId);
         if(md.isModderOfCommunity(newMod, community)){
             md.removeModder(md.findByid(newMod,community).orElseThrow());
+            sendRemovedModNotification(newMod, community);
             return true;
         }
         return false;
+    }
+
+    @Async
+    void sendRemovedModNotification(User to, Community community) {
+        mailingService.notifyRemovedModerator(to.getEmail(), to.getUsername(), community.getName());
     }
 
     @Override

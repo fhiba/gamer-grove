@@ -187,4 +187,31 @@ public class MailingServiceImpl implements MailingService {
         String htmlBody = thymeleafTemplateEngine.process("commentDeletion", thymeleafContext);
         sendHtmlMessage(to, messageSource.getMessage("email.commentDeletion.subject", null, Locale.getDefault()), htmlBody, null);
     }
+
+    @Async
+    @Override
+    public void notifyNewModerator(String to, String name, String communityName, String communityEncoded) {
+        Map<String, Object> vars = new HashMap<>();
+        vars.put("username", name);
+        vars.put("community", communityName);
+        vars.put("base", base);
+        vars.put("community_encoded", communityEncoded);
+        Context thymeleafContext = new Context();
+        thymeleafContext.setVariables(vars);
+        String htmlBody = thymeleafTemplateEngine.process("newModNotification", thymeleafContext);
+        sendHtmlMessage(to, messageSource.getMessage("email.newModNotification.subject", null, Locale.getDefault()), htmlBody, null);
+    }
+
+    @Async
+    @Override
+    public void notifyRemovedModerator(String to, String name, String communityName) {
+        Map<String, Object> vars = new HashMap<>();
+        vars.put("username", name);
+        vars.put("community", communityName);
+        vars.put("base", base);
+        Context thymeleafContext = new Context();
+        thymeleafContext.setVariables(vars);
+        String htmlBody = thymeleafTemplateEngine.process("removeModNotification", thymeleafContext);
+        sendHtmlMessage(to, messageSource.getMessage("email.removeModNotification.subject", null, Locale.getDefault()), htmlBody, null);
+    }
 }

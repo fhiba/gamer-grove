@@ -26,4 +26,10 @@ public interface MailingService {
 
     @Async
     void notifyCommentDeletion(String to, String name, Long postId, String postTitle, String communityName, String commentBody);
+
+    @Async
+    void notifyNewModerator(String to, String name, String communityName, String communityEncoded);
+
+    @Async
+    void notifyRemovedModerator(String to, String name, String communityName);
 }
