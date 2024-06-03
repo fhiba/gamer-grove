@@ -127,8 +127,8 @@ public class CommunityController {
         if(errors.hasErrors())
             return community(null,communityName,newPostForm,followCommunityForm,newRatingForm);
 
-        ps.createPost(newPostForm.getTitle(),newPostForm.getBody(),communityName,newPostForm.getCategory(),newPostForm.getFiles());
-        return new ModelAndView("redirect:/community/"+ communityName);
+        Post post = ps.createPost(newPostForm.getTitle(),newPostForm.getBody(),communityName,newPostForm.getCategory(),newPostForm.getFiles());
+        return new ModelAndView("redirect:/post/" + post.getId());
     }
 
 
@@ -175,8 +175,8 @@ public class CommunityController {
             return community(null,communityName,newPostForm,followCommunityForm,newRatingForm);
         //chequeo de que exista la community
         Community community = cs.findByName(communityName);
-        ps.createPost(newPostForm.getTitle(),newPostForm.getBody(),community.getName(),newPostForm.getCategory(),newPostForm.getFiles());
-        return community(null,communityName,newPostForm,followCommunityForm,newRatingForm);
+        Post post = ps.createPost(newPostForm.getTitle(),newPostForm.getBody(),community.getName(),newPostForm.getCategory(),newPostForm.getFiles());
+        return new ModelAndView("redirect:/post/" + post.getId());
     }
 
     @RequestMapping(path="/community/{communityName}/info", method = RequestMethod.GET)
