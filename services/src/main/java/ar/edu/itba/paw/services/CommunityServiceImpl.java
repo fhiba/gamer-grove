@@ -3,6 +3,7 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
 import ar.edu.itba.paw.models.Community;
+import ar.edu.itba.paw.models.Rating;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
 import ar.edu.itba.paw.models.pagination.PaginationRequest;
@@ -31,6 +32,8 @@ public class CommunityServiceImpl implements CommunityService{
     private UserService userService;
     @Autowired
     private FileService fileService;
+    @Autowired
+    private RatingService ratingService;
 
     @Transactional
     @Override
@@ -67,6 +70,30 @@ public class CommunityServiceImpl implements CommunityService{
         if(maybeCommunity.isEmpty())
             throw new NoSuchCommunityException("Community " + communityId+ " not found");
         return maybeCommunity.get();
+    }
+
+    @Override
+    @Transactional
+    public Community updateRating(Long communityId, float rating) throws NoSuchCommunityException, NoLoggedUserException {
+        Community community = findById(communityId);
+        Optional<User> user = userService.getLoggedUser();
+        if(user.isEmpty())
+            throw new NoLoggedUserException("No logged user");
+        ratingService.createRating(user.get(), community, rating);
+        return communityDao.updateRating(community, rating, 1);
+    }
+
+    @Transactional
+    @Override
+    public Community discountRating(String communityName, Float rating) throws NoSuchCommunityException, NoLoggedUserException {
+        Community community = findByName(communityName);
+        Optional<User> user = userService.getLoggedUser();
+        if (user.isEmpty())
+            throw new NoLoggedUserException("No logged user");
+        Boolean deleted = ratingService.deleteRating(user.get(), community);
+        if(deleted)
+            communityDao.updateRating(community, -rating, -1);
+        return community;
     }
 
 

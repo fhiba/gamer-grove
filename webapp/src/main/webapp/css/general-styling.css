@@ -33,12 +33,6 @@ body {
     background-color: #2d3237!important;
 }
 
-
-.modal{
-    background-color: #1f1f1f;
-
-}
-
 .modal-content{
     background-color: #414141;
     border:none;
@@ -139,6 +133,11 @@ body {
 .round-btn {
     border-radius: 50%; /* Makes the button round */
     padding: 10px 12px; /* Adjusts the padding to make the button larger */
+}
+
+.star-btn{
+    border-radius: 50%; /* Makes the button round */
+
 }
 
 .round-btn .fa-solid.fa-plus {
@@ -311,4 +310,9 @@ body {
 .sidebar-nav:hover{
     margin-left: 10px;
     font-weight: bold;
+}
+
+.rate {
+    border-bottom-right-radius: 12px;
+    border-bottom-left-radius: 12px
 }

@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -43,6 +44,8 @@ public class CommunityController {
     private ModderService ms;
     @Autowired
     private UserService us;
+    @Autowired
+    private RatingService rs;
 
     @RequestMapping(path="/new-community", method = RequestMethod.GET)
     public ModelAndView newCommunity(@ModelAttribute("newCommunityForm") final NewCommunityForm newCommunityForm) {
@@ -74,7 +77,7 @@ public class CommunityController {
 
 
     @RequestMapping(path="/community/{communityName}", method = RequestMethod.GET)
-    public ModelAndView community(@RequestParam(required = false) Integer pageNumber,@PathVariable("communityName") final String communityName, @ModelAttribute("newPostForm") final NewPostForm newPostForm, @ModelAttribute("followCommunityForm") final FollowCommunityForm followCommunityForm) throws NoSuchCommunityException, NoLoggedUserException {
+    public ModelAndView community(@RequestParam(required = false) Integer pageNumber,@PathVariable("communityName") final String communityName, @ModelAttribute("newPostForm") final NewPostForm newPostForm, @ModelAttribute("followCommunityForm") final FollowCommunityForm followCommunityForm, @ModelAttribute("newRatingForm") final NewRatingForm newRatingForm) throws NoSuchCommunityException, NoLoggedUserException {
         ModelAndView mav = new ModelAndView("community/community");
         Community community = cs.findByName(communityName);
         PaginatedDataWrapper<Post> posts;
@@ -91,17 +94,21 @@ public class CommunityController {
         Boolean isFollowing = false;
         Optional<User> maybeUser = us.getLoggedUser();
         List<Community> communities;
+        Optional<Rating> rating;
         boolean canEdit = false;
         if(maybeUser.isPresent()){
             User user = maybeUser.get();
             isAdmin = user.getOwner();
             isFollowing = cs.checkIfUserFollowsCommunity(community.getId().intValue());
             communities = cs.getFollowedCommunities(user);
-            canEdit = ms.isModderOfCommunity(user,community);
+            rating = rs.getRatingById(user,community);
+            canEdit = ms.isModderOfCommunity(user,community.getId());
         }
         else {
+            rating = Optional.empty();
             communities = cs.getAllCommunities();
         }
+        mav.addObject("rating",rating.orElse(null));
         mav.addObject("isAdmin",isAdmin);
         mav.addObject("isLogged", maybeUser.isPresent());
         mav.addObject("communities", communities);
@@ -115,10 +122,10 @@ public class CommunityController {
     }
 
     @RequestMapping(path="/community/{communityName}", method = RequestMethod.POST)
-    public ModelAndView createPostOnCommunity(@PathVariable("communityName") final String communityName,@ModelAttribute("followCommunityForm") final FollowCommunityForm followCommunityForm,@Valid @ModelAttribute("newPostForm") final NewPostForm newPostForm,BindingResult errors) throws NoLoggedUserException, NoSuchCommunityException {
+    public ModelAndView createPostOnCommunity(@PathVariable("communityName") final String communityName,@ModelAttribute("newRatingForm") final NewRatingForm newRatingForm,@ModelAttribute("followCommunityForm") final FollowCommunityForm followCommunityForm,@Valid @ModelAttribute("newPostForm") final NewPostForm newPostForm,BindingResult errors) throws NoLoggedUserException, NoSuchCommunityException {
 
         if(errors.hasErrors())
-            return community(null,communityName,newPostForm,followCommunityForm);
+            return community(null,communityName,newPostForm,followCommunityForm,newRatingForm);
 
         ps.createPost(newPostForm.getTitle(),newPostForm.getBody(),communityName,newPostForm.getCategory(),newPostForm.getFiles());
         return new ModelAndView("redirect:/community/"+ communityName);
@@ -163,13 +170,13 @@ public class CommunityController {
     }
 
     @RequestMapping(path="/community/{communityName}/new", method = RequestMethod.POST)
-    public ModelAndView newCommunityPost(@PathVariable("communityName") final String communityName,@ModelAttribute("followCommunityForm") final FollowCommunityForm followCommunityForm,@ModelAttribute("newPostForm") final NewPostForm newPostForm,BindingResult errors) throws NoSuchCommunityException, NoLoggedUserException {
+    public ModelAndView newCommunityPost(@PathVariable("communityName") final String communityName,@ModelAttribute("newRatingForm") final NewRatingForm newRatingForm,@ModelAttribute("followCommunityForm") final FollowCommunityForm followCommunityForm,@ModelAttribute("newPostForm") final NewPostForm newPostForm,BindingResult errors) throws NoSuchCommunityException, NoLoggedUserException {
         if(errors.hasErrors())
-            return community(null,communityName,newPostForm,followCommunityForm);
+            return community(null,communityName,newPostForm,followCommunityForm,newRatingForm);
         //chequeo de que exista la community
         Community community = cs.findByName(communityName);
         ps.createPost(newPostForm.getTitle(),newPostForm.getBody(),community.getName(),newPostForm.getCategory(),newPostForm.getFiles());
-        return community(null,communityName,newPostForm,followCommunityForm);
+        return community(null,communityName,newPostForm,followCommunityForm,newRatingForm);
     }
 
     @RequestMapping(path="/community/{communityName}/info", method = RequestMethod.GET)
@@ -210,11 +217,29 @@ public class CommunityController {
     }
 
     @RequestMapping(path = "/community/{communityName}/follow", method = RequestMethod.POST)
-    public ModelAndView followCommunity(@PathVariable("communityName") final String communityName, @ModelAttribute("followCommunityForm") final FollowCommunityForm followCommunityForm, BindingResult errors) throws NoSuchCommunityException, NoLoggedUserException {
+    public ModelAndView followCommunity(@PathVariable("communityName") final String communityName,@ModelAttribute("newRatingForm") final NewRatingForm newRatingForm, @ModelAttribute("followCommunityForm") final FollowCommunityForm followCommunityForm, BindingResult errors) throws NoSuchCommunityException, NoLoggedUserException {
         if(errors.hasErrors())
-            return community(null,communityName,new NewPostForm(),followCommunityForm);
+            return community(null,communityName,new NewPostForm(),followCommunityForm,newRatingForm);
         cs.modifyUserOnCommunity(followCommunityForm.getCommunityId(),followCommunityForm.getCommunityName());
         LOGGER.atDebug().setMessage("Communuty name: {}").addArgument(() -> communityName).log();
+        return new ModelAndView("redirect:/community/"+communityName);
+    }
+
+    @RequestMapping(path = "/community/{communityName}/rate", method = RequestMethod.POST)
+    public ModelAndView rateCommunity(@PathVariable("communityName") final String communityName, @ModelAttribute("followCommunityForm") final FollowCommunityForm followCommunityForm,@ModelAttribute("newRatingForm") final NewRatingForm newRatingForm, BindingResult errors) throws NoSuchCommunityException, NoLoggedUserException {
+        if(errors.hasErrors())
+            return community(null,communityName,new NewPostForm(),followCommunityForm,newRatingForm);
+        System.out.println("El id de la comunidad es: " + newRatingForm.getCommunityId());
+        System.out.println("El rating es: " + newRatingForm.getRating());
+        cs.updateRating(newRatingForm.getCommunityId(),newRatingForm.getRating());
+        return new ModelAndView("redirect:/community/"+communityName);
+    }
+
+    @RequestMapping(path = "/community/{communityName}/deleteRating", method = RequestMethod.POST)
+    public ModelAndView deleteRating(@PathVariable("communityName") final String communityName,@Valid @ModelAttribute("newRatingForm")final NewRatingForm newRatingForm, BindingResult errors) throws NoSuchCommunityException, NoLoggedUserException {
+        if(errors.hasErrors())
+            return community(null,communityName,new NewPostForm(),new FollowCommunityForm(),newRatingForm);
+        cs.discountRating(communityName,newRatingForm.getRating());
         return new ModelAndView("redirect:/community/"+communityName);
     }
 }

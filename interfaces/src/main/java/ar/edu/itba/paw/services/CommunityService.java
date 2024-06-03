@@ -22,6 +22,10 @@ public interface CommunityService {
 
     Community findById(final long communityId)throws NoSuchCommunityException;
 
+    Community updateRating(Long community_id, float rating) throws NoSuchCommunityException, NoLoggedUserException;
+
+    Community discountRating(String communityName, Float rating) throws NoSuchCommunityException, NoLoggedUserException;
+
     void modifyUserOnCommunity(int communityId,String communityName) throws NoLoggedUserException, NoSuchCommunityException;
 
     Boolean checkIfUserFollowsCommunity(int communityId) throws NoLoggedUserException, NoSuchCommunityException;
@@ -43,4 +47,5 @@ public interface CommunityService {
     void updateCommunityImageId(long id, long imageId);
 
     void editCommunityInfo(String communityName, String description, String publisher, String developer, MultipartFile image, String categories) throws NoSuchCommunityException;
+
 }

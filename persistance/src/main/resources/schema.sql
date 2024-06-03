@@ -154,3 +154,17 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS locale VARCHAR(2) DEFAULT 'en' NOT NU
 
 --- Sprint 5
 ALTER TABLE modders ADD COLUMN since_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL;
+
+---- Sprint 5
+
+ALTER TABLE community ADD COLUMN total_rating FLOAT NOT NULL DEFAULT 0.0;
+ALTER TABLE community ADD COLUMN rating_count INT NOT NULL DEFAULT 0;
+
+CREATE TABLE IF NOT EXISTS ratings (
+                                       user_id INT NOT NULL,
+                                       community_id INT NOT NULL,
+                                       rating FLOAT NOT NULL,
+                                       PRIMARY KEY (user_id, community_id),
+                                       FOREIGN KEY (user_id) REFERENCES users(id),
+                                       FOREIGN KEY (community_id) REFERENCES community(id)
+);

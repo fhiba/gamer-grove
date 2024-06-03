@@ -42,6 +42,14 @@ public class Community implements Serializable {
     @ManyToMany(mappedBy = "modderCommunities")
     private List<User> modders;
 
+
+
+    @Column(name = "total_rating")
+    private Float totalRating;
+
+    @Column(name = "rating_count")
+    private Integer ratingCount;
+
     public Community() {
         //FOR HIBERNATE JPA
     }
@@ -52,6 +60,8 @@ public class Community implements Serializable {
         this.publisher = publisher;
         this.developer = developer;
         this.releaseDate = releaseDate;
+        this.totalRating = 0.0F;
+        this.ratingCount = 0;
     }
     public Community( final String name, final String description, List<CommunityCategories> categories, String publisher, String developer, LocalDateTime releaseDate) {
         this.name = name;
@@ -107,6 +117,21 @@ public class Community implements Serializable {
 
     public LocalDateTime getReleaseDate() {
         return releaseDate;
+    }
+    public Float getTotalRating() {
+        return totalRating;
+    }
+
+    public void setTotalRating(Float totalRating) {
+        this.totalRating = totalRating;
+    }
+
+    public Integer getRatingCount() {
+        return ratingCount;
+    }
+
+    public void setRatingCount(Integer ratingCount) {
+        this.ratingCount = ratingCount;
     }
 
     public String getEncodedName(){
