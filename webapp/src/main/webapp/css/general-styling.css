@@ -317,3 +317,10 @@ body {
     border-bottom-right-radius: 12px;
     border-bottom-left-radius: 12px
 }
+
+
+.pillUpvoteHome{
+    max-width: fit-content;
+    margin-bottom: 0;
+    --bs-border-opacity: .25;
+}
