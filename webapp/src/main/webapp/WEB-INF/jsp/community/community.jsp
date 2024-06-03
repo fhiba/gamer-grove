@@ -196,11 +196,18 @@
                                 </a>
                             </c:forEach>
                             <div>
-                                <h6 class="fw-bold"><spring:message code="Developer"/>: <c:out
-                                        value="${community.developer}" escapeXml="true"/></h6>
-                                <h6 class="fw-bold"><spring:message code="Publisher"/>: <c:out
-                                        value="${community.publisher}" escapeXml="true"/></h6>
-                                <%--                                        <h6 class="fw-bold">Release Date: ${community.releaseDate}</h6>--%>
+                                <c:if test="${community.developer.equals(\"Not specified\")}">
+                                    <h6 class="fw-bold"><spring:message code="Developer"/>:<spring:message code="Publisher.Default" /></h6>
+                                </c:if>
+                                <c:if test="${!community.developer.equals(\"Not specified\")}">
+                                    <h6 class="fw-bold"><spring:message code="Developer"/>:<c:out value="${community.developer}" escapeXml="true"/></h6>
+                                </c:if>
+                                    <c:if test="${community.publisher.equals(\"Not specified\")}">
+                                        <h6 class="fw-bold"><spring:message code="Publisher"/>:<spring:message code="Publisher.Default" /></h6>
+                                    </c:if>
+                                    <c:if test="${!community.publisher.equals(\"Not specified\")}">
+                                        <h6 class="fw-bold"><spring:message code="Publisher"/>:<c:out value="${community.publisher}" escapeXml="true"/></h6>
+                                    </c:if>
                                 <div class="d-flex w-100">
                                     <c:if test="${community.ratingCount == 0}">
                                         <h6 class="fw-bold"><spring:message code="Rating"/>: <spring:message
