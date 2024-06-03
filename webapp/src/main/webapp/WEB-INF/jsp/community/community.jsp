@@ -102,10 +102,11 @@
                             <form:errors path="rating" cssStyle="color: red" cssClass="error"/>
                         </div>
                         <form:hidden path="communityId" value="${community.id}"/>
+                        <form:errors cssStyle="color: red" cssClass="error"/>
                     </div>
                 </form:form>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><spring:message code="Confirm"/></button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><spring:message code="Post.CancelDelete"/></button>
 
                         <button id="submitButtonRatingForm" class="btn btn-primary"><spring:message code="RateSubmit"/></button>
                     </div>
@@ -301,9 +302,14 @@
 </html>
 <script>
 
-    if (document.getElementsByClassName("error").length > 0) {
-        var myModal = new bootstrap.Modal(document.getElementById('createPostModal'))
-        myModal.show()
+    if (document.getElementsByClassName("error").length > 0 ) {
+        if(document.getElementById('rating.errors') == null) {
+            var myModal = new bootstrap.Modal(document.getElementById('createPostModal'))
+            myModal.show()
+        }else {
+            var myModal = new bootstrap.Modal(document.getElementById('ratingModal'))
+            myModal.show()
+        }
     }
     let postBody = document.getElementsByClassName('post-body');
     console.log(postBody.length);
@@ -357,10 +363,10 @@
     document.getElementById('submitButtonRatingForm').addEventListener('click',(e)=>{
         var $rateYo = $("#rateYoInput").rateYo();
         let aux = $rateYo.rateYo("rating");
-        if(aux !==0){
+        // if(aux !==0){
             document.getElementById('ratingInput').value = aux;
             document.getElementById('ratingForm').submit();
-        }
+        // }
     })
     </c:if>
 
@@ -381,8 +387,8 @@
         <c:if test="${rating == null}">
         $("#rateYoInput").rateYo({
             fullStar: true,
-            rating: 1,
             minStar: 1,
+            rating: 1,
         })
         </c:if>
         $("#rateYo").rateYo({

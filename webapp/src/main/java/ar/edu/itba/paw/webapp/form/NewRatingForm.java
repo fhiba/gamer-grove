@@ -8,9 +8,8 @@ public class NewRatingForm {
     @NotNull
     private Long communityId;
 
-    @Positive
     @NotNull
-    @Min(1)
+    @Min(value = 1)
     @Max(5)
     private Float rating;
 
