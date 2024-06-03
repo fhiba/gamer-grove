@@ -107,7 +107,7 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><spring:message code="Confirm"/></button>
 
-                        <button id="submitButtonRatingForm" class="btn btn-primary"><spring:message code="RateSumbit"/></button>
+                        <button id="submitButtonRatingForm" class="btn btn-primary"><spring:message code="RateSubmit"/></button>
                     </div>
             </c:if>
             <c:if test="${rating != null}">
@@ -230,7 +230,7 @@
                             </a>
                         </c:if>
                         <div>
-                            <button type="button" class="btn btn-primary rounded-5" data-bs-toggle="modal"
+                            <button type="button" class="btn btn-primary rounded-5 star-btn" data-bs-toggle="modal"
                                     data-bs-target="#ratingModal">
                                 <i class="fa fa-star"></i>
                             </button>
@@ -356,8 +356,11 @@
     <c:if test="${rating == null}">
     document.getElementById('submitButtonRatingForm').addEventListener('click',(e)=>{
         var $rateYo = $("#rateYoInput").rateYo();
-        document.getElementById('ratingInput').value = $rateYo.rateYo("rating");
-        document.getElementById('ratingForm').submit();
+        let aux = $rateYo.rateYo("rating");
+        if(aux !==0){
+            document.getElementById('ratingInput').value = aux;
+            document.getElementById('ratingForm').submit();
+        }
     })
     </c:if>
 
@@ -378,7 +381,8 @@
         <c:if test="${rating == null}">
         $("#rateYoInput").rateYo({
             fullStar: true,
-            rating: 0,
+            rating: 1,
+            minStar: 1,
         })
         </c:if>
         $("#rateYo").rateYo({

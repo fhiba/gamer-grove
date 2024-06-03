@@ -148,7 +148,7 @@ public class UserController {
             return manageMods(null,null, newModForm, removeModForm);
         }
         Boolean removedSuccess = md.removeModder(removeModForm.getRemoveUsername(), removeModForm.getFromCommunityId());
-        if (removedSuccess) {
+        if (!removedSuccess) {
             return manageMods(null,null, newModForm, removeModForm).addObject("notAMod", true);
         }
         return new ModelAndView("redirect:/manageMods");

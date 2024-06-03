@@ -67,7 +67,7 @@
                         </div>
                         <div class="mt-2 d-flex flex-column">
                             <label class="form-label fw-semibold"><spring:message
-                                    code="Profile.AddCommunityProfilePictire"/></label>
+                                    code="Profile.AddCommunityProfilePicture"/></label>
                             <form:input
                                     id="image-input"
                                     path="image" class="form-control w-100" type="file" accept="image/*"/>

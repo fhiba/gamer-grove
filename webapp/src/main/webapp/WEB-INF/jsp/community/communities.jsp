@@ -86,7 +86,7 @@
                 <div class="card-body">
                     <c:if test="${empty communitiesPaginated.data}">
                         <div class="d-flex flex-column align-items-center">
-                            <h4 class="fw-semi-bold"><spring:message code="Communities.NoCommunitites"/></h4>
+                            <h4 class="fw-semi-bold"><spring:message code="Communities.NoCommunities"/></h4>
                             <c:url value="/communities" var="showAll"/>
                             <a href="${showAll}" class="btn btn-primary"><spring:message
                                     code="Communities.searchAll"/></a>
@@ -251,11 +251,13 @@
     }
 
     let selectCategory = (category) => {
-        let selectedPill = document.getElementById(category + 'Pill');
-        auxArray.push(category);
-        applyFilterArray.push(category);
-        selectedPill.classList.remove("class","border-light");
-        selectedPill.classList.add("class","border-primary");
+        if(applyFilterArray.length < 1) {
+            let selectedPill = document.getElementById(category + 'Pill');
+            auxArray.push(category);
+            applyFilterArray.push(category);
+            selectedPill.classList.remove("class", "border-light");
+            selectedPill.classList.add("class", "border-primary");
+        }
     }
 
     let deselectCategory = (category) => {

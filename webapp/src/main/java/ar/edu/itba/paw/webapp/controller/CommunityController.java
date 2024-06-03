@@ -102,7 +102,7 @@ public class CommunityController {
             isFollowing = cs.checkIfUserFollowsCommunity(community.getId().intValue());
             communities = cs.getFollowedCommunities(user);
             rating = rs.getRatingById(user,community);
-            canEdit = ms.isModderOfCommunity(user,community.getId());
+            canEdit = ms.isModderOfCommunity(user,community);
         }
         else {
             rating = Optional.empty();

@@ -81,7 +81,7 @@
                                                 <c:out value="${post.date.format(format)}" escapeXml="true"/>
                                             </small>
                                         </p>
-                                            <span class="badge rounded-pill text-bg-primary groovy-pill border-1"><c:out value="${post.grooviness}" escapeXml="true"/></span>
+                                            <span class="badge rounded-pill text-bg-primary groovy-pill border-1"><c:out value="${post.grooviness}" escapeXml="true"/><i class="fa fa-thumbs-up" aria-hidden="true"></i></span>
                                     </div>
                                 </div>
                             </div>

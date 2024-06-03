@@ -135,9 +135,10 @@ body {
     padding: 10px 12px; /* Adjusts the padding to make the button larger */
 }
 
-.star-btn{
+.star-btn {
+    width: 43px; /* Adjust as needed */
+    height: 43px; /* Adjust as needed */
     border-radius: 50%; /* Makes the button round */
-
 }
 
 .round-btn .fa-solid.fa-plus {

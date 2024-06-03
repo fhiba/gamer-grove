@@ -35,7 +35,7 @@
                 <h3 class="mb-3"><spring:message code="Mod.Modderators"/></h3>
                 <div class="mb-3">
                     <select onchange="filterMods()" class="form-select" aria-label="Default select example" id="filterByCommunities">
-                        <option selected disabled><spring:message code="Mod.FilterByCommunty"/></option>
+                        <option selected disabled><spring:message code="Mod.FilterByCommunity"/></option>
                         <c:forEach items="${allCommunities}" var="communty">
                             <option>${communty.name}</option>
                         </c:forEach>
@@ -132,7 +132,7 @@
                         </div>
                         <div class="mt-2 d-flex flex-column ">
                             <label class="form-label fw-semibold"><spring:message
-                                    code="Mod.Communnity"/>: </label>
+                                    code="Mod.Community"/>: </label>
                             <form:select cssClass="text-bg-dark w-75" path="communityId" id="addModSelect">
                                 <c:forEach var="community" items="${allCommunities}">
                                     <form:option cssStyle="color:black;" value="${community.id}"
