@@ -161,7 +161,7 @@ public class PostDaoJpa implements PostDao {
 //        TypedQuery<PostCategories> query = em.createQuery(hql, PostCategories.class);
 //        return query.getResultList();
 //        return em.createQuery("SELECT p.category FROM Post as p WHERE p.deleted = false GROUP BY p.category", PostCategories.class).getResultList();
-        String sql = "SELECT p.category FROM post p WHERE p.category IS NOT NULL GROUP BY p.category";
+        String sql = "SELECT p.category FROM post p WHERE p.category IS NOT NULL AND deleted=false GROUP BY p.category";
         List<String> categoryStrings = em.createNativeQuery(sql).getResultList();
 
         // Print out the categoryStrings list
@@ -297,7 +297,7 @@ public class PostDaoJpa implements PostDao {
 
     @Override
     public List<Post> getUserLikedPostPaginated(long userId, int pageSize, int offset) {
-        Query nativeQuery = em.createNativeQuery("SELECT post_id FROM groovy_post_history WHERE user_id = :userId and groovy_type = true");
+        Query nativeQuery = em.createNativeQuery("SELECT post_id FROM groovy_post_history JOIN post ON groovy_post_history.post_id = post.id WHERE user_id = :userId and groovy_type = true ORDER BY post_date DESC");
         nativeQuery.setFirstResult(offset);
         nativeQuery.setParameter("userId",userId);
         nativeQuery.setMaxResults(pageSize);
@@ -319,7 +319,7 @@ public class PostDaoJpa implements PostDao {
 
     @Override
     public List<Post> getPostsByUserPaginated(long id, int pageSize, int offset) {
-        Query nativeQuery = em.createNativeQuery("SELECT id FROM post where author_id = :authorId");
+        Query nativeQuery = em.createNativeQuery("SELECT id FROM post where author_id = :authorId ORDER BY post_date DESC");
         nativeQuery.setParameter("authorId",id);
         nativeQuery.setFirstResult(offset);
         nativeQuery.setMaxResults(pageSize);
