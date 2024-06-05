@@ -217,7 +217,8 @@
     console.log("has categories es " + hasCategories);
     let isVerified = ${isVerified};
     let noTerms = ${noTerms};
-    if (isVerified && !hasCategories && noTerms) {
+    let followsCommunities = ${followedCommunities.size() > 0}
+    if (isVerified &&  !followsCommunities && !hasCategories && noTerms) {
         var myModal1 = new bootstrap.Modal(document.getElementById('onboardingModalVerified'))
         myModal1.show()
     }
