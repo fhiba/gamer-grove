@@ -61,8 +61,6 @@ public class CommunityDaoJpa implements CommunityDao{
                 .withSearchTerms(searchTerms)
                 .withCategories(categories)
                 .build(pageSize, offset);
-        System.out.println("Los ID son:");
-        System.out.println(idList);
         TypedQuery<Community> query = em.createQuery("SELECT c FROM Community c WHERE c.id IN :ids", Community.class);
         query.setParameter("ids", idList);
         return query.getResultList();

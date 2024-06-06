@@ -165,7 +165,6 @@ public class PostDaoJpa implements PostDao {
         List<String> categoryStrings = em.createNativeQuery(sql).getResultList();
 
         // Print out the categoryStrings list
-        System.out.println(categoryStrings);
 
         // Convert the list of strings to a list of PostCategory enums
 //        List<PostCategories> categories = categoryStrings.stream()

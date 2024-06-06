@@ -6,8 +6,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -15,14 +13,14 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Locale;
 
 @ControllerAdvice
-public class ExceptionHandlerController {
+public class ExceptionHandler {
 
     @Autowired
     private MessageSource messageSource;
 
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(value = {
+    @org.springframework.web.bind.annotation.ExceptionHandler(value = {
             NoSuchPostException.class,
             NoSuchCommunityException.class,
             UserNotFoundException.class,
@@ -36,7 +34,7 @@ public class ExceptionHandlerController {
     }
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    @ExceptionHandler(value = {
+    @org.springframework.web.bind.annotation.ExceptionHandler(value = {
             NoLoggedUserException.class
     })
     public ModelAndView unauthorizedException() {
@@ -47,7 +45,7 @@ public class ExceptionHandlerController {
     }
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    @ExceptionHandler({BadCredentialsException.class})
+    @org.springframework.web.bind.annotation.ExceptionHandler({BadCredentialsException.class})
     public ModelAndView unregisteredUserException(HttpServletRequest request) {
         return new ModelAndView("user/login").addObject("error", messageSource.getMessage("Login.Invalid", null, request.getLocale()));
     }

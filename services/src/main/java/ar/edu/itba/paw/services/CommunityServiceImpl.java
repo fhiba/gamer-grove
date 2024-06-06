@@ -78,7 +78,7 @@ public class CommunityServiceImpl implements CommunityService{
         Community community = findById(communityId);
         Optional<User> user = userService.getLoggedUser();
         if(user.isEmpty())
-            throw new NoLoggedUserException("No logged user");
+            throw new NoLoggedUserException();
         ratingService.createRating(user.get(), community, rating);
         return communityDao.updateRating(community, rating, 1);
     }
@@ -89,7 +89,7 @@ public class CommunityServiceImpl implements CommunityService{
         Community community = findByName(communityName);
         Optional<User> user = userService.getLoggedUser();
         if (user.isEmpty())
-            throw new NoLoggedUserException("No logged user");
+            throw new NoLoggedUserException();
         Boolean deleted = ratingService.deleteRating(user.get(), community);
         if(deleted)
             communityDao.updateRating(community, -rating, -1);
@@ -198,7 +198,7 @@ public class CommunityServiceImpl implements CommunityService{
         Community community = findById(communityId);
         Optional<User> maybeUser = userService.getLoggedUser();
         if (maybeUser.isEmpty())
-            throw new NoLoggedUserException("No logged user");
+            throw new NoLoggedUserException();
         User user = maybeUser.get();
         if(communityDao.checkIfUserFollowsCommunity(user.getId(),communityId)){
             communityDao.unfollowCommunity(user.getId(), communityId);
@@ -243,7 +243,7 @@ public class CommunityServiceImpl implements CommunityService{
     public Boolean checkIfUserFollowsCommunity(int communityId) throws NoLoggedUserException, NoSuchCommunityException {
         Optional<User> maybeUser = userService.getLoggedUser();
         if(maybeUser.isEmpty())
-            throw new NoLoggedUserException("No logged user");
+            throw new NoLoggedUserException();
         User user = maybeUser.get();
         Community community = findById(communityId);
         return communityDao.checkIfUserFollowsCommunity(user.getId(),communityId);

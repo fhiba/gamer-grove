@@ -303,11 +303,6 @@ public class PostServiceImpl implements PostService{
     public List<String> getUsedCategories() {
         List<String> categories = postDao.getUsedCategories();
 
-//        System.out.println("LAs CAT SON:");
-//        for (PostCategories category : categories) {
-//            System.out.println(category.getCategory());
-//        }
-
 
 
 //        List<String> categoryNames = categories.stream().map(PostCategories::getCategory).toList();

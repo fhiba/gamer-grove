@@ -33,10 +33,10 @@ import java.util.List;
 public class AuthController {
 
     @Autowired
-    TokenService tokenService;
+    private TokenService tokenService;
 
     @Autowired
-    UserService userService;
+    private UserService userService;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
 

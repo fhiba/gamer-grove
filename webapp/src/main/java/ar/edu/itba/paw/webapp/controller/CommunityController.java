@@ -204,7 +204,6 @@ public class CommunityController {
         if(errors.hasErrors())
             return communityImage(communityName,editCommunityInfoForm);
         cs.editCommunityInfo(communityName,editCommunityInfoForm.getDescription(),editCommunityInfoForm.getPublisher(),editCommunityInfoForm.getDeveloper(), editCommunityInfoForm.getImage(), editCommunityInfoForm.getCategories());
-        System.out.println("El nombre de la comunidad es: " + communityName);
         return new ModelAndView("redirect:/community/" + communityName);
     }
 
@@ -229,8 +228,6 @@ public class CommunityController {
     public ModelAndView rateCommunity(@PathVariable("communityName") final String communityName,@ModelAttribute("newPostForm") final NewPostForm newPostForm, @ModelAttribute("followCommunityForm") final FollowCommunityForm followCommunityForm,@Valid @ModelAttribute("newRatingForm") final NewRatingForm newRatingForm, BindingResult errors) throws NoSuchCommunityException, NoLoggedUserException {
         if(errors.hasErrors())
             return community(null,communityName,newPostForm,followCommunityForm,newRatingForm);
-        System.out.println("El id de la comunidad es: " + newRatingForm.getCommunityId());
-        System.out.println("El rating es: " + newRatingForm.getRating());
         cs.updateRating(newRatingForm.getCommunityId(),newRatingForm.getRating());
         return new ModelAndView("redirect:/community/"+communityName);
     }
