@@ -3,12 +3,12 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.exceptions.*;
 import ar.edu.itba.paw.models.Community;
 import ar.edu.itba.paw.models.Post;
-import ar.edu.itba.paw.models.PostCategories;
+
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
 import ar.edu.itba.paw.models.pagination.PaginationRequest;
 import ar.edu.itba.paw.persistance.PostDao;
-import org.apache.commons.logging.Log;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +20,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Transactional(readOnly = true)
 @Service
@@ -59,7 +58,7 @@ public class PostServiceImpl implements PostService{
     public Post createPost(final String title, final String body, final String communityName, final String category, final MultipartFile[] files) throws NoLoggedUserException, NoSuchCommunityException {
         Optional<User> maybeUser = userService.getLoggedUser();
         if(maybeUser.isEmpty())
-            throw new NoLoggedUserException("User not logged");
+            throw new NoLoggedUserException();
         User user = maybeUser.get();
         Community community = communityService.findByName(communityName);
         Post post = postDao.createPost(title,body,user,community,false, LocalDateTime.now(), category);
@@ -157,7 +156,7 @@ public class PostServiceImpl implements PostService{
     @Override
     public void editGrooviness(int grooviness, long postId) throws NoSuchPostException, NoLoggedUserException {
         Optional<Post> post = postDao.findById(postId);
-        User user = userService.getLoggedUser().orElseThrow(() -> new NoLoggedUserException("User not found"));
+        User user = userService.getLoggedUser().orElseThrow(NoLoggedUserException::new);
         if(post.isEmpty()) {
             throw new NoSuchPostException("Post not found");
         }

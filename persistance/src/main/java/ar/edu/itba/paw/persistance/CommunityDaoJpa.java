@@ -3,7 +3,7 @@ package ar.edu.itba.paw.persistance;
 
 import ar.edu.itba.paw.models.Community;
 import ar.edu.itba.paw.models.CommunityCategories;
-import ar.edu.itba.paw.models.User;
+
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;

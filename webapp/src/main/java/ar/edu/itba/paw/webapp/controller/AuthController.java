@@ -48,7 +48,7 @@ public class AuthController {
     }
 
     @RequestMapping(value = "/verify", method = RequestMethod.GET)
-    public ModelAndView validateAccount(@RequestParam("token") final String token) throws NoSuchTokenException, UserNotFoundException {
+    public ModelAndView validateAccount(@RequestParam("token") final String token) throws NoSuchTokenException {
         if(token == null || token.isEmpty())
             throw new NoSuchTokenException("token is empty or null");
 
@@ -69,7 +69,7 @@ public class AuthController {
     }
 
     @RequestMapping(value = "/auth/resetPassword", method = RequestMethod.GET)
-    public ModelAndView resetPassword(@ModelAttribute("token") final String token, @ModelAttribute("resetPasswordForm") ResetPasswordForm resetPasswordForm) throws NoSuchTokenException, UserNotFoundException {
+    public ModelAndView resetPassword(@ModelAttribute("token") final String token, @ModelAttribute("resetPasswordForm") ResetPasswordForm resetPasswordForm) throws NoSuchTokenException {
         if(token == null || token.isEmpty())
             throw new NoSuchTokenException("token is empty or null");
         Boolean tokenExists = tokenService.verifyResetToken(token);
@@ -104,7 +104,7 @@ public class AuthController {
     }
 
     @RequestMapping(value="/auth/forgotCredentials", method = RequestMethod.POST)
-    public ModelAndView forgotCredentials(@Valid @ModelAttribute("emailForm") final EmailForm emailForm, final BindingResult errors) throws NoSuchTokenException, UserNotFoundException{
+    public ModelAndView forgotCredentials(@Valid @ModelAttribute("emailForm") final EmailForm emailForm, final BindingResult errors) throws UserNotFoundException{
         if(errors.hasErrors()) {
             return forgotCredentials(emailForm);
         }
