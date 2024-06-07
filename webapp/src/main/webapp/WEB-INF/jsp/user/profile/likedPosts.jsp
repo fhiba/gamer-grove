@@ -154,11 +154,17 @@
                                     <h4 class="card-title fw-bold"><c:out value="${post.title}" escapeXml="true"/></h4>
                                     <p class="card-text post-body-home"><c:out value="${post.body}"
                                                                                escapeXml="true"/></p>
-                                    <p class="m-auto">
-                                        <small class="text-body-secondary">
-                                            <c:out value="${post.date.format(format)}" escapeXml="true"/>
-                                        </small>
-                                    </p>
+                                    <div class="d-flex row-cols-2 justify-content-between mt-1">
+                                        <p>
+                                            <small class="text-body-secondary">
+                                                <c:out value="${post.date.format(format)}" escapeXml="true"/>
+                                            </small>
+                                        </p>
+                                        <div class="d-flex justify-content-end align-items-end">
+                                        <span class="badge text-bg-dark pillUpvoteHome bg-transparent border border-light rounded-2 border-1"><c:out value="${post.grooviness}" escapeXml="true"/>
+                                                <i class="fa fa-thumbs-up ms-2" aria-hidden="true"></i></span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </a>

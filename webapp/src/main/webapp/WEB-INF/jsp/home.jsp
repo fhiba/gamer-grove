@@ -85,7 +85,6 @@
                                         <span class="badge text-bg-dark pillUpvoteHome bg-transparent border border-light rounded-2 border-1"><c:out value="${post.grooviness}" escapeXml="true"/>
                                                 <i class="fa fa-thumbs-up ms-2" aria-hidden="true"></i></span>
                                         </div>
-
                                     </div>
                                 </div>
                             </div>
