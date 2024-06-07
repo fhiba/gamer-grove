@@ -49,7 +49,7 @@ public class CommentServiceImpl implements CommentService {
     public Comment createComment(long postId, String body) throws NoLoggedUserException, NoSuchPostException, PostIsDeletedException {
         Optional<User> user = userService.getLoggedUser();
         if(user.isEmpty())
-            throw new NoLoggedUserException("User not logged");
+            throw new NoLoggedUserException();
         Post post = postService.getPostById(postId);
         if(post.getDeleted()){
             throw new PostIsDeletedException("Post is deleted");
@@ -109,7 +109,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public void editGroovinessOnComment(long commentId, int grooviness, long postId) throws NoSuchCommentException, NoLoggedUserException, NoSuchPostException {
         Optional<Comment> comment = commentDao.getCommentById(commentId);
-        User user = userService.getLoggedUser().orElseThrow(() -> new NoLoggedUserException("User not found"));
+        User user = userService.getLoggedUser().orElseThrow(NoLoggedUserException::new);
 
         if(comment.isEmpty())
             throw new NoSuchCommentException("Comment not found");

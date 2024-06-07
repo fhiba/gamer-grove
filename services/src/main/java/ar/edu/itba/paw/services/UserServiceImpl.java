@@ -92,7 +92,7 @@ public class UserServiceImpl implements UserService {
     public User getLoggedUserChecked() throws NoLoggedUserException {
         Optional<User> maybeUser = getLoggedUser();
         if(maybeUser.isEmpty())
-            throw new NoLoggedUserException("User not logged");
+            throw new NoLoggedUserException();
         return maybeUser.get();
     }
 

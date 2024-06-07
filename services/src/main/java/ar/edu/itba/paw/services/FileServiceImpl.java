@@ -68,7 +68,7 @@ public class FileServiceImpl implements FileService{
     public Optional<File> uploadUserImage(MultipartFile file) throws NoLoggedUserException {
         Optional<User> maybeUser = us.getLoggedUser();
         if(maybeUser.isEmpty() ){
-            throw new NoLoggedUserException("No user logged in");
+            throw new NoLoggedUserException();
         }
         User user = maybeUser.get();
 
