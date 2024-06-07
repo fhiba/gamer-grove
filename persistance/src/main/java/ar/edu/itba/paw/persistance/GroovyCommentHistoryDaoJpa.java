@@ -19,7 +19,7 @@ import java.util.Optional;
 public class GroovyCommentHistoryDaoJpa implements GroovyCommentHistoryDao {
 
     @PersistenceContext
-    EntityManager em;
+    private EntityManager em;
     @Override
     public GroovyCommentHistory createGroovyCommentHistory(User user, Comment comment, Post post, Boolean groovy) {
         GroovyCommentHistory gch = new GroovyCommentHistory(user, comment, post, groovy);

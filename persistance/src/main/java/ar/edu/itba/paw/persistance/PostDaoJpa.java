@@ -22,7 +22,7 @@ public class PostDaoJpa implements PostDao {
     @PersistenceContext
     private EntityManager em;
 
-    Logger LOGGER = LoggerFactory.getLogger(PostDaoJpa.class);
+    private Logger LOGGER = LoggerFactory.getLogger(PostDaoJpa.class);
     @Override
     public Optional<Post> findById(long id) {
         return Optional.ofNullable(em.find(Post.class, id));

@@ -14,7 +14,7 @@ import java.util.Optional;
 @Primary
 public class TokenDaoJpa implements TokenDao{
     @PersistenceContext
-    EntityManager em;
+    private EntityManager em;
 
     @Override
     public Boolean verifyValidationToken(String token) {

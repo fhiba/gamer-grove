@@ -15,7 +15,7 @@ import java.util.Optional;
 public class RatingServiceImpl implements RatingService{
 
     @Autowired
-    RatingDao ratingDao;
+    private RatingDao ratingDao;
     @Override
     @Transactional
     public Rating createRating(User user, Community community, Float rating) {

@@ -18,7 +18,7 @@ import java.util.Optional;
 @Configuration
 public class ApplicationLocaleResolver extends SessionLocaleResolver {
     @Autowired
-    UserService userService;
+    private UserService userService;
 
     @Override
     public Locale resolveLocale(HttpServletRequest request) {

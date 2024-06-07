@@ -23,10 +23,10 @@ public class TokenServiceImpl implements TokenService {
 
 
     @Autowired
-    TokenDao tokenDao;
+    private TokenDao tokenDao;
 
     @Autowired
-    UserService userService;
+    private UserService userService;
 
     @Transactional
     @Override

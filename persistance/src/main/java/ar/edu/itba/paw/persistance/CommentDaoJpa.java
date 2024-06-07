@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 @Primary
 public class CommentDaoJpa implements CommentDao{
 
-    Logger LOGGER = LoggerFactory.getLogger(CommentDaoJpa.class);
+    private Logger LOGGER = LoggerFactory.getLogger(CommentDaoJpa.class);
 
     @PersistenceContext
     private EntityManager em;
