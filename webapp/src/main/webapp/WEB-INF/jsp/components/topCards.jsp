@@ -23,6 +23,11 @@
                                 value="${a_top.communityName}" escapeXml="true"/></h6>
                         <h5 class="card-title fw-bold"><c:out value="${a_top.title}" escapeXml="true"/></h5>
                         <p class="card-text post-body truncate-4-lines"><c:out value="${a_top.body}" escapeXml="true"/></p>
+                        <div class="d-flex justify-content-end align-items-end">
+                                        <span class="badge text-bg-dark pillUpvoteHome bg-transparent border border-light rounded-2 border-1"><c:out value="${a_topInanna
+                                        .grooviness}" escapeXml="true"/>
+                                                <i class="fa fa-thumbs-up ms-2" aria-hidden="true"></i></span>
+                        </div>
                     </div>
                 </div>
             </a>

@@ -22,6 +22,12 @@ public class PawUserDetailsService implements UserDetailsService {
     @Autowired
     private UserService us;
 
+    private static final boolean ACCOUNT_NON_EXPIRED = true;
+    private static final boolean CREDENTIALS_NON_EXPIRED = true;
+
+    private static final boolean USER_IS_NON_LOCK = true;
+
+
     @Autowired
     public PawUserDetailsService(final UserService us){
         this.us = us;
@@ -31,12 +37,13 @@ public class PawUserDetailsService implements UserDetailsService {
         final User user = us.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User "+ username +" not found"));
         final Set<GrantedAuthority> authorities = new HashSet<>();
         authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-        if(user.isVerified()) {
-            authorities.add(new SimpleGrantedAuthority("ROLE_VERIFIED"));
-        }
+//        if(user.isVerified()) {
+//
+//            authorities.add(new SimpleGrantedAuthority("ROLE_VERIFIED"));
+//        }
         if(user.getOwner()) {
             authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
         }
-        return new PawAuthUser(user.getUsername(), user.getPassword(), authorities);
+        return new PawAuthUser(user.getUsername(), user.getPassword(),user.getVerified(),ACCOUNT_NON_EXPIRED,CREDENTIALS_NON_EXPIRED,USER_IS_NON_LOCK, authorities);
     }
 }

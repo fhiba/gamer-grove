@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
@@ -48,6 +49,12 @@ public class ExceptionHandler {
     @org.springframework.web.bind.annotation.ExceptionHandler({BadCredentialsException.class})
     public ModelAndView unregisteredUserException(HttpServletRequest request) {
         return new ModelAndView("user/login").addObject("error", messageSource.getMessage("Login.Invalid", null, request.getLocale()));
+    }
+
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @org.springframework.web.bind.annotation.ExceptionHandler({DisabledException.class})
+    public ModelAndView disabledUserException(HttpServletRequest request) {
+        return new ModelAndView("user/login").addObject("error", messageSource.getMessage("Login.Disabled", null, request.getLocale()));
     }
 
 }
