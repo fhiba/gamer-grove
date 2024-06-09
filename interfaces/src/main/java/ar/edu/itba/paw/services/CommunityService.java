@@ -33,7 +33,7 @@ public interface CommunityService {
     List<Community> getFollowedCommunities(User user);
 
     PaginatedDataWrapper<Community> find(PaginationRequest request, final String searchTerms, List<String> categories);
-
+    PaginatedDataWrapper<Community> findFollowedCommunities(PaginationRequest request, List<String> categories) throws NoLoggedUserException;
     void addCategory(final long id, String category) throws NoSuchCommunityException;
 
     void removeCategory(final long id, String category) throws NoSuchCommunityException;

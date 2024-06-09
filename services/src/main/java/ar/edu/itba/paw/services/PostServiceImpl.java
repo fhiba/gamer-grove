@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 @Transactional(readOnly = true)
@@ -75,6 +76,7 @@ public class PostServiceImpl implements PostService{
         Community community = post.getcommunity();
 
         List<User> users = userService.getFollowersOfCommunity(community.getId());
+
         mailingService.sendNewPostNotifications(users, post, user);
     }
 
@@ -383,7 +385,7 @@ public class PostServiceImpl implements PostService{
             return;
         }
         User authorUser = author.get();
-        mailingService.notifyPostDeletion(authorUser.getEmail(), authorUser.getUsername(), post.getId(), post.getTitle(), post.getcommunity().getName());
+        mailingService.notifyPostDeletion(authorUser.getEmail(), authorUser.getUsername(), post.getId(), post.getTitle(), post.getcommunity().getName(), Locale.of(authorUser.getLocale()));
     }
 
 }

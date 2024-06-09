@@ -56,10 +56,11 @@ public class CommunityDaoJpa implements CommunityDao{
     }
 
     @Override
-    public List<Community> find(int pageSize, int offset, String searchTerms, List<String> categories) {
+    public List<Community> find(int pageSize, int offset, String searchTerms, List<String> categories, Long userId) {
         List<Long> idList = new QueryBuilder()
                 .withSearchTerms(searchTerms)
                 .withCategories(categories)
+                .followedBy(userId)
                 .build(pageSize, offset);
         TypedQuery<Community> query = em.createQuery("SELECT c FROM Community c WHERE c.id IN :ids", Community.class);
         query.setParameter("ids", idList);
@@ -70,9 +71,11 @@ public class CommunityDaoJpa implements CommunityDao{
         private static final String SELECT = "SELECT c.id FROM Community c WHERE TRUE ";
         private static final String COUNT = "SELECT COUNT(c.id) FROM Community c WHERE TRUE ";
         private static final String SEARCH_TERM = "AND c.name ILIKE :searchTerms ";
+        private static final String FOLLOWED_BY = "AND c.id IN (SELECT cu.community_id FROM community_user cu WHERE cu.user_id = :userId) ";
         private static final String CATEGORY = "AND c.id IN (SELECT cc.community_id FROM communities_categories cc WHERE cc.category in :categories GROUP BY cc.community_id HAVING COUNT(cc.community_id) = :categoriesCount) ";
         private final List<String> categories = new ArrayList<>();
         private String searchTerms = "";
+        private Long userId = null;
 
         public QueryBuilder() {
 
@@ -89,6 +92,11 @@ public class CommunityDaoJpa implements CommunityDao{
             return this;
         }
 
+        public QueryBuilder followedBy(Long userId)  {
+            this.userId = userId;
+            return this;
+        }
+
         List<Long> build(Integer pageSize, Integer offset) {
             StringBuilder query = new StringBuilder(SELECT);
             if (!searchTerms.isEmpty()) {
@@ -97,6 +105,9 @@ public class CommunityDaoJpa implements CommunityDao{
             if (!categories.isEmpty()) {
                 query.append(CATEGORY);
             }
+            if (userId != null) {
+                query.append(FOLLOWED_BY);
+            }
             Query q = em.createNativeQuery(query.toString());
             if (!searchTerms.isEmpty()) {
                 q.setParameter("searchTerms", "%" + searchTerms + "%");
@@ -104,6 +115,9 @@ public class CommunityDaoJpa implements CommunityDao{
             if (!categories.isEmpty()) {
                 q.setParameter("categories", categories);
                 q.setParameter("categoriesCount", categories.size());
+            }
+            if (userId != null) {
+                q.setParameter("userId", userId);
             }
             q.setFirstResult(offset);
             q.setMaxResults(pageSize);
@@ -118,6 +132,9 @@ public class CommunityDaoJpa implements CommunityDao{
             if (!categories.isEmpty()) {
                 query.append(CATEGORY);
             }
+            if (userId != null) {
+                query.append(FOLLOWED_BY);
+            }
             Query q = em.createNativeQuery(query.toString());
             if (!searchTerms.isEmpty()) {
                 q.setParameter("searchTerms", "%" + searchTerms + "%");
@@ -125,6 +142,9 @@ public class CommunityDaoJpa implements CommunityDao{
             if (!categories.isEmpty()) {
                 q.setParameter("categories", categories);
                 q.setParameter("categoriesCount", categories.size());
+            }
+            if (userId != null) {
+                q.setParameter("userId", userId);
             }
             return ((Number) q.getSingleResult()).intValue();
         }
@@ -256,10 +276,11 @@ public class CommunityDaoJpa implements CommunityDao{
     }
 
     @Override
-    public int findCount(String searchTerms, List<String> categories) {
+    public int findCount(String searchTerms, List<String> categories, Long userId) {
         return new QueryBuilder()
                 .withSearchTerms(searchTerms)
                 .withCategories(categories)
+                .followedBy(userId)
                 .buildCount();
     }
 

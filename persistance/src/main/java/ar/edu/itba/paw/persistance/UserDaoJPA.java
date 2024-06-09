@@ -7,9 +7,11 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @Repository
 @Primary
@@ -58,11 +60,14 @@ public class UserDaoJPA implements UserDao {
 
     @Override
     public List<User> getFollowersOfCommunity(long communityId) {
+        Query list = em.createNativeQuery("SELECT users.id FROM users WHERE id IN (SELECT user_id FROM community_user WHERE community_id = :communityId)")
+                .setParameter("communityId",communityId);
+
         @SuppressWarnings("unchecked")
-        List<User> list = em.createNativeQuery("SELECT * FROM users WHERE id IN (SELECT user_id FROM community_user WHERE community_id = :communityId)")
-                .setParameter("communityId",communityId)
-                .getResultList();
-        return list;
+        List<Long> resultList = ((Stream<Integer>) list.getResultStream()).map(Integer::longValue).toList();
+        TypedQuery<User> query = em.createQuery("from User where id in :list",User.class);
+        query.setParameter("list",resultList);
+        return query.getResultList();
     }
 
     @Override
@@ -83,36 +88,4 @@ public class UserDaoJPA implements UserDao {
         return em.merge(user);
     }
 
-
-//    @Override
-//    public void updateImageId(long id, long imageId) {
-//         em.createNativeQuery("UPDATE users SET portrait_id = ? WHERE id=?")
-//                 .setParameter(1,imageId)
-//                 .setParameter(2,id)
-//                 .executeUpdate();
-//    }
-//
-//    @Override
-//    public void updatePassword(Long id, String password) {
-//        em.createNativeQuery("UPDATE users SET password = ? WHERE id=?")
-//                .setParameter(1,password)
-//                .setParameter(2,id)
-//                .executeUpdate();
-//    }
-//
-//    @Override
-//    public void verifyUser(Long id) {
-//        em.createNativeQuery("UPDATE users SET verified = ? WHERE id=?")
-//                .setParameter(1,true)
-//                .setParameter(2,id)
-//                .executeUpdate();
-//    }
-//
-//    @Override
-//    public void updateLocale(long id, String locale) {
-//        em.createNativeQuery("UPDATE users SET locale = ? WHERE id=?")
-//                .setParameter(1,locale)
-//                .setParameter(2,id)
-//                .executeUpdate();
-//    }
 }
