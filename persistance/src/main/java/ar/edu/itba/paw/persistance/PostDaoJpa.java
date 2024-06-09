@@ -339,4 +339,11 @@ public class PostDaoJpa implements PostDao {
     public void removePost(Post post) {
         post.setDeleted(true);
     }
+
+    @Override
+    public List<Post> topFivePosts() {
+        TypedQuery<Post> query = em.createQuery("from Post as p where p.deleted = false order by p.grooviness desc", Post.class);
+        query.setMaxResults(5);
+        return query.getResultList();
+    }
 }

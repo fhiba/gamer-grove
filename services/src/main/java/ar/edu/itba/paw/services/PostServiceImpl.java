@@ -361,6 +361,15 @@ public class PostServiceImpl implements PostService{
         notifyDeletion(postId);
     }
 
+    @Override
+    public List<Post> topFivePosts() {
+        List<Post> out = postDao.topFivePosts();
+        for (Post post : out) {
+            System.out.println(post.getId());;
+        }
+        return postDao.topFivePosts();
+    }
+
     @Async
     public void notifyDeletion(Long postId) {
         Post post;

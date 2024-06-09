@@ -77,4 +77,6 @@ public interface PostDao {
     int getTotalPostsByUser(long id);
 
     void removePost(Post post);
+
+    List<Post> topFivePosts();
 }

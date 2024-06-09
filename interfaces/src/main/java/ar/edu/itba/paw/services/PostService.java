@@ -54,6 +54,8 @@ public interface PostService {
     List<String> getUsedCategories();
     void removePost(final long postId) throws NoSuchPostException;
 
+    List<Post> topFivePosts();
+
 
     PaginatedDataWrapper<Post> getAllPostsPaginated(PaginationRequest paginationRequest);
 

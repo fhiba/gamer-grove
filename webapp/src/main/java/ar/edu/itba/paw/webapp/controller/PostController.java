@@ -114,7 +114,7 @@ public class PostController {
             User user = userOptional.get();
             communities = cs.getFollowedCommunities(user);
             isAdmin = user.getOwner();
-            if (Objects.nonNull(category) &&!category.isEmpty() && !category.equals("all")) {
+            if (Objects.nonNull(category) && !category.isEmpty() && !category.equals("all")) {
                 try {
                     posts = ps.getUserFollowedPostsByCategoryPaginated(category,user.getId(),paginationRequest);
                 }catch (IllegalArgumentException e){
@@ -140,6 +140,7 @@ public class PostController {
     @NotNull
     private ModelAndView homeAndAllConfig(@RequestParam(value = "category", required = false) String category, ModelAndView mav, List<Community> communities, List<String> categories, Optional<User> userOptional) {
         mav.addObject("communities", communities);
+        mav.addObject("topPost",ps.topFivePosts());
         mav.addObject("news", ps.getNewsLimited(5));
         mav.addObject("categories", categories);
         mav.addObject("isVerified", userOptional.isPresent() && userOptional.get().isVerified());

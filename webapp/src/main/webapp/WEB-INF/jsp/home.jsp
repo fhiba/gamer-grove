@@ -117,6 +117,19 @@
                     </div>
                 </div>
             </div>
+            <c:set var="topPost" value="${topPost}" scope="request"/>
+            <jsp:include page="/WEB-INF/jsp/components/topCards.jsp" />
+            <div id="toastBox" class=" position-fixed bottom-0 end-0 m-3" style="display: none">
+                <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast-header">
+                        <strong id="toast_header" class="me-auto"></strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                    <div class="toast-body text-dark" id="toast_body">
+
+                    </div>
+                </div>
+            </div>
             <c:if test="${isLogged && !isVerified }">
                 <c:url value="auth/resend-verification" var="verifyUrl"/>
                 <div class="toast show position-fixed bottom-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true" id="verifyToastBox">
