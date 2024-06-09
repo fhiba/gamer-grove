@@ -363,10 +363,6 @@ public class PostServiceImpl implements PostService{
 
     @Override
     public List<Post> topFivePosts() {
-        List<Post> out = postDao.topFivePosts();
-        for (Post post : out) {
-            System.out.println(post.getId());;
-        }
         return postDao.topFivePosts();
     }
 
