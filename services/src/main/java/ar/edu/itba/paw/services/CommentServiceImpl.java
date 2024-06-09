@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 @Transactional(readOnly = true)
@@ -74,7 +75,7 @@ public class CommentServiceImpl implements CommentService {
         Optional<User> user = userService.findById(post.getAuthor().getId());
         if(user.isEmpty())
             return;
-        mailingService.sendNewCommentNotification(user.get(), post, date);
+        mailingService.sendNewCommentNotification(user.get(), post, date, Locale.of(user.get().getLocale()));
     }
 
 
@@ -200,6 +201,6 @@ public class CommentServiceImpl implements CommentService {
         } catch (NoSuchPostException e) {
             return;
         }
-        mailingService.notifyCommentDeletion(user.get().getEmail(), user.get().getUsername(), comment.getPostId(), post.getTitle(), post.getcommunity().getName(), comment.getBody());
+        mailingService.notifyCommentDeletion(user.get().getEmail(), user.get().getUsername(), comment.getPostId(), post.getTitle(), post.getcommunity().getName(), comment.getBody(), Locale.of(user.get().getLocale()));
     }
 }

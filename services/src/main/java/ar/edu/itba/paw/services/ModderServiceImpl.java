@@ -22,6 +22,7 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -64,7 +65,7 @@ public class ModderServiceImpl implements ModderService{
 
     @Async
     void sendNewModNotification(User to, Community community) {
-        mailingService.notifyNewModerator(to.getEmail(), to.getUsername(), community.getName(), community.getEncodedName());
+        mailingService.notifyNewModerator(to.getEmail(), to.getUsername(), community.getName(), community.getEncodedName(), Locale.of(to.getLocale()));
     }
 
     @Override
@@ -91,7 +92,7 @@ public class ModderServiceImpl implements ModderService{
 
     @Async
     void sendRemovedModNotification(User to, Community community) {
-        mailingService.notifyRemovedModerator(to.getEmail(), to.getUsername(), community.getName());
+        mailingService.notifyRemovedModerator(to.getEmail(), to.getUsername(), community.getName(), Locale.of(to.getLocale()));
     }
 
     @Override

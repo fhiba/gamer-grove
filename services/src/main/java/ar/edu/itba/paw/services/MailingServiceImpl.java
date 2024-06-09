@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cglib.core.Local;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -93,12 +94,13 @@ public class MailingServiceImpl implements MailingService {
     @Override
     public void sendNewPostNotifications(List<User> to, Post post, User postAuthor) {
        to.forEach(receiver -> {
-           sendNewPostNotification(receiver.getEmail(), receiver.getUsername(), post, postAuthor);
+
+           sendNewPostNotification(receiver.getEmail(), receiver.getUsername(), post, postAuthor, Locale.of(receiver.getLocale()));
        });
     }
 
     @Override
-    public void sendNewCommentNotification(User to, Post post, LocalDateTime date) {
+    public void sendNewCommentNotification(User to, Post post, LocalDateTime date, Locale locale) {
         Map<String, Object> vars = new HashMap<>();
         vars.put("date", date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
         vars.put("username", to.getUsername());
@@ -107,12 +109,13 @@ public class MailingServiceImpl implements MailingService {
         vars.put("post_title", post.getTitle());
         Context thymeleafContext = new Context();
         thymeleafContext.setVariables(vars);
+        thymeleafContext.setLocale(locale);
         String htmlBody = thymeleafTemplateEngine.process("postCommentNotification", thymeleafContext);
-        sendHtmlMessage(to.getEmail(), messageSource.getMessage("email.newCommentPostNotification.subject", null, Locale.getDefault()), htmlBody, null);
+        sendHtmlMessage(to.getEmail(), messageSource.getMessage("email.newCommentPostNotification.subject", null, locale), htmlBody, null);
 
     }
 
-    private void sendNewPostNotification(String to, String name, Post post, User postAuthor) {
+    private void sendNewPostNotification(String to, String name, Post post, User postAuthor, Locale locale) {
         Map<String,Object> vars = new HashMap<>();
         vars.put("community", post.getcommunity().getName());
         vars.put("username", name);
@@ -124,40 +127,43 @@ public class MailingServiceImpl implements MailingService {
 
         thymeleafContext.setVariables(vars);
 
+        thymeleafContext.setLocale(locale);
         String htmlBody = thymeleafTemplateEngine.process("postNotification", thymeleafContext);
 
-        sendHtmlMessage(to, messageSource.getMessage("email.newPostNotification.subject",new Object[] {thymeleafContext.getVariable("community")}, Locale.getDefault()), htmlBody, null);
+        sendHtmlMessage(to, messageSource.getMessage("email.newPostNotification.subject",new Object[] {thymeleafContext.getVariable("community")}, locale), htmlBody, null);
     }
 
     @Async
     @Override
-    public void sendResetPasswordEmail(String to, String name, String token) {
+    public void sendResetPasswordEmail(String to, String name, String token, Locale locale) {
         Map<String, Object> vars = new HashMap<>();
         vars.put("username", name);
         vars.put("token", token);
         vars.put("base", base);
         Context thymeleafContext = new Context();
         thymeleafContext.setVariables(vars);
+        thymeleafContext.setLocale(locale);
         String htmlBody = thymeleafTemplateEngine.process("resetPassword", thymeleafContext);
-        sendHtmlMessage(to, messageSource.getMessage("email.resetPassword.subject", null, Locale.getDefault()), htmlBody, null);
+        sendHtmlMessage(to, messageSource.getMessage("email.resetPassword.subject", null, locale), htmlBody, null);
     }
 
     @Async
     @Override
-    public void sendValidationEmail(String to, String name, String token) {
+    public void sendValidationEmail(String to, String name, String token, Locale locale) {
         Map<String, Object> vars = new HashMap<>();
         vars.put("username", name);
         vars.put("token", token);
         vars.put("base", base);
         Context thymeleafContext = new Context();
         thymeleafContext.setVariables(vars);
+        thymeleafContext.setLocale(locale);
         String htmlBody = thymeleafTemplateEngine.process("verifyAccount", thymeleafContext);
-        sendHtmlMessage(to, messageSource.getMessage("email.validateAccount.subject", null, Locale.getDefault()), htmlBody, null);
+        sendHtmlMessage(to, messageSource.getMessage("email.validateAccount.subject", null, locale), htmlBody, null);
     }
 
     @Async
     @Override
-    public void notifyPostDeletion(String to, String name, Long postId, String postTitle, String communityName) {
+    public void notifyPostDeletion(String to, String name, Long postId, String postTitle, String communityName, Locale locale) {
 
         Map<String, Object> vars = new HashMap<>();
         vars.put("username", name);
@@ -168,13 +174,14 @@ public class MailingServiceImpl implements MailingService {
         Context thymeleafContext = new Context();
         thymeleafContext.setVariables(vars);
 
+        thymeleafContext.setLocale(locale);
         String htmlBody = thymeleafTemplateEngine.process("postDeletion", thymeleafContext);
-        sendHtmlMessage(to, messageSource.getMessage("email.postDeletion.subject", null, Locale.getDefault()), htmlBody, null);
+        sendHtmlMessage(to, messageSource.getMessage("email.postDeletion.subject", null, locale), htmlBody, null);
     }
 
     @Async
     @Override
-    public void notifyCommentDeletion(String to, String name,  Long postId, String postTitle, String communityName, String commentBody) {
+    public void notifyCommentDeletion(String to, String name,  Long postId, String postTitle, String communityName, String commentBody, Locale locale) {
         Map<String, Object> vars = new HashMap<>();
         vars.put("username", name);
         vars.put("post_title", postTitle);
@@ -184,13 +191,14 @@ public class MailingServiceImpl implements MailingService {
         vars.put("base", base);
         Context thymeleafContext = new Context();
         thymeleafContext.setVariables(vars);
+        thymeleafContext.setLocale(locale);
         String htmlBody = thymeleafTemplateEngine.process("commentDeletion", thymeleafContext);
-        sendHtmlMessage(to, messageSource.getMessage("email.commentDeletion.subject", null, Locale.getDefault()), htmlBody, null);
+        sendHtmlMessage(to, messageSource.getMessage("email.commentDeletion.subject", null, locale), htmlBody, null);
     }
 
     @Async
     @Override
-    public void notifyNewModerator(String to, String name, String communityName, String communityEncoded) {
+    public void notifyNewModerator(String to, String name, String communityName, String communityEncoded, Locale locale) {
         Map<String, Object> vars = new HashMap<>();
         vars.put("username", name);
         vars.put("community", communityName);
@@ -198,20 +206,22 @@ public class MailingServiceImpl implements MailingService {
         vars.put("community_encoded", communityEncoded);
         Context thymeleafContext = new Context();
         thymeleafContext.setVariables(vars);
+        thymeleafContext.setLocale(locale);
         String htmlBody = thymeleafTemplateEngine.process("newModNotification", thymeleafContext);
-        sendHtmlMessage(to, messageSource.getMessage("email.newModNotification.subject", null, Locale.getDefault()), htmlBody, null);
+        sendHtmlMessage(to, messageSource.getMessage("email.newModNotification.subject", null, locale), htmlBody, null);
     }
 
     @Async
     @Override
-    public void notifyRemovedModerator(String to, String name, String communityName) {
+    public void notifyRemovedModerator(String to, String name, String communityName, Locale locale) {
         Map<String, Object> vars = new HashMap<>();
         vars.put("username", name);
         vars.put("community", communityName);
         vars.put("base", base);
         Context thymeleafContext = new Context();
         thymeleafContext.setVariables(vars);
+        thymeleafContext.setLocale(locale);
         String htmlBody = thymeleafTemplateEngine.process("removeModNotification", thymeleafContext);
-        sendHtmlMessage(to, messageSource.getMessage("email.removeModNotification.subject", null, Locale.getDefault()), htmlBody, null);
+        sendHtmlMessage(to, messageSource.getMessage("email.removeModNotification.subject", null, locale), htmlBody, null);
     }
 }

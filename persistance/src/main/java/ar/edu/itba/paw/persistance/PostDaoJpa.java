@@ -210,7 +210,6 @@ public class PostDaoJpa implements PostDao {
         nativeQuery.setFirstResult(offset);
         nativeQuery.setParameter("category",category);
         nativeQuery.setMaxResults(pageSize);
-
         List<Long> resultList = ((Stream<Integer>) nativeQuery.getResultStream()).map(Integer::longValue).toList();
 
         TypedQuery<Post> query = em.createQuery("from Post as p where p.id IN :ids order by p.date desc ", Post.class);

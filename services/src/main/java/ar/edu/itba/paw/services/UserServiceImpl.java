@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -60,7 +61,7 @@ public class UserServiceImpl implements UserService {
     public User create(final String username, final String email, final String password) throws UserNotFoundException {
         User user =  userDao.create(username, email, passwordEncoder.encode(password));
         String token = tokenService.generateValidationToken(user.getId());
-        mailingService.sendValidationEmail(email, username, token);
+        mailingService.sendValidationEmail(email, username, token, Locale.getDefault());
         return user;
     }
 
@@ -131,8 +132,9 @@ public class UserServiceImpl implements UserService {
         Optional<User> maybeUser = findByEmail(email);
         if(maybeUser.isEmpty())
             return false;
-        String token = tokenService.generateResetToken(maybeUser.get().getId());
-        mailingService.sendResetPasswordEmail(maybeUser.get().getEmail(), maybeUser.get().getUsername(), token);
+        User user = maybeUser.get();
+        String token = tokenService.generateResetToken(user.getId());
+        mailingService.sendResetPasswordEmail(user.getEmail(), user.getUsername(), token, Locale.of(user.getLocale()));
         return true;
     }
 
@@ -142,7 +144,7 @@ public class UserServiceImpl implements UserService {
     public void resendVerification() throws NoLoggedUserException, UserNotFoundException {
         User loggedUSer = getLoggedUserChecked();
         String token = tokenService.generateValidationToken(loggedUSer.getId());
-        mailingService.sendValidationEmail(loggedUSer.getEmail(), loggedUSer.getUsername(), token);
+        mailingService.sendValidationEmail(loggedUSer.getEmail(), loggedUSer.getUsername(), token, Locale.of(loggedUSer.getLocale()));
     }
 
     @Transactional
