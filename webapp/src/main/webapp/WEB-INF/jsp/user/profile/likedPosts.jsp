@@ -131,6 +131,11 @@
                         <li class="nav-item">
                             <a class="nav-link active"><spring:message code="Profile.LikedPost"/></a>
                         </li>
+                        <li class="nav-item">
+                            <c:url var="followedCommunitiesUrl" value="/profile/followed"/>
+                            <a class="nav-link" href="${followedCommunitiesUrl}"><spring:message
+                                    code="Profile.FollowedCommunities"/></a>
+                        </li>
                     </ul>
                     <c:if test="${empty posts.data}">
                         <div class="mt-5 d-flex justify-content-center">

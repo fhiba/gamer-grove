@@ -40,8 +40,10 @@ import org.springframework.validation.BindingResult;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Controller
 public class UserController {
@@ -222,6 +224,36 @@ public class UserController {
         }
         mav.addObject("posts", likedPosts);
         return mav;
+    }
+
+    @RequestMapping(path = "/profile/followed", method = RequestMethod.GET)
+    public ModelAndView getFollowedCommunities(@RequestParam(required = false) Integer pageNumber, @ModelAttribute("categories") final String categories, @ModelAttribute("userPfpForm") final UserPfpForm userPfpForm) throws NoLoggedUserException {
+        ModelAndView mav = new ModelAndView("user/profile/followedCommunities");
+        PaginatedDataWrapper<Community> communities;
+
+        List<String> selectedCategories = Arrays.asList(categories.split(","));
+        PaginationRequest paginationRequest = new PaginationRequest(8);
+        if (Objects.nonNull(pageNumber))
+            paginationRequest.setPageNumber(pageNumber);
+
+        try {
+            communities = cs.findFollowedCommunities(paginationRequest, selectedCategories);
+        } catch (IllegalArgumentException e) {
+
+            LOGGER.error("Error getting created posts", e);
+            communities = null;
+        }
+        User user = us.getLoggedUserChecked();
+        mav.addObject("isAdmin", user.getOwner());
+        mav.addObject("user", user);
+        mav.addObject("followedCommunities", communities);
+        mav.addObject("selectedCategories", selectedCategories);
+        mav.addObject("categories", Arrays.stream(CommunityCategories.values()).map(CommunityCategories::getCategory).toArray(String[]::new));
+        mav.addObject("communities", cs.getFollowedCommunities(user));
+        mav.addObject("isVerified", user.isVerified());
+
+        return mav;
+
     }
 
 

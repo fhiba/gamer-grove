@@ -20,7 +20,7 @@ public interface CommunityDao {
     Community updateRating(Community community, float rating, Integer count);
 
 
-    List<Community> find(int pageSize,int offset,String searchTerms, List<String> categories);
+    List<Community> find(int pageSize,int offset,String searchTerms, List<String> categories, Long userId);
 
     Boolean addCategory(final long id, String category);
     Community addCategory(Community community, String category);
@@ -48,7 +48,7 @@ public interface CommunityDao {
 
     void editCommunityInfo(String communityName, String description, String publisher, String developer);
 
-    int findCount(String searchTerms, List<String> categories);
+    int findCount(String searchTerms, List<String> categories, Long userId);
 
     Integer getFollowedCommunitiesCount(Long userId);
 

@@ -50,8 +50,8 @@
                     <c:if test="${empty posts || posts.data.size() == 0}">
                         <c:url var="allUrl" value="/all"/>
                         <div class="align-items-center text-center justify-content-center w-100">
-                                <h6 class="card-title"><spring:message code="Home.NoPosts"/> <a href="${allUrl}"><spring:message code="Home.GoAll"/></a></h6>
-
+                                <h6 class="card-title"><spring:message code="Home.NoPosts"/></h6>
+                            <a href="${allUrl}"><button type="button" class="btn btn-primary mt-2"><spring:message code="Home.GoAll"/></button></a>
                         </div>
                     </c:if>
                     <c:forEach var="post" items="${posts.data}">

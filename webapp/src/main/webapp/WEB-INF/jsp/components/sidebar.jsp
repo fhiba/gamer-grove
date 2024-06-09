@@ -43,7 +43,8 @@
                 <div class="h5 card-title text-light mb-3"><spring:message code="Communities.Title"/></div>
             </c:if>
             <c:if test="${isLogged}">
-                <div class="card-title text-light mb-3"><spring:message code="Communities.Logged"/></div>
+                <c:url value="/profile/followed" var="followedUrl"/>
+                <div class="mb-3"><a href="${followedUrl}" class="card-title text-light fs-5  sidebar-nav"><spring:message code="Communities.Logged"/></a></div>
             </c:if>
 
             <jsp:useBean id="communities" scope="request" type="java.util.List"/>

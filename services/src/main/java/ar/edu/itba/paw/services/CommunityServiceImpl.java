@@ -138,11 +138,37 @@ public class CommunityServiceImpl implements CommunityService{
         if(!categories.isEmpty() && !categories.getFirst().isEmpty()) {
             newList = categories.stream().map(category -> category.replaceAll("([%_\\\\])", "\\\\$1")).toList();
         }
-        int totalCount = communityDao.findCount(searchTerms.replaceAll("([%_\\\\])", "\\\\$1"), newList == null? List.of(): newList);
+        int totalCount = communityDao.findCount(searchTerms.replaceAll("([%_\\\\])", "\\\\$1"), newList == null? List.of(): newList, null);
 
         int offset = (request.getPageNumber() - 1) * request.getPageSize();
 
-        List<Community> data = communityDao.find(request.getPageSize(),offset,searchTerms.replaceAll("([%_\\\\])", "\\\\$1"), newList == null? List.of(): newList);
+        List<Community> data = communityDao.find(request.getPageSize(),offset,searchTerms.replaceAll("([%_\\\\])", "\\\\$1"), newList == null? List.of(): newList, null);
+        PaginatedDataWrapper<Community> dataWrapper = new PaginatedDataWrapper<>(data, request.getPageNumber(), totalCount, request.getPageSize());
+        if(request.getPageNumber() > dataWrapper.getTotalPages() && dataWrapper.getTotalPages() != 0){
+            throw new IllegalArgumentException("Invalid Page number");
+        }
+        return dataWrapper;
+    }
+
+    @Override
+    public PaginatedDataWrapper<Community> findFollowedCommunities(PaginationRequest request, List<String> categories) throws NoLoggedUserException {
+        if( request.getPageSize() < 1){
+            throw new IllegalArgumentException("Invalid Page size");
+        }
+        if(request.getPageNumber() <1 ){
+            throw new IllegalArgumentException("Invalid Page number");
+        }
+        Optional<User> maybeUser = userService.getLoggedUser();
+        if(maybeUser.isEmpty())
+            throw new NoLoggedUserException();
+        List<String> newList = null;
+        if(!categories.isEmpty() && !categories.getFirst().isEmpty()) {
+            newList = categories.stream().map(category -> category.replaceAll("([%_\\\\])", "\\\\$1")).toList();
+        }
+        int totalCount = communityDao.findCount(null, newList == null? List.of(): newList, maybeUser.get().getId());
+        int offset = (request.getPageNumber() - 1) * request.getPageSize();
+
+        List<Community> data = communityDao.find(request.getPageSize(),offset,null, newList == null? List.of(): newList, maybeUser.get().getId());
         PaginatedDataWrapper<Community> dataWrapper = new PaginatedDataWrapper<>(data, request.getPageNumber(), totalCount, request.getPageSize());
         if(request.getPageNumber() > dataWrapper.getTotalPages() && dataWrapper.getTotalPages() != 0){
             throw new IllegalArgumentException("Invalid Page number");
