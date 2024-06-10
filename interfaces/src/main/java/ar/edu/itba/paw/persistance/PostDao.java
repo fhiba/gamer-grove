@@ -1,8 +1,6 @@
 package ar.edu.itba.paw.persistance;
 
-import ar.edu.itba.paw.models.Community;
-import ar.edu.itba.paw.models.Post;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -79,4 +77,8 @@ public interface PostDao {
     void removePost(Post post);
 
     List<Post> topFivePosts();
+
+    List<Post> find(int pageSize, int offset, PostCategories category, PostOrders order, Long userId);
+
+    Integer findCount(PostCategories category, Long userId);
 }

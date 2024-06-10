@@ -25,8 +25,6 @@ public interface PostService {
 
     List<Post> getByCategory(final String category);
 
-    PaginatedDataWrapper<Post> getPostsByCategoryPaginated(String category, PaginationRequest request);
-
     Post getPostById(long postId) throws NoSuchPostException;
 
     Post getPostByIdWithImage(long postId) throws NoSuchPostException;
@@ -37,11 +35,9 @@ public interface PostService {
 
     List<Post> getMyFollowedPosts(User user) throws NoLoggedUserException;
 
-    PaginatedDataWrapper<Post> getUserFollowedPostsPaginated(long userId, PaginationRequest request);
+    PaginatedDataWrapper<Post> getUserFollowedPostsPaginated(String category, String order, long userId, PaginationRequest request);
 
     List<Post> getMyFollowedPostsByCategory(String category, User user) throws NoLoggedUserException;
-
-    PaginatedDataWrapper<Post> getUserFollowedPostsByCategoryPaginated(String category, long userId, PaginationRequest request);
 
     List<Post> getPostsByUser(long id);
 
@@ -57,7 +53,7 @@ public interface PostService {
     List<Post> topFivePosts();
 
 
-    PaginatedDataWrapper<Post> getAllPostsPaginated(PaginationRequest paginationRequest);
+    PaginatedDataWrapper<Post> getAllPostsPaginated(String category, String order, PaginationRequest paginationRequest);
 
     PaginatedDataWrapper<Post> getPostsByUserPaginated(long id, PaginationRequest paginationRequest);
 }
