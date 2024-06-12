@@ -170,7 +170,7 @@ public class UserController {
         if (!removedSuccess) {
             return manageMods(null,null,null, newModForm, removeModForm).addObject("notAMod", true);
         }
-        return new ModelAndView("redirect:/manageMods");
+        return new ModelAndView("redirect:/manageMods?username="+removeModForm.getRemoveUsername());
     }
 
     @RequestMapping("/loginFailed")
