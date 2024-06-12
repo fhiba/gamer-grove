@@ -22,4 +22,8 @@ public interface ModderDao {
     List<Mod> getModdersPaginatedByCommunity(Long community_id, int pageSize, int offset);
     int getTotalModders();
     int getTotalModdersByCommunity(Long communityId);
+
+    int getTotalModdersByUserId(Long id);
+
+    List<Mod> getModdersPaginatedByUserId(Long id, int pageSize, int offset);
 }

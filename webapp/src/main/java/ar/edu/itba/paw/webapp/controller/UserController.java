@@ -40,10 +40,7 @@ import org.springframework.validation.BindingResult;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Controller
 public class UserController {
@@ -95,21 +92,41 @@ public class UserController {
     }
 
     @RequestMapping(path = "/manageMods", method = RequestMethod.GET)
-    public ModelAndView manageMods(@RequestParam(value = "community", required = false) final String community, @RequestParam(required = false) Integer pageNumber, @ModelAttribute("newModForm") final NewModForm newModForm, @ModelAttribute("removeModForm") final RemoveModForm removeModForm) throws NoLoggedUserException {
+    public ModelAndView manageMods(@RequestParam(value = "username", required = false) final String username,@RequestParam(value = "community", required = false) final String community, @RequestParam(required = false) Integer pageNumber, @ModelAttribute("newModForm") final NewModForm newModForm, @ModelAttribute("removeModForm") final RemoveModForm removeModForm) throws NoLoggedUserException {
         ModelAndView mav = new ModelAndView("/user/manageMods");
         PaginatedDataWrapper<Mod> modders;
         List<Community> allCommunities = cs.getAllCommunities();
         PaginationRequest paginationRequest = new PaginationRequest();
         if (Objects.nonNull(pageNumber))
             paginationRequest.setPageNumber(pageNumber);
-        if(Objects.nonNull(community) && !community.isEmpty()){
+        if(Objects.nonNull(community) && !community.isEmpty() && Objects.isNull(username)){
             try {
-                modders = md.getModsByCommunityPaginated(allCommunities.stream().filter(community1 -> community1.getName().equals(community)).findFirst().orElseThrow().getId(), paginationRequest);
-            } catch (IllegalArgumentException e) {
+                modders = md.getModsByCommunityPaginated(community, paginationRequest);
+            } catch (NoSuchCommunityException e) {
                 LOGGER.error("Error getting moderators filter by "+community, e);
                 modders = null;
             }
-        }else{
+        } else if (Objects.nonNull(username) && !username.isEmpty() && Objects.isNull(community)) {
+            try {
+                modders = md.getModsByUsernamePaginated(username, paginationRequest);
+            } catch (IllegalArgumentException e) {
+                LOGGER.error("Error getting moderators filter by "+community, e);
+                modders = null;
+            } catch (UserNotFoundException e) {
+                modders = null;
+            }
+        } else if (Objects.nonNull(username) && !username.isEmpty() && !community.isEmpty()) {
+            try {
+                Optional<Mod> optMod = md.findMod(username,community);
+                mav.addObject("moderator",optMod.orElseThrow());
+                modders = null;
+            } catch (IllegalArgumentException e) {
+                LOGGER.error("Error getting moderators filter by "+community, e);
+                modders = null;
+            } catch (UserNotFoundException | NoSuchCommunityException e) {
+                modders = null;
+            }
+        } else{
             try {
                 modders = md.getAllModPaginated(paginationRequest);
             } catch (IllegalArgumentException e) {
@@ -131,14 +148,14 @@ public class UserController {
     public ModelAndView postAddMod(@ModelAttribute("removeModForm") final RemoveModForm removeModForm, @Valid @ModelAttribute("newModForm") final NewModForm newModForm, final BindingResult errors) throws UserNotFoundException, NoSuchCommunityException, NoLoggedUserException {
 
         if (errors.hasErrors()) {
-            return manageMods(null,null, newModForm, removeModForm);
+            return manageMods(null,null,null, newModForm, removeModForm);
         }
 
         try {
             md.addModder(newModForm.getUsername(), newModForm.getCommunityId());
         } catch (AlreadyModException e) {
             LOGGER.debug("User is already a mod");
-            return manageMods(null,null, newModForm, removeModForm).addObject("isAlreadyMod", true);
+            return manageMods(null,null,null, newModForm, removeModForm).addObject("isAlreadyMod", true);
         }
         return new ModelAndView("redirect:/manageMods");
     }
@@ -147,11 +164,11 @@ public class UserController {
     public ModelAndView postRemoveMod(@ModelAttribute("newModForm") final NewModForm newModForm, @Valid @ModelAttribute("removeModForm") final RemoveModForm removeModForm, final BindingResult errors) throws UserNotFoundException, NoLoggedUserException, NoSuchCommunityException {
 
         if (errors.hasErrors()) {
-            return manageMods(null,null, newModForm, removeModForm);
+            return manageMods(null,null,null, newModForm, removeModForm);
         }
         Boolean removedSuccess = md.removeModder(removeModForm.getRemoveUsername(), removeModForm.getFromCommunityId());
         if (!removedSuccess) {
-            return manageMods(null,null, newModForm, removeModForm).addObject("notAMod", true);
+            return manageMods(null,null,null, newModForm, removeModForm).addObject("notAMod", true);
         }
         return new ModelAndView("redirect:/manageMods");
     }

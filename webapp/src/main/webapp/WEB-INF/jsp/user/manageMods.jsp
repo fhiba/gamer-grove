@@ -33,7 +33,37 @@
         <div class="col-7 d-flex flex-column align-items-start ms-5 mt-5 mb-4">
             <div class="d-flex flex-row w-100 justify-content-between">
                 <h3 class="mb-3"><spring:message code="Mod.Modderators"/></h3>
-                <div class="mb-3">
+
+                <div class="mb-3 d-flex">
+                    <c:url var="clearUsernameFilterUrl" value="/manageMods">
+                        <c:forEach var="entry" items="${param}">
+                            <c:if test="${!entry.key.equals('username')}">
+                                <c:param name="${entry.key}" value="${entry.value}"/>
+                            </c:if>
+                        </c:forEach>
+                    </c:url>
+                    <c:url var="clearCommunityFilterUrl" value="/manageMods">
+                        <c:forEach var="entry" items="${param}">
+                            <c:if test="${!entry.key.equals('community')}">
+                                <c:param name="${entry.key}" value="${entry.value}"/>
+                            </c:if>
+                        </c:forEach>
+                    </c:url>
+                    <div class="input-manage-mods input-group-sm d-flex me-2" id="filterUsernameDiv">
+                        <a href="${clearUsernameFilterUrl}" id="clearButtonUsernameFilter" >
+
+                        <button class="btn btn-outline-secondary btn-sm input-manage-mods">
+                            <i class="fa fa-x" aria-hidden="true"></i>
+                        </button>
+                        </a>
+                        <input  id="filterByUsername" type="text" class="form-control small" placeholder="<spring:message code="Mod.FilterByUsername"/>"  aria-describedby="button-addon2">
+                        <button class="btn btn-outline-secondary" type="button" id="button-addon2" onclick="filterMods()"><spring:message code="Mod.Filter"/></button>
+                    </div>
+                    <a href="${clearCommunityFilterUrl}" id="clearButtonCommunityFilter" >
+                        <button class="btn btn-outline-secondary btn-sm input-manage-mods">
+                            <i class="fa fa-x" aria-hidden="true"></i>
+                        </button>
+                    </a>
                     <select onchange="filterMods()" class="form-select" aria-label="Default select example"
                             id="filterByCommunities">
                         <option selected disabled><spring:message code="Mod.FilterByCommunity"/></option>
@@ -41,13 +71,6 @@
                             <option>${communty.name}</option>
                         </c:forEach>
                     </select>
-                    <c:url var="manageModUrl" value="/manageMods"/>
-                    <a href="${manageModUrl}" id="clearButton">
-                        <button class="btn btn-outline-secondary btn-sm">
-                            <i class="fa fa-x" aria-hidden="true"></i>
-                        </button>
-                    </a>
-
                 </div>
             </div>
             <table class="table table-dark background-of-modders w-100">
@@ -112,9 +135,60 @@
                         </td>
                     </tr>
                 </c:forEach>
+                <c:if test="${not empty moderator}">
+                    <tr>
+                        <td><c:out value="${ moderator.user.username}" escapeXml="true"/></td>
+                        <td><c:out value="${moderator.user.email}" escapeXml="true"/></td>
+                        <td><c:out value="${moderator.community.name}" escapeXml="true"/></td>
+                        <td><c:out value="${moderator.sinceDate.format(format)}" escapeXml="true"/></td>
+                        <td>
+                            <button class="btn btn-outline-danger btn-sm align-content-center"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#removeMod${moderator.user.id}${moderator.community.id}Modal">
+                                <i class="fas fa-solid fa-trash"></i>
+                            </button>
+                            <!-- Modal -->
+                            <div class="modal fade" id="removeMod${moderator.user.id}${moderator.community.id}Modal"
+                                 tabindex="-1"
+                                 aria-labelledby="exampleModalLabel"
+                                 aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5 modal-title-color"><spring:message
+                                                    code="Mod.RemoveConfirmation"/></h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <h2 class="fs-5"><spring:message code="Mod.Username"/>: <c:out
+                                                    value="${moderator.user.username}" escapeXml="true"/></h2>
+                                            <h2 class="fs-5"><spring:message code="Post.Community"/> : <c:out
+                                                    value="${moderator.community.name}" escapeXml="true"/></h2>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button data-bs-dismiss="modal" class="btn btn-secondary btn-sm">
+                                                <spring:message code="Post.CancelDelete"/>
+                                            </button>
+                                            <c:url var="removeModUrl" value="/removeMod"/>
+                                            <form:form action="${removeModUrl}" method="post"
+                                                       modelAttribute="removeModForm">
+                                                <form:hidden path="removeUsername" value="${moderator.user.username}"/>
+                                                <form:hidden path="fromCommunityId" value="${moderator.community.id}"/>
+                                                <button class="btn btn-danger btn-sm" type="submit">
+                                                    <spring:message code="Mod.Remove"/>
+                                                </button>
+                                            </form:form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </c:if>
                 </tbody>
             </table>
-            <c:if test="${empty modders.data}">
+            <c:if test="${empty modders.data && empty moderator}">
                 <h3 class="text-center w-100"><spring:message code="Mod.Empty"/></h3>
             </c:if>
             <c:if test="${not empty modders.data}">
@@ -142,6 +216,7 @@
                             <label class="form-label fw-semibold"><spring:message
                                     code="Mod.Community"/>: </label>
                             <form:select cssClass="text-bg-dark w-75" path="communityId" id="addModSelect">
+                                <option selected disabled><spring:message code="Mod.SelectCommunity"/></option>
                                 <c:forEach var="community" items="${allCommunities}">
                                     <form:option cssStyle="color:black;" value="${community.id}"
                                                  label="${community.name}"/>
@@ -175,20 +250,40 @@
 </div>
 </body>
 <script>
+    // Function to replace a substring with another substring
+    function replaceSubstring(originalString, substringToFind, substringToReplace) {
+        // Use the replace method to find and replace the substring
+        const newString = originalString.replace(substringToFind, substringToReplace);
+        return newString;
+    }
 
+    // Example usage
+    const originalString = document.URL;
+    const substringToFind = "addMod";
+    const substringToReplace = "manageMods";
 
+    // Call the function
+    const result = replaceSubstring(originalString, substringToFind, substringToReplace);
+
+    console.log(new URL(result));
+    console.log(new URL(document.URL))
     const filterMods = () => {
-        let url = document.URL;
+        let url = replaceSubstring(document.URL, "addMod", "manageMods");
         let community = document.getElementById('filterByCommunities').value;
+        let username = document.getElementById('filterByUsername').value;
         let newUrl = new URL(url);
-        newUrl.searchParams.set('community', community);
-        window.location.search = newUrl.search;
+        let defaultValue = "<spring:message code="Mod.FilterByCommunity" />";
+        if (community !== undefined && community !== '' && community !== defaultValue) {
+            newUrl.searchParams.set('community', community);
+        }
+        if (username !== undefined && username !== '') {
+            newUrl.searchParams.set('username', username);
+        }
+        window.location = newUrl.href;
     }
 
     $(document).ready(function () {
         $('#addModSelect').select2({
-            placeholder: "Select a community",
-            allowClear: true,
             color: "black!important",
         });
     });
@@ -219,7 +314,13 @@
     if (community) {
         document.getElementById('filterByCommunities').value = community;
     } else {
-        document.getElementById('clearButton').style.display = 'none'
+        document.getElementById('clearButtonCommunityFilter').style.display = 'none'
+    }
+    let username = urlParams.get('username');
+    if(username){
+        document.getElementById('filterByUsername').value = username;
+    }else{
+        document.getElementById('clearButtonUsernameFilter').style.display = 'none'
     }
 </script>
 </html>

@@ -324,3 +324,7 @@ body {
     margin-bottom: 0;
     --bs-border-opacity: .25;
 }
+
+.input-manage-mods{
+    height: 29px!important;
+}

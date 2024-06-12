@@ -11,6 +11,8 @@ import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
 import ar.edu.itba.paw.models.pagination.PaginationRequest;
 
+import java.util.Optional;
+
 public interface ModderService {
 
     Boolean addModder(final String username,final long communityId) throws UserNotFoundException, NoSuchCommunityException, AlreadyModException;
@@ -27,6 +29,9 @@ public interface ModderService {
     Boolean canEditCommunityInfo(String encodedCommunityName) throws NoSuchCommunityException, UserNotFoundException;
     PaginatedDataWrapper<Mod> getAllModPaginated(PaginationRequest paginationRequest);
 
-    public PaginatedDataWrapper<Mod> getModsByCommunityPaginated(Long communityId, PaginationRequest request);
+    PaginatedDataWrapper<Mod> getModsByCommunityPaginated(String communityName, PaginationRequest request) throws NoSuchCommunityException;
 
+    PaginatedDataWrapper<Mod> getModsByUsernamePaginated(String username, PaginationRequest paginationRequest) throws UserNotFoundException;
+
+    Optional<Mod> findMod(String username, String community) throws UserNotFoundException, NoSuchCommunityException;
 }

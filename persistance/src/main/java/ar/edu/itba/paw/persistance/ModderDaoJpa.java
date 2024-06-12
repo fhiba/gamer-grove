@@ -96,4 +96,24 @@ public class ModderDaoJpa implements ModderDao{
                 .setParameter("id", communityId);
         return((Number) query.getSingleResult()).intValue();
     }
+
+    @Override
+    public int getTotalModdersByUserId(Long userId) {
+        Query query= em.createQuery("select count(*) from Mod as m where m.user.id = :id")
+                .setParameter("id", userId);
+        return((Number) query.getSingleResult()).intValue();
+    }
+
+    @Override
+    public List<Mod> getModdersPaginatedByUserId(Long userId, int pageSize, int offset) {
+        Query nativeQuery = em.createNativeQuery("SELECT user_id FROM modders WHERE user_id = :userId order by since_date desc");
+        nativeQuery.setFirstResult(offset);
+        nativeQuery.setMaxResults(pageSize);
+        nativeQuery.setParameter("userId",userId);
+        List<Long> resultList = ((Stream<Integer>) nativeQuery.getResultStream()).map(Integer::longValue).toList();
+
+        TypedQuery<Mod> query = em.createQuery("from Mod as m where m.user.id IN :ids order by m.sinceDate desc", Mod.class);
+        query.setParameter("ids", resultList);
+        return query.getResultList();
+    }
 }
