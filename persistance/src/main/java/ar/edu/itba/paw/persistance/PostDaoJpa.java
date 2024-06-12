@@ -71,13 +71,7 @@ public class PostDaoJpa implements PostDao {
         em.persist(gph);
     }
 
-    @Override
-    public void addToGroovy(long userId, long postId, boolean grooviness) {
-/*
-       GroovyPostHistory gph = new GroovyPostHistory((int) userId, (int) id, grooviness);
-       em.persist(gph);
-*/
-    }
+
 
     @Override
     public Optional<Boolean> checkGrooviness(long postId, long userId) {
@@ -94,11 +88,7 @@ public class PostDaoJpa implements PostDao {
 
     }
 
-//    @Override
-//    public void insertIntoGroovyHistory(Post post, long id, boolean grooviness) {
-//        GroovyPostHistory gph = new GroovyPostHistory((int) post.getAuthor().getId(), (int) id, grooviness);
-//        em.persist(gph);
-//    }
+
 
     @Override
     public void deleteGrooviness(long postId, long id) {
@@ -156,23 +146,9 @@ public class PostDaoJpa implements PostDao {
 
     @Override
     public List<String> getUsedCategories() {
-//        return em.createNativeQuery("SELECT p.category FROM post as p WHERE p.category is not null GROUP BY p.category").getResultList();
-//        String hql = "SELECT Distinct category from Post where deleted = false and category IS NOT NULL";
-//        TypedQuery<PostCategories> query = em.createQuery(hql, PostCategories.class);
-//        return query.getResultList();
-//        return em.createQuery("SELECT p.category FROM Post as p WHERE p.deleted = false GROUP BY p.category", PostCategories.class).getResultList();
         String sql = "SELECT p.category FROM post p WHERE p.category IS NOT NULL AND deleted=false GROUP BY p.category";
         List<String> categoryStrings = em.createNativeQuery(sql).getResultList();
-
-        // Print out the categoryStrings list
-
-        // Convert the list of strings to a list of PostCategory enums
-//        List<PostCategories> categories = categoryStrings.stream()
-//                .map(PostCategories::valueOf)
-//                .collect(Collectors.toList());
         return categoryStrings;
-        // Native SQL query to select the category field from the Post entity
-
     }
 
     @Override

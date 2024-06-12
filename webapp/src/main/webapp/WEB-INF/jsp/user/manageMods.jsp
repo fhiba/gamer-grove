@@ -174,34 +174,6 @@
     </div>
 </div>
 </body>
-<%--REMOVE MOD MAKE MODAL--%>
-<%--<div class="card border-0 w-100 ms-5 mt-5">--%>
-<%--    <div class="card-body">--%>
-<%--        <h3 class="fw-semibold card-subtitle mb-1">--%>
-<%--            <spring:message code="Mod.Remove"/>--%>
-<%--        </h3>--%>
-<%--        <c:url var="removeModUrl" value="/removeMod"/>--%>
-<%--        <form:form action="${removeModUrl}" method="post" modelAttribute="removeModForm">--%>
-<%--            <div class="mt-2 d-flex flex-column w-25">--%>
-<%--                <label class="form-label rounded-3 fw-semibold"><spring:message--%>
-<%--                        code="Login.Username"/>: </label>--%>
-<%--                <form:input path="removeUsername"/>--%>
-<%--                <form:errors path="removeUsername" cssStyle="color: red" cssClass="error"/>--%>
-<%--            </div>--%>
-<%--            <div class="mt-2 d-flex flex-column w-25">--%>
-<%--                <label class="form-label fw-semibold"><spring:message--%>
-<%--                        code="Mod.Communnity"/>: </label>--%>
-<%--                <form:select class="mod-form bg-dark" path="fromCommunityId" id="removeModSelect">--%>
-<%--                    <c:forEach var="community" items="${allCommunities}">--%>
-<%--                        <form:option value="${community.id}" label="${community.name}"/>--%>
-<%--                    </c:forEach>--%>
-<%--                </form:select>--%>
-<%--            </div>--%>
-<%--            <form:errors path="fromCommunityId" cssStyle="color: red" cssClass="error"/>--%>
-<%--            <button class="btn btn-outline-danger mt-3"><spring:message code="Mod.Remove"/></button>--%>
-<%--        </form:form>--%>
-<%--    </div>--%>
-<%--</div>--%>
 <script>
 
 

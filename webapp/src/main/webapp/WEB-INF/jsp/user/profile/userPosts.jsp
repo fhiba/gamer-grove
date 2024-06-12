@@ -83,16 +83,6 @@
                                 </div>
 
                             </div>
-<%--                            <c:if test="${!user.isVerified()}">--%>
-<%--                                <div class="mb-3">--%>
-<%--                                    <c:url value="auth/resend-verification" var="resendUrl"/>--%>
-<%--                                    <spring:message code="VerifyAccount.Verify"/>--%>
-<%--                                    <a href="${resendUrl}">--%>
-<%--                                        <button type="button" class="p-0 btn btn-link"><spring:message--%>
-<%--                                                code="email.validateAccount.action"/></button>--%>
-<%--                                    </a>--%>
-<%--                                </div>--%>
-<%--                            </c:if>--%>
                             <div>
                                 <c:url value="/user/update" var="userUpdateUrl"/>
                                 <form:form method="POST" action="${userUpdateUrl}" enctype="multipart/form-data"

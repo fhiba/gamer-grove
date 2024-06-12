@@ -211,7 +211,6 @@ public class CommunityController {
             produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_GIF_VALUE})
     @ResponseBody
     public byte[] getImage(@PathVariable Integer imageId) {
-        //File image = fs.getFile(doctorId).orElse(null);
         return fs.getFile(imageId).map(File::getFile).orElse(null);
     }
 

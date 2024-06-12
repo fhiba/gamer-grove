@@ -155,14 +155,14 @@ public class CommentServiceImpl implements CommentService {
 
 
     @Override
-    public List<Comment> getUpGroovedComments(long postId) throws UserNotFoundException {
+    public List<Comment> getUpGroovedComments(long postId) throws UserNotFoundException, NoSuchPostException {
         Optional<User> possibleUser = userService.getLoggedUser();
         if(possibleUser.isEmpty())
             throw new UserNotFoundException("User not found");
         User user = possibleUser.get();
-        //chequeo que el post exista
-        //Post post = postService.getPostById(postId); chequear si hace falta validar aca, creemos que no
-        return commentDao.getGroovedComments(postId,user.getId());
+        //TODO: Cambiar a que getPostById devuelva un Optional<Post>
+        Post post = postService.getPostById(postId);
+        return commentDao.getGroovedComments(post.getId(),user.getId());
     }
 
     @Override

@@ -8,9 +8,6 @@ import java.util.Optional;
 
 public interface TokenService {
 
-    void verifyUser(String token) throws NoSuchTokenException, UserNotFoundException;
-
-
     Optional<Long> getUserIdFromToken(String token, String type)throws NoSuchTokenException;
 
     Optional<User> getUserFromToken(String token, String type) throws NoSuchTokenException;

@@ -257,14 +257,6 @@
                             <div class="card mb-3">
                                 <div class="card-body">
                                     <div class="title-container">
-                                            <%--                                        <c:if test="${community.portrait_id == 0}">--%>
-                                            <%--                                            <img src="${pageContext.request.contextPath}/images/profile-picture.jpg"--%>
-                                            <%--                                                 class="very-small-profile-pic mb-1" alt="Profile Picture">--%>
-                                            <%--                                        </c:if>--%>
-                                            <%--                                        <c:if test="${community.portrait_id != 0}">--%>
-                                            <%--                                            <img src="<c:url value='/image/${community.portrait_id}'/>"--%>
-                                            <%--                                                 class="very-small-profile-pic mb-1" alt="Profile Picture">--%>
-                                            <%--                                        </c:if>                                            --%>
                                         <p class="fw-semibold card-subtitle">/<c:out value="${post.communityName}"
                                                                                      escapeXml="true"/></p>
                                         <span class="badge rounded-pill mb-1 ${post.category}">${post.category}</span>
@@ -351,7 +343,6 @@
             removeButton.setAttribute('class', 'btn-close delete');
             removeButton.classList.add('delete');
             removeButton.dataset.filename = selectedFiles[i].name;
-            // removeButton.innerHTML = '<span>&times;</span>'
             imageContainer.appendChild(elem);
             imageContainer.appendChild(removeButton);
             elemContainer.appendChild(imageContainer);
@@ -372,10 +363,8 @@
     document.getElementById('submitButtonRatingForm').addEventListener('click',(e)=>{
         var $rateYo = $("#rateYoInput").rateYo();
         let aux = $rateYo.rateYo("rating");
-        // if(aux !==0){
-            document.getElementById('ratingInput').value = aux;
-            document.getElementById('ratingForm').submit();
-        // }
+        document.getElementById('ratingInput').value = aux;
+        document.getElementById('ratingForm').submit();
     })
     </c:if>
 
@@ -419,17 +408,4 @@
             });
         </c:if>
     });
-    console.log("adnksjnkdajskjn")
-    <%--$(document).ready(function () {--%>
-    <%--    $("#rateYoSelf").rateYo({--%>
-    <%--        numStars: 5,--%>
-    <%--        halfStar: true,--%>
-    <%--        precision: 2,--%>
-    <%--        rating: ${rating.rating},--%>
-    <%--        readOnly: true,--%>
-    <%--        starWidth: "20px"--%>
-    <%--    });--%>
-    <%--});--%>
-
-
 </script>

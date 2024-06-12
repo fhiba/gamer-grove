@@ -27,18 +27,6 @@ public class ValidCommunityCategoriesConstraintValidator implements ConstraintVa
                 return false;
             }
         }
-/*        if(s == null) {
-            return true;
-        }
-        List<CommunityCategories> categories = Arrays.stream(CommunityCategories.values()).toList();
-        for (String category : s) {
-            if (category == null || category.isEmpty()) {
-                break;
-            }
-            if (categories.stream().noneMatch(c -> c.getCategory().equals(category))) {
-                return false;
-            }
-        }
-        */return true;
+        return true;
     }
 }

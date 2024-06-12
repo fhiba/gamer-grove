@@ -117,7 +117,6 @@
             removeButton.setAttribute('class', 'btn btn-close btn-close-white delete');
             removeButton.classList.add('delete');
             removeButton.dataset.filename = selectedFiles[i].name;
-                // removeButton.innerHTML = '<span>&times;</span>'
                 imageContainer.appendChild(elem);
             imageContainer.appendChild(removeButton);
             elemContainer.appendChild(imageContainer);
@@ -142,6 +141,5 @@
             item_images = item_images.filter(img => img.name != fileName)
         }
     })
-// mmmm no se si ese = esta bien, chequear si no va un = solo
 </script>
 

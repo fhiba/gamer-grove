@@ -1,10 +1,3 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: juani
-  Date: 3/30/2024
-  Time: 6:25 PM
-  To change this template use File | Settings | File Templates.
---%>
 <%@ page contentType="text/html;charset=UTF-8"  %>
 <footer class="d-flex flex-wrap justify-content-center align-items-center border-top">
     <div class="col-md-4 d-flex align-items-center justify-content-center">

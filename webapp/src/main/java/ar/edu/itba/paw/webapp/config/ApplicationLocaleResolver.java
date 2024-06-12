@@ -22,7 +22,6 @@ public class ApplicationLocaleResolver extends SessionLocaleResolver {
 
     @Override
     public Locale resolveLocale(HttpServletRequest request) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String localeOption;
         Optional<User> maybeUser;
         try {

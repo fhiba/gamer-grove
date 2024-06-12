@@ -3,13 +3,6 @@
 <jsp:useBean id="paginatedDataWrapper" scope="request" type="ar.edu.itba.paw.models.pagination.PaginatedDataWrapper"/>
 <jsp:useBean id="pageNumberName" scope="request" type="java.lang.String"/>
 
-<%--
-  Created by IntelliJ IDEA.
-  User: juani
-  Date: 5/9/2024
-  Time: 8:50 PM
-  To change this template use File | Settings | File Templates.
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <c:if test="${not empty paginatedDataWrapper&&paginatedDataWrapper.pageNumber  <= paginatedDataWrapper.totalPages && paginatedDataWrapper.pageNumber >= 1 && paginatedDataWrapper.totalPages > 1}">

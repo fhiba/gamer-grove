@@ -28,15 +28,6 @@ public class TokenServiceImpl implements TokenService {
     @Autowired
     private UserService userService;
 
-    @Transactional
-    @Override
-    public void verifyUser(String token) throws NoSuchTokenException, UserNotFoundException {
-      /*  Optional<Long> userId = getUserIdFromToken(token);
-        if(userId.isEmpty())
-            throw new NoSuchTokenException("Token " + token + " does not exist");
-        //userService.verifyUser(userId.get());
-        deleteVerifyTokens(userId.get());*/
-    }
 
 
     @Override
