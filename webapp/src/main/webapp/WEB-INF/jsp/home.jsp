@@ -103,8 +103,41 @@
         <div class="col-1"></div>
         <%--LISTA DE NEWS--%>
         <div class="col-3 mt-5">
-            <c:set var="news" value="${news}" scope="request"/>
-            <jsp:include page="/WEB-INF/jsp/components/newsCard.jsp" />
+            <div class="card  bg-transparent border-0">
+                <div class="card-title news-title">
+                    <h5><spring:message code="Home.News"/></h5>
+                </div>
+                <div class="card-body ">
+                    <jsp:useBean id="news" scope="request" type="java.util.List"/>
+                    <c:forEach var="a_new" items="${news}">
+                        <c:url value="/post/${a_new.id}" var="newsUrl"/>
+                        <a href="${newsUrl}" class="card-link text-decoration-none ">
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h6 class="card-subtitle text-secondary fw-bold"><c:out
+                                            value="${a_new.communityName}" escapeXml="true"/></h6>
+                                    <h5 class="card-title fw-bold"><c:out value="${a_new.title}" escapeXml="true"/></h5>
+                                    <p class="card-text post-body truncate-4-lines"><c:out value="${a_new.body}" escapeXml="true"/></p>
+
+                                    <div class="d-flex row-cols-2 justify-content-between mt-1">
+                                        <p>
+                                            <small class="text-body-secondary">
+                                                <c:out value="${a_new.date.format(format)}" escapeXml="true"/>
+                                            </small>
+                                        </p>
+                                        <div class="d-flex justify-content-end align-items-end">
+                                        <span class="badge text-bg-dark pillUpvoteHome bg-transparent border border-light rounded-2 border-1"><c:out value="${a_new.grooviness}" escapeXml="true"/>
+                                                <i class="fa fa-thumbs-up ms-2" aria-hidden="true"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </a>
+
+                    </c:forEach>
+                </div>
+            </div>
 
             <div id="toastBox" class=" position-fixed bottom-0 end-0 m-3" style="display: none">
                 <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
@@ -117,8 +150,40 @@
                     </div>
                 </div>
             </div>
-            <c:set var="topPost" value="${topPost}" scope="request"/>
-            <jsp:include page="/WEB-INF/jsp/components/topCards.jsp" />
+            <div class="card  bg-transparent border-0">
+                <div class="card-title news-title">
+                    <h5><spring:message code="Home.Top"/></h5>
+                </div>
+                <div class="card-body ">
+                    <c:forEach var="a_top" items="${topPost}">
+                        <c:url value="/post/${a_top.id}" var="newsUrl"/>
+                        <a href="${newsUrl}" class="card-link text-decoration-none ">
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h6 class="card-subtitle text-secondary fw-bold"><c:out
+                                            value="${a_top.communityName}" escapeXml="true"/></h6>
+                                    <h5 class="card-title fw-bold"><c:out value="${a_top.title}" escapeXml="true"/></h5>
+                                    <p class="card-text post-body truncate-4-lines"><c:out value="${a_top.body}" escapeXml="true"/></p>
+
+                                    <div class="d-flex row-cols-2 justify-content-between mt-1">
+                                        <p>
+                                            <small class="text-body-secondary">
+                                                <c:out value="${a_top.date.format(format)}" escapeXml="true"/>
+                                            </small>
+                                        </p>
+                                        <div class="d-flex justify-content-end align-items-end">
+                                        <span class="badge text-bg-dark pillUpvoteHome bg-transparent border border-light rounded-2 border-1"><c:out value="${a_top.grooviness}" escapeXml="true"/>
+                                                <i class="fa fa-thumbs-up ms-2" aria-hidden="true"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </a>
+
+                    </c:forEach>
+                </div>
+            </div>
             <div id="toastBox" class=" position-fixed bottom-0 end-0 m-3" style="display: none">
                 <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
                     <div class="toast-header">

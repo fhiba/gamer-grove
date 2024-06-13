@@ -30,10 +30,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.validation.BindingResult;
 
@@ -261,6 +258,94 @@ public class UserController {
             communities = null;
         }
         User user = us.getLoggedUserChecked();
+        mav.addObject("isAdmin", user.getOwner());
+        mav.addObject("user", user);
+        mav.addObject("followedCommunities", communities);
+        mav.addObject("selectedCategories", selectedCategories);
+        mav.addObject("categories", Arrays.stream(CommunityCategories.values()).map(CommunityCategories::getCategory).toArray(String[]::new));
+        mav.addObject("communities", cs.getFollowedCommunities(user));
+        mav.addObject("isVerified", user.isVerified());
+
+        return mav;
+
+    }
+
+    @RequestMapping(path = {"/user/{id}/userPosts"}, method = RequestMethod.GET)
+    public ModelAndView getPublicProfileUserPosts(@PathVariable("id") final long id,@RequestParam(required = false) Integer pageNumber) throws UserNotFoundException {
+        ModelAndView mav = new ModelAndView("user/public_profile/userPosts");
+        Optional<User> maybeUser = us.findById(id);
+        if(maybeUser.isEmpty())
+            throw new UserNotFoundException("This user does not exists");
+        User user = maybeUser.get();
+        mav.addObject("isAdmin", user.getOwner());
+        mav.addObject("user", user);
+        mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+        mav.addObject("communities", cs.getFollowedCommunities(user));
+        mav.addObject("isVerified", user.isVerified());
+
+        PaginatedDataWrapper<Post> posts;
+        PaginationRequest paginationRequest = new PaginationRequest(5);
+        if (Objects.nonNull(pageNumber))
+            paginationRequest.setPageNumber(pageNumber);
+        try {
+            posts = ps.getPostsByUserPaginated(user.getId(), paginationRequest);
+        } catch (IllegalArgumentException e) {
+
+            LOGGER.error("Error getting created posts", e);
+            posts = null;
+        }
+        mav.addObject("posts", posts);
+        return mav;
+    }
+
+    @RequestMapping(path = "/user/{id}/likedPosts", method = RequestMethod.GET)
+    public ModelAndView getProfileLikedPosts(@PathVariable("id") final long id,@RequestParam(required = false) Integer pageNumber) throws UserNotFoundException {
+        ModelAndView mav = new ModelAndView("user/public_profile/likedPosts");
+        Optional<User> maybeUser = us.findById(id);
+        if(maybeUser.isEmpty())
+            throw new UserNotFoundException("This user does not exists");
+        User user = maybeUser.get();
+
+        mav.addObject("isAdmin", false);
+        mav.addObject("user", user);
+        mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+        mav.addObject("communities", cs.getFollowedCommunities(user));
+        mav.addObject("isVerified", user.isVerified());
+        PaginatedDataWrapper<Post> likedPosts;
+        PaginationRequest paginationRequestLikedPosts = new PaginationRequest(5);
+        if (Objects.nonNull(pageNumber))
+            paginationRequestLikedPosts.setPageNumber(pageNumber);
+        try {
+            likedPosts = ps.getUserLikedPostsPaginated(user.getId(), paginationRequestLikedPosts);
+        } catch (IllegalArgumentException e) {
+            LOGGER.error("Error getting liked posts", e);
+            likedPosts = null;
+        }
+        mav.addObject("posts", likedPosts);
+        return mav;
+    }
+
+    @RequestMapping(path = "/user/{id}/followed", method = RequestMethod.GET)
+    public ModelAndView getFollowedCommunities(@PathVariable("id") final long id,@RequestParam(required = false) Integer pageNumber, @ModelAttribute("categories") final String categories) throws NoLoggedUserException, UserNotFoundException {
+        ModelAndView mav = new ModelAndView("user/public_profile/followedCommunities");
+        PaginatedDataWrapper<Community> communities;
+
+        List<String> selectedCategories = Arrays.asList(categories.split(","));
+        PaginationRequest paginationRequest = new PaginationRequest(8);
+        if (Objects.nonNull(pageNumber))
+            paginationRequest.setPageNumber(pageNumber);
+
+        try {
+            communities = cs.findFollowedCommunities(paginationRequest, selectedCategories);
+        } catch (IllegalArgumentException e) {
+
+            LOGGER.error("Error getting created posts", e);
+            communities = null;
+        }
+        Optional<User> maybeUser = us.findById(id);
+        if(maybeUser.isEmpty())
+            throw new UserNotFoundException("This user does not exists");
+        User user = maybeUser.get();
         mav.addObject("isAdmin", user.getOwner());
         mav.addObject("user", user);
         mav.addObject("followedCommunities", communities);

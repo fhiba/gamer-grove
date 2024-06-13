@@ -37,7 +37,7 @@
                         <c:url value="/all?category=${post.category}" var="categoryFilterURl"/>
                         <a href="${categoryFilterURl}">
                         <span class="badge rounded-pill pe-auto ${post.category}"><c:out value="${post.category}"
-                                                                                 escapeXml="true"/></span>
+                                                                                         escapeXml="true"/></span>
                         </a>
                     </p>
 
@@ -47,8 +47,11 @@
                     </c:if>
                     <c:if test="${!post.deleted}">
                         <h4 class="card-title fw-bold mb-0"><c:out value="${post.title}" escapeXml="true"/></h4>
+                        <c:url var="authorProfileUrl" value="/user/${post.author.id}/userPosts" />
+                        <a class="text-decoration-none text-light" href="${authorProfileUrl}">
                         <p class="card-subtitle mb-4">u/<c:out value="${author}" escapeXml="true"/></p>
-                        <p class="card-text"><c:out value="${post.body}" escapeXml="true"/></p>
+                        </a>
+                            <p class="card-text"><c:out value="${post.body}" escapeXml="true"/></p>
                         <c:if test="${not empty post.images}">
                             <div id="carouselExample" class="carousel slide ">
                                 <div class="carousel-inner bg-dark">
@@ -80,15 +83,18 @@
                         <c:if test="${canDelete}">
                             <button type="button" class="btn btn-danger" data-bs-toggle="modal"
                                     data-bs-target="#deletePostModal">
-                                <spring:message code="Post.DeleteButton" />
+                                <spring:message code="Post.DeleteButton"/>
                             </button>
                             <!-- Modal -->
-                            <div class="modal fade" id="deletePostModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal fade" id="deletePostModal" tabindex="-1"
+                                 aria-labelledby="exampleModalLabel" aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h1 class="modal-title fs-5" id="exampleModalLabel"><spring:message code="Post.DeleteConfirmation"/> </h1>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel"><spring:message
+                                                    code="Post.DeleteConfirmation"/></h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
                                         </div>
                                         <div class="modal-footer">
                                             <button data-bs-dismiss="modal" class="btn btn-secondary btn-sm">
@@ -192,13 +198,18 @@
                     <ul class="list-group">
                         <c:forEach var="comment" items="${comments.data}">
                             <c:if test="${!comment.deleted}">
+                                <c:url var="publicProfileUrl" value="/user/${comment.author.id}/userPosts"/>
                                 <li class="list-group-item d-flex justify-content-between align-items-start bg-body-secondary">
                                         <%--suppress CheckImageSize --%>
-                                    <img src="${pageContext.request.contextPath}/images/default-avatar-icon.jpg"
-                                         height="50" width="50" class="rounded-5" alt="Profile Picture" >
+                                    <a href="${publicProfileUrl}"><img  src="${pageContext.request.contextPath}/images/default-avatar-icon.jpg"
+                                         height="50" width="50" class="rounded-5" alt="Profile Picture">
+                                    </a>
                                     <div class="ms-2 me-auto">
-                                        <div class="fw-bold"><c:out value="${comment.username}" escapeXml="true"/>
-                                        </div>
+
+                                        <a class="text-decoration-none text-dark" href="${publicProfileUrl}" >
+                                            <div class="fw-bold"><c:out value="${comment.username}" escapeXml="true"/>
+                                            </div>
+                                        </a>
                                         <p class="text-break">
                                             <c:out value="${comment.body}" escapeXml="true"/>
                                         </p>
@@ -248,38 +259,44 @@
                                                     </button>
                                                     <span class="grooviness-count d-flex justify-content-center align-items-center">${comment.grooviness}</span>
 
-                                                <button onclick="commentGroovyUpdate(false, ${comment.id})" class="btn">
-                                                    <i class="fas fa-arrow-down"></i>
-                                                </button>
+                                                    <button onclick="commentGroovyUpdate(false, ${comment.id})"
+                                                            class="btn">
+                                                        <i class="fas fa-arrow-down"></i>
+                                                    </button>
                                                 </c:if>
                                             </div>
                                         </c:if>
-                                        </div>
-                                        <div class="d-flex justify-content-center align-items-center">
+                                    </div>
+                                    <div class="d-flex justify-content-center align-items-center">
                                         <c:url value="/comment/${postId}/delete" var="deleteCommentUrl"/>
                                         <c:if test="${canDelete}">
                                             <c:if test="${!post.deleted}">
-                                            <button class="btn btn-danger btn-sm align-content-center"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#deleteComment${comment.id}Modal">
-                                                <i class="fas fa-solid fa-trash"></i>
-                                            </button>
+                                                <button class="btn btn-danger btn-sm align-content-center"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#deleteComment${comment.id}Modal">
+                                                    <i class="fas fa-solid fa-trash"></i>
+                                                </button>
                                             </c:if>
                                             <!-- Modal -->
-                                            <div class="modal fade" id="deleteComment${comment.id}Modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                            <div class="modal fade" id="deleteComment${comment.id}Modal" tabindex="-1"
+                                                 aria-labelledby="exampleModalLabel" aria-hidden="true">
                                                 <div class="modal-dialog modal-dialog-centered">
                                                     <div class="modal-content">
                                                         <div class="modal-header">
-                                                            <h1 class="modal-title fs-5 modal-title-color" ><spring:message code="Comment.DeleteConfirmation"/> </h1>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            <h1 class="modal-title fs-5 modal-title-color">
+                                                                <spring:message code="Comment.DeleteConfirmation"/></h1>
+                                                            <button type="button" class="btn-close"
+                                                                    data-bs-dismiss="modal" aria-label="Close"></button>
                                                         </div>
                                                         <div class="modal-footer">
-                                                            <button data-bs-dismiss="modal" class="btn btn-secondary btn-sm">
+                                                            <button data-bs-dismiss="modal"
+                                                                    class="btn btn-secondary btn-sm">
                                                                 <spring:message code="Post.CancelDelete"/>
                                                             </button>
-                                                            <form:form action="${deleteCommentUrl}" var="deleteCommenttUrl"
+                                                            <form:form action="${deleteCommentUrl}"
+                                                                       var="deleteCommenttUrl"
                                                                        method="post"
-                                                                       modelAttribute="commentDeleteForm" >
+                                                                       modelAttribute="commentDeleteForm">
                                                                 <form:hidden path="commentId" value="${comment.id}"/>
 
                                                                 <button class="btn btn-danger btn-sm" type="submit">
@@ -320,8 +337,8 @@
                             </c:if>
                         </div>
                     </ul>
-                </div>
             </div>
+        </div>
         <div class="col-1">
 
         </div>

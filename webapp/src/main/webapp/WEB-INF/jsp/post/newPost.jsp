@@ -93,7 +93,7 @@
         <%--POSTS LIST OF THE COMMUNITY--%>
         <div class="col-2">
             <c:set var="news" value="${news}" scope="request"/>
-            <jsp:include page="/WEB-INF/jsp/components/newsCard.jsp" />
+            <jsp:include page="/WEB-INF/jsp/components/postCard.jsp" />
         </div>
 
     </div>
