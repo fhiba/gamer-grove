@@ -1,3 +1,7 @@
+CREATE TABLE IF NOT EXISTS media(
+                                    id SERIAL PRIMARY KEY,
+                                    bytes bytea NOT NULL
+);
 CREATE TABLE IF NOT EXISTS users(
                       id SERIAL PRIMARY KEY,
                       username VARCHAR(50) UNIQUE NOT NULL,
@@ -8,10 +12,7 @@ CREATE TABLE IF NOT EXISTS users(
     CONSTRAINT fk_users_portrait_id FOREIGN KEY (portrait_id) REFERENCES media(id)
 );
 
-CREATE TABLE IF NOT EXISTS media(
-                      id SERIAL PRIMARY KEY,
-                      bytes bytea NOT NULL
-);
+
 
 CREATE TABLE IF NOT EXISTS community(
                           id SERIAL PRIMARY KEY,

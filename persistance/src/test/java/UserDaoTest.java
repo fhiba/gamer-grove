@@ -1,4 +1,5 @@
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.persistance.UserDaoJPA;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.annotation.Rollback;
@@ -25,7 +26,7 @@ import static org.junit.Assert.assertNotNull;
 public class UserDaoTest {
 
     @Autowired
-    private UserDao userDao;
+    private UserDaoJPA userDao;
 
     @Autowired
     private DataSource ds;
@@ -44,7 +45,6 @@ public class UserDaoTest {
     @Rollback
     public void testCreate() {
         final User user = userDao.create(USERNAME, EMAIL, PASSWORD);
-
         em.flush();
         assertNotNull(user);
         assertEquals(USERNAME, user.getUsername());
@@ -83,7 +83,7 @@ public class UserDaoTest {
 
     @Test
     public void testGetFollowersOfCommunity() {
-        List<User> followers = userDao.getFollowersOfCommunity(10);
+        List<User> followers = userDao.getFollowersOfCommunity(10L);
         assertEquals(1,followers.size());
     }
 

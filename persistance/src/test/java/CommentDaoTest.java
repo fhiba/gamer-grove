@@ -44,7 +44,7 @@ public class CommentDaoTest {
     public void testCreateComment(){
         User user = new User("Pedro", "curti", "pedro@curti.com",false,"en",false);
         user.setId(10L);
-        Community community = new Community("name", "description", null, "developer", "publisher", NOW);
+        Community community = new Community("test", "This is a test community", null, "falsepub", "falsedeveloper", NOW);
         community.setId(10L);
         Post post = new Post("title", "body", user, community,false,1L,NOW, 0, false, "Help");
         post.setId(10L);
@@ -75,7 +75,7 @@ public class CommentDaoTest {
     public void testEditGrooviness() {
         User user = new User("Pedro", "curti", "pedro@curti.com",false,"en",false);
         user.setId(10L);
-        Community community = new Community("name", "description", null, "developer", "publisher", NOW);
+        Community community = new Community("test", "This is a test community", null, "falsepub", "falsedeveloper", NOW);
         community.setId(10L);
         Post post = new Post("title", "body", user, community,false,1L,NOW, 0, false, "Help");
         post.setId(10L);
@@ -102,7 +102,7 @@ public class CommentDaoTest {
         User user = new User("Pedro", "curti", "pedro@curti.com", false, "en", false);
         user.setId(10L);
         user = em.merge(user);
-        Community community = new Community("test", "description", null, "developer", "publisher", EXISTING_POST);
+        Community community = new Community("test", "This is a test community", null, "falsepub", "falsedeveloper", NOW);
         community.setId(10L);
         community = em.merge(community);
         Post post = new Post("First post", "This is my first post", user, community, false, 1L, EXISTING_POST, 0, false, "Help");
