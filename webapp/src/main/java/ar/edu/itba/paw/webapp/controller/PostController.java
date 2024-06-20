@@ -99,7 +99,7 @@ public class PostController {
 
 
     @RequestMapping(path = {"/home"}, method = RequestMethod.GET)
-    public ModelAndView getHomePosts(@RequestParam(required = false) Integer pageNumber,@RequestParam(value = "category", required = false) final String category) {
+    public ModelAndView getHomePosts(@RequestParam(required = false) Integer pageNumber,@RequestParam(value = "category", required = false) final String category, @RequestParam(value="order", required = false) String order) {
         ModelAndView mav = new ModelAndView("/home");
         List<Community> communities;
         Boolean isAdmin;
@@ -114,18 +114,11 @@ public class PostController {
             User user = userOptional.get();
             communities = cs.getFollowedCommunities(user);
             isAdmin = user.getOwner();
-            if (Objects.nonNull(category) && !category.isEmpty() && !category.equals("all")) {
-                try {
-                    posts = ps.getUserFollowedPostsByCategoryPaginated(category,user.getId(),paginationRequest);
-                }catch (IllegalArgumentException e){
-                    posts = null;
-                }
-            } else {
-                try {
-                    posts = ps.getUserFollowedPostsPaginated(user.getId(),paginationRequest);
-                }catch (IllegalArgumentException e){
-                    posts = null;
-                }
+
+            try {
+                posts = ps.getUserFollowedPostsPaginated(category, order, user.getId(),paginationRequest);
+            } catch (IllegalArgumentException e) {
+                posts = null;
             }
         }else{
            return new ModelAndView("redirect:/all/");
@@ -134,23 +127,25 @@ public class PostController {
         mav.addObject("isLogged", true);
         mav.addObject("posts",posts);
         mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
-        return homeAndAllConfig(category, mav, communities, categories, userOptional);
+        return homeAndAllConfig(category, order, mav, communities, categories, userOptional);
     }
 
     @NotNull
-    private ModelAndView homeAndAllConfig(@RequestParam(value = "category", required = false) String category, ModelAndView mav, List<Community> communities, List<String> categories, Optional<User> userOptional) {
+    private ModelAndView homeAndAllConfig(@RequestParam(value = "category", required = false) String category, @RequestParam(value="order", required = false) String order, ModelAndView mav, List<Community> communities, List<String> categories, Optional<User> userOptional) {
         mav.addObject("communities", communities);
         mav.addObject("topPost",ps.topFivePosts());
         mav.addObject("news", ps.getNewsLimited(5));
         mav.addObject("categories", categories);
         mav.addObject("isVerified", userOptional.isPresent() && userOptional.get().isVerified());
         mav.addObject("category",category);
+        mav.addObject("order",order);
+        mav.addObject("orders", Arrays.stream(PostOrders.values()).filter(o -> !o.equals(PostOrders.DEFAULT)).map(PostOrders::getOrder).toList());
         return mav;
     }
 
 
     @RequestMapping(path = {"/","/all"}, method = RequestMethod.GET)
-    public ModelAndView getAllPosts(@RequestParam(required = false) Integer pageNumber,@RequestParam(value = "category", required = false) final String category) {
+    public ModelAndView getAllPosts(@RequestParam(required = false) Integer pageNumber,@RequestParam(value = "category", required = false) final String category, @RequestParam(value="order", required = false) String order) {
         ModelAndView mav = new ModelAndView("/home");
         PaginatedDataWrapper<Post> posts;
         List<Community> communities;
@@ -169,24 +164,18 @@ public class PostController {
         }else{
             communities = cs.getAllCommunities();
         }
-        if (Objects.nonNull(category) && !category.isEmpty() && !category.equals("all")) {
-            try {
-                posts = ps.getPostsByCategoryPaginated(category,paginationRequest);
-            }catch (IllegalArgumentException e){
-                posts = null;
-            }
-        } else {
-            try {
-                posts = ps.getAllPostsPaginated(paginationRequest);
-            }catch (IllegalArgumentException e){
-                posts = null;
-            }
+
+        try {
+            posts = ps.getAllPostsPaginated(category, order, paginationRequest);
+        } catch (IllegalArgumentException e) {
+            posts = null;
         }
+
         mav.addObject("isAdmin",isAdmin);
         mav.addObject("isLogged", optionalUser.isPresent());
         mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
         mav.addObject("posts",posts);
-        return homeAndAllConfig(category, mav, communities, categories, optionalUser);
+        return homeAndAllConfig(category, order, mav, communities, categories, optionalUser);
     }
 
     @RequestMapping(path = "/post/{postId}", method = RequestMethod.GET)

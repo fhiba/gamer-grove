@@ -202,7 +202,6 @@ public class CommunityDaoJpa implements CommunityDao{
     }
 
 
-
     @Override
     public void unfollowCommunity(long id, int communityId) {
         em.createNativeQuery("DELETE FROM community_user WHERE user_id = :id AND community_id = :communityId")

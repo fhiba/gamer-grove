@@ -40,9 +40,17 @@
                                 <c:forEach var="categoryItem" items="${categories}">
                                 <option <c:if test="${categoryItem == category}"> selected </c:if> value="${categoryItem}">${categoryItem}</option>
                                 </c:forEach>
-                            </select>
-                            <label for="category"><spring:message code="Home.Category"/></label>
+                            </select><label for="category"><spring:message code="Home.Category"/></label>
                         </div>
+                        <div class="form-floating w-25 mb-3">
+                            <select class="form-select" id="order" aria-label="Floating label select example"
+                                    onchange="orderPosts()">
+                                <c:forEach var="orderItem" items="${orders}">
+                                    <option <c:if test="${orderItem == order}"> selected </c:if> value="${orderItem}">${orderItem}</option>
+                                </c:forEach>
+                            </select><label for="order"><spring:message code="Home.Order"/></label>
+                        </div>
+
                         <c:url value="/post" var="newPostUrl"/>
                         <a href="${newPostUrl}" type="button" class="btn  btn-primary  h-25 me-2 mt-1"><spring:message
                                 code="Post.Create"/></a>
@@ -221,6 +229,13 @@
         let category = document.getElementById('category').value;
         let newUrl = new URL(url);
         newUrl.searchParams.set('category', category);
+        window.location.search = newUrl.search;
+    }
+    const orderPosts = () => {
+        let url = document.URL;
+        let order = document.getElementById('order').value;
+        let newUrl = new URL(url);
+        newUrl.searchParams.set('order', order);
         window.location.search = newUrl.search;
     }
     let postBody = document.getElementsByClassName('post-body');

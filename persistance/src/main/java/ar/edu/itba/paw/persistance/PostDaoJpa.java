@@ -321,4 +321,129 @@ public class PostDaoJpa implements PostDao {
         query.setMaxResults(5);
         return query.getResultList();
     }
+
+    private class QueryBuilder {
+        private static final String COUNT = "SELECT COUNT(post.id) FROM post WHERE post.deleted = false ";
+        private static final String SELECT = "SELECT post.id FROM post WHERE post.deleted = false ";
+        private static final String COMMUNITY_FILTERED = " AND post.community_name IN (SELECT cu.community_name FROM community_user AS cu WHERE cu.user_id = :userId)";
+        private static final String CATEGORY = " AND post.category = :category";
+        private static final String DEFAULT_ORDER_BY = " ORDER BY post.post_date DESC";
+        private static final String OLDEST_ORDER_BY = " ORDER BY post.post_date ASC";
+        private static final String HOTTEST_ORDER_BY = " ORDER BY post.grooviness DESC";
+        private static final String DEFAULT_RETRIEVE = "from Post as p where p.id IN :ids order by p.date desc";
+        private static final String OLD_RETRIEVE = "from Post as p where p.id IN :ids order by p.date asc";
+        private static final String HOTTEST_RETRIEVE = "from Post as p where p.id IN :ids order by p.grooviness desc";
+        private PostCategories category;
+        private PostOrders order;
+        private Long userId;
+
+         public QueryBuilder() {
+
+        }
+
+        public QueryBuilder forUser(Long userId) {
+            this.userId = userId;
+            return this;
+        }
+
+        public QueryBuilder fromCategory(PostCategories category) {
+            this.category = category;
+            return this;
+        }
+
+        public QueryBuilder orderBy(PostOrders order) {
+            this.order = order;
+            return this;
+        }
+
+        List<Long> getIds(Integer pageSize, Integer offset) {
+            StringBuilder queryString = new StringBuilder(SELECT);
+            if (category != null) {
+                queryString.append(CATEGORY);
+            }
+            if (userId != null) {
+                queryString.append(COMMUNITY_FILTERED);
+            }
+            switch (order) {
+
+                case OLDEST:
+                    queryString.append(OLDEST_ORDER_BY);
+                    break;
+                case HOTTEST:
+                    queryString.append(HOTTEST_ORDER_BY);
+                    break;
+                case NEWEST:
+                case DEFAULT:
+                    queryString.append(DEFAULT_ORDER_BY);
+                    break;
+            }
+
+            LOGGER.debug("Query: {}", queryString.toString());
+            Query nativeQuery = em.createNativeQuery(queryString.toString());
+            if (category != null) {
+                nativeQuery.setParameter("category", category.getCategory());
+            }
+            if (userId != null) {
+                nativeQuery.setParameter("userId", userId);
+            }
+            nativeQuery.setFirstResult(offset);
+            nativeQuery.setMaxResults(pageSize);
+            return ((Stream<Integer>) nativeQuery.getResultStream()).map(Integer::longValue).toList();
+        }
+
+        List<Post> build(Integer pageSize, Integer offset) {
+             List<Long> ids = getIds(pageSize, offset);
+             String query;
+             switch (order) {
+                 case OLDEST:
+                     query = OLD_RETRIEVE;
+                     break;
+                 case HOTTEST:
+                     query = HOTTEST_RETRIEVE;
+                     break;
+                 case NEWEST:
+                 case DEFAULT:
+                 default:
+                     query = DEFAULT_RETRIEVE;
+                     break;
+             }
+                TypedQuery<Post> typedQuery = em.createQuery(query, Post.class);
+                typedQuery.setParameter("ids", ids);
+                return typedQuery.getResultList();
+        }
+
+        Integer buildCount() {
+            StringBuilder queryString = new StringBuilder(COUNT);
+            if (category != null) {
+                queryString.append(CATEGORY);
+            }
+            if (userId != null) {
+                queryString.append(COMMUNITY_FILTERED);
+            }
+            LOGGER.debug("Count Query: {}", queryString.toString());
+            Query query = em.createNativeQuery(queryString.toString());
+            if (category != null) {
+                query.setParameter("category", category.getCategory());
+            }
+            if (userId != null) {
+                query.setParameter("userId", userId);
+            }
+            return ((Number) query.getSingleResult()).intValue();
+        }
+    }
+
+    public List<Post> find(int pageSize, int offset, PostCategories category, PostOrders order, Long userId) {
+         return new QueryBuilder()
+                .fromCategory(category)
+                .orderBy(order)
+                .forUser(userId)
+                .build(pageSize, offset);
+    }
+
+    public Integer findCount(PostCategories category, Long userId) {
+        return new QueryBuilder()
+                .fromCategory(category)
+                .forUser(userId)
+                .buildCount();
+    }
 }
