@@ -53,15 +53,7 @@ public class UserController {
     @Autowired
     private CommunityService cs;
     @Autowired
-    private FileService fs;
-
-
-    @Autowired
     private PostService ps;
-
-    @Autowired
-    private CommentService cms;
-
 
     @RequestMapping(path = "/login")
     public ModelAndView getLogIn(@ModelAttribute("loginForm") final LogInForm loginForm) {
@@ -100,14 +92,14 @@ public class UserController {
             try {
                 modders = md.getModsByCommunityPaginated(community, paginationRequest);
             } catch (NoSuchCommunityException e) {
-                LOGGER.error("Error getting moderators filter by "+community, e);
+                LOGGER.atError().setMessage("Error getting moderators filter by community {}").addArgument(community).log();
                 modders = null;
             }
         } else if (Objects.nonNull(username) && !username.isEmpty() && Objects.isNull(community)) {
             try {
                 modders = md.getModsByUsernamePaginated(username, paginationRequest);
             } catch (IllegalArgumentException e) {
-                LOGGER.error("Error getting moderators filter by "+community, e);
+                LOGGER.atError().setMessage("Error getting moderators filter by username {}").addArgument(username).log();
                 modders = null;
             } catch (UserNotFoundException e) {
                 modders = null;
@@ -118,7 +110,7 @@ public class UserController {
                 mav.addObject("moderator",optMod.orElseThrow());
                 modders = null;
             } catch (IllegalArgumentException e) {
-                LOGGER.error("Error getting moderators filter by "+community, e);
+                LOGGER.atError().setMessage("Error getting moderators filter by username {} and community").addArgument(username).addArgument(community).log();
                 modders = null;
             } catch (UserNotFoundException | NoSuchCommunityException e) {
                 modders = null;
@@ -127,7 +119,7 @@ public class UserController {
             try {
                 modders = md.getAllModPaginated(paginationRequest);
             } catch (IllegalArgumentException e) {
-                LOGGER.error("Error getting moderators", e);
+                LOGGER.atError().setMessage("Error getting all moderators").log();
                 modders = null;
             }
         }
@@ -151,7 +143,7 @@ public class UserController {
         try {
             md.addModder(newModForm.getUsername(), newModForm.getCommunityId());
         } catch (AlreadyModException e) {
-            LOGGER.debug("User is already a mod");
+            LOGGER.atError().setMessage("User {} is already a mod").addArgument(()-> newModForm.getUsername()).log();
             return manageMods(null,null,null, newModForm, removeModForm).addObject("isAlreadyMod", true);
         }
         return new ModelAndView("redirect:/manageMods");
@@ -183,7 +175,7 @@ public class UserController {
     }
 
     @RequestMapping(path = "/user/update", method = RequestMethod.POST)
-    public ModelAndView updateUser(@Valid @ModelAttribute("userPfpForm") final UserPfpForm userPfpForm, final BindingResult errors) throws NoLoggedUserException {
+    public ModelAndView updateUser(@Valid @ModelAttribute("userPfpForm") final UserPfpForm userPfpForm, final BindingResult errors) throws NoLoggedUserException, UserNotFoundException {
         if (errors.hasErrors()) {
             return getProfileUserPosts(null, userPfpForm);
         }
@@ -192,9 +184,14 @@ public class UserController {
     }
 
     @RequestMapping(path = {"/profile/userPosts", "/profile"}, method = RequestMethod.GET)
-    public ModelAndView getProfileUserPosts(@RequestParam(required = false) Integer pageNumber, @ModelAttribute("userPfpForm") final UserPfpForm userPfpForm) {
+    public ModelAndView getProfileUserPosts(@RequestParam(required = false) Integer pageNumber, @ModelAttribute("userPfpForm") final UserPfpForm userPfpForm) throws UserNotFoundException {
         ModelAndView mav = new ModelAndView("user/profile/userPosts");
-        User user = us.getLoggedUser().orElseThrow();
+        Optional<User> maybeUser = us.getLoggedUser();
+        if(maybeUser.isEmpty()) {
+            LOGGER.atError().setMessage("User logged not found").log();
+            throw new UserNotFoundException("This user does not exists");
+        }
+        User user = maybeUser.get();
         mav.addObject("isAdmin", user.getOwner());
         mav.addObject("user", user);
         mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
@@ -208,8 +205,7 @@ public class UserController {
         try {
             posts = ps.getPostsByUserPaginated(user.getId(), paginationRequest);
         } catch (IllegalArgumentException e) {
-
-            LOGGER.error("Error getting created posts", e);
+            LOGGER.atError().setMessage("Error getting posts of user {}").addArgument(()-> user.getId()).log();
             posts = null;
         }
         mav.addObject("posts", posts);
@@ -217,9 +213,14 @@ public class UserController {
     }
 
     @RequestMapping(path = "/profile/likedPosts", method = RequestMethod.GET)
-    public ModelAndView getProfileLikedPosts(@RequestParam(required = false) Integer pageNumber, @ModelAttribute("userPfpForm") final UserPfpForm userPfpForm) {
+    public ModelAndView getProfileLikedPosts(@RequestParam(required = false) Integer pageNumber, @ModelAttribute("userPfpForm") final UserPfpForm userPfpForm) throws UserNotFoundException {
         ModelAndView mav = new ModelAndView("user/profile/likedPosts");
-        User user = us.getLoggedUser().orElseThrow();
+        Optional<User> maybeUser = us.getLoggedUser();
+        if(maybeUser.isEmpty()) {
+            LOGGER.atError().setMessage("User logged not found").log();
+            throw new UserNotFoundException("This user does not exists");
+        }
+        User user = maybeUser.get();
         Boolean isAdmin = us.getLoggedUser().get().getOwner();
         mav.addObject("isAdmin", isAdmin);
         mav.addObject("user", user);
@@ -233,7 +234,7 @@ public class UserController {
         try {
             likedPosts = ps.getUserLikedPostsPaginated(user.getId(), paginationRequestLikedPosts);
         } catch (IllegalArgumentException e) {
-            LOGGER.error("Error getting liked posts", e);
+            LOGGER.atError().setMessage("Error getting liked posts of user {}").addArgument(()-> user.getId()).log();
             likedPosts = null;
         }
         mav.addObject("posts", likedPosts);
@@ -241,7 +242,7 @@ public class UserController {
     }
 
     @RequestMapping(path = "/profile/followed", method = RequestMethod.GET)
-    public ModelAndView getFollowedCommunities(@RequestParam(required = false) Integer pageNumber, @ModelAttribute("categories") final String categories, @ModelAttribute("userPfpForm") final UserPfpForm userPfpForm) throws NoLoggedUserException {
+    public ModelAndView getFollowedCommunities(@RequestParam(required = false) Integer pageNumber, @ModelAttribute("categories") final String categories, @ModelAttribute("userPfpForm") final UserPfpForm userPfpForm) throws NoLoggedUserException, UserNotFoundException {
         ModelAndView mav = new ModelAndView("user/profile/followedCommunities");
         PaginatedDataWrapper<Community> communities;
 
@@ -253,11 +254,14 @@ public class UserController {
         try {
             communities = cs.findFollowedCommunities(paginationRequest, selectedCategories);
         } catch (IllegalArgumentException e) {
-
-            LOGGER.error("Error getting created posts", e);
             communities = null;
         }
-        User user = us.getLoggedUserChecked();
+        Optional<User> maybeUser = us.getLoggedUser();
+        if(maybeUser.isEmpty()) {
+            LOGGER.atError().setMessage("User logged not found").log();
+            throw new UserNotFoundException("This user does not exists");
+        }
+        User user = maybeUser.get();
         mav.addObject("isAdmin", user.getOwner());
         mav.addObject("user", user);
         mav.addObject("followedCommunities", communities);
@@ -274,8 +278,10 @@ public class UserController {
     public ModelAndView getPublicProfileUserPosts(@PathVariable("id") final long id,@RequestParam(required = false) Integer pageNumber) throws UserNotFoundException {
         ModelAndView mav = new ModelAndView("user/public_profile/userPosts");
         Optional<User> maybeUser = us.findById(id);
-        if(maybeUser.isEmpty())
+        if(maybeUser.isEmpty()) {
+            LOGGER.atError().setMessage("The user with id {} does not exists").addArgument(id).log();
             throw new UserNotFoundException("This user does not exists");
+        }
         User user = maybeUser.get();
         mav.addObject("isAdmin", user.getOwner());
         mav.addObject("user", user);
@@ -290,8 +296,6 @@ public class UserController {
         try {
             posts = ps.getPostsByUserPaginated(user.getId(), paginationRequest);
         } catch (IllegalArgumentException e) {
-
-            LOGGER.error("Error getting created posts", e);
             posts = null;
         }
         mav.addObject("posts", posts);
@@ -302,8 +306,10 @@ public class UserController {
     public ModelAndView getProfileLikedPosts(@PathVariable("id") final long id,@RequestParam(required = false) Integer pageNumber) throws UserNotFoundException {
         ModelAndView mav = new ModelAndView("user/public_profile/likedPosts");
         Optional<User> maybeUser = us.findById(id);
-        if(maybeUser.isEmpty())
+        if(maybeUser.isEmpty()) {
+            LOGGER.atError().setMessage("The user with id {} does not exists").addArgument(id).log();
             throw new UserNotFoundException("This user does not exists");
+        }
         User user = maybeUser.get();
 
         mav.addObject("isAdmin", false);
@@ -318,7 +324,6 @@ public class UserController {
         try {
             likedPosts = ps.getUserLikedPostsPaginated(user.getId(), paginationRequestLikedPosts);
         } catch (IllegalArgumentException e) {
-            LOGGER.error("Error getting liked posts", e);
             likedPosts = null;
         }
         mav.addObject("posts", likedPosts);
@@ -334,17 +339,16 @@ public class UserController {
         PaginationRequest paginationRequest = new PaginationRequest(8);
         if (Objects.nonNull(pageNumber))
             paginationRequest.setPageNumber(pageNumber);
-
         try {
             communities = cs.findFollowedCommunities(paginationRequest, selectedCategories);
         } catch (IllegalArgumentException e) {
-
-            LOGGER.error("Error getting created posts", e);
             communities = null;
         }
         Optional<User> maybeUser = us.findById(id);
-        if(maybeUser.isEmpty())
+        if(maybeUser.isEmpty()) {
+            LOGGER.atError().setMessage("The user with id {} does not exists").addArgument(id).log();
             throw new UserNotFoundException("This user does not exists");
+        }
         User user = maybeUser.get();
         mav.addObject("isAdmin", user.getOwner());
         mav.addObject("user", user);
@@ -353,9 +357,7 @@ public class UserController {
         mav.addObject("categories", Arrays.stream(CommunityCategories.values()).map(CommunityCategories::getCategory).toArray(String[]::new));
         mav.addObject("communities", cs.getFollowedCommunities(user));
         mav.addObject("isVerified", user.isVerified());
-
         return mav;
-
     }
 
 

@@ -103,7 +103,7 @@ public class UserServiceImpl implements UserService {
     public void resetPassword(String token, String password) throws NoSuchTokenException {
         Optional<Long> maybeId = tokenService.getUserIdFromToken(token, "ResetPass");
         if (maybeId.isEmpty()) {
-            LOGGER.debug("Token {} does not exist",token);
+            LOGGER.atError().setMessage("Token {} does not exist").addArgument(token).log();
             throw new NoSuchTokenException("Token " + token + " does not exist");
         }
 
@@ -116,7 +116,7 @@ public class UserServiceImpl implements UserService {
     public User verifyUser(String token) throws NoSuchTokenException{
         Optional<User> maybeUser = tokenService.getUserFromToken(token, "Validation");
         if (maybeUser.isEmpty()) {
-            LOGGER.debug("Token {} does not exist",token);
+            LOGGER.atError().setMessage("Token {} does not exist").addArgument(token).log();
             throw new NoSuchTokenException("Token " + token + " does not exist");
         }else{
             User user = maybeUser.get();

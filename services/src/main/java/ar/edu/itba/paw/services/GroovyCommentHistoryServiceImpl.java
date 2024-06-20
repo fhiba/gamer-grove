@@ -29,7 +29,6 @@ public class GroovyCommentHistoryServiceImpl implements GroovyCommentHistoryServ
     public void deleteGroovyCommentHistory(User user, Comment comment) {
         Optional<GroovyCommentHistory> maybeGCH = gchDao.findGroovyCommentHistory(user, comment, comment.getPost());
         maybeGCH.ifPresent(gchDao::deleteGroovyCommentHistory);
-
     }
 
     @Override

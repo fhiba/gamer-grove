@@ -22,7 +22,8 @@
     <root level="WARN">
         <appender-ref ref="root-appender"/>
     </root>
-    <logger name="ar.edu.itba.paw" level="DEBUG" additivity="false">
+    <!--COMO SE HABLO EN CLASE CON LOS PROFESORES EL NIVEL DE ESTE LOGGER DEBE ESTAR EN INFO-->
+    <logger name="ar.edu.itba.paw" level="INFO" additivity="false">
         <appender-ref ref="paw-appender"/>
     </logger>
 </configuration>

@@ -86,7 +86,7 @@ public class MailingServiceImpl implements MailingService {
             Transport.send(helper.getMimeMessage());
 
         }catch (MessagingException e) {
-            LOGGER.debug("Error sending email", e);
+            LOGGER.atWarn().setMessage("Error sending email").log();
         }
     }
 

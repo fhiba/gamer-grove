@@ -265,7 +265,6 @@ public class PostDaoJpa implements PostDao {
         String sql = "SELECT COUNT(*) FROM groovy_post_history WHERE user_id = :userId and groovy_type = true";
         Query query = em.createNativeQuery(sql);
         query.setParameter("userId", userId);
-        LOGGER.info("Total user liked posts: {}" , ((Number) query.getSingleResult()).intValue());
         return ((Number) query.getSingleResult()).intValue();
     }
 

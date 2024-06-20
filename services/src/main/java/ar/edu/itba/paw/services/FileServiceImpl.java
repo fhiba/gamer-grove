@@ -46,17 +46,16 @@ public class FileServiceImpl implements FileService{
         if(Objects.isNull(community.getPortrait())) {
             try {
                 image = fd.uploadImage(file.getBytes());
-                //TODO MAYBE CAN BE REFACTORED
                 image.ifPresent(value -> cs.updateCommunityImageId(community.getId(), value.getImageId()));
             } catch (IOException e) {
-                LOGGER.debug("Error uploading image",e);
+                LOGGER.atError().setMessage("Error uploading image").log();
                 throw new RuntimeException(e);
             }
         } else {
             try {
                 image = fd.updateFile(community.getPortrait(), file.getBytes());
             } catch (IOException e) {
-                LOGGER.debug("Error updating image",e);
+                LOGGER.atError().setMessage("Error updating image").log();
                 throw new RuntimeException(e);
             }
         }
@@ -68,25 +67,24 @@ public class FileServiceImpl implements FileService{
     public Optional<File> uploadUserImage(MultipartFile file) throws NoLoggedUserException {
         Optional<User> maybeUser = us.getLoggedUser();
         if(maybeUser.isEmpty() ){
+            LOGGER.atError().setMessage("Error while uploading user image because there is no logged user").log();
             throw new NoLoggedUserException();
         }
         User user = maybeUser.get();
-
         Optional<File> image;
         if(Objects.isNull(user.getImage())) {
             try {
                 image = fd.uploadImage(file.getBytes());
-                //TODO MAYBE CAN BE REFACTORED
                 image.ifPresent(value -> us.updateImage(user, value));
             } catch (IOException e) {
-                LOGGER.debug("Error uploading image",e);
+                LOGGER.atError().setMessage("Error uploading image").log();
                 throw new RuntimeException(e);
             }
         } else {
             try {
                 image = fd.updateFile(user.getImage(), file.getBytes());
             } catch (IOException e) {
-                LOGGER.debug("Error updating image",e);
+                LOGGER.atError().setMessage("Error updating image").log();
                 throw new RuntimeException(e);
             }
         }
@@ -100,7 +98,7 @@ public class FileServiceImpl implements FileService{
             Optional<File> postImage = fd.uploadImage(file.getBytes());
             postImage.ifPresent(value -> fd.uploadPostImage(id, value.getImageId()));
         } catch (IOException e) {
-            LOGGER.debug("Error uploading post image",e);
+            LOGGER.atError().setMessage("Error uploading post image").log();
             throw new RuntimeException(e);
         }
     }

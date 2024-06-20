@@ -58,17 +58,20 @@ public class CommunityServiceImpl implements CommunityService{
     @Override
     public Community findByName(final String communityName) throws NoSuchCommunityException {
         Optional<Community> possibleCommunity = communityDao.findByName(URLDecoder.decode(communityName, StandardCharsets.UTF_8));
-        LOGGER.debug("Community name: " + communityName + " decoded: " + URLDecoder.decode(communityName, StandardCharsets.UTF_8));
-        if(possibleCommunity.isEmpty())
-            throw new NoSuchCommunityException("Community " + communityName+ " not found");
+        if(possibleCommunity.isEmpty()) {
+            LOGGER.atError().setMessage("Communuty {} not found").addArgument(() -> communityName).log();
+            throw new NoSuchCommunityException("Community " + communityName + " not found");
+        }
         return possibleCommunity.get();
     }
 
     @Override
     public Community findById(final long communityId) throws NoSuchCommunityException{
         Optional<Community> maybeCommunity = communityDao.findById(communityId);
-        if(maybeCommunity.isEmpty())
-            throw new NoSuchCommunityException("Community " + communityId+ " not found");
+        if(maybeCommunity.isEmpty()) {
+            LOGGER.atError().setMessage("Communuty with id {} not found").addArgument(() -> communityId).log();
+            throw new NoSuchCommunityException("Community " + communityId + " not found");
+        }
         return maybeCommunity.get();
     }
 
@@ -77,8 +80,10 @@ public class CommunityServiceImpl implements CommunityService{
     public Community updateRating(Long communityId, float rating) throws NoSuchCommunityException, NoLoggedUserException {
         Community community = findById(communityId);
         Optional<User> user = userService.getLoggedUser();
-        if(user.isEmpty())
+        if(user.isEmpty()) {
+            LOGGER.atError().setMessage("Error while trying updating rating because there is no logged user").log();
             throw new NoLoggedUserException();
+        }
         ratingService.createRating(user.get(), community, rating);
         return communityDao.updateRating(community, rating, 1);
     }
@@ -88,47 +93,19 @@ public class CommunityServiceImpl implements CommunityService{
     public Community discountRating(String communityName, Float rating) throws NoSuchCommunityException, NoLoggedUserException {
         Community community = findByName(communityName);
         Optional<User> user = userService.getLoggedUser();
-        if (user.isEmpty())
+        if (user.isEmpty()) {
+            LOGGER.atError().setMessage("Error while trying deleting rating because there is no logged user").log();
             throw new NoLoggedUserException();
+        }
         Boolean deleted = ratingService.deleteRating(user.get(), community);
         if(deleted)
             communityDao.updateRating(community, -rating, -1);
         return community;
     }
 
-
-    public PaginatedDataWrapper<Community> followedCommunities(PaginationRequest request, Long userId) {
-        if( request.getPageSize() < 1){
-            throw new IllegalArgumentException("Invalid Page size");
-        }
-
-        if(request.getPageNumber() <1 ){
-            throw new IllegalArgumentException("Invalid Page number");
-        }
-
-        Integer totalCount = communityDao.getFollowedCommunitiesCount(userId);
-
-        int offset = (request.getPageNumber() - 1) * request.getPageSize();
-
-        List<Community> data = communityDao.getFollowedCommunitiesPaginated(request.getPageSize(), offset, userId);
-
-        PaginatedDataWrapper<Community> dataWrapper = new PaginatedDataWrapper<>(data, request.getPageNumber(), totalCount, request.getPageSize());
-
-        if(request.getPageNumber() > dataWrapper.getTotalPages() && dataWrapper.getTotalPages() != 0){
-            throw new IllegalArgumentException("Invalid Page number");
-        }
-        return dataWrapper;
-
-    }
-
-    public List<Community> getFollowedCommunitiesLimitedBy(Long userId, Integer limit) {
-        return communityDao.getFollowedCommunitiesLimitedBy(userId, limit);
-    }
-
-
     @Override
     public PaginatedDataWrapper<Community> find(PaginationRequest request, final String searchTerms, List<String> categories) {
-               if( request.getPageSize() < 1){
+        if( request.getPageSize() < 1){
             throw new IllegalArgumentException("Invalid Page size");
         }
         if(request.getPageNumber() <1 ){
@@ -159,8 +136,10 @@ public class CommunityServiceImpl implements CommunityService{
             throw new IllegalArgumentException("Invalid Page number");
         }
         Optional<User> maybeUser = userService.getLoggedUser();
-        if(maybeUser.isEmpty())
+        if(maybeUser.isEmpty()) {
+            LOGGER.atError().setMessage("Error getting followed communites because there is no logged user").log();
             throw new NoLoggedUserException();
+        }
         List<String> newList = null;
         if(!categories.isEmpty() && !categories.getFirst().isEmpty()) {
             newList = categories.stream().map(category -> category.replaceAll("([%_\\\\])", "\\\\$1")).toList();
@@ -221,10 +200,11 @@ public class CommunityServiceImpl implements CommunityService{
     @Transactional
     @Override
     public void modifyUserOnCommunity(int communityId,String communityName) throws NoLoggedUserException, NoSuchCommunityException {
-        Community community = findById(communityId);
         Optional<User> maybeUser = userService.getLoggedUser();
-        if (maybeUser.isEmpty())
+        if (maybeUser.isEmpty()) {
+            LOGGER.atError().setMessage("Error while trying follow/unfollow communtity because there is no logged user").log();
             throw new NoLoggedUserException();
+        }
         User user = maybeUser.get();
         if(communityDao.checkIfUserFollowsCommunity(user.getId(),communityId)){
             communityDao.unfollowCommunity(user.getId(), communityId);
@@ -268,10 +248,11 @@ public class CommunityServiceImpl implements CommunityService{
     @Override
     public Boolean checkIfUserFollowsCommunity(int communityId) throws NoLoggedUserException, NoSuchCommunityException {
         Optional<User> maybeUser = userService.getLoggedUser();
-        if(maybeUser.isEmpty())
+        if(maybeUser.isEmpty()) {
+            LOGGER.atError().setMessage("Error while trying to check if logged user follows community because there is no logged user").log();
             throw new NoLoggedUserException();
+        }
         User user = maybeUser.get();
-        Community community = findById(communityId);
         return communityDao.checkIfUserFollowsCommunity(user.getId(),communityId);
     }
 

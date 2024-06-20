@@ -118,15 +118,19 @@ public class PostServiceImpl implements PostService{
     @Override
     public Post getPostById(long postId) throws NoSuchPostException{
         Optional<Post> post = postDao.findById(postId);
-        if(post.isEmpty())
-            throw new NoSuchPostException("Post with id:" + postId+ " not found");
+        if(post.isEmpty()) {
+            LOGGER.atWarn().setMessage("No post with id {} found").addArgument(postId).log();
+            throw new NoSuchPostException("Post with id:" + postId + " not found");
+        }
         return post.get();
     }
     @Override
     public Post getPostByIdWithImage(long postId) throws NoSuchPostException{
         Optional<Post> post = postDao.findById(postId);
-        if(post.isEmpty())
-            throw new NoSuchPostException("Post with id:" + postId+ " not found");
+        if(post.isEmpty()) {
+            LOGGER.atWarn().setMessage("No post with id {} found").addArgument(postId).log();
+            throw new NoSuchPostException("Post with id:" + postId + " not found");
+        }
         return post.get();
     }
 
@@ -136,7 +140,8 @@ public class PostServiceImpl implements PostService{
         Optional<Post> post = postDao.findById(postId);
         User user = userService.getLoggedUser().orElseThrow(NoLoggedUserException::new);
         if(post.isEmpty()) {
-            throw new NoSuchPostException("Post not found");
+            LOGGER.atWarn().setMessage("No post with id {} found").addArgument(postId).log();
+            throw new NoSuchPostException("Post with id:" + postId + " not found");
         }
         //checks whether the user has already grooved the comment
         Optional<Boolean> isGroovy = postDao.checkGrooviness(postId, user.getId());
@@ -259,14 +264,7 @@ public class PostServiceImpl implements PostService{
     @Override
     public List<String> getUsedCategories() {
         List<String> categories = postDao.getUsedCategories();
-
-
-
-//        List<String> categoryNames = categories.stream().map(PostCategories::getCategory).toList();
         return categories.isEmpty() ? Collections.emptyList() : categories;
-
-
-//        return categoryNames.isEmpty() ? Collections.emptyList() : categoryNames;
     }
 
     @Override
@@ -294,11 +292,9 @@ public class PostServiceImpl implements PostService{
     @Override
     public PaginatedDataWrapper<Post> getPostsByUserPaginated(long id, PaginationRequest request) {
         if( request.getPageSize() < 1){
-            LOGGER.error("Invalid Page size");
             throw new IllegalArgumentException("Invalid Page size");
         }
         if(request.getPageNumber() <1 ){
-            LOGGER.error("Invalid Page Number");
             throw new IllegalArgumentException("Invalid Page number");
         }
         int totalCount = postDao.getTotalPostsByUser(id);
@@ -306,7 +302,6 @@ public class PostServiceImpl implements PostService{
         List<Post> data = postDao.getPostsByUserPaginated(id,request.getPageSize(), offset);
         PaginatedDataWrapper<Post> dataWrapper = new PaginatedDataWrapper<>(data, request.getPageNumber(), totalCount, request.getPageSize());
         if(request.getPageNumber() > dataWrapper.getTotalPages() && dataWrapper.getTotalPages() != 0){
-            LOGGER.error("Invalid Page number");
             throw new IllegalArgumentException("Invalid Page number");
         }
         return dataWrapper;
@@ -330,14 +325,14 @@ public class PostServiceImpl implements PostService{
         try {
             post = getPostById(postId);
         } catch (NoSuchPostException e) {
-            LOGGER.debug("Post not found");
+            LOGGER.atError().setMessage("Post with id {} not found").addArgument(postId).log();
             return;
         }
         long authorId = post.getAuthor().getId();
         Optional<User> author = userService.findById(authorId);
 
         if(author.isEmpty()){
-            LOGGER.debug("Author not found");
+            LOGGER.atError().setMessage("Author of post {} with id {} not found").addArgument(postId).addArgument(authorId).log();
             return;
         }
         User authorUser = author.get();

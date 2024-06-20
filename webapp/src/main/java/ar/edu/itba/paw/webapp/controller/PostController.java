@@ -57,7 +57,7 @@ public class PostController {
         try {
             post = ps.createPost(newPostForm.getTitle(), newPostForm.getBody(), newPostForm.getCommunity(), newPostForm.getCategory(),newPostForm.getFiles());
         } catch (NoLoggedUserException | NoSuchCommunityException e) {
-            LOGGER.debug("No logged user", e);
+            LOGGER.atError().setMessage("Error creating new post: {}").addArgument(() -> e.getMessage()).log();
             throw e;
         }
         return new ModelAndView("redirect:/post/"+ post.getId());
@@ -205,8 +205,8 @@ public class PostController {
             post = ps.getPostByIdWithImage(postId);
             mav.addObject("post", post);
             community = cs.findByName(post.getcommunity().getName());
-        } catch (NoSuchPostException e) {
-            LOGGER.debug("No such post", e);
+        } catch (NoSuchPostException | NoSuchCommunityException e ) {
+            LOGGER.atError().setMessage("Error getting post: {}").addArgument(() -> e.getMessage()).log();
             throw e;
         }
         PaginatedDataWrapper<Comment> comments;
