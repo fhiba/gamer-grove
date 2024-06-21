@@ -275,9 +275,11 @@
         let defaultValue = "<spring:message code="Mod.FilterByCommunity" />";
         if (community !== undefined && community !== '' && community !== defaultValue) {
             newUrl.searchParams.set('community', community);
+            newUrl.searchParams.set('pageNumber', '1');
         }
         if (username !== undefined && username !== '') {
             newUrl.searchParams.set('username', username);
+            newUrl.searchParams.set('pageNumber', '1');
         }
         window.location = newUrl.href;
     }

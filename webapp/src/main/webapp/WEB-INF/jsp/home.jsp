@@ -229,6 +229,7 @@
         let category = document.getElementById('category').value;
         let newUrl = new URL(url);
         newUrl.searchParams.set('category', category);
+        newUrl.searchParams.set('pageNumber','1');
         window.location.search = newUrl.search;
     }
     const orderPosts = () => {
@@ -236,6 +237,7 @@
         let order = document.getElementById('order').value;
         let newUrl = new URL(url);
         newUrl.searchParams.set('order', order);
+        newUrl.searchParams.set('pageNumber','1');
         window.location.search = newUrl.search;
     }
     let postBody = document.getElementsByClassName('post-body');
