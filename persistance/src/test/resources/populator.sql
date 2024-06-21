@@ -13,7 +13,7 @@ INSERT INTO communities_categories(community_id, category) VALUES (10, 'Shooter'
 INSERT INTO communities_categories(community_id, category) VALUES (10, 'RPG');
 INSERT INTO communities_categories(community_id, category) VALUES (11, 'RPG');
 INSERT INTO modders(user_id, community_id) VALUES (10, 10);
-INSERT INTO modders(user_id, community_id) VALUES (10, 11);
+-- INSERT INTO modders(user_id, community_id) VALUES (10, 11);
 
 INSERT INTO groovy_post_history(user_id, post_id, groovy_type) VALUES (10,10,true);
 
