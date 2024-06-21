@@ -44,7 +44,13 @@ public class CommunityServiceImpl implements CommunityService{
         if(categories != null && !categories.isEmpty()) {
             addCategories(community.getId(), List.of(categories.split(",")));
         }
-        return Optional.of(community);
+        Optional<Community> maybeCommunity = Optional.of(community);
+        if(maybeCommunity.isEmpty()){
+            LOGGER.atError().setMessage("Failed to create new community").log();
+        }else{
+            LOGGER.atInfo().setMessage("Community {} created successfully").addArgument(()->community.getName()).log();
+        }
+        return maybeCommunity;
     }
 
     @Override
@@ -85,6 +91,7 @@ public class CommunityServiceImpl implements CommunityService{
             throw new NoLoggedUserException();
         }
         ratingService.createRating(user.get(), community, rating);
+        LOGGER.atInfo().setMessage("Rating of community {} updated {}").addArgument(communityId).addArgument(()->community.getRatingCount()).log();
         return communityDao.updateRating(community, rating, 1);
     }
 
@@ -100,6 +107,7 @@ public class CommunityServiceImpl implements CommunityService{
         Boolean deleted = ratingService.deleteRating(user.get(), community);
         if(deleted)
             communityDao.updateRating(community, -rating, -1);
+        LOGGER.atInfo().setMessage("Rating of community {} updated {}").addArgument(communityName).addArgument(()->community.getRatingCount()).log();
         return community;
     }
 
@@ -162,6 +170,7 @@ public class CommunityServiceImpl implements CommunityService{
         if(community.isEmpty())
             throw new NoSuchCommunityException("Community " + id+ " not found");
         communityDao.addCategory(community.get().getId(), category);
+        LOGGER.atInfo().setMessage("Category {} added successfully to community {}").addArgument(category).addArgument(id).log();
     }
 
     @Transactional
@@ -171,6 +180,7 @@ public class CommunityServiceImpl implements CommunityService{
         if(community.isEmpty())
             throw new NoSuchCommunityException("Community " + id+ " not found");
         communityDao.removeCategory(community.get(),category);
+        LOGGER.atInfo().setMessage("Category {} removed successfully to community {}").addArgument(category).addArgument(id).log();
     }
 
     @Transactional
@@ -199,7 +209,7 @@ public class CommunityServiceImpl implements CommunityService{
 
     @Transactional
     @Override
-    public void modifyUserOnCommunity(int communityId,String communityName) throws NoLoggedUserException, NoSuchCommunityException {
+    public void modifyUserOnCommunity(int communityId,String communityName) throws NoLoggedUserException {
         Optional<User> maybeUser = userService.getLoggedUser();
         if (maybeUser.isEmpty()) {
             LOGGER.atError().setMessage("Error while trying follow/unfollow communtity because there is no logged user").log();
@@ -211,12 +221,14 @@ public class CommunityServiceImpl implements CommunityService{
         } else{
             communityDao.followCommunity(user.getId(), communityId, communityName);
         }
+        LOGGER.atInfo().setMessage("User {} followed community {} successfully").addArgument(()-> user.getUsername()).addArgument(communityName).log();
     }
 
     @Transactional
     @Override
     public void updateCommunityImageId(long id, long imageId) {
         communityDao.updateCommunityImageId(id,imageId);
+        LOGGER.atInfo().setMessage("Community {} updated image {} successfully").addArgument(id).addArgument(imageId).log();
     }
 
     @Transactional

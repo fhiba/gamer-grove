@@ -20,12 +20,6 @@ public interface UserService {
     Optional<User> getLoggedUser();
 
 
-    User getLoggedUserChecked() throws NoLoggedUserException;
-
-    List<User> findAll();
-
-
-
     void resetPassword(String token, String password) throws NoSuchTokenException;
 
     User verifyUser(String token) throws NoSuchTokenException;

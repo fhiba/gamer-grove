@@ -85,6 +85,7 @@ public class MailingServiceImpl implements MailingService {
         }catch (MessagingException e) {
             LOGGER.atWarn().setMessage("Error sending email: {}").addArgument(()->e.getMessage()).log();
         }
+        LOGGER.atInfo().setMessage("Mail sent successfully, subject: {}").addArgument(subject).log();
     }
 
     @Async

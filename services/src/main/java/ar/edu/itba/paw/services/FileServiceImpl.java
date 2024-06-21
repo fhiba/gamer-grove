@@ -59,6 +59,9 @@ public class FileServiceImpl implements FileService{
                 throw new RuntimeException(e);
             }
         }
+        if(image.isPresent()) {
+            LOGGER.atInfo().setMessage("New image {} upload successfully to community {}").addArgument(()->image.get().getImageId()).addArgument(communityId).log();
+        }
         return image;
     }
 
@@ -88,6 +91,9 @@ public class FileServiceImpl implements FileService{
                 throw new RuntimeException(e);
             }
         }
+        if(image.isPresent()) {
+            LOGGER.atInfo().setMessage("New image {} upload successfully to user {}").addArgument(()->image.get().getImageId()).addArgument(()->user.getUsername()).log();
+        }
         return image;
     }
 
@@ -96,7 +102,10 @@ public class FileServiceImpl implements FileService{
     public void uploadPostImage(MultipartFile file, long id) {
         try {
             Optional<File> postImage = fd.uploadImage(file.getBytes());
-            postImage.ifPresent(value -> fd.uploadPostImage(id, value.getImageId()));
+            if(postImage.isPresent()){
+                fd.uploadPostImage(id, postImage.get().getImageId());
+                LOGGER.atInfo().setMessage("New image {} upload successfully to post {}").addArgument(()->postImage.get().getImageId()).addArgument(id).log();
+            }
         } catch (IOException e) {
             LOGGER.atError().setMessage("Error uploading post image").log();
             throw new RuntimeException(e);

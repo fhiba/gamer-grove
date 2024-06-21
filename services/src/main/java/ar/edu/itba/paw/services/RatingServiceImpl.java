@@ -21,8 +21,10 @@ public class RatingServiceImpl implements RatingService{
     private RatingDao ratingDao;
     @Override
     @Transactional
-    public Rating createRating(User user, Community community, Float rating) {
-        return ratingDao.createRating(user, community, rating);
+    public Rating createRating(User user, Community community, Float ratingValue) {
+        Rating rating = ratingDao.createRating(user, community, ratingValue);
+        LOGGER.atInfo().setMessage("User {} rate community {} with {} sucessfully").addArgument(()->user.getUsername()).addArgument(()->community.getName()).addArgument(ratingValue).log();
+        return rating;
     }
 
     @Override
@@ -30,11 +32,13 @@ public class RatingServiceImpl implements RatingService{
         return ratingDao.getRatingById(user, community);
     }
 
+    @Transactional
     @Override
     public Boolean deleteRating(User user, Community community) {
         Optional<Rating> maybeRating = getRatingById(user,community);
         if(maybeRating.isPresent()) {
             ratingDao.deleteRating(maybeRating.get());
+            LOGGER.atInfo().setMessage("Deleted rating of user {} in community {} sucessfully").addArgument(()->user.getUsername()).addArgument(()->community.getName()).log();
             return true;
         }
         LOGGER.atWarn().setMessage("Cannot delete a rating that does not exists, {} {}").addArgument(()->user.getUsername()).addArgument(()->community.getName()).log();

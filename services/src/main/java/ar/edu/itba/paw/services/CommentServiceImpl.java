@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
@@ -61,6 +60,7 @@ public class CommentServiceImpl implements CommentService {
         LocalDateTime date = LocalDateTime.now();
         Comment comment = commentDao.createComment(post,body,username,date,userId);
         sendMailToPostOwner(postId,date);
+        LOGGER.atInfo().setMessage("Comment {} created successfully").addArgument(()->comment.getId()).log();
         return comment;
     }
     @Async
@@ -187,6 +187,7 @@ public class CommentServiceImpl implements CommentService {
         }
         int ret = commentDao.deleteComment(comment.get());
         notifyCommentDeletion(comment.get());
+        LOGGER.atInfo().setMessage("Comment {} deleted successfully").addArgument(()->comment.get().getId()).log();
         return  ret;
     }
 

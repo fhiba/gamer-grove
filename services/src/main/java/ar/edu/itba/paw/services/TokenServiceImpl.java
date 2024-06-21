@@ -48,12 +48,14 @@ public class TokenServiceImpl implements TokenService {
     @Override
     public void deleteVerifyTokens(Long userId) {
         tokenDao.deleteValidationTokens(userId);
+        LOGGER.atInfo().setMessage("Deleted verification token of user {} sucessfully").addArgument(userId).log();
     }
 
     @Transactional
     @Override
     public void deleteResetTokens(Long userId) {
         tokenDao.deleteResetTokens(userId);
+        LOGGER.atInfo().setMessage("Deleted reset token of user {} sucessfully").addArgument(userId).log();
     }
 
     @Transactional
@@ -68,6 +70,7 @@ public class TokenServiceImpl implements TokenService {
         }
         User user = maybeUser.get();
         tokenDao.createValidationToken(user, token);
+        LOGGER.atInfo().setMessage("Generated verification token {} of user {} sucessfully").addArgument(token).addArgument(userId).log();
         return token;
     }
 
@@ -83,6 +86,7 @@ public class TokenServiceImpl implements TokenService {
             throw new UserNotFoundException("User with id " + userId + " does not exist");
         }
         tokenDao.createResetToken(maybeUser.get(), token);
+        LOGGER.atInfo().setMessage("Generated reset token {} of user {} sucessfully").addArgument(token).addArgument(userId).log();
         return token;
     }
 

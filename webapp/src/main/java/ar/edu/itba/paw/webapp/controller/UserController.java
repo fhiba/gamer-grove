@@ -125,7 +125,13 @@ public class UserController {
         mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
         //El user esta necesariamente logueado para entrar en esta vista entonces no hace falta chequear si esta presente
         mav.addObject("isAdmin", true);
-        mav.addObject("sidebarcommunities", cs.getFollowedCommunities(us.getLoggedUserChecked()));
+        Optional<User> maybeUser = us.getLoggedUser();
+        if(maybeUser.isPresent()){
+            mav.addObject("sidebarcommunities", cs.getFollowedCommunities(maybeUser.get()));
+        }else {
+            LOGGER.atError().setMessage("No user logged in the manage mods request").log();
+            throw new NoLoggedUserException();
+        }
         mav.addObject("allCommunities", allCommunities);
         mav.addObject("isLogged", true);
         return mav;

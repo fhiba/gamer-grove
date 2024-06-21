@@ -62,6 +62,7 @@ public class UserServiceImpl implements UserService {
         User user =  userDao.create(username, email, passwordEncoder.encode(password));
         String token = tokenService.generateValidationToken(user.getId());
         mailingService.sendValidationEmail(email, username, token, Locale.getDefault());
+        LOGGER.atInfo().setMessage("Created new user {} sucessfully").addArgument(token).addArgument(()->user.getUsername()).log();
         return user;
     }
 
@@ -73,15 +74,14 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    @Override
-    public List<User> findAll() {
-        return userDao.findAll();
-    }
+
 
     @Transactional
     @Override
     public User updateImage(User user, File image) {
-        return userDao.updateImage(user, image);
+        User updatedUser = userDao.updateImage(user, image);
+        LOGGER.atInfo().setMessage("Profile image {} of user updated successfully").addArgument(()->user.getImage().getImageId()).addArgument(()->user.getUsername()).log();
+        return updatedUser;
     }
 
     @Override
@@ -89,13 +89,6 @@ public class UserServiceImpl implements UserService {
         return userDao.getFollowersOfCommunity(communityId);
     }
 
-    @Override
-    public User getLoggedUserChecked() throws NoLoggedUserException {
-        Optional<User> maybeUser = getLoggedUser();
-        if(maybeUser.isEmpty())
-            throw new NoLoggedUserException();
-        return maybeUser.get();
-    }
 
 
     @Transactional
@@ -106,9 +99,10 @@ public class UserServiceImpl implements UserService {
             LOGGER.atError().setMessage("Token {} does not exist when trying to reset password").addArgument(token).log();
             throw new NoSuchTokenException("Token " + token + " does not exist");
         }
-
-        userDao.updatePassword(userDao.findById(maybeId.orElseThrow()).orElseThrow(), passwordEncoder.encode(password));
+        User user = userDao.findById(maybeId.orElseThrow()).orElseThrow();
+        userDao.updatePassword(user, passwordEncoder.encode(password));
         tokenService.deleteResetTokens(maybeId.get());
+        LOGGER.atInfo().setMessage("Password of user {} updated with token {}").addArgument(()->user.getUsername()).addArgument(token).log();
     }
 
     @Transactional
@@ -122,6 +116,7 @@ public class UserServiceImpl implements UserService {
             User user = maybeUser.get();
             userDao.verifyUser(user);
             tokenService.deleteVerifyTokens(user.getId());
+            LOGGER.atInfo().setMessage("User {} has been verified").addArgument(()->user.getUsername()).log();
             return user;
         }
     }
@@ -137,6 +132,7 @@ public class UserServiceImpl implements UserService {
         User user = maybeUser.get();
         String token = tokenService.generateResetToken(user.getId());
         mailingService.sendResetPasswordEmail(user.getEmail(), user.getUsername(), token, Locale.of(user.getLocale()));
+        LOGGER.atInfo().setMessage("Email to reset password of user {} has been sent").addArgument(email).log();
         return true;
     }
 
@@ -144,9 +140,16 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void resendVerification() throws NoLoggedUserException, UserNotFoundException {
-        User loggedUSer = getLoggedUserChecked();
-        String token = tokenService.generateValidationToken(loggedUSer.getId());
-        mailingService.sendValidationEmail(loggedUSer.getEmail(), loggedUSer.getUsername(), token, Locale.of(loggedUSer.getLocale()));
+        Optional<User> maybeUser = getLoggedUser();
+        if(maybeUser.isPresent()) {
+            User loggedUser = maybeUser.get();
+            String token = tokenService.generateValidationToken(loggedUser.getId());
+            mailingService.sendValidationEmail(loggedUser.getEmail(), loggedUser.getUsername(), token, Locale.of(loggedUser.getLocale()));
+            LOGGER.atInfo().setMessage("Email to reset password of user {} has been re-sent").addArgument(() -> loggedUser.getEmail()).log();
+        }else{
+            LOGGER.atError().setMessage("No user logged when trying to resend verification email").log();
+            throw new NoLoggedUserException();
+        }
     }
 
     @Transactional
@@ -155,6 +158,13 @@ public class UserServiceImpl implements UserService {
         if(!profilePic.isEmpty() && !Objects.isNull(profilePic)) {
             fs.uploadUserImage(profilePic);
         }
-        userDao.updateLocale(getLoggedUserChecked(), locale);
+        Optional<User> maybeUser = getLoggedUser();
+        if(maybeUser.isPresent()) {
+            userDao.updateLocale(maybeUser.get(), locale);
+            LOGGER.atInfo().setMessage("Updated profile picture of user {} successfully").addArgument(()->maybeUser.get().getUsername()).log();
+        }else{
+            LOGGER.atError().setMessage("No user logged when trying to update profile picture").log();
+            throw new NoLoggedUserException();
+        }
     }
 }

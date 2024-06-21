@@ -62,7 +62,13 @@ public class ModderServiceImpl implements ModderService{
             throw new AlreadyModException("User with id "+newMod.getId()+" is already a mod of community with id "+communityId);
         }
         sendNewModNotification(newMod, community);
-        return Objects.nonNull(md.addModder(newMod, community));
+        if(Objects.nonNull(md.addModder(newMod,community))){
+            LOGGER.atInfo().setMessage("New mod {} added to community {} successfully").addArgument(username).addArgument(communityId).log();
+            return true;
+        }else{
+            LOGGER.atError().setMessage("Fail to add mod {} to community {} ").addArgument(username).addArgument(communityId).log();
+            return false;
+        }
     }
 
     @Async
@@ -88,6 +94,7 @@ public class ModderServiceImpl implements ModderService{
         if(md.isModderOfCommunity(newMod, community)){
             md.removeModder(md.findByid(newMod,community).orElseThrow());
             sendRemovedModNotification(newMod, community);
+            LOGGER.atInfo().setMessage("Mod {} removed from community {} successfully").addArgument(username).addArgument(communityId).log();
             return true;
         }
         LOGGER.atWarn().setMessage("Failed to remove mod: User {} is already not a mod in the community with id {}").addArgument(username).addArgument(communityId).log();

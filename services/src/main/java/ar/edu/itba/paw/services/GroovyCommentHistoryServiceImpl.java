@@ -24,7 +24,9 @@ public class GroovyCommentHistoryServiceImpl implements GroovyCommentHistoryServ
     @Transactional
     @Override
     public GroovyCommentHistory createGroovyCommentHistory(User user, Comment comment, Post post, Boolean groovy) {
-        return gchDao.createGroovyCommentHistory(user, comment, post, groovy);
+        GroovyCommentHistory groovyCommentHistory = gchDao.createGroovyCommentHistory(user, comment, post, groovy);
+        LOGGER.atInfo().setMessage("User {} upvoted post {} succesfully").addArgument(()->user.getUsername()).addArgument(()->post.getId()).log();
+        return groovyCommentHistory;
     }
 
     @Transactional
@@ -49,7 +51,8 @@ public class GroovyCommentHistoryServiceImpl implements GroovyCommentHistoryServ
     @Transactional
     @Override
     public GroovyCommentHistory updateGroovyCommentHistory(GroovyCommentHistory groovyCommentHistory, Boolean newValue) {
-
-        return gchDao.updateGroovyCommentHistory(groovyCommentHistory, newValue);
+        GroovyCommentHistory groovyCommentHistoryUpdated = gchDao.updateGroovyCommentHistory(groovyCommentHistory, newValue);
+        LOGGER.atInfo().setMessage("User {} updated upvote post {} succesfully").addArgument(()->groovyCommentHistoryUpdated.getUser().getUsername()).addArgument(()->groovyCommentHistoryUpdated.getPost().getId()).log();
+        return groovyCommentHistoryUpdated;
     }
 }

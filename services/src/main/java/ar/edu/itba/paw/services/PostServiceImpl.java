@@ -68,7 +68,7 @@ public class PostServiceImpl implements PostService{
             if (!file.isEmpty())
                 fs.uploadPostImage(file, post.getId());
         }
-
+        LOGGER.atInfo().setMessage("New post {} created successfully").addArgument(()->post.getId()).log();
         return post;
     }
     @Async
@@ -144,7 +144,6 @@ public class PostServiceImpl implements PostService{
             LOGGER.atWarn().setMessage("No post with id {} found").addArgument(postId).log();
             throw new NoSuchPostException("Post with id:" + postId + " not found");
         }
-        //checks whether the user has already grooved the comment
         Optional<Boolean> isGroovy = postDao.checkGrooviness(postId, user.getId());
         if(isGroovy.isEmpty()) {
             postDao.addToGroovy(user, post.get(),(grooviness == 1));
@@ -174,6 +173,7 @@ public class PostServiceImpl implements PostService{
             default:
                 throw new IllegalArgumentException("Invalid grooviness value");
         }
+        LOGGER.atInfo().setMessage("User {} upvote post with id {} sucessfully").addArgument(()->post.get().getAuthor().getUsername()).addArgument(postId).log();
     }
 
     @Override
@@ -313,6 +313,7 @@ public class PostServiceImpl implements PostService{
         Post post = getPostById(postId);
         postDao.removePost(post);
         notifyDeletion(postId);
+        LOGGER.atInfo().setMessage("Post with id {} removed sucessfully").addArgument(postId).log();
     }
 
     @Override
