@@ -40,7 +40,11 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public Boolean verifyResetToken(String token) {
+    public Boolean verifyResetToken(String token) throws NoSuchTokenException {
+        if(token == null || token.isEmpty()) {
+            LOGGER.atError().setMessage("Empty token provided when reseting password").log();
+            throw new NoSuchTokenException("token is empty or null");
+        }
         return tokenDao.verifyResetToken(token);
     }
 

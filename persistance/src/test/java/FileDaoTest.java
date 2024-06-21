@@ -1,9 +1,6 @@
 import ar.edu.itba.paw.models.File;
 import ar.edu.itba.paw.persistance.FileDaoJpa;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.OrderWith;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
@@ -58,6 +55,7 @@ public class FileDaoTest {
         em.flush();
         assertNotNull(file);
         assertEquals(TEST, file.getFile());
+        Assert.assertEquals(2,((Number) em.createNativeQuery("SELECT COUNT(*) FROM media").getSingleResult()).intValue());
     }
 
     @Test

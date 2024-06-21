@@ -44,7 +44,7 @@ public class PostDaoTest {
         user.setId(10L);
         user = em.merge(user);
         Community community = new Community("test", "This is a test community", null, "falsepub", "falsedeveloper", NOW);
-        community.setId(10L);;
+        community.setId(10L);
         community = em.merge(community);
         Post post = postDao.createPost("title", "body", user, community, false, NOW,"Help");
         em.flush();
@@ -132,6 +132,26 @@ public class PostDaoTest {
     @Test
     public void testGetTotalPostCount(){
         Assert.assertEquals(2, postDao.getTotalPostCount());
+    }
+
+    @Test
+    public void testEditGrooviness() {
+        User user = new User("Pedro", "curti", "pedro@curti.com", false, "en", false);
+        user.setId(10L);
+        user = em.merge(user);
+        Community community = new Community("test", "This is a test community", null, "falsepub", "falsedeveloper", NOW);
+        community.setId(10L);
+        community = em.merge(community);
+        Post post = new Post("First post", "This is my first post", user, community,false,null,POST_TIME, 0, false, "News");
+        post.setId(10L);
+        post = em.merge(post);
+        postDao.editGrooviness(post.getId(), -1);
+
+    }
+
+    @Test
+    public void testEditGroovyHistory(){
+
     }
 }
 

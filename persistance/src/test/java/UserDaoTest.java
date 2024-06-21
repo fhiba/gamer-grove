@@ -1,3 +1,4 @@
+import ar.edu.itba.paw.models.File;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistance.UserDaoJPA;
 import org.junit.Test;
@@ -13,6 +14,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.sql.DataSource;
 
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,7 +41,8 @@ public class UserDaoTest {
     private static final String EMAIL = "mail@mail";
     private static final String PASSWORD = "Password";
 
-    private static final byte[] byteBlob = {0, 1, 2, 3, 4};
+    final static byte[] TEST = HexFormat.ofDelimiter(":")
+            .parseHex("e0:4f:d0:20:ea:3a:69:10:a2:d8:08:00:2b:30:30:9d");
 
     @Test
     @Rollback
@@ -85,6 +88,37 @@ public class UserDaoTest {
     public void testGetFollowersOfCommunity() {
         List<User> followers = userDao.getFollowersOfCommunity(10L);
         assertEquals(1,followers.size());
+    }
+
+    @Test
+    @Rollback
+    public void testUpdateImage() {
+        User user = new User("Pedro", "curti", "pedro@curti.com", false, "en", false);
+        user.setId(10L);
+        File byteBlob = new File(TEST);
+        byteBlob.setImageId(10L);
+        user = userDao.updateImage(user, byteBlob);
+        assertEquals(byteBlob.getImageId(), user.getImage().getImageId());
+    }
+
+    @Test
+    @Rollback
+    public void testVerifyUser() {
+        User user = new User("Pedro", "curti", "pedro@curti.com", false, "en", false);
+        user.setId(10L);
+        user = userDao.verifyUser(user);
+        assertNotNull(user);
+        assertEquals(true, user.isVerified());
+    }
+
+    @Test
+    @Rollback
+    public void testUpdateLocale() {
+        User user = new User("Pedro", "curti", "pedro@curti.com", false, "en", false);
+        user.setId(10L);
+        user = userDao.updateLocale(user, "es");
+        assertNotNull(user);
+        assertEquals("es", user.getLocale());
     }
 
 

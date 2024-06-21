@@ -49,6 +49,13 @@ public class TokenDaoTest {
 
     @Test
     @Rollback
+    public void testGetUserFromToken() {
+        User result = tokenDao.getUserFromToken("vaaa","Validation").get();
+        assertEquals(10L,result.getId().longValue());
+    }
+
+    @Test
+    @Rollback
     public void testCreateValidationToken() {
         User user = new User("Pedro", "curti", "pedro@curti.com",false,"en",false);
         user.setId(10L);

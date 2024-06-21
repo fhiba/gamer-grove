@@ -87,7 +87,6 @@ public class ModderDaoTest {
         Mod mod = new Mod(user,community, NOW);
         mod = em.merge(mod);
         em.flush();
-        System.out.println(((Number) em.createNativeQuery("SELECT count(*) FROM modders").getSingleResult()).intValue());
         modDao.removeModder(mod);
         em.flush();
         Assert.assertEquals(0,((Number) em.createNativeQuery("SELECT count(*) FROM modders").getSingleResult()).intValue());

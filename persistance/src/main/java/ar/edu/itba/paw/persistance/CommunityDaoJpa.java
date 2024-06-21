@@ -121,7 +121,7 @@ public class CommunityDaoJpa implements CommunityDao{
             }
             q.setFirstResult(offset);
             q.setMaxResults(pageSize);
-            return ((Stream<Integer>) q.getResultStream()).map(Integer::longValue).toList();
+            return ((Stream<Number>) q.getResultStream()).map(Number::longValue).toList();
         }
 
         Integer buildCount() {
@@ -229,7 +229,7 @@ public class CommunityDaoJpa implements CommunityDao{
                 .setMaxResults(pageSize);
 
         @SuppressWarnings("unchecked")
-        List<Long> resultList = ((Stream<Integer>) nativeQuery.getResultStream()).map(Integer::longValue).toList();
+        List<Long> resultList = ((Stream<Number>) nativeQuery.getResultStream()).map(Number::longValue).toList();
 
         TypedQuery<Community> query = em.createQuery("from Community as c where c.id IN :ids", Community.class);
         query.setParameter("ids", resultList);
@@ -243,7 +243,7 @@ public class CommunityDaoJpa implements CommunityDao{
                 .setMaxResults(limit);
 
         @SuppressWarnings("unchecked")
-        List<Long> resultList = ((Stream<Integer>) nativeQuery.getResultStream()).map(Integer::longValue).toList();
+        List<Long> resultList = ((Stream<Number>) nativeQuery.getResultStream()).map(Number::longValue).toList();
 
         TypedQuery<Community> query = em.createQuery("from Community as c where c.id IN :ids", Community.class);
         query.setParameter("ids", resultList);
