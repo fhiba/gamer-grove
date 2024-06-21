@@ -136,7 +136,7 @@ public class PostDaoJpa implements PostDao {
         return query.getResultList();
     }
 
-    @Override
+    @Override //TODO DELETE
     public List<Post> findPostsLikedByUser(long id) {
         String sql = "SELECT * FROM post WHERE id IN(SELECT post_id FROM groovy_post_history WHERE user_id=?) ORDER BY post_date DESC";
         Query query = em.createNativeQuery(sql, Post.class);

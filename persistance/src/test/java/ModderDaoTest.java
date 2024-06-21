@@ -46,7 +46,7 @@ public class ModderDaoTest {
         Mod mod = modDao.addModder(user, community);
         em.flush();
         Assert.assertNotNull(mod);
-        Assert.assertEquals(3,((Number) em.createNativeQuery("SELECT count(*) FROM modders").getSingleResult()).intValue());
+        Assert.assertEquals(2,((Number) em.createNativeQuery("SELECT count(*) FROM modders").getSingleResult()).intValue());
 
     }
 
@@ -61,7 +61,7 @@ public class ModderDaoTest {
         community = em.merge(community);
         em.flush();
         Boolean isMod = modDao.isModderOfCommunity(user,community);
-        Assert.assertEquals(true,isMod.booleanValue());
+        Assert.assertTrue(isMod);
 
     }
 
@@ -70,9 +70,11 @@ public class ModderDaoTest {
         User user = new User("Pedro", "curti", "pedro@curti.com", false, "en", false);
         user.setId(10L);
         user = em.merge(user);
-        Community community = new Community("other", "This is a test community", null, "falsepub", "falsedeveloper", EXISTING_TIME);
-        community.setId(11L);
+        em.flush();
+        Community community = new Community("test", "This is a test community", null, "falsepub", "falsedeveloper", EXISTING_TIME);
+        community.setId(10L);
         community = em.merge(community);
+        em.flush();
         Mod mod = modDao.findByid(user,community).get();
         Assert.assertNotNull(mod);
     }
@@ -89,10 +91,49 @@ public class ModderDaoTest {
         community = em.merge(community);
         em.flush();
         Mod mod = new Mod(user,community, NOW);
+        mod = em.merge(mod);
+        em.flush();
+        System.out.println(((Number) em.createNativeQuery("SELECT count(*) FROM modders").getSingleResult()).intValue());
         modDao.removeModder(mod);
-        Assert.assertEquals(1,((Number) em.createNativeQuery("SELECT count(*) FROM modders").getSingleResult()).intValue());
+        em.flush();
+        Assert.assertEquals(0,((Number) em.createNativeQuery("SELECT count(*) FROM modders").getSingleResult()).intValue());
 
 
+    }
+
+    @Test
+    public void testGetAllModdersPaginated() {
+        List<Mod> mods = modDao.getAllModdersPaginated(1,0);
+        Assert.assertEquals(1, mods.size());
+    }
+    @Test
+    public void testGetModdersPaginatedByCommunity() {
+        List<Mod> mods = modDao.getModdersPaginatedByCommunity(10L,1,0);
+        Assert.assertEquals(1, mods.size());
+    }
+
+    @Test
+    public void testGetTotalModders() {
+        Integer total = modDao.getTotalModders();
+        Assert.assertEquals(1, total.intValue());
+    }
+
+    @Test
+    public void testGetTotalModdersByCommunity(){
+        Integer total = modDao.getTotalModdersByCommunity(10L);
+        Assert.assertEquals(1, total.intValue());
+    }
+
+    @Test
+    public void testGetTotalModdersByUserId(){
+        Integer total = modDao.getTotalModdersByUserId(10L);
+        Assert.assertEquals(1, total.intValue());
+    }
+
+    @Test
+    public void testGetModdersPaginatedByUserId(){
+        List<Mod> mods = modDao.getModdersPaginatedByUserId(10L,1,0);
+        Assert.assertEquals(1, mods.size());
     }
 
 }

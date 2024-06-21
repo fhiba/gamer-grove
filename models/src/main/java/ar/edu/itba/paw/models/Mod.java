@@ -86,7 +86,7 @@ public class Mod {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             ModKey modKey = (ModKey) o;
-            return Objects.equals(user, modKey.user) && Objects.equals(community, modKey.community);
+            return Objects.equals(user.getId(), modKey.user.getId()) && Objects.equals(community.getId(), modKey.community.getId());
         }
 
         @Override
