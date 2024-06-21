@@ -92,16 +92,15 @@ public class UserController {
             try {
                 modders = md.getModsByCommunityPaginated(community, paginationRequest);
             } catch (NoSuchCommunityException e) {
-                LOGGER.atError().setMessage("Error getting moderators filter by community {}").addArgument(community).log();
                 modders = null;
             }
         } else if (Objects.nonNull(username) && !username.isEmpty() && Objects.isNull(community)) {
             try {
                 modders = md.getModsByUsernamePaginated(username, paginationRequest);
             } catch (IllegalArgumentException e) {
-                LOGGER.atError().setMessage("Error getting moderators filter by username {}").addArgument(username).log();
                 modders = null;
             } catch (UserNotFoundException e) {
+                LOGGER.atError().setMessage("Error getting moderators filter because username {} not found").addArgument(username).log();
                 modders = null;
             }
         } else if (Objects.nonNull(username) && !username.isEmpty() && !community.isEmpty()) {
@@ -110,16 +109,15 @@ public class UserController {
                 mav.addObject("moderator",optMod.orElseThrow());
                 modders = null;
             } catch (IllegalArgumentException e) {
-                LOGGER.atError().setMessage("Error getting moderators filter by username {} and community").addArgument(username).addArgument(community).log();
                 modders = null;
             } catch (UserNotFoundException | NoSuchCommunityException e) {
+                LOGGER.atError().setMessage("Error getting moderators filter by username {} and community").addArgument(username).addArgument(community).log();
                 modders = null;
             }
         } else{
             try {
                 modders = md.getAllModPaginated(paginationRequest);
             } catch (IllegalArgumentException e) {
-                LOGGER.atError().setMessage("Error getting all moderators").log();
                 modders = null;
             }
         }
@@ -143,7 +141,6 @@ public class UserController {
         try {
             md.addModder(newModForm.getUsername(), newModForm.getCommunityId());
         } catch (AlreadyModException e) {
-            LOGGER.atError().setMessage("User {} is already a mod").addArgument(()-> newModForm.getUsername()).log();
             return manageMods(null,null,null, newModForm, removeModForm).addObject("isAlreadyMod", true);
         }
         return new ModelAndView("redirect:/manageMods");

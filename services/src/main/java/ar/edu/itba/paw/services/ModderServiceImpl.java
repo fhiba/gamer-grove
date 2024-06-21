@@ -50,6 +50,7 @@ public class ModderServiceImpl implements ModderService{
     public Boolean addModder(String username, long communityId) throws UserNotFoundException, NoSuchCommunityException, AlreadyModException {
         Optional<User> possibleNewMod = us.findByUsername(username);
         if(possibleNewMod.isEmpty()){
+            LOGGER.atError().setMessage("Failed to add modder {} in the community with id {} becaouse the user was not found").addArgument(username).addArgument(communityId).log();
             throw new UserNotFoundException("User with username "+username+" not found");
         }
         User newMod = possibleNewMod.get();
@@ -57,6 +58,7 @@ public class ModderServiceImpl implements ModderService{
         Community community = cs.findById(communityId);
         //Checkeo si existe el mod
         if(isModderOfCommunity(newMod, community)){
+            LOGGER.atWarn().setMessage("Failed to add modder: User {} is already mod in the community with id {}").addArgument(username).addArgument(communityId).log();
             throw new AlreadyModException("User with id "+newMod.getId()+" is already a mod of community with id "+communityId);
         }
         sendNewModNotification(newMod, community);
@@ -78,6 +80,7 @@ public class ModderServiceImpl implements ModderService{
     public Boolean removeModder(String username, long communityId) throws UserNotFoundException, NoSuchCommunityException {
         Optional<User> possibleNewMod = us.findByUsername(username);
         if(possibleNewMod.isEmpty()){
+            LOGGER.atError().setMessage("Failed to remove modder in the community with id {} becaouse the user {} was not found").addArgument(communityId).addArgument(username).log();
             throw new UserNotFoundException("User with id "+username+" not found");
         }
         User newMod = possibleNewMod.get();
@@ -87,6 +90,7 @@ public class ModderServiceImpl implements ModderService{
             sendRemovedModNotification(newMod, community);
             return true;
         }
+        LOGGER.atWarn().setMessage("Failed to remove mod: User {} is already not a mod in the community with id {}").addArgument(username).addArgument(communityId).log();
         return false;
     }
 
@@ -97,22 +101,22 @@ public class ModderServiceImpl implements ModderService{
 
     @Override
     public Boolean canRemovePost(User user, long postId) throws NoSuchPostException, NoSuchCommunityException {
-
         Post toDelete = ps.getPostById(postId);
         Community community = cs.findByName(toDelete.getcommunity().getName());
-
         return isModderOfCommunity(user, community);
     }
     @Override
-    public Boolean canEditCommunityInfo(String encodedCommunityName) throws NoSuchCommunityException, UserNotFoundException {
+    public Boolean canEditCommunityInfo(String encodedCommunityName) {
         Community community;
         try {
             community = cs.findByName(URLDecoder.decode(encodedCommunityName, StandardCharsets.UTF_8));
-        } catch (Exception e){
+        } catch (NoSuchCommunityException e){
+            LOGGER.atWarn().setMessage("Failed to check if user can edit community with encoded name {} because community was not found").addArgument(encodedCommunityName).log();
             return false;
         }
         Optional<User> possibleMod = us.getLoggedUser();
         if (possibleMod.isEmpty()) {
+            LOGGER.atWarn().setMessage("Failed to check if can edit community because there is no logged user").log();
             return false;
         }
         return isModderOfCommunity(possibleMod.get(), community);
@@ -188,8 +192,10 @@ public class ModderServiceImpl implements ModderService{
     @Override
     public Optional<Mod> findMod(String username, String communityName) throws UserNotFoundException, NoSuchCommunityException {
         Optional<User> maybeUser = us.findByUsername(username);
-        if(maybeUser.isEmpty())
+        if(maybeUser.isEmpty()) {
+            LOGGER.atWarn().setMessage("Failed to find user {}").addArgument(username).log();
             throw new UserNotFoundException("The user you filter don't exists");
+        }
         User user = maybeUser.get();
         Community community = cs.findByName(communityName);
         return md.findByid(user,community);
@@ -197,21 +203,24 @@ public class ModderServiceImpl implements ModderService{
 
 
     @Override
-    public Boolean canRemovePostAlternative(long postId) throws NoSuchPostException, NoSuchCommunityException, UserNotFoundException {
+    public Boolean canRemovePostAlternative(long postId) {
         Post toDelete;
         try {
             toDelete = ps.getPostById(postId);
         } catch (NoSuchPostException e) {
+            LOGGER.atWarn().setMessage("Failed to find post with id {}").addArgument(postId).log();
             return false;
         }
         Community postFrom;
         try {
             postFrom = cs.findByName(toDelete.getcommunity().getName());
         } catch (NoSuchCommunityException e) {
+            LOGGER.atWarn().setMessage("Failed to find community {}").addArgument(()-> toDelete.getcommunity().getName()).log();
             return false;
         }
         Optional<User> possibleMod = us.getLoggedUser();
         if (possibleMod.isEmpty()) {
+            LOGGER.atWarn().setMessage("There is no logged user").log();
             return false;
         }
 

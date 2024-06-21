@@ -103,7 +103,7 @@ public class UserServiceImpl implements UserService {
     public void resetPassword(String token, String password) throws NoSuchTokenException {
         Optional<Long> maybeId = tokenService.getUserIdFromToken(token, "ResetPass");
         if (maybeId.isEmpty()) {
-            LOGGER.atError().setMessage("Token {} does not exist").addArgument(token).log();
+            LOGGER.atError().setMessage("Token {} does not exist when trying to reset password").addArgument(token).log();
             throw new NoSuchTokenException("Token " + token + " does not exist");
         }
 
@@ -130,8 +130,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public Boolean startResetPassword(String email) throws UserNotFoundException {
         Optional<User> maybeUser = findByEmail(email);
-        if(maybeUser.isEmpty())
+        if(maybeUser.isEmpty()) {
+            LOGGER.atWarn().setMessage("Cannot reset password of not existing user: {}").addArgument(email).log();
             return false;
+        }
         User user = maybeUser.get();
         String token = tokenService.generateResetToken(user.getId());
         mailingService.sendResetPasswordEmail(user.getEmail(), user.getUsername(), token, Locale.of(user.getLocale()));

@@ -23,7 +23,6 @@ public class CommentController {
 
     @Autowired
     private CommentService commentService;
-    private static final Logger LOGGER = LoggerFactory.getLogger(PostController.class);
 
 
 

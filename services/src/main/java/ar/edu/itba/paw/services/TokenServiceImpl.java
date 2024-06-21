@@ -62,8 +62,10 @@ public class TokenServiceImpl implements TokenService {
          UUID uuid = UUID.randomUUID();
         String token = uuid.toString();
         Optional<User> maybeUser = userService.findById(userId);
-        if(maybeUser.isEmpty())
+        if(maybeUser.isEmpty()) {
+            LOGGER.atError().setMessage("Trying to generate validation token of unexsiting user with id {}").addArgument(userId).log();
             throw new UserNotFoundException("User with id " + userId + " does not exist");
+        }
         User user = maybeUser.get();
         tokenDao.createValidationToken(user, token);
         return token;
@@ -76,8 +78,10 @@ public class TokenServiceImpl implements TokenService {
         UUID uuid = UUID.randomUUID();
         String token = uuid.toString();
         Optional<User> maybeUser = userService.findById(userId);
-        if(maybeUser.isEmpty())
+        if(maybeUser.isEmpty()) {
+            LOGGER.atError().setMessage("Trying to reset token of unexsiting user with id {}").addArgument(userId).log();
             throw new UserNotFoundException("User with id " + userId + " does not exist");
+        }
         tokenDao.createResetToken(maybeUser.get(), token);
         return token;
     }

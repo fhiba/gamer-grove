@@ -377,7 +377,6 @@ public class PostDaoJpa implements PostDao {
                     break;
             }
 
-            LOGGER.debug("Query: {}", queryString.toString());
             Query nativeQuery = em.createNativeQuery(queryString.toString());
             if (category != null) {
                 nativeQuery.setParameter("category", category.getCategory());
@@ -419,7 +418,6 @@ public class PostDaoJpa implements PostDao {
             if (userId != null) {
                 queryString.append(COMMUNITY_FILTERED);
             }
-            LOGGER.debug("Count Query: {}", queryString.toString());
             Query query = em.createNativeQuery(queryString.toString());
             if (category != null) {
                 query.setParameter("category", category.getCategory());

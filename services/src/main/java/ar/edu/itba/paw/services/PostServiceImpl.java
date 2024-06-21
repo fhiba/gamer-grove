@@ -56,8 +56,10 @@ public class PostServiceImpl implements PostService{
     @Override
     public Post createPost(final String title, final String body, final String communityName, final String category, final MultipartFile[] files) throws NoLoggedUserException, NoSuchCommunityException {
         Optional<User> maybeUser = userService.getLoggedUser();
-        if(maybeUser.isEmpty())
+        if(maybeUser.isEmpty()) {
+            LOGGER.atError().setMessage("No logged user found when creating a post").log();
             throw new NoLoggedUserException();
+        }
         User user = maybeUser.get();
         Community community = communityService.findByName(communityName);
         Post post = postDao.createPost(title,body,user,community,false, LocalDateTime.now(), category);
@@ -82,7 +84,6 @@ public class PostServiceImpl implements PostService{
     public List<Post> getPostsByCommunity(final String communityName) {
         List<Post> posts = postDao.findPostsByCommunity(URLDecoder.decode(communityName, StandardCharsets.UTF_8));
         return posts.isEmpty()? Collections.emptyList(): posts;
-
     }
 
     @Override

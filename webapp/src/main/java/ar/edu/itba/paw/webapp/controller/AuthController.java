@@ -49,9 +49,10 @@ public class AuthController {
 
     @RequestMapping(value = "/verify", method = RequestMethod.GET)
     public ModelAndView validateAccount(@RequestParam("token") final String token) throws NoSuchTokenException {
-        if(token == null || token.isEmpty())
+        if(token == null || token.isEmpty()) {
+            LOGGER.atError().setMessage("Empty token provided when reseting password").log();
             throw new NoSuchTokenException("token is empty or null");
-
+        }
         ModelAndView mav = new ModelAndView("redirect:/communities");
 
         try {
@@ -70,11 +71,15 @@ public class AuthController {
 
     @RequestMapping(value = "/auth/resetPassword", method = RequestMethod.GET)
     public ModelAndView resetPassword(@ModelAttribute("token") final String token, @ModelAttribute("resetPasswordForm") ResetPasswordForm resetPasswordForm) throws NoSuchTokenException {
-        if(token == null || token.isEmpty())
+        if(token == null || token.isEmpty()) {
+            LOGGER.atError().setMessage("Empty token provided when reseting password").log();
             throw new NoSuchTokenException("token is empty or null");
+        }
         Boolean tokenExists = tokenService.verifyResetToken(token);
-        if(!tokenExists)
+        if(!tokenExists) {
+            LOGGER.atError().setMessage("Invalid token provided when reseting password").log();
             throw new NoSuchTokenException("token is invalid");
+        }
         ModelAndView mav = new ModelAndView("user/resetPassword");
         mav.addObject("token",token);
         return mav;
@@ -91,7 +96,6 @@ public class AuthController {
         try {
             userService.resetPassword(resetPasswordForm.getToken(), resetPasswordForm.getPassword());
         } catch (NoSuchTokenException e) {
-
             return mav.addObject("resetSuccess", false);
         }
 

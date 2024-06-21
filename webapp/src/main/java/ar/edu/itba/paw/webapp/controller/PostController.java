@@ -185,7 +185,6 @@ public class PostController {
         Post post;
         Community community;
         List<Community> communities;
-        User user = null;
         PaginationRequest paginationRequest = new PaginationRequest(5);
         if(!Objects.isNull(pageNumber))
             paginationRequest.setPageNumber(pageNumber);
@@ -196,27 +195,24 @@ public class PostController {
         Boolean isAdmin = false;
         boolean canDelete = false;
         int isGrooved = 0;
-        try{
-            user = us.getLoggedUserChecked();
-        }catch (Exception ignored){
 
-        }
         try {
             post = ps.getPostByIdWithImage(postId);
             mav.addObject("post", post);
             community = cs.findByName(post.getcommunity().getName());
         } catch (NoSuchPostException | NoSuchCommunityException e ) {
-            LOGGER.atError().setMessage("Error getting post: {}").addArgument(() -> e.getMessage()).log();
+            LOGGER.atError().setMessage("Error getting post with id {}").addArgument(postId).log();
             throw e;
         }
         PaginatedDataWrapper<Comment> comments;
         try {
             comments = commentService.getPostCommentsPaginated(postId,paginationRequest);
-
         }catch (IllegalArgumentException e){
             comments = null;
         }
-        if(user != null) {
+        Optional<User> maybeUser = us.getLoggedUser();
+        if(maybeUser.isPresent()) {
+            User user = maybeUser.get();
             communities = cs.getFollowedCommunities(user);
             grooviedComments = commentService.getUpGroovedComments(postId);
             negativeGrooviedComments = commentService.getDownGroovedComments(postId);
@@ -230,7 +226,7 @@ public class PostController {
         mav.addObject("isAdmin",isAdmin);
         mav.addObject("isFollowing",isFollowing);
         mav.addObject("community",community);
-        mav.addObject("isLogged", user != null);
+        mav.addObject("isLogged", maybeUser.isPresent());
         mav.addObject("isGrooved", isGrooved);
         mav.addObject("newPostGroovyForm", newPostGroovyForm);
         mav.addObject("upComments", grooviedComments);

@@ -1,12 +1,10 @@
 package ar.edu.itba.paw.services;
-
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cglib.core.Local;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -14,7 +12,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring4.SpringTemplateEngine;
-
 import javax.mail.MessagingException;
 import java.io.File;
 import java.time.LocalDateTime;
@@ -86,7 +83,7 @@ public class MailingServiceImpl implements MailingService {
             Transport.send(helper.getMimeMessage());
 
         }catch (MessagingException e) {
-            LOGGER.atWarn().setMessage("Error sending email").log();
+            LOGGER.atWarn().setMessage("Error sending email: {}").addArgument(()->e.getMessage()).log();
         }
     }
 
@@ -94,7 +91,6 @@ public class MailingServiceImpl implements MailingService {
     @Override
     public void sendNewPostNotifications(List<User> to, Post post, User postAuthor) {
        to.forEach(receiver -> {
-
            sendNewPostNotification(receiver.getEmail(), receiver.getUsername(), post, postAuthor, Locale.of(receiver.getLocale()));
        });
     }
@@ -124,12 +120,9 @@ public class MailingServiceImpl implements MailingService {
         vars.put("post_author", postAuthor.getUsername());
         vars.put("base", base);
         Context thymeleafContext = new Context();
-
         thymeleafContext.setVariables(vars);
-
         thymeleafContext.setLocale(locale);
         String htmlBody = thymeleafTemplateEngine.process("postNotification", thymeleafContext);
-
         sendHtmlMessage(to, messageSource.getMessage("email.newPostNotification.subject",new Object[] {thymeleafContext.getVariable("community")}, locale), htmlBody, null);
     }
 

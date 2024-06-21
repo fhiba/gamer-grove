@@ -59,7 +59,7 @@ public class CommunityServiceImpl implements CommunityService{
     public Community findByName(final String communityName) throws NoSuchCommunityException {
         Optional<Community> possibleCommunity = communityDao.findByName(URLDecoder.decode(communityName, StandardCharsets.UTF_8));
         if(possibleCommunity.isEmpty()) {
-            LOGGER.atError().setMessage("Communuty {} not found").addArgument(() -> communityName).log();
+            LOGGER.atError().setMessage("Community {} not found").addArgument(() -> communityName).log();
             throw new NoSuchCommunityException("Community " + communityName + " not found");
         }
         return possibleCommunity.get();

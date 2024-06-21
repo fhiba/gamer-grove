@@ -4,6 +4,8 @@ import ar.edu.itba.paw.models.Community;
 import ar.edu.itba.paw.models.Rating;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistance.RatingDao;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +15,7 @@ import java.util.Optional;
 @Service
 @Transactional(readOnly = true)
 public class RatingServiceImpl implements RatingService{
+    private static final Logger LOGGER = LoggerFactory.getLogger(RatingServiceImpl.class);
 
     @Autowired
     private RatingDao ratingDao;
@@ -34,6 +37,7 @@ public class RatingServiceImpl implements RatingService{
             ratingDao.deleteRating(maybeRating.get());
             return true;
         }
+        LOGGER.atWarn().setMessage("Cannot delete a rating that does not exists, {} {}").addArgument(()->user.getUsername()).addArgument(()->community.getName()).log();
         return false;
     }
 }
