@@ -1,10 +1,12 @@
 INSERT INTO users(id, username, password, email, owner, verified, locale) VALUES (10, 'Pedro', 'curti', 'pedro@curti.com', false, false, 'en');
 INSERT INTO users(id, username, password, email, owner, verified, locale) VALUES (11, 'notMod', 'curti','notmod@hotmail.com',false, false, 'en');
 
-INSERT INTO community(id, name, description, portrait_id,publisher,developer,release_date) VALUES (10, 'test', 'This is a test community', null,'falsepub','falsedeveloper','2024-05-05 20:30:00');
+INSERT INTO community(id, name, description, portrait_id,publisher,developer,release_date,rating_count,total_rating) VALUES (10, 'test', 'This is a test community', null,'falsepub','falsedeveloper','2024-05-05 20:30:00',0,0);
 INSERT INTO community(id, name, description, portrait_id,publisher,developer,release_date) VALUES (11, 'other', 'This is a test community', null,'falsepub','falsedeveloper','2024-05-05 20:30:00');
 INSERT INTO community(id, name, description, portrait_id,publisher,developer,release_date) VALUES (12, 'test2', 'This is a test community', null,'falsepub','falsedeveloper','2024-05-05 20:30:00');
 INSERT INTO post(id, title, body, author_id, community_name, media, media_id, post_date,category, grooviness, deleted) VALUES (10, 'First post', 'This is my first post', 10, 'test', false, null, '2020-01-01 00:00:00','News',0, false);
+INSERT INTO post(id, title, body, author_id, community_name, media, media_id, post_date,category, grooviness, deleted) VALUES (11, 'First post', 'This is my first post', 10, 'test', false, null, '2020-01-01 00:00:00','News',0, false);
+
 -- id 1 is test
 -- id 2 is other
 -- id 3 is test2
@@ -32,3 +34,5 @@ INSERT INTO token (value, user_id, type) values ('vaaa', 10, 'Validation');
 INSERT INTO token (value, user_id, type) values ('raaa', 10, 'ResetPass');
 
 INSERT INTO media (id,bytes) values (10, HEXTORAW('e04fd020ea3a6910a2d808002b30309d'));
+
+INSERT INTO ratings (user_id, community_id, rating) VALUES (10, 10, 4.5);

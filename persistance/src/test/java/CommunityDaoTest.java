@@ -1,5 +1,6 @@
 
 import ar.edu.itba.paw.models.Community;
+import ar.edu.itba.paw.models.CommunityCategories;
 import ar.edu.itba.paw.persistance.CommunityDaoJpa;
 import org.junit.Assert;
 import org.junit.Test;
@@ -59,17 +60,61 @@ public class CommunityDaoTest {
         Assert.assertEquals(3, communityDao.findAllCommunities().size());
     }
 
-//    @Test
-//    @Rollback
-//    public void testUpdateRating(){
-//        Community community = new Community("test", "This is a test community", null, "falsepub", "falsedeveloper", EXISTING_TIME);
-//        community.setId(10L);
-//        community = em.merge(community);
-//        em.flush();
-//        community = communityDao.updateRating(community, 5,1);
-//        community = em.merge(community);
-//        Assert.assertEquals(1, community.getRatingCount().intValue());
-//
-//    }
+    @Test
+    @Rollback
+    public void testUpdateRating(){
+        Community community = new Community("test", "This is a test community", null, "falsepub", "falsedeveloper", EXISTING_TIME);
+        community.setId(10L);
+        community.setRatingCount(0);
+        community.setTotalRating(0F);
+        community = communityDao.updateRating(community, 5,1);
+        Assert.assertEquals(1, community.getRatingCount().intValue());
+        Assert.assertEquals(5.0F,community.getTotalRating().floatValue(),0.1);
+
+    }
+
+    @Test
+    @Rollback
+    public void testAddCategory(){
+        Boolean added = communityDao.addCategory(10L, "Action");
+        Assert.assertTrue(added);
+        Assert.assertEquals(5, ((Number) em.createNativeQuery("SELECT count(*) FROM communities_categories").getSingleResult()).intValue());
+    }
+
+    @Test
+    @Rollback
+    public void testRemoveCategory(){
+        Boolean added = communityDao.removeCategory(10L, "RPG");
+        Assert.assertTrue(added);
+        Assert.assertEquals(3, ((Number) em.createNativeQuery("SELECT count(*) FROM communities_categories").getSingleResult()).intValue());
+    }
+
+    @Test
+    public void testCheckIfUserFollowsCommunity(){
+        Assert.assertTrue(communityDao.checkIfUserFollowsCommunity(10L, 10));
+    }
+
+    @Test
+    @Rollback
+    public void testUnfollowCommunity(){
+        communityDao.unfollowCommunity(10L, 10);
+        Assert.assertEquals(0, ((Number) em.createNativeQuery("SELECT count(*) FROM community_user").getSingleResult()).intValue());
+    }
+
+    @Test
+    @Rollback
+    public void testFollowCommunity(){
+        communityDao.followCommunity(10L, 11,"other");
+        Assert.assertEquals(2, ((Number) em.createNativeQuery("SELECT count(*) FROM community_user").getSingleResult()).intValue());
+    }
+
+    @Test
+    @Rollback
+    public void testUpdateCommunityImageId(){
+        communityDao.updateCommunityImageId(10L, 10L);
+        Assert.assertEquals(10L, ((Number) em.createNativeQuery("SELECT portrait_id FROM community WHERE id = 10").getSingleResult()).longValue());
+    }
+
+
 
 }

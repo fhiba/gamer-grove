@@ -54,12 +54,10 @@ public class ModderDaoTest {
     public void testIsModderOfCommunity() {
         User user = new User("Pedro", "curti", "pedro@curti.com", false, "en", false);
         user.setId(10L);
-        user = em.merge(user);
-        em.flush();
+
         Community community = new Community("test", "This is a test community", null, "falsepub", "falsedeveloper", EXISTING_TIME);
         community.setId(10L);
-        community = em.merge(community);
-        em.flush();
+
         Boolean isMod = modDao.isModderOfCommunity(user,community);
         Assert.assertTrue(isMod);
 
@@ -69,12 +67,8 @@ public class ModderDaoTest {
     public void testFindByid() {
         User user = new User("Pedro", "curti", "pedro@curti.com", false, "en", false);
         user.setId(10L);
-        user = em.merge(user);
-        em.flush();
         Community community = new Community("test", "This is a test community", null, "falsepub", "falsedeveloper", EXISTING_TIME);
         community.setId(10L);
-        community = em.merge(community);
-        em.flush();
         Mod mod = modDao.findByid(user,community).get();
         Assert.assertNotNull(mod);
     }

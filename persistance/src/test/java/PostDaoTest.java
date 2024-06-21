@@ -33,7 +33,9 @@ public class PostDaoTest {
 
     private static final LocalDateTime EXISTING_TIME = LocalDateTime.of(2024, 5, 5, 20, 30);
 
+    private static final LocalDateTime POST_TIME = LocalDateTime.of(2020, 1, 1, 0, 00);
 
+//2020-01-01 00:00:00
 
     @Test
     @Rollback
@@ -47,7 +49,7 @@ public class PostDaoTest {
         Post post = postDao.createPost("title", "body", user, community, false, NOW,"Help");
         em.flush();
         Assert.assertNotNull(post);
-        Assert.assertEquals(2,((Number) em.createNativeQuery("SELECT count(*) FROM post").getSingleResult()).intValue());
+        Assert.assertEquals(3,((Number) em.createNativeQuery("SELECT count(*) FROM post").getSingleResult()).intValue());
 
     }
 
@@ -66,17 +68,17 @@ public class PostDaoTest {
 
     @Test
     public void testFindAllPosts() {
-        Assert.assertEquals(1, postDao.findAllPosts().size());
+        Assert.assertEquals(2, postDao.findAllPosts().size());
     }
 
     @Test
     public void testFindPostByCommunity() {
-        Assert.assertEquals(1, postDao.findPostsByCommunity("test").size());
+        Assert.assertEquals(2, postDao.findPostsByCommunity("test").size());
     }
 
     @Test
     public void testFindByCategory(){
-        Assert.assertEquals(1, postDao.findByCategory("News").size());
+        Assert.assertEquals(2, postDao.findByCategory("News").size());
     }
 
     @Test
@@ -85,20 +87,16 @@ public class PostDaoTest {
         User user = new User("notMod", "curti", "notmod@hotmail.com",false,"en",false);
         user.setId(11L);
         user = em.merge(user);
-        em.flush();
         Community community = new Community("test", "This is a test community", null, "falsepub", "falsedeveloper", NOW);
         community.setId(10L);
         community = em.merge(community);
-        em.flush();
-        Post post = new Post("title", "body", user, community,false,1L,NOW, 1, false, "Help");
-        post.setId(10L);
+        Post post = new Post("First post", "This is my first post", user, community,false,null,POST_TIME, 0, false, "News");
+        post.setId(11L);
         post = em.merge(post);
-
         postDao.addToGroovy(user,post, true);
         em.flush();
         Assert.assertEquals(2, ((Number) em.createNativeQuery("SELECT count(*) FROM groovy_post_history").getSingleResult()).intValue());
     }
-
     @Test
     public void testCheckGrooviness(){
         Optional<Boolean> value = postDao.checkGrooviness(1L, 2L);
@@ -114,17 +112,17 @@ public class PostDaoTest {
 
     @Test
     public void testGetMyFollowedPosts(){
-        Assert.assertEquals(1, postDao.getMyFollowedPosts(10L).size());
+        Assert.assertEquals(2, postDao.getMyFollowedPosts(10L).size());
     }
 
     @Test
     public void testGetMyFollowedPostsByCategory(){
-        Assert.assertEquals(1, postDao.getMyFollowedPostsByCategory("News",10L ).size());
+        Assert.assertEquals(2, postDao.getMyFollowedPostsByCategory("News",10L ).size());
     }
 
     @Test
     public void testFindPostsByUser(){
-        Assert.assertEquals(1, postDao.findPostsByUser(10L).size());
+        Assert.assertEquals(2, postDao.findPostsByUser(10L).size());
     }
     @Test
     public void testGetUsedCategories(){
@@ -133,7 +131,7 @@ public class PostDaoTest {
 
     @Test
     public void testGetTotalPostCount(){
-        Assert.assertEquals(1, postDao.getTotalPostCount());
+        Assert.assertEquals(2, postDao.getTotalPostCount());
     }
 }
 

@@ -63,7 +63,6 @@ public class UserDaoJPA implements UserDao {
         Query list = em.createNativeQuery("SELECT users.id FROM users WHERE id IN (SELECT user_id FROM community_user WHERE community_id = :communityId)")
                 .setParameter("communityId",communityId);
 
-        @SuppressWarnings("unchecked")
         List<Long> resultList = ((Stream<Integer>) list.getResultStream()).map(Integer::longValue).toList();
         TypedQuery<User> query = em.createQuery("from User where id in :list",User.class);
         query.setParameter("list",resultList);
