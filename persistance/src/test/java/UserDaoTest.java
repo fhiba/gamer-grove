@@ -37,9 +37,23 @@ public class UserDaoTest {
     private EntityManager em;
 
 
-    private static final String USERNAME = "Username";
-    private static final String EMAIL = "mail@mail";
-    private static final String PASSWORD = "Password";
+    private static final String NEW_USERNAME = "Username";
+    private static final String NEW_EMAIL = "mail@mail";
+    private static final String NEW_PASSWORD = "Password";
+
+    private static final String USERNAME = "Pedro";
+
+    private static final String PASSWORD = "curti";
+
+    private static final String EMAIL = "pedro@curti.com";
+
+    private static final Boolean VERIFIED = false;
+
+    private static final String LOCALE = "en";
+
+    private static final Boolean OWNER = false;
+
+    private static final Long USER_ID = 10L;
 
     final static byte[] TEST = HexFormat.ofDelimiter(":")
             .parseHex("e0:4f:d0:20:ea:3a:69:10:a2:d8:08:00:2b:30:30:9d");
@@ -47,11 +61,11 @@ public class UserDaoTest {
     @Test
     @Rollback
     public void testCreate() {
-        final User user = userDao.create(USERNAME, EMAIL, PASSWORD);
+        final User user = userDao.create(NEW_USERNAME, NEW_EMAIL, NEW_PASSWORD);
         em.flush();
         assertNotNull(user);
-        assertEquals(USERNAME, user.getUsername());
-        assertEquals(PASSWORD, user.getPassword());
+        assertEquals(NEW_USERNAME, user.getUsername());
+        assertEquals(NEW_PASSWORD, user.getPassword());
         assertEquals(1,user.getId().intValue());
     }
     //Pedro', 'curti', 'pedro@curti.com'
@@ -93,8 +107,8 @@ public class UserDaoTest {
     @Test
     @Rollback
     public void testUpdateImage() {
-        User user = new User("Pedro", "curti", "pedro@curti.com", false, "en", false);
-        user.setId(10L);
+        User user = new User(USERNAME, PASSWORD, EMAIL,VERIFIED,LOCALE,OWNER);
+        user.setId(USER_ID);
         File byteBlob = new File(TEST);
         byteBlob.setImageId(10L);
         user = userDao.updateImage(user, byteBlob);
@@ -104,8 +118,8 @@ public class UserDaoTest {
     @Test
     @Rollback
     public void testVerifyUser() {
-        User user = new User("Pedro", "curti", "pedro@curti.com", false, "en", false);
-        user.setId(10L);
+        User user = new User(USERNAME, PASSWORD, EMAIL,VERIFIED,LOCALE,OWNER);
+        user.setId(USER_ID);
         user = userDao.verifyUser(user);
         assertNotNull(user);
         assertEquals(true, user.isVerified());
@@ -114,8 +128,8 @@ public class UserDaoTest {
     @Test
     @Rollback
     public void testUpdateLocale() {
-        User user = new User("Pedro", "curti", "pedro@curti.com", false, "en", false);
-        user.setId(10L);
+        User user = new User(USERNAME, PASSWORD, EMAIL,VERIFIED,LOCALE,OWNER);
+        user.setId(USER_ID);
         user = userDao.updateLocale(user, "es");
         assertNotNull(user);
         assertEquals("es", user.getLocale());
