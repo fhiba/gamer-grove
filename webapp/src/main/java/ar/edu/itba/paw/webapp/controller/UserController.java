@@ -254,17 +254,18 @@ public class UserController {
         if (Objects.nonNull(pageNumber))
             paginationRequest.setPageNumber(pageNumber);
 
-        try {
-            communities = cs.findFollowedCommunities(paginationRequest, selectedCategories);
-        } catch (IllegalArgumentException e) {
-            communities = null;
-        }
+
         Optional<User> maybeUser = us.getLoggedUser();
         if(maybeUser.isEmpty()) {
             LOGGER.atError().setMessage("User logged not found").log();
             throw new UserNotFoundException("This user does not exists");
         }
         User user = maybeUser.get();
+        try {
+            communities = cs.findFollowedCommunities(paginationRequest, selectedCategories,user);
+        } catch (IllegalArgumentException e) {
+            communities = null;
+        }
         mav.addObject("isAdmin", user.getOwner());
         mav.addObject("user", user);
         mav.addObject("followedCommunities", communities);
@@ -278,7 +279,7 @@ public class UserController {
     }
 
     @RequestMapping(path = {"/user/{id}/userPosts"}, method = RequestMethod.GET)
-    public ModelAndView getPublicProfileUserPosts(@PathVariable("id") final long id,@RequestParam(required = false) Integer pageNumber) throws UserNotFoundException {
+    public ModelAndView getPublicProfileUserPosts(@PathVariable("id") final long id,@RequestParam(required = false) Integer pageNumber) throws UserNotFoundException,NoLoggedUserException {
         ModelAndView mav = new ModelAndView("user/public_profile/userPosts");
         Optional<User> maybeUser = us.findById(id);
         if(maybeUser.isEmpty()) {
@@ -286,10 +287,19 @@ public class UserController {
             throw new UserNotFoundException("This user does not exists");
         }
         User user = maybeUser.get();
-        mav.addObject("isAdmin", user.getOwner());
         mav.addObject("user", user);
+
+        Optional<User> maybeLoggedUser = us.getLoggedUser();
+        if(maybeLoggedUser.isEmpty()) {
+            LOGGER.atError().setMessage("Not user logged found when trying to acess public profile of another user").log();
+            throw new NoLoggedUserException();
+        }
+        User loggedUser = maybeLoggedUser.get();
+        mav.addObject("user", user);
+
+        mav.addObject("isAdmin", loggedUser.getOwner());
         mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
-        mav.addObject("communities", cs.getFollowedCommunities(user));
+        mav.addObject("communities", cs.getFollowedCommunities(loggedUser));
         mav.addObject("isVerified", user.isVerified());
 
         PaginatedDataWrapper<Post> posts;
@@ -306,7 +316,7 @@ public class UserController {
     }
 
     @RequestMapping(path = "/user/{id}/likedPosts", method = RequestMethod.GET)
-    public ModelAndView getProfileLikedPosts(@PathVariable("id") final long id,@RequestParam(required = false) Integer pageNumber) throws UserNotFoundException {
+    public ModelAndView getProfileLikedPosts(@PathVariable("id") final long id,@RequestParam(required = false) Integer pageNumber) throws UserNotFoundException, NoLoggedUserException {
         ModelAndView mav = new ModelAndView("user/public_profile/likedPosts");
         Optional<User> maybeUser = us.findById(id);
         if(maybeUser.isEmpty()) {
@@ -314,11 +324,18 @@ public class UserController {
             throw new UserNotFoundException("This user does not exists");
         }
         User user = maybeUser.get();
-
-        mav.addObject("isAdmin", false);
         mav.addObject("user", user);
+
+
+        Optional<User> maybeLoggedUser = us.getLoggedUser();
+        if(maybeLoggedUser.isEmpty()) {
+            LOGGER.atError().setMessage("Not user logged found when trying to acess public profile of another user").log();
+            throw new NoLoggedUserException();
+        }
+        User loggedUser = maybeLoggedUser.get();
+        mav.addObject("isAdmin", loggedUser.getOwner());
         mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
-        mav.addObject("communities", cs.getFollowedCommunities(user));
+        mav.addObject("communities", cs.getFollowedCommunities(loggedUser));
         mav.addObject("isVerified", user.isVerified());
         PaginatedDataWrapper<Post> likedPosts;
         PaginationRequest paginationRequestLikedPosts = new PaginationRequest(5);
@@ -342,23 +359,31 @@ public class UserController {
         PaginationRequest paginationRequest = new PaginationRequest(8);
         if (Objects.nonNull(pageNumber))
             paginationRequest.setPageNumber(pageNumber);
-        try {
-            communities = cs.findFollowedCommunities(paginationRequest, selectedCategories);
-        } catch (IllegalArgumentException e) {
-            communities = null;
-        }
+
         Optional<User> maybeUser = us.findById(id);
         if(maybeUser.isEmpty()) {
             LOGGER.atError().setMessage("The user with id {} does not exists").addArgument(id).log();
             throw new UserNotFoundException("This user does not exists");
         }
         User user = maybeUser.get();
+        try {
+            communities = cs.findFollowedCommunities(paginationRequest, selectedCategories,user);
+        } catch (IllegalArgumentException e) {
+            communities = null;
+        }
+
+        Optional<User> maybeLoggedUser = us.getLoggedUser();
+        if(maybeLoggedUser.isEmpty()) {
+            LOGGER.atError().setMessage("Not user logged found when trying to acess public profile of another user").log();
+            throw new NoLoggedUserException();
+        }
+        User loggedUser = maybeLoggedUser.get();
         mav.addObject("isAdmin", user.getOwner());
         mav.addObject("user", user);
         mav.addObject("followedCommunities", communities);
         mav.addObject("selectedCategories", selectedCategories);
         mav.addObject("categories", Arrays.stream(CommunityCategories.values()).map(CommunityCategories::getCategory).toArray(String[]::new));
-        mav.addObject("communities", cs.getFollowedCommunities(user));
+        mav.addObject("communities", cs.getFollowedCommunities(loggedUser));
         mav.addObject("isVerified", user.isVerified());
         return mav;
     }

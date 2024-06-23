@@ -3,7 +3,6 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
 import ar.edu.itba.paw.models.Community;
-
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
 import ar.edu.itba.paw.models.pagination.PaginationRequest;
@@ -14,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -136,26 +134,22 @@ public class CommunityServiceImpl implements CommunityService{
     }
 
     @Override
-    public PaginatedDataWrapper<Community> findFollowedCommunities(PaginationRequest request, List<String> categories) throws NoLoggedUserException {
+    public PaginatedDataWrapper<Community> findFollowedCommunities(PaginationRequest request, List<String> categories, User user) throws NoLoggedUserException {
         if( request.getPageSize() < 1){
             throw new IllegalArgumentException("Invalid Page size");
         }
         if(request.getPageNumber() <1 ){
             throw new IllegalArgumentException("Invalid Page number");
         }
-        Optional<User> maybeUser = userService.getLoggedUser();
-        if(maybeUser.isEmpty()) {
-            LOGGER.atError().setMessage("Error getting followed communites because there is no logged user").log();
-            throw new NoLoggedUserException();
-        }
+
         List<String> newList = null;
         if(!categories.isEmpty() && !categories.getFirst().isEmpty()) {
             newList = categories.stream().map(category -> category.replaceAll("([%_\\\\])", "\\\\$1")).toList();
         }
-        int totalCount = communityDao.findCount(null, newList == null? List.of(): newList, maybeUser.get().getId());
+        int totalCount = communityDao.findCount(null, newList == null? List.of(): newList, user.getId());
         int offset = (request.getPageNumber() - 1) * request.getPageSize();
 
-        List<Community> data = communityDao.find(request.getPageSize(),offset,null, newList == null? List.of(): newList, maybeUser.get().getId());
+        List<Community> data = communityDao.find(request.getPageSize(),offset,null, newList == null? List.of(): newList, user.getId());
         PaginatedDataWrapper<Community> dataWrapper = new PaginatedDataWrapper<>(data, request.getPageNumber(), totalCount, request.getPageSize());
         if(request.getPageNumber() > dataWrapper.getTotalPages() && dataWrapper.getTotalPages() != 0){
             throw new IllegalArgumentException("Invalid Page number");
