@@ -77,7 +77,7 @@ public class ModderDaoJpa implements ModderDao{
         nativeQuery.setFirstResult(offset);
         nativeQuery.setMaxResults(pageSize);
         nativeQuery.setParameter("communityId",communityId);
-        List<Long> resultList = ((Stream<Integer>) nativeQuery.getResultStream()).map(Integer::longValue).toList();
+        List<Long> resultList = ((Stream<Number>) nativeQuery.getResultStream()).map(Number::longValue).toList();
 
         TypedQuery<Mod> query = em.createQuery("from Mod as m where m.user.id IN :ids and m.community.id = :communityId order by m.sinceDate desc", Mod.class);
         query.setParameter("ids", resultList);
@@ -110,7 +110,7 @@ public class ModderDaoJpa implements ModderDao{
         nativeQuery.setFirstResult(offset);
         nativeQuery.setMaxResults(pageSize);
         nativeQuery.setParameter("userId",userId);
-        List<Long> resultList = ((Stream<Integer>) nativeQuery.getResultStream()).map(Integer::longValue).toList();
+        List<Long> resultList = ((Stream<Number>) nativeQuery.getResultStream()).map(Number::longValue).toList();
 
         TypedQuery<Mod> query = em.createQuery("from Mod as m where m.user.id IN :ids order by m.sinceDate desc", Mod.class);
         query.setParameter("ids", resultList);

@@ -108,6 +108,12 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public User verifyUser(String token) throws NoSuchTokenException{
+
+        if(token == null || token.isEmpty()) {
+            LOGGER.atError().setMessage("Empty token provided when reseting password").log();
+            throw new NoSuchTokenException("token is empty or null");
+        }
+
         Optional<User> maybeUser = tokenService.getUserFromToken(token, "Validation");
         if (maybeUser.isEmpty()) {
             LOGGER.atError().setMessage("Token {} does not exist").addArgument(token).log();

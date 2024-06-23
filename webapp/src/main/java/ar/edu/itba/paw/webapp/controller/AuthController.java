@@ -49,32 +49,27 @@ public class AuthController {
 
     @RequestMapping(value = "/verify", method = RequestMethod.GET)
     public ModelAndView validateAccount(@RequestParam("token") final String token) throws NoSuchTokenException {
-        if(token == null || token.isEmpty()) {
-            LOGGER.atError().setMessage("Empty token provided when reseting password").log();
-            throw new NoSuchTokenException("token is empty or null");
-        }
-        ModelAndView mav = new ModelAndView("redirect:/communities");
 
+        ModelAndView mav = new ModelAndView("redirect:/communities");
         try {
             userService.verifyUser(token);
         } catch (NoSuchTokenException e) {
             return mav.addObject("verifySuccess", false);
         }
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        List<GrantedAuthority> updatedAuthorities = new ArrayList<>(auth.getAuthorities());
-        updatedAuthorities.add(new SimpleGrantedAuthority("ROLE_VERIFIED"));
-        Authentication newAuth = new UsernamePasswordAuthenticationToken(auth.getPrincipal(), auth.getCredentials(), updatedAuthorities);
-        SecurityContextHolder.getContext().setAuthentication(newAuth);
+        if(userService.getLoggedUser().isPresent()) {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            List<GrantedAuthority> updatedAuthorities = new ArrayList<>(auth.getAuthorities());
+            updatedAuthorities.add(new SimpleGrantedAuthority("ROLE_VERIFIED"));
+            Authentication newAuth = new UsernamePasswordAuthenticationToken(auth.getPrincipal(), auth.getCredentials(), updatedAuthorities);
+            SecurityContextHolder.getContext().setAuthentication(newAuth);
+        }
 
         return mav.addObject("verifySuccess", true);
     }
 
     @RequestMapping(value = "/auth/resetPassword", method = RequestMethod.GET)
     public ModelAndView resetPassword(@ModelAttribute("token") final String token, @ModelAttribute("resetPasswordForm") ResetPasswordForm resetPasswordForm) throws NoSuchTokenException {
-        if(token == null || token.isEmpty()) {
-            LOGGER.atError().setMessage("Empty token provided when reseting password").log();
-            throw new NoSuchTokenException("token is empty or null");
-        }
+
         Boolean tokenExists = tokenService.verifyResetToken(token);
         if(!tokenExists) {
             LOGGER.atError().setMessage("Invalid token provided when reseting password").log();

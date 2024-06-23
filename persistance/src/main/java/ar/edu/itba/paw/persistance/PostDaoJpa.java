@@ -164,7 +164,7 @@ public class PostDaoJpa implements PostDao {
         nativeQuery.setFirstResult(offset);
         nativeQuery.setMaxResults(pageSize);
 
-        List<Long> resultList = ((Stream<Integer>) nativeQuery.getResultStream()).map(Integer::longValue).toList();
+        List<Long> resultList = ((Stream<Number>) nativeQuery.getResultStream()).map(Number::longValue).toList();
 
         TypedQuery<Post> query = em.createQuery("from Post as p where p.id IN :ids order by p.date desc ", Post.class);
         query.setParameter("ids", resultList);
@@ -186,7 +186,7 @@ public class PostDaoJpa implements PostDao {
         nativeQuery.setFirstResult(offset);
         nativeQuery.setParameter("category",category);
         nativeQuery.setMaxResults(pageSize);
-        List<Long> resultList = ((Stream<Integer>) nativeQuery.getResultStream()).map(Integer::longValue).toList();
+        List<Long> resultList = ((Stream<Number>) nativeQuery.getResultStream()).map(Number::longValue).toList();
 
         TypedQuery<Post> query = em.createQuery("from Post as p where p.id IN :ids order by p.date desc ", Post.class);
         query.setParameter("ids", resultList);
@@ -207,7 +207,7 @@ public class PostDaoJpa implements PostDao {
         nativeQuery.setParameter("name",communityName);
         nativeQuery.setMaxResults(pageSize);
 
-        List<Long> resultList = ((Stream<Integer>) nativeQuery.getResultStream()).map(Integer::longValue).toList();
+        List<Long> resultList = ((Stream<Number>) nativeQuery.getResultStream()).map(Number::longValue).toList();
 
         TypedQuery<Post> query = em.createQuery("from Post as p where p.id IN :ids order by p.date desc", Post.class);
         query.setParameter("ids", resultList);
@@ -229,7 +229,7 @@ public class PostDaoJpa implements PostDao {
         nativeQuery.setParameter("userId",userId);
         nativeQuery.setMaxResults(pageSize);
 
-        List<Long> resultList = ((Stream<Integer>) nativeQuery.getResultStream()).map(Integer::longValue).toList();
+        List<Long> resultList = ((Stream<Number>) nativeQuery.getResultStream()).map(Number::longValue).toList();
 
         TypedQuery<Post> query = em.createQuery("from Post as p where p.id IN :ids order by p.date desc", Post.class);
         query.setParameter("ids", resultList);
@@ -253,7 +253,7 @@ public class PostDaoJpa implements PostDao {
         nativeQuery.setParameter("userId",userId);
         nativeQuery.setMaxResults(pageSize);
 
-        List<Long> resultList = ((Stream<Integer>) nativeQuery.getResultStream()).map(Integer::longValue).toList();
+        List<Long> resultList = ((Stream<Number>) nativeQuery.getResultStream()).map(Number::longValue).toList();
 
         TypedQuery<Post> query = em.createQuery("from Post as p where p.id IN :ids order by p.date desc ", Post.class);
         query.setParameter("ids", resultList);
@@ -275,7 +275,7 @@ public class PostDaoJpa implements PostDao {
         nativeQuery.setParameter("userId",userId);
         nativeQuery.setMaxResults(pageSize);
 
-        List<Long> resultList = ((Stream<Integer>) nativeQuery.getResultStream()).map(Integer::longValue).toList();
+        List<Long> resultList = ((Stream<Number>) nativeQuery.getResultStream()).map(Number::longValue).toList();
 
         TypedQuery<Post> query = em.createQuery("from Post as p where p.id IN :ids order by p.date desc", Post.class);
         query.setParameter("ids", resultList);
@@ -296,7 +296,7 @@ public class PostDaoJpa implements PostDao {
         nativeQuery.setParameter("authorId",id);
         nativeQuery.setFirstResult(offset);
         nativeQuery.setMaxResults(pageSize);
-        List<Long> resultList = ((Stream<Integer>) nativeQuery.getResultStream()).map(Integer::longValue).toList();
+        List<Long> resultList = ((Stream<Number>) nativeQuery.getResultStream()).map(Number::longValue).toList();
         TypedQuery<Post> query = em.createQuery("from Post as p where p.id IN :ids order by p.date desc", Post.class);
         query.setParameter("ids", resultList);
         return query.getResultList();
@@ -386,7 +386,7 @@ public class PostDaoJpa implements PostDao {
             }
             nativeQuery.setFirstResult(offset);
             nativeQuery.setMaxResults(pageSize);
-            return ((Stream<Integer>) nativeQuery.getResultStream()).map(Integer::longValue).toList();
+            return ((Stream<Number>) nativeQuery.getResultStream()).map(Number::longValue).toList();
         }
 
         List<Post> build(Integer pageSize, Integer offset) {

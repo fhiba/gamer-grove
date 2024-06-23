@@ -12,7 +12,7 @@ public interface TokenService {
 
     Optional<User> getUserFromToken(String token, String type) throws NoSuchTokenException;
 
-    Boolean verifyResetToken(String token);
+    Boolean verifyResetToken(String token)throws NoSuchTokenException;
 
     void deleteVerifyTokens(Long userId);
 

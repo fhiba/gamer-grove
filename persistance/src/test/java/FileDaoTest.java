@@ -1,22 +1,22 @@
 import ar.edu.itba.paw.models.File;
 import ar.edu.itba.paw.persistance.FileDaoJpa;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.OrderWith;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.event.annotation.BeforeTestExecution;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.sql.DataSource;
 import java.math.BigInteger;
 import java.util.HexFormat;
 
@@ -43,6 +43,16 @@ public class FileDaoTest {
             .parseHex("e04fd020ea3a6910a2d808002b30309d");
 
 
+    @Autowired
+    private DataSource ds;
+    private JdbcTemplate jdbcTemplate;
+
+    private static final String TABLE = "media";
+    private static final String PI_TABLE = "post_images";
+    @Before
+    public void setUp() {
+        jdbcTemplate = new JdbcTemplate(ds);
+    }
 
     @Test
     public void testGetFile() {
@@ -58,6 +68,7 @@ public class FileDaoTest {
         em.flush();
         assertNotNull(file);
         assertEquals(TEST, file.getFile());
+        Assert.assertEquals(2, JdbcTestUtils.countRowsInTable(jdbcTemplate, TABLE));
     }
 
     @Test
@@ -65,7 +76,7 @@ public class FileDaoTest {
     public void testUploadPostImage() {
         fileDao.uploadPostImage(10, 10);
         em.flush();
-        assertEquals(1, ((Number) em.createNativeQuery("SELECT COUNT(*) FROM post_images").getSingleResult()).intValue());
+        assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, PI_TABLE));
     }
 
 
