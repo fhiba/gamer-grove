@@ -18,13 +18,7 @@ public interface CommentDao {
 
     void editGrooviness(Comment comment, int i);
 
-    Optional<Boolean> getGroovyTypeFromComment(Comment comment, User user, Post post);
-
     void insertGroovinessIntoComment(Comment comment, User user, Post post, boolean grooviness);
-
-    void deleteGrooviness(Post post, User user, Comment comment);
-
-    void updateGroovyHistory(Post post, User user, Comment comment, boolean grooviness);
 
     List<Comment> getGroovedComments(long postId, long id);
 

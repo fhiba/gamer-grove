@@ -46,7 +46,7 @@
                             <select class="form-select" id="order" aria-label="Floating label select example"
                                     onchange="orderPosts()">
                                 <c:forEach var="orderItem" items="${orders}">
-                                    <option <c:if test="${orderItem == order}"> selected </c:if> value="${orderItem}">${orderItem}</option>
+                                    <option <c:if test="${orderItem == order}"> selected </c:if> value="${orderItem}"><spring:message code="${orderItem}" /></option>
                                 </c:forEach>
                             </select><label for="order"><spring:message code="Home.Order"/></label>
                         </div>

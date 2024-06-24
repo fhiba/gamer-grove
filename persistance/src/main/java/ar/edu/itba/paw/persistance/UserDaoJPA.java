@@ -45,13 +45,6 @@ public class UserDaoJPA implements UserDao {
         return newUser;
     }
 
-
-    @Override
-    public List<User> findAll() {
-        TypedQuery<User> query = em.createQuery("from User",User.class);
-        return query.getResultList();
-    }
-
     @Override
     public User updateImage(User user, File image) {
         user.setImage(image);

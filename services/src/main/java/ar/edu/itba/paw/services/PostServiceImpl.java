@@ -44,14 +44,6 @@ public class PostServiceImpl implements PostService{
     @Autowired
     private FileService fs;
 
-    @Override
-    public List<Post> getAllPosts() {
-        List<Post> posts = postDao.findAllPosts();
-        if(posts.isEmpty())
-            return Collections.emptyList();
-        return posts;
-    }
-
     @Transactional
     @Override
     public Post createPost(final String title, final String body, final String communityName, final String category, final MultipartFile[] files) throws NoLoggedUserException, NoSuchCommunityException {
@@ -179,13 +171,6 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    public List<Post> getMyFollowedPosts(User user) {
-        List<Post> posts = postDao.getMyFollowedPosts(user.getId());
-        if(posts.isEmpty())
-            return Collections.emptyList();
-        return posts;
-    }
-    @Override
     public PaginatedDataWrapper<Post> getUserFollowedPostsPaginated(String category, String order,long userId, PaginationRequest request) {
         if( request.getPageSize() < 1){
             throw new IllegalArgumentException("Invalid Page size");
@@ -208,22 +193,8 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    public List<Post> getMyFollowedPostsByCategory(String category, User user) {
-        List<Post> posts = postDao.getMyFollowedPostsByCategory(category,user.getId());
-        if(posts.isEmpty())
-            return Collections.emptyList();
-        return posts;
-    }
-
-    @Override
     public List<Post> getPostsByUser(long id) {
         List<Post> posts = postDao.findPostsByUser(id);
-        return posts.isEmpty()? Collections.emptyList(): posts;
-    }
-
-    @Override
-    public List<Post> getUserLikedPosts(long id) {
-        List<Post> posts = postDao.findPostsLikedByUser(id);
         return posts.isEmpty()? Collections.emptyList(): posts;
     }
 

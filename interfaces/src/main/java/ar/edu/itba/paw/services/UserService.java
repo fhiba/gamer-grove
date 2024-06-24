@@ -12,13 +12,14 @@ import java.util.List;
 public interface UserService {
 
     Optional<User> findById(final long id);
+
     Optional<User> findByEmail(final String email);
 
     Optional<User> findByUsername(final String username);
+
     User create(String username, final String email, final String password) throws UserNotFoundException;
 
     Optional<User> getLoggedUser();
-
 
     void resetPassword(String token, String password) throws NoSuchTokenException;
 

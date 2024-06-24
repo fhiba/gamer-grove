@@ -11,11 +11,11 @@ public interface UserDao {
         Optional<User> findByEmail(final String mail);
 
         Optional<User> findByUsername(final String username);
+
         User create(final String username, final String email, final String password);
 
-        List<User> findAll();
-
         User updatePassword(User user, String password);
+
         User verifyUser(User user);
 
         User updateLocale(User user, String locale);

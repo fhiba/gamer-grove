@@ -1,9 +1,7 @@
 package ar.edu.itba.paw.webapp.validators;
 
-import ar.edu.itba.paw.webapp.validators.interfaces.FileMustBeImageConstraint;
 import ar.edu.itba.paw.webapp.validators.interfaces.NullableImageConstraint;
 import org.springframework.http.MediaType;
-import org.springframework.lang.Nullable;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.ConstraintValidator;

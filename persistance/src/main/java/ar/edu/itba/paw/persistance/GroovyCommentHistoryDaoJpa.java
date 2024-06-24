@@ -4,9 +4,6 @@ import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.GroovyCommentHistory;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 

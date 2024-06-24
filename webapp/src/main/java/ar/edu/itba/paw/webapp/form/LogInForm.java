@@ -2,8 +2,6 @@ package ar.edu.itba.paw.webapp.form;
 
 
 import ar.edu.itba.paw.webapp.validators.interfaces.UniqueUsernameConstraint;
-
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 

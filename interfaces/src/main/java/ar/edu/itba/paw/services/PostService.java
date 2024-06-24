@@ -15,10 +15,7 @@ import java.util.List;
 
 public interface PostService {
 
-    List<Post> getAllPosts();
-
     Post createPost(final String title, final String content, final String communityName, final String category, final MultipartFile[] files) throws NoLoggedUserException, NoSuchCommunityException;
-
 
     PaginatedDataWrapper<Post> getPostsByCommunityPaginated(String communityName, PaginationRequest request);
 
@@ -32,25 +29,19 @@ public interface PostService {
 
     int checkGrooviness(long postId);
 
-    List<Post> getMyFollowedPosts(User user) throws NoLoggedUserException;
-
     PaginatedDataWrapper<Post> getUserFollowedPostsPaginated(String category, String order, long userId, PaginationRequest request);
 
-    List<Post> getMyFollowedPostsByCategory(String category, User user) throws NoLoggedUserException;
-
     List<Post> getPostsByUser(long id);
-
-    List<Post> getUserLikedPosts(long id);
 
     List<Post> getNewsLimited(int limit);
 
     PaginatedDataWrapper<Post> getUserLikedPostsPaginated(long userId, PaginationRequest request);
 
     List<String> getUsedCategories();
+
     void removePost(final long postId) throws NoSuchPostException;
 
     List<Post> topFivePosts();
-
 
     PaginatedDataWrapper<Post> getAllPostsPaginated(String category, String order, PaginationRequest paginationRequest);
 

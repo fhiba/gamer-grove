@@ -3,7 +3,6 @@ package ar.edu.itba.paw.persistance;
 import ar.edu.itba.paw.models.Community;
 
 import ar.edu.itba.paw.models.Mod;
-import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
@@ -12,7 +11,6 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 

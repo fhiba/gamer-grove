@@ -184,21 +184,11 @@ public class CommunityDaoJpa implements CommunityDao{
     }
 
     @Override
-    public List<String> getCategoriesOfCommunity(long id) {
-        return List.of();
-    }
-
-    @Override
     public Boolean checkIfUserFollowsCommunity(long userId, int communityId) {
        return em.createNativeQuery("SELECT 1 FROM community_user WHERE user_id = :userId AND community_id = :communityId")
                 .setParameter("userId", userId)
                 .setParameter("communityId", communityId)
                 .getResultStream().findFirst().isPresent();
-    }
-
-    @Override
-    public List<String> getAllCategories() {
-        return em.createNativeQuery("SELECT DISTINCT category FROM communities_categories").getResultList();
     }
 
 
@@ -219,21 +209,6 @@ public class CommunityDaoJpa implements CommunityDao{
                 .setParameter("role", 0)
                 .executeUpdate();
 
-    }
-
-    @Override
-    public List<Community> getFollowedCommunitiesPaginated(Integer pageSize, Integer offset, Long userId) {
-        Query nativeQuery = em.createNativeQuery("SELECT community_id FROM community_user WHERE user_id = :userId")
-                .setParameter("userId", userId)
-                .setFirstResult(offset)
-                .setMaxResults(pageSize);
-
-        @SuppressWarnings("unchecked")
-        List<Long> resultList = ((Stream<Number>) nativeQuery.getResultStream()).map(Number::longValue).toList();
-
-        TypedQuery<Community> query = em.createQuery("from Community as c where c.id IN :ids", Community.class);
-        query.setParameter("ids", resultList);
-        return query.getResultList();
     }
 
     @Override
@@ -260,11 +235,6 @@ public class CommunityDaoJpa implements CommunityDao{
     }
 
     @Override
-    public List<Community> getAllCommunitiesNoCat() {
-        return List.of();
-    }
-
-    @Override
     public void editCommunityInfo(String communityName, String description, String publisher, String developer) {
         em.createQuery("UPDATE Community SET  description = :description, publisher = :publisher, developer = :developer WHERE name = :communityName")
                 .setParameter("communityName", communityName)
@@ -282,12 +252,4 @@ public class CommunityDaoJpa implements CommunityDao{
                 .followedBy(userId)
                 .buildCount();
     }
-
-    @Override
-    public Integer getFollowedCommunitiesCount(Long userId) {
-        Query query = em.createNativeQuery("SELECT COUNT(*) FROM community_user WHERE user_id = :userId")
-                .setParameter("userId", userId);
-        return ((Long) query.getSingleResult()).intValue();
-    }
-
 }

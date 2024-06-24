@@ -76,10 +76,6 @@ public class PostDaoJpa implements PostDao {
         return result;
     }
 
-    @Override
-    public void insertIntoGroovyHistory(long postId, long id, boolean grooviness) {
-
-    }
 
 
 
@@ -100,10 +96,6 @@ public class PostDaoJpa implements PostDao {
                 .executeUpdate();
     }
 
-    @Override
-    public Optional<Post> findByIdWithImage(long id) {
-        return Optional.empty();
-    }
 
     @Override
     public List<Post> getMyFollowedPosts(long userId) {
@@ -129,13 +121,6 @@ public class PostDaoJpa implements PostDao {
         return query.getResultList();
     }
 
-    @Override //TODO DELETE
-    public List<Post> findPostsLikedByUser(long id) {
-        String sql = "SELECT * FROM post WHERE id IN(SELECT post_id FROM groovy_post_history WHERE user_id=?) ORDER BY post_date DESC";
-        Query query = em.createNativeQuery(sql, Post.class);
-        query.setParameter(1, id);
-        return null;
-    }
 
     @Override
     public List<String> getUsedCategories() {
@@ -149,41 +134,6 @@ public class PostDaoJpa implements PostDao {
         String hql = "SELECT COUNT(p) FROM Post p WHERE p.deleted = false";
         Query query = em.createQuery(hql);
         return ((Long) query.getSingleResult()).intValue();
-    }
-
-    @Override
-    public List<Post> getAllPostsPaginated(int pageSize, int offset) {
-        Query nativeQuery = em.createNativeQuery("SELECT id FROM post WHERE deleted = false ORDER BY post_date DESC");
-        nativeQuery.setFirstResult(offset);
-        nativeQuery.setMaxResults(pageSize);
-
-        List<Long> resultList = ((Stream<Number>) nativeQuery.getResultStream()).map(Number::longValue).toList();
-
-        TypedQuery<Post> query = em.createQuery("from Post as p where p.id IN :ids order by p.date desc ", Post.class);
-        query.setParameter("ids", resultList);
-        return query.getResultList();
-    }
-
-    @Override
-    public int getTotalPostByCategoryCount(String category) {
-
-        Query query = em.createQuery("SELECT COUNT(*) FROM Post WHERE deleted = false AND category = :category");
-        query.setParameter("category", category);
-        return ((Long) query.getSingleResult()).intValue();
-
-    }
-
-    @Override
-    public List<Post> getAllPostsByCategoryPaginated(String category, int pageSize, int offset) {
-        Query nativeQuery = em.createNativeQuery("SELECT id FROM post WHERE deleted = false and category = :category ORDER BY post_date DESC");
-        nativeQuery.setFirstResult(offset);
-        nativeQuery.setParameter("category",category);
-        nativeQuery.setMaxResults(pageSize);
-        List<Long> resultList = ((Stream<Number>) nativeQuery.getResultStream()).map(Number::longValue).toList();
-
-        TypedQuery<Post> query = em.createQuery("from Post as p where p.id IN :ids order by p.date desc ", Post.class);
-        query.setParameter("ids", resultList);
-        return query.getResultList();
     }
 
     @Override
@@ -203,52 +153,6 @@ public class PostDaoJpa implements PostDao {
         List<Long> resultList = ((Stream<Number>) nativeQuery.getResultStream()).map(Number::longValue).toList();
 
         TypedQuery<Post> query = em.createQuery("from Post as p where p.id IN :ids order by p.date desc", Post.class);
-        query.setParameter("ids", resultList);
-        return query.getResultList();
-    }
-
-    @Override
-    public int getTotaltFollowedPostsByUserCount(long userId) {
-        String sql = "SELECT COUNT(*) FROM post WHERE deleted = false AND community_name IN (SELECT community_name FROM community_user WHERE user_id = ?)";
-        Query query = em.createNativeQuery(sql);
-        query.setParameter(1, userId);
-        return ((Number) query.getSingleResult()).intValue();
-    }
-
-    @Override
-    public List<Post> getFollowedPostsByUserPaginated(long userId, int pageSize, int offset) {
-        Query nativeQuery = em.createNativeQuery("SELECT id FROM post WHERE deleted = false AND community_name IN (SELECT community_name FROM community_user WHERE user_id = :userId) ORDER BY post_date DESC");
-        nativeQuery.setFirstResult(offset);
-        nativeQuery.setParameter("userId",userId);
-        nativeQuery.setMaxResults(pageSize);
-
-        List<Long> resultList = ((Stream<Number>) nativeQuery.getResultStream()).map(Number::longValue).toList();
-
-        TypedQuery<Post> query = em.createQuery("from Post as p where p.id IN :ids order by p.date desc", Post.class);
-        query.setParameter("ids", resultList);
-        return query.getResultList();
-    }
-
-    @Override
-    public int getTotalUserFollowedPostsByCategoryCount(long userId, String category) {
-        String sql = "SELECT COUNT(*) FROM post WHERE deleted = false AND category = ? AND community_name IN (SELECT community_name FROM community_user WHERE user_id = ?)";
-        Query query = em.createNativeQuery(sql);
-        query.setParameter(1, category);
-        query.setParameter(2, userId);
-        return ((Number) query.getSingleResult()).intValue();
-    }
-
-    @Override
-    public List<Post> getUserFollowedPostsByCategoryPaginated(long userId, String category, int pageSize, int offset) {
-        Query nativeQuery = em.createNativeQuery("SELECT id FROM post WHERE deleted = false AND category = :category AND community_name IN (SELECT community_name FROM community_user WHERE user_id = :userId) ORDER BY post_date DESC");
-        nativeQuery.setFirstResult(offset);
-        nativeQuery.setParameter("category",category);
-        nativeQuery.setParameter("userId",userId);
-        nativeQuery.setMaxResults(pageSize);
-
-        List<Long> resultList = ((Stream<Number>) nativeQuery.getResultStream()).map(Number::longValue).toList();
-
-        TypedQuery<Post> query = em.createQuery("from Post as p where p.id IN :ids order by p.date desc ", Post.class);
         query.setParameter("ids", resultList);
         return query.getResultList();
     }

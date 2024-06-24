@@ -43,13 +43,6 @@
                         </div>
                         <div class="col-8">
                             <h3 class="card-title"><c:out value="${user.username}" escapeXml="true"/></h3>
-                            <div class="d-flex">
-                                <div class="me-5">
-                                    <label class="form-label fw-semibold"><spring:message
-                                            code="Register.Email"/></label>
-                                    <p><c:out value="${user.email}" escapeXml="true"/></p>
-                                </div>
-                            </div>
                         </div>
                     </div>
                     <ul class="nav nav-tabs mb-3">
@@ -158,7 +151,7 @@
 
                                                         <p class="text-dark-emphasis m-1" hidden="hidden"
                                                            id="emptyCatText">
-                                                            <spring:message code="Category.NoMore"/></p>
+                                                            <spring:message code="Category.NoCat"/></p>
                                                     </div>
                                                 </div>
                                             </div>

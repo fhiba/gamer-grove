@@ -9,10 +9,8 @@ import java.util.List;
 
 public interface CommentService {
         Comment createComment(long postId, String body) throws NoLoggedUserException, NoSuchPostException, PostIsDeletedException;
-        List<Comment> getPostComments(long postId);
 
         PaginatedDataWrapper<Comment> getPostCommentsPaginated(long postId, PaginationRequest request);
-
 
         void editGroovinessOnComment(long commentId, int grooviness, long postId) throws NoSuchCommentException, UserNotFoundException, NoLoggedUserException, NoSuchPostException;
 

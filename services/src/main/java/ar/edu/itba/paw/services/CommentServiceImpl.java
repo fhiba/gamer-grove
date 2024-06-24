@@ -25,7 +25,6 @@ public class CommentServiceImpl implements CommentService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommentServiceImpl.class);
 
-
     @Autowired
     private CommentDao commentDao;
 
@@ -37,7 +36,6 @@ public class CommentServiceImpl implements CommentService {
 
     @Autowired
     private PostService postService;
-
 
     @Autowired
     private GroovyCommentHistoryService groovyCommentHistoryService;
@@ -75,12 +73,6 @@ public class CommentServiceImpl implements CommentService {
         if(user.isEmpty())
             return;
         mailingService.sendNewCommentNotification(user.get(), post, date, Locale.of(user.get().getLocale()));
-    }
-
-
-    @Override
-    public List<Comment> getPostComments(long postId) {
-        return commentDao.getPostComments(postId);
     }
 
     @Override

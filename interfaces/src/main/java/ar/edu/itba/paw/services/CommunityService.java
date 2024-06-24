@@ -40,10 +40,6 @@ public interface CommunityService {
 
     void addCategories(final long id, List<String> categories) throws NoSuchCommunityException;
 
-    void removeCategories(final long id, List<String> categories) throws NoSuchCommunityException;
-
-    List<Community> getAllCommunitiesNoCat();
-
     void updateCommunityImageId(long id, long imageId);
 
     void editCommunityInfo(String communityName, String description, String publisher, String developer, MultipartFile image, String categories) throws NoSuchCommunityException;

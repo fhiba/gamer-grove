@@ -26,31 +26,23 @@ public interface CommunityDao {
     Community addCategory(Community community, String category);
 
     Boolean removeCategory(final long id, String category);
+
     Community removeCategory(Community community, String category);
 
-    List<String> getCategoriesOfCommunity(final long id);
-
     Boolean checkIfUserFollowsCommunity(long userId, int communityId);
-
-    List<String> getAllCategories();
 
     void unfollowCommunity(long id, int communityId);
 
 
     void followCommunity(long id, int communityId,String communityName);
 
-    List<Community> getFollowedCommunitiesPaginated(Integer pageSize, Integer offset, Long userId);
-
     List<Community> getFollowedCommunitiesLimitedBy(Long userId, Integer limit);
-    void updateCommunityImageId(long id, long imageId);
 
-    List<Community> getAllCommunitiesNoCat();
+    void updateCommunityImageId(long id, long imageId);
 
     void editCommunityInfo(String communityName, String description, String publisher, String developer);
 
     int findCount(String searchTerms, List<String> categories, Long userId);
-
-    Integer getFollowedCommunitiesCount(Long userId);
 
 
 }

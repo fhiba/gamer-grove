@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.webapp.form;
 
-import ar.edu.itba.paw.webapp.validators.interfaces.FileMustBeImageConstraint;
+
 import ar.edu.itba.paw.webapp.validators.interfaces.NullableImageConstraint;
 import org.springframework.web.multipart.MultipartFile;
 

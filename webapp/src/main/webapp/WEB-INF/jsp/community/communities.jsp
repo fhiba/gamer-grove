@@ -213,8 +213,7 @@
 </html>
 <script>
     let hasToast = document.URL.includes("verifySuccess");
-    let hasCategories = document.URL.includes("&categories=");
-    console.log("has categories es " + hasCategories);
+    let hasCategories = document.URL.includes("categories=");
     let isVerified = ${isVerified};
     let noTerms = ${noTerms};
     let followsCommunities = ${followedCommunities.size() > 0}

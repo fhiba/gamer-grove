@@ -131,8 +131,8 @@
                         <div class="mt-5 d-flex justify-content-center">
                             <div class="mb-4 d-flex flex-column align-items-center">
                                 <h4><spring:message code="Profile.NoUserPosts"/></h4>
-                                <c:url value="/" var="homeUrl"/>
-                                <a href="${homeUrl}" class="btn btn-primary w-50"><spring:message code="Post.Create"/></a>
+                                <c:url value="/post" var="postUrl"/>
+                                <a href="${postUrl}" class="btn btn-primary w-50"><spring:message code="Post.Create"/></a>
                             </div>
                         </div>
                     </c:if>

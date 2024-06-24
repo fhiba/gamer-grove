@@ -114,7 +114,8 @@
                     </div>
                     <ul class="nav nav-tabs mb-3">
                         <li class="nav-item">
-                            <a class="nav-link " aria-current="page"><spring:message
+                            <c:url var="userPostsUrl" value="/profile/userPosts"/>
+                            <a class="nav-link " aria-current="page" href="${userPostsUrl}"><spring:message
                                     code="Profile.UserPosts"/></a>
                         </li>
                         <li class="nav-item">

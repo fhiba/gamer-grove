@@ -187,22 +187,6 @@ public class CommunityServiceImpl implements CommunityService{
 
     @Transactional
     @Override
-    public void removeCategories(long id, List<String> categories) throws NoSuchCommunityException {
-        for (String category: categories){
-            removeCategory(id,category);
-        }
-    }
-
-    @Override
-    public List<Community> getAllCommunitiesNoCat() {
-        List<Community> communities = communityDao.getAllCommunitiesNoCat();
-        if(communities.isEmpty())
-            return Collections.emptyList();
-        return communities;
-    }
-
-    @Transactional
-    @Override
     public void modifyUserOnCommunity(int communityId,String communityName) throws NoLoggedUserException {
         Optional<User> maybeUser = userService.getLoggedUser();
         if (maybeUser.isEmpty()) {

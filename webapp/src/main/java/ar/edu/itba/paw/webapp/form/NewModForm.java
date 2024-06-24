@@ -1,7 +1,6 @@
 package ar.edu.itba.paw.webapp.form;
 
 import ar.edu.itba.paw.webapp.validators.interfaces.UsernameMustExistConstraint;
-import ar.edu.itba.paw.webapp.validators.interfaces.ValidCommunityConstraint;
 
 import javax.validation.constraints.*;
 
