@@ -138,9 +138,7 @@ public class ModderServiceImpl implements ModderService{
             throw new IllegalArgumentException("Invalid Page number");
         }
         int totalCount = md.getTotalModders();
-        if(request.getPageNumber() <1 ){
-            throw new IllegalArgumentException("Invalid Page number");
-        }
+
         int offset = (request.getPageNumber() - 1) * request.getPageSize();
         List<Mod> data = md.getAllModdersPaginated(request.getPageSize() , offset);
         PaginatedDataWrapper<Mod> dataWrapper = new PaginatedDataWrapper<>(data, request.getPageNumber(), totalCount, request.getPageSize());
@@ -159,9 +157,7 @@ public class ModderServiceImpl implements ModderService{
         }
         Community community = cs.findByName(communityName);
         int totalCount = md.getTotalModdersByCommunity(community.getId());
-        if(request.getPageNumber() <1 ){
-            throw new IllegalArgumentException("Invalid Page number");
-        }
+
         int offset = (request.getPageNumber() - 1) * request.getPageSize();
         List<Mod> data = md.getModdersPaginatedByCommunity(community.getId(),request.getPageSize() , offset);
         PaginatedDataWrapper<Mod> dataWrapper = new PaginatedDataWrapper<>(data, request.getPageNumber(), totalCount, request.getPageSize());
@@ -184,9 +180,7 @@ public class ModderServiceImpl implements ModderService{
             throw new UserNotFoundException("The user you filter don't exists");
         User user = maybeUser.get();
         int totalCount = md.getTotalModdersByUserId(user.getId());
-        if(request.getPageNumber() <1 ){
-            throw new IllegalArgumentException("Invalid Page number");
-        }
+
         int offset = (request.getPageNumber() - 1) * request.getPageSize();
         List<Mod> data = md.getModdersPaginatedByUserId(user.getId(),request.getPageSize() , offset);
         PaginatedDataWrapper<Mod> dataWrapper = new PaginatedDataWrapper<>(data, request.getPageNumber(), totalCount, request.getPageSize());

@@ -287,6 +287,7 @@ public class UserController {
             throw new UserNotFoundException("This user does not exists");
         }
         User user = maybeUser.get();
+
         mav.addObject("user", user);
 
         Optional<User> maybeLoggedUser = us.getLoggedUser();
@@ -295,6 +296,9 @@ public class UserController {
             throw new NoLoggedUserException();
         }
         User loggedUser = maybeLoggedUser.get();
+        if(loggedUser.getId().equals(user.getId())){
+            return new ModelAndView("redirect:/profile/userPosts");
+        }
         mav.addObject("user", user);
 
         mav.addObject("isAdmin", loggedUser.getOwner());
@@ -333,6 +337,9 @@ public class UserController {
             throw new NoLoggedUserException();
         }
         User loggedUser = maybeLoggedUser.get();
+        if(loggedUser.getId().equals(user.getId())){
+            return new ModelAndView("redirect:/profile/likedPosts");
+        }
         mav.addObject("isAdmin", loggedUser.getOwner());
         mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
         mav.addObject("communities", cs.getFollowedCommunities(loggedUser));
@@ -378,6 +385,11 @@ public class UserController {
             throw new NoLoggedUserException();
         }
         User loggedUser = maybeLoggedUser.get();
+
+        if(loggedUser.getId().equals(user.getId())){
+            return new ModelAndView("redirect:/profile/followed");
+        }
+
         mav.addObject("isAdmin", user.getOwner());
         mav.addObject("user", user);
         mav.addObject("followedCommunities", communities);

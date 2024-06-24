@@ -19,7 +19,6 @@ public interface PostService {
 
     Post createPost(final String title, final String content, final String communityName, final String category, final MultipartFile[] files) throws NoLoggedUserException, NoSuchCommunityException;
 
-    List<Post> getPostsByCommunity(final String communityName);
 
     PaginatedDataWrapper<Post> getPostsByCommunityPaginated(String communityName, PaginationRequest request);
 

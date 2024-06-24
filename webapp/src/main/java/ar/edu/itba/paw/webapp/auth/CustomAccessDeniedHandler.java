@@ -24,7 +24,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
             HttpServletResponse response,
             AccessDeniedException exc) throws IOException, ServletException {
         String url = request.getRequestURI();
-        if(url.contains("/delete") || url.contains("/new-community") || url.contains("/addMod") || url.contains("/info")) {
+        if(url.contains("/delete") || url.contains("/new-community") || url.contains("/addMod") || url.contains("/removeMod") || url.contains("/info") || url.contains("/manageMods")) {
             response.sendRedirect(request.getContextPath() + "/403");
             return;
         }

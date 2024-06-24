@@ -43,13 +43,6 @@ public class PostDaoJpa implements PostDao {
     }
 
     @Override
-    public List<Post> findPostsByCommunity(String communityId) {
-        TypedQuery<Post> query = em.createQuery("from Post as p where p.community.name = :communityId", Post.class);
-        query.setParameter("communityId", communityId);
-        return query.getResultList();
-    }
-
-    @Override
     public List<Post> findByCategory(String category) {
         TypedQuery<Post> query = em.createQuery("from Post as p where p.category = :category", Post.class);
         query.setParameter("category", category);

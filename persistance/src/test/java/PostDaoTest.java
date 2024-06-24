@@ -121,11 +121,7 @@ public class PostDaoTest {
     public void testFindAllPosts() {
         Assert.assertEquals(2, postDao.findAllPosts().size());
     }
-
-    @Test
-    public void testFindPostByCommunity() {
-        Assert.assertEquals(2, postDao.findPostsByCommunity("test").size());
-    }
+    
 
     @Test
     public void testFindByCategory(){

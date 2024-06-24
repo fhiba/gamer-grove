@@ -80,11 +80,7 @@ public class PostServiceImpl implements PostService{
         mailingService.sendNewPostNotifications(users, post, user);
     }
 
-    @Override
-    public List<Post> getPostsByCommunity(final String communityName) {
-        List<Post> posts = postDao.findPostsByCommunity(URLDecoder.decode(communityName, StandardCharsets.UTF_8));
-        return posts.isEmpty()? Collections.emptyList(): posts;
-    }
+
 
     @Override
     public PaginatedDataWrapper<Post> getPostsByCommunityPaginated(final String communityName, PaginationRequest request) {

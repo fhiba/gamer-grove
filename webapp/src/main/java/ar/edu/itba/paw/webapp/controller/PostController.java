@@ -236,7 +236,6 @@ public class PostController {
         Optional<User> author = us.findById(post.getAuthor().getId());
         mav.addObject("author", author.isPresent() ? author.get().getUsername() : "[deleted]");
         mav.addObject("communities", communities);
-        mav.addObject("posts", ps.getPostsByCommunity(post.getcommunity().getName()));
         mav.addObject("canDelete", canDelete);
 
         return mav;

@@ -208,3 +208,8 @@ public class CommentServiceImpl implements CommentService {
         mailingService.notifyCommentDeletion(user.get().getEmail(), user.get().getUsername(), comment.getPostId(), post.getTitle(), post.getcommunity().getName(), comment.getBody(), Locale.of(user.get().getLocale()));
     }
 }
+
+
+
+
+

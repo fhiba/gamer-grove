@@ -37,7 +37,11 @@ public class TokenDaoJpa implements TokenDao{
 
     @Override
     public Optional<User> getUserFromToken(String token, String type) {
-        return Optional.ofNullable(em.find(Token.class,token).getUser());
+        Token t = em.find(Token.class,token);
+        if(t == null){
+            return Optional.empty();
+        }
+        return Optional.ofNullable(t.getUser());
     }
 
     @Override

@@ -1,17 +1,15 @@
-import ar.edu.itba.paw.exceptions.NoLoggedUserException;
-import ar.edu.itba.paw.exceptions.NoSuchPostException;
-import ar.edu.itba.paw.exceptions.PostIsDeletedException;
-import ar.edu.itba.paw.models.Comment;
-import ar.edu.itba.paw.models.Post;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.exceptions.*;
+import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
 import ar.edu.itba.paw.models.pagination.PaginationRequest;
 import ar.edu.itba.paw.persistance.CommentDao;
 import ar.edu.itba.paw.services.*;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.time.LocalDateTime;
@@ -19,15 +17,30 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 
 @RunWith(MockitoJUnitRunner.class)
 public class CommentServiceTest {
+    public static final Long USER_ID = 1L;
+    public static final Long COMMENT_ID = 1L;
+    public static final Long COMMUNITY_ID = 1L;
+    public static final Long POST_ID = 1L;
     public static final String USERNAME = "username";
+    public static final String EMAIL = "email";
+    public static final String PASSWORD = "password";
+    public static final String POST_TITLE = "Test post";
+    public static final String POST_BODY = "Test post body";
+    public static final PostCategories POST_CATEGORY = PostCategories.DISC;
+    public static final String COMMUNITY_NAME = "Test community";
+    public static final String COMMUNITY_DESCRIPTION = "Test community description";
+    public static final String COMMUNITY_PUBLISHER = "Test community publisher";
+    public static final String COMMUNITY_DEVELOPER = "Test community developer";
+    public static LocalDateTime RELEASE_DATE = LocalDateTime.now();
+
+
 
     public static final String COMMENT_BODY = "Test comment";
     @Mock
@@ -42,87 +55,312 @@ public class CommentServiceTest {
     @Mock
     private PostService mockPostService;
 
+    @Mock
+    private GroovyCommentHistoryService mockGroovyCommentHistoryService;
+
     @InjectMocks
     private CommentServiceImpl commentService;
 
 
+    @Test
+    public void testCreateComment() throws NoLoggedUserException, NoSuchPostException, PostIsDeletedException {
+        // SET UP
+        final User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
+        user.setId(USER_ID);
+        final Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, RELEASE_DATE);
+        community.setId(COMMUNITY_ID);
+        final Post post = new Post(POST_TITLE, POST_BODY, user, community, false, null, LocalDateTime.now(), 0, false, POST_CATEGORY.getCategory());
+        post.setId(POST_ID);
 
-//    @Test
-//    public void testCreateComment() throws NoLoggedUserException, NoSuchPostException, PostIsDeletedException {
-//        // Mocking user service to return a dummy user
-//        when(mockUserService.getLoggedUser()).thenReturn(Optional.of(new User(1,"username", "password", "email",0, false)));
-//        when(mockUserService.findById(anyLong())).thenReturn(Optional.of(new User(1,"username", "password", "email",0, false)));
-//        when(mockPostService.getPostById(anyLong()))
-//                .thenReturn(new Post(1, "title", "post body", 1, "communityName", false, 0, LocalDateTime.now(), 0,false,"category"));
-//        LocalDateTime now = LocalDateTime.now();
-//        // Mocking commentDao's createComment method
-//        when(commentDao.createComment(anyLong(), anyString(), anyString(), any(LocalDateTime.class), anyLong()))
-//                .thenReturn(new Comment(1L, 1L, "username", -1, COMMENT_BODY, now, 0,false));
-//
-//        // Call the method to be tested
-//        Comment createdComment = commentService.createComment(1, "Test comment");
-//
-//        assertNotNull(createdComment);
-//        assertEquals(COMMENT_BODY,createdComment.getBody());
-//        assertEquals(1,createdComment.getId());
-//        assertEquals(USERNAME,createdComment.getUsername());
-//        assertEquals(0,createdComment.getGrooviness());
-//        assertEquals(-1,createdComment.getParentId());
-//        assertEquals(now,createdComment.getDate());
-//    }
+        Mockito.when(mockUserService.getLoggedUser()).thenReturn(Optional.of(user));
+        Mockito.when(mockPostService.getPostById(POST_ID)).thenReturn(post);
+        Mockito.when(commentDao.createComment(eq(post), eq(COMMENT_BODY), eq(user), any(LocalDateTime.class), eq(USER_ID))).thenReturn(new Comment(post, user, COMMENT_BODY, LocalDateTime.now(), 0, false));
+
+        Comment comment = commentService.createComment(POST_ID, COMMENT_BODY);
+
+        Assert.assertEquals(COMMENT_BODY, comment.getBody());
+        Assert.assertEquals(user, comment.getAuthor());
+        Assert.assertEquals(post, comment.getPost());
+        Assert.assertNotNull(comment.getDate());
+    }
 
     @Test(expected = NoLoggedUserException.class)
-    public void testFailedCreateWithNoUser() throws NoLoggedUserException, NoSuchPostException, PostIsDeletedException {
-        //	1.	Setup!
-        when(mockUserService.getLoggedUser()).thenReturn(Optional.empty());
-        //when(mockDao.createPost(Mockito.eq(TITLE), Mockito.eq(BODY), Mockito.anyInt(), Mockito.eq(COMMUNITY_NAME), Mockito.anyBoolean(), Mockito.any(LocalDateTime.class), Mockito.eq(CATEGORY))).thenReturn(new Post(1, TITLE, BODY, 1, COMMUNITY_NAME, false,0, LocalDateTime.now(), 0,CATEGORY));
-        // 	2.	"ejercito"	la	class	under	test
+    public void testCreateCommentNoLoggedUser() throws NoLoggedUserException, NoSuchPostException, PostIsDeletedException {
+        // SET UP
+        final User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
+        user.setId(USER_ID);
+        final Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, RELEASE_DATE);
+        community.setId(COMMUNITY_ID);
+        final Post post = new Post(POST_TITLE, POST_BODY, user, community, false, null, LocalDateTime.now(), 0, false, POST_CATEGORY.getCategory());
+        post.setId(POST_ID);
 
-        commentService.createComment(1, "Test comment");
+        Mockito.when(mockUserService.getLoggedUser()).thenReturn(Optional.empty());
+        Mockito.when(mockPostService.getPostById(POST_ID)).thenReturn(post);
+        Mockito.when(commentDao.createComment(eq(post), eq(COMMENT_BODY), eq(user), any(LocalDateTime.class), eq(USER_ID))).thenReturn(new Comment(post, user, COMMENT_BODY, LocalDateTime.now(), 0, false));
 
+        Comment comment = commentService.createComment(POST_ID, COMMENT_BODY);
+
+        Assert.assertEquals(COMMENT_BODY, comment.getBody());
+        Assert.assertEquals(user, comment.getAuthor());
+        Assert.assertEquals(post, comment.getPost());
+        Assert.assertNotNull(comment.getDate());
+    }
+    @Test(expected = PostIsDeletedException.class)
+    public void testCreateCommentOnDeletedPost() throws NoLoggedUserException, NoSuchPostException, PostIsDeletedException {
+        // SET UP
+        final User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
+        user.setId(USER_ID);
+        final Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, RELEASE_DATE);
+        community.setId(COMMUNITY_ID);
+        final Post post = new Post(POST_TITLE, POST_BODY, user, community, false, null, LocalDateTime.now(), 0, true, POST_CATEGORY.getCategory());
+        post.setId(POST_ID);
+
+        Mockito.when(mockUserService.getLoggedUser()).thenReturn(Optional.of(user));
+        Mockito.when(mockPostService.getPostById(POST_ID)).thenReturn(post);
+        Mockito.when(commentDao.createComment(eq(post), eq(COMMENT_BODY), eq(user), any(LocalDateTime.class), eq(USER_ID))).thenReturn(new Comment(post, user, COMMENT_BODY, LocalDateTime.now(), 0, false));
+
+        Comment comment = commentService.createComment(POST_ID, COMMENT_BODY);
+
+        Assert.assertEquals(COMMENT_BODY, comment.getBody());
+        Assert.assertEquals(user, comment.getAuthor());
+        Assert.assertEquals(post, comment.getPost());
+        Assert.assertNotNull(comment.getDate());
     }
 
-//    @Test
-//    public void testGetPostCommentsPaginated() {
-//        // Mock data for testing
-//        List<Comment> mockComments = Arrays.asList(
-//                new Comment(1L, 1L, "username", -1, "Comment 1", LocalDateTime.now(), 0, false),
-//                new Comment(2L, 1L, "username", -1, "Comment 2", LocalDateTime.now(), 0, false),
-//                new Comment(3L, 1L, "username", -1, "Comment 3", LocalDateTime.now(), 0, false)
-//        );
-//
-//        // Mock behavior of commentDao methods
-//        when(commentDao.getPostCommentsPaginated(1L, 10, 0)).thenReturn(mockComments);
-//        when(commentDao.getPostCommentsTotalCount(1L)).thenReturn(3);
-//
-//        // Call the method to be tested
-//        PaginatedDataWrapper<Comment> result = commentService.getPostCommentsPaginated(1L, new PaginationRequest());
-//
-//        // Verify the result
-//        assertEquals(1, result.getPageNumber());
-//        assertEquals(1, result.getTotalPages());
-//        assertEquals(3, result.getTotalCount());
-//        assertEquals(10, result.getPageSize());
-//        assertEquals(mockComments, result.getData());
-//    }
+    @Test
+    public void getPostCommentsPaginated() {
+        PaginationRequest request = new PaginationRequest(1, 10);
+        Mockito.when(commentDao.getPostCommentsTotalCount(eq(POST_ID))).thenReturn(10);
+        Mockito.when(commentDao.getPostCommentsPaginated(eq(POST_ID), eq(10), eq(0))).thenReturn(Arrays.asList(new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment()));
+        PaginatedDataWrapper<Comment> comments = commentService.getPostCommentsPaginated(POST_ID, request);
+        assertNotNull(comments);
+        assertEquals(10, comments.getTotalCount());
+    }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testIllegalPostIdGetPostCommentsPaginated() {
-        commentService.getPostCommentsPaginated(-1,new PaginationRequest());
+    public void getPostCommentsPaginatedWithBadPageSize() {
+        PaginationRequest request = new PaginationRequest(1,-3);
+        Mockito.when(commentDao.getPostCommentsTotalCount(eq(POST_ID))).thenReturn(10);
+        Mockito.when(commentDao.getPostCommentsPaginated(eq(POST_ID), eq(10), eq(0))).thenReturn(Arrays.asList(new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment()));
+        PaginatedDataWrapper<Comment> comments = commentService.getPostCommentsPaginated(POST_ID, request);
+        assertNotNull(comments);
+        assertEquals(10, comments.getTotalCount());
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testIllegalPageNumberGetPostCommentsPaginated() {
-        commentService.getPostCommentsPaginated(1,new PaginationRequest(-1,1));
+    public void getPostCommentsPaginatedWithBadPostId(){
+        PaginationRequest request = new PaginationRequest(1,10);
+        Mockito.when(commentDao.getPostCommentsTotalCount(eq(POST_ID))).thenReturn(10);
+        Mockito.when(commentDao.getPostCommentsPaginated(eq(POST_ID), eq(10), eq(0))).thenReturn(Arrays.asList(new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment()));
+        PaginatedDataWrapper<Comment> comments = commentService.getPostCommentsPaginated(0, request);
+        assertNotNull(comments);
+        assertEquals(10, comments.getTotalCount());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void getPostCommentsPaginatedWithBadPageNumber(){
+        PaginationRequest request = new PaginationRequest(0,10);
+        Mockito.when(commentDao.getPostCommentsTotalCount(eq(POST_ID))).thenReturn(10);
+        Mockito.when(commentDao.getPostCommentsPaginated(eq(POST_ID), eq(10), eq(0))).thenReturn(Arrays.asList(new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment()));
+        PaginatedDataWrapper<Comment> comments = commentService.getPostCommentsPaginated(POST_ID, request);
+        assertNotNull(comments);
+        assertEquals(10, comments.getTotalCount());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void getPostCommentsPaginatedWithBadExceedingPageNumber(){
+        PaginationRequest request = new PaginationRequest(0,10);
+        Mockito.when(commentDao.getPostCommentsTotalCount(eq(POST_ID))).thenReturn(10);
+        Mockito.when(commentDao.getPostCommentsPaginated(eq(POST_ID), eq(10), eq(0))).thenReturn(Arrays.asList(new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment()));
+        PaginatedDataWrapper<Comment> comments = commentService.getPostCommentsPaginated(POST_ID, request);
+        assertNotNull(comments);
+        assertEquals(10, comments.getTotalCount());
+    }
+
+    @Test
+    public void testEditGroovinessOnComment() throws NoSuchPostException, NoLoggedUserException, NoSuchCommentException {
+        final User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
+        user.setId(USER_ID);
+        final Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, RELEASE_DATE);
+        community.setId(COMMUNITY_ID);
+        final Post post = new Post(POST_TITLE, POST_BODY, user, community, false, null, LocalDateTime.now(), 0, true, POST_CATEGORY.getCategory());
+        post.setId(POST_ID);
+        final Comment comment = new Comment(post, user, COMMENT_BODY, LocalDateTime.now(), 0, false);
+        GroovyCommentHistory gch = new GroovyCommentHistory(user, comment, post, true);
+        Mockito.when(mockUserService.getLoggedUser()).thenReturn(Optional.of(user));
+        Mockito.when(commentDao.getCommentById(eq(COMMENT_ID))).thenReturn(Optional.of(comment));
+        Mockito.when(mockPostService.getPostById(eq(POST_ID))).thenReturn(post);
+        Mockito.when(mockGroovyCommentHistoryService.findGroovyCommentHistory(eq(user), eq(comment), eq(post))).thenReturn(Optional.empty());
+        commentService.editGroovinessOnComment(COMMENT_ID, 1, POST_ID);
+    }
+    @Test(expected = NoLoggedUserException.class)
+    public void testEditGroovinessOnCommentWithNoUser() throws NoSuchPostException, NoLoggedUserException, NoSuchCommentException {
+        final User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
+        user.setId(USER_ID);
+        final Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, RELEASE_DATE);
+        community.setId(COMMUNITY_ID);
+        final Post post = new Post(POST_TITLE, POST_BODY, user, community, false, null, LocalDateTime.now(), 0, true, POST_CATEGORY.getCategory());
+        post.setId(POST_ID);
+        final Comment comment = new Comment(post, user, COMMENT_BODY, LocalDateTime.now(), 0, false);
+        GroovyCommentHistory gch = new GroovyCommentHistory(user, comment, post, true);
+        Mockito.when(mockUserService.getLoggedUser()).thenReturn(Optional.empty());
+        Mockito.when(commentDao.getCommentById(eq(COMMENT_ID))).thenReturn(Optional.of(comment));
+        Mockito.when(mockPostService.getPostById(eq(POST_ID))).thenReturn(post);
+        Mockito.when(mockGroovyCommentHistoryService.findGroovyCommentHistory(eq(user), eq(comment), eq(post))).thenReturn(Optional.of(gch));
+        commentService.editGroovinessOnComment(COMMENT_ID, 1, POST_ID);
+    }
+
+    @Test(expected = NoSuchCommentException.class)
+    public void testEditGroovinessOnCommentWithNoComment() throws NoSuchPostException, NoLoggedUserException, NoSuchCommentException {
+        final User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
+        user.setId(USER_ID);
+        final Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, RELEASE_DATE);
+        community.setId(COMMUNITY_ID);
+        final Post post = new Post(POST_TITLE, POST_BODY, user, community, false, null, LocalDateTime.now(), 0, true, POST_CATEGORY.getCategory());
+        post.setId(POST_ID);
+        final Comment comment = new Comment(post, user, COMMENT_BODY, LocalDateTime.now(), 0, false);
+        GroovyCommentHistory gch = new GroovyCommentHistory(user, comment, post, true);
+        Mockito.when(mockUserService.getLoggedUser()).thenReturn(Optional.of(user));
+        Mockito.when(commentDao.getCommentById(eq(COMMENT_ID))).thenReturn(Optional.empty());
+        Mockito.when(mockPostService.getPostById(eq(POST_ID))).thenReturn(post);
+        Mockito.when(mockGroovyCommentHistoryService.findGroovyCommentHistory(eq(user), eq(comment), eq(post))).thenReturn(Optional.of(gch));
+        commentService.editGroovinessOnComment(COMMENT_ID, 1, POST_ID);
     }
     @Test(expected = IllegalArgumentException.class)
-    public void testIllegalPageSizeGetPostCommentsPaginated() {
-        commentService.getPostCommentsPaginated(1,new PaginationRequest(1,-1));
+    public void testEditGroovinessOnCommentWithBadGrooviness() throws NoSuchPostException, NoLoggedUserException, NoSuchCommentException {
+        final User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
+        user.setId(USER_ID);
+        final Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, RELEASE_DATE);
+        community.setId(COMMUNITY_ID);
+        final Post post = new Post(POST_TITLE, POST_BODY, user, community, false, null, LocalDateTime.now(), 0, true, POST_CATEGORY.getCategory());
+        post.setId(POST_ID);
+        final Comment comment = new Comment(post, user, COMMENT_BODY, LocalDateTime.now(), 0, false);
+        GroovyCommentHistory gch = new GroovyCommentHistory(user, comment, post, true);
+        Mockito.when(mockUserService.getLoggedUser()).thenReturn(Optional.of(user));
+        Mockito.when(commentDao.getCommentById(eq(COMMENT_ID))).thenReturn(Optional.of(comment));
+        Mockito.when(mockPostService.getPostById(eq(POST_ID))).thenReturn(post);
+        Mockito.when(mockGroovyCommentHistoryService.findGroovyCommentHistory(eq(user), eq(comment), eq(post))).thenReturn(Optional.of(gch));
+        commentService.editGroovinessOnComment(COMMENT_ID, 3, POST_ID);
     }
-    @Test(expected = IllegalArgumentException.class)
-    public void testIllegalPageNumberMoreThanPageCountGetPostCommentsPaginated() {
-        when(commentDao.getPostCommentsTotalCount(eq(1L))).thenReturn(3);
-        commentService.getPostCommentsPaginated(1,new PaginationRequest(4,2));
+
+    @Test
+    public void TestGetUpGroovedComments() throws UserNotFoundException, NoSuchPostException, UserNotFoundException {
+        final User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
+        user.setId(USER_ID);
+        final Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, RELEASE_DATE);
+        community.setId(COMMUNITY_ID);
+        final Post post = new Post(POST_TITLE, POST_BODY, user, community, false, null, LocalDateTime.now(), 0, true, POST_CATEGORY.getCategory());
+        post.setId(POST_ID);
+        Mockito.when(mockUserService.getLoggedUser()).thenReturn(Optional.of(user));
+        Mockito.when(mockPostService.getPostById(eq(POST_ID))).thenReturn(post);
+        List<Comment> comments = Arrays.asList(new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment());
+        Mockito.when(commentDao.getGroovedComments(eq(POST_ID), eq(USER_ID))).thenReturn(comments);
+        List<Comment> upGroovedComments = commentService.getUpGroovedComments(POST_ID);
+        assertNotNull(upGroovedComments);
+        assertEquals(10, upGroovedComments.size());
     }
+
+    @Test(expected = UserNotFoundException.class)
+    public void TestGetUpGroovedCommentsWithNoUser() throws UserNotFoundException, NoSuchPostException, UserNotFoundException {
+        final User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
+        user.setId(USER_ID);
+        final Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, RELEASE_DATE);
+        community.setId(COMMUNITY_ID);
+        final Post post = new Post(POST_TITLE, POST_BODY, user, community, false, null, LocalDateTime.now(), 0, true, POST_CATEGORY.getCategory());
+        post.setId(POST_ID);
+        Mockito.when(mockUserService.getLoggedUser()).thenReturn(Optional.empty());
+        Mockito.when(mockPostService.getPostById(eq(POST_ID))).thenReturn(post);
+        List<Comment> comments = Arrays.asList(new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment());
+        Mockito.when(commentDao.getGroovedComments(eq(POST_ID), eq(USER_ID))).thenReturn(comments);
+        List<Comment> upGroovedComments = commentService.getUpGroovedComments(POST_ID);
+        assertNotNull(upGroovedComments);
+        assertEquals(10, upGroovedComments.size());
+    }
+
+    @Test
+    public void TestGetDownGroovedComments() throws UserNotFoundException, NoSuchPostException, UserNotFoundException {
+        final User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
+        user.setId(USER_ID);
+        final Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, RELEASE_DATE);
+        community.setId(COMMUNITY_ID);
+        final Post post = new Post(POST_TITLE, POST_BODY, user, community, false, null, LocalDateTime.now(), 0, true, POST_CATEGORY.getCategory());
+        post.setId(POST_ID);
+        Mockito.when(mockUserService.getLoggedUser()).thenReturn(Optional.of(user));
+        Mockito.when(mockPostService.getPostById(eq(POST_ID))).thenReturn(post);
+        List<Comment> comments = Arrays.asList(new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment());
+        Mockito.when(commentDao.getDownGroovedComments(eq(POST_ID), eq(USER_ID))).thenReturn(comments);
+        List<Comment> upGroovedComments = commentService.getDownGroovedComments(POST_ID);
+        assertNotNull(upGroovedComments);
+        assertEquals(10, upGroovedComments.size());
+    }
+
+    @Test(expected = UserNotFoundException.class)
+    public void TestGetDownGroovedCommentsWithNoUser() throws UserNotFoundException, NoSuchPostException, UserNotFoundException {
+        final User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
+        user.setId(USER_ID);
+        final Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, RELEASE_DATE);
+        community.setId(COMMUNITY_ID);
+        final Post post = new Post(POST_TITLE, POST_BODY, user, community, false, null, LocalDateTime.now(), 0, true, POST_CATEGORY.getCategory());
+        post.setId(POST_ID);
+        Mockito.when(mockUserService.getLoggedUser()).thenReturn(Optional.empty());
+        Mockito.when(mockPostService.getPostById(eq(POST_ID))).thenReturn(post);
+        List<Comment> comments = Arrays.asList(new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment());
+        Mockito.when(commentDao.getDownGroovedComments(eq(POST_ID), eq(USER_ID))).thenReturn(comments);
+        List<Comment> upGroovedComments = commentService.getDownGroovedComments(POST_ID);
+        assertNotNull(upGroovedComments);
+        assertEquals(10, upGroovedComments.size());
+    }
+
+    @Test
+    public void testDeleteComment() throws NoSuchPostException, NoSuchCommentException, PostIsDeletedException {
+        final User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
+        user.setId(USER_ID);
+        final Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, RELEASE_DATE);
+        community.setId(COMMUNITY_ID);
+        final Post post = new Post(POST_TITLE, POST_BODY, user, community, false, null, LocalDateTime.now(), 0, false, POST_CATEGORY.getCategory());
+        post.setId(POST_ID);
+        final Comment comment = new Comment(post, user, COMMENT_BODY, LocalDateTime.now(), 0, false);
+        Mockito.when(commentDao.getCommentById(eq(COMMENT_ID))).thenReturn(Optional.of(comment));
+        Mockito.when(mockPostService.getPostById(eq(POST_ID))).thenReturn(post);
+        Mockito.when(commentDao.deleteComment(eq(comment))).thenReturn(1);
+        int result = commentService.deleteComment(COMMENT_ID);
+        assertTrue(result > 0);
+    }
+
+    @Test(expected = NoSuchCommentException.class)
+    public void testDeleteCommentWithNotExistingComment() throws NoSuchPostException, NoSuchCommentException, PostIsDeletedException {
+        final User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
+        user.setId(USER_ID);
+        final Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, RELEASE_DATE);
+        community.setId(COMMUNITY_ID);
+        final Post post = new Post(POST_TITLE, POST_BODY, user, community, false, null, LocalDateTime.now(), 0, false, POST_CATEGORY.getCategory());
+        post.setId(POST_ID);
+        final Comment comment = new Comment(post, user, COMMENT_BODY, LocalDateTime.now(), 0, false);
+        Mockito.when(commentDao.getCommentById(eq(COMMENT_ID))).thenReturn(Optional.empty());
+        Mockito.when(mockPostService.getPostById(eq(POST_ID))).thenReturn(post);
+        Mockito.when(commentDao.deleteComment(eq(comment))).thenReturn(1);
+        int result = commentService.deleteComment(COMMENT_ID);
+        assertTrue(result > 0);
+    }
+
+    @Test(expected = PostIsDeletedException.class)
+    public void testDeleteCommentWithDeletedPost() throws NoSuchPostException, NoSuchCommentException, PostIsDeletedException {
+        final User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
+        user.setId(USER_ID);
+        final Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, RELEASE_DATE);
+        community.setId(COMMUNITY_ID);
+        final Post post = new Post(POST_TITLE, POST_BODY, user, community, false, null, LocalDateTime.now(), 0, true, POST_CATEGORY.getCategory());
+        post.setId(POST_ID);
+        final Comment comment = new Comment(post, user, COMMENT_BODY, LocalDateTime.now(), 0, false);
+        Mockito.when(commentDao.getCommentById(eq(COMMENT_ID))).thenReturn(Optional.of(comment));
+        Mockito.when(mockPostService.getPostById(eq(POST_ID))).thenReturn(post);
+        Mockito.when(commentDao.deleteComment(eq(comment))).thenReturn(1);
+        int result = commentService.deleteComment(COMMENT_ID);
+        assertTrue(result > 0);
+    }
+
+
+
+
 
 }

@@ -1,15 +1,11 @@
 import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
-import ar.edu.itba.paw.models.Community;
-import ar.edu.itba.paw.models.Post;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.exceptions.NoSuchPostException;
+import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
 import ar.edu.itba.paw.models.pagination.PaginationRequest;
 import ar.edu.itba.paw.persistance.PostDao;
-import ar.edu.itba.paw.services.CommunityService;
-import ar.edu.itba.paw.services.MailingService;
-import ar.edu.itba.paw.services.PostServiceImpl;
-import ar.edu.itba.paw.services.UserService;
+import ar.edu.itba.paw.services.*;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,11 +28,25 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class PostServiceTest {
 
-    public static final String TITLE = "title";
-    public static final String BODY = "body";
-    public static final String COMMUNITY_NAME = "community";
-    public static final String CATEGORY = "category";
 
+    public static final Long USER_ID = 1L;
+    public static final Long COMMENT_ID = 1L;
+    public static final Long COMMUNITY_ID = 1L;
+    public static final Long POST_ID = 1L;
+    public static final String USERNAME = "username";
+    public static final String EMAIL = "email";
+    public static final String PASSWORD = "password";
+    public static final String POST_TITLE = "Test post";
+    public static final String POST_BODY = "Test post body";
+    public static final PostCategories POST_CATEGORY = PostCategories.DISC;
+    public static final PostOrders POST_ORDERS = PostOrders.HOTTEST;
+    public static final String COMMUNITY_NAME = "Test community";
+    public static final String COMMUNITY_DESCRIPTION = "Test community description";
+    public static final String COMMUNITY_PUBLISHER = "Test community publisher";
+    public static final String COMMUNITY_DEVELOPER = "Test community developer";
+    public static LocalDateTime RELEASE_DATE = LocalDateTime.now();
+    public static final Integer PAGE_SIZE = 10;
+    public static final Integer PAGE_NUMBER = 1;
     @Mock
     public UserService mockUserService;
 
@@ -49,26 +59,33 @@ public class PostServiceTest {
     @Mock
     public CommunityService mockCommunityService;
 
+    @Mock
+    public FileService mockFileService;
+
     @InjectMocks
     public PostServiceImpl postService = new PostServiceImpl();
 
     @Test
     public void testCreate() throws NoSuchCommunityException, NoLoggedUserException {
         //	1.	Setup!
-        Community mockCommunity = new Community(1, COMMUNITY_NAME, "description","falsedeveloper", "falsepub", LocalDateTime.now());
-        mockCommunity.setPortrait_id(0);
-        when(mockUserService.getLoggedUser()).thenReturn(Optional.of(new User(1,"username", "password", "email",0,false)));
-        when(mockUserService.findByCommunity(anyString())).thenReturn(List.of(new User(1,"username", "password", "email",0,false)));
-        when(mockCommunityService.findByName(COMMUNITY_NAME)).thenReturn(mockCommunity);
-        when(postDao.createPost(Mockito.eq(TITLE), Mockito.eq(BODY), Mockito.anyInt(), Mockito.eq(COMMUNITY_NAME), Mockito.anyBoolean(), Mockito.any(LocalDateTime.class), Mockito.eq(CATEGORY))).thenReturn(new Post(1, TITLE, BODY, 1, COMMUNITY_NAME, false,0, LocalDateTime.now(), 0,false,CATEGORY));
+        final User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
+        user.setId(USER_ID);
+        final Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, RELEASE_DATE);
+        community.setId(COMMUNITY_ID);
+        final Post post = new Post(POST_TITLE, POST_BODY, user, community, false, null, LocalDateTime.now(), 0, false, POST_CATEGORY.getCategory());
+        post.setId(POST_ID);
+        MultipartFile mockMultipartFile = Mockito.mock(MultipartFile.class);
+        when(mockUserService.getLoggedUser()).thenReturn(Optional.of(user));
+        when(mockCommunityService.findByName(COMMUNITY_NAME)).thenReturn(community);
+        when(postDao.createPost(Mockito.eq(POST_TITLE), Mockito.eq(POST_BODY), eq(user), eq(community), Mockito.anyBoolean(), Mockito.any(LocalDateTime.class), Mockito.eq(POST_CATEGORY.getCategory()))).thenReturn(post);
         // 	2.	"ejercito"	la	class	under	test
-        Post post = postService.createPost(TITLE, BODY, COMMUNITY_NAME, CATEGORY, new MultipartFile[]{});
+        Post result = postService.createPost(POST_TITLE, POST_BODY, COMMUNITY_NAME, POST_CATEGORY.getCategory(), new MultipartFile[]{mockMultipartFile});
         // 	3.	Asserts!
-        Assert.assertEquals(TITLE, post.getTitle());
-        Assert.assertEquals(BODY, post.getBody());
-        Assert.assertEquals(1, post.getAuthorId());
+        Assert.assertEquals(POST_TITLE, result.getTitle());
+        Assert.assertEquals(POST_BODY, result.getBody());
+        Assert.assertEquals(user.getId(), result.getAuthor().getId());
         Assert.assertEquals(COMMUNITY_NAME, post.getCommunityName());
-        Assert.assertFalse(post.getMedia());
+        Assert.assertFalse(result.getMedia());
 
     }
 
@@ -76,262 +93,108 @@ public class PostServiceTest {
     public void testFailedCreateWithNoUser() throws NoSuchCommunityException, NoLoggedUserException {
         //	1.	Setup!
         when(mockUserService.getLoggedUser()).thenReturn(Optional.empty());
-        Community mockCommunity = new Community(1, COMMUNITY_NAME, "description","falsedeveloper", "falsepub", LocalDateTime.now());
-        mockCommunity.setPortrait_id(0);
-
         // 	2.	"ejercito"	la	class	under	test
 
-        postService.createPost(TITLE, BODY, COMMUNITY_NAME, CATEGORY,null);
+        Post result = postService.createPost(POST_TITLE, POST_BODY, COMMUNITY_NAME, POST_CATEGORY.getCategory(), null);
 
     }
 
     @Test
     public void testGetPostsByUser() {
         // Mock data
-        long userId = 1L;
-        List<Post> mockPosts = List.of(new Post(1, TITLE, BODY, 1, COMMUNITY_NAME, false, 0, LocalDateTime.now(), 0,false, CATEGORY));
+        final User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
+        user.setId(USER_ID);
+        final Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, RELEASE_DATE);
+        community.setId(COMMUNITY_ID);
+        final Post post = new Post(POST_TITLE, POST_BODY, user, community, false, null, LocalDateTime.now(), 0, false, POST_CATEGORY.getCategory());
+        post.setId(POST_ID);
+        List<Post> mockPosts = List.of(post);
 
         // Mock behavior
-        when(postDao.findPostsByUser(userId)).thenReturn(mockPosts);
+        when(postDao.findPostsByUser(USER_ID)).thenReturn(mockPosts);
 
         // Call the method under test
-        List<Post> result = postService.getPostsByUser(userId);
+        List<Post> result = postService.getPostsByUser(USER_ID);
 
         // Verify the result
         assertEquals(mockPosts, result);
     }
 
     @Test
-    public void testGetUserLikedPosts() {
-        // Mock data
-        long userId = 1L;
-        List<Post> mockPosts = List.of(new Post(1, TITLE, BODY, 1, COMMUNITY_NAME, false, 0, LocalDateTime.now(), 0,false, CATEGORY));
-
-        // Mock behavior
-        when(postDao.findPostsByUser(userId)).thenReturn(mockPosts);
-
-        // Call the method under test
-        List<Post> result = postService.getPostsByUser(userId);
-
-        // Verify the result
-        assertEquals(mockPosts, result);
-    }
-
-
-    @Test
-    public void testGetPostsPaginated() {
+    public void testGetAllPostsPaginated() {
         // Mock data for testing
-        long userId = 1L;
-        int pageSize = 10;
-        int pageNumber = 1;
-        int offset = 0;
-        PaginationRequest request = new PaginationRequest(pageNumber,pageSize);
-
+        PaginationRequest request = new PaginationRequest(PAGE_NUMBER,PAGE_SIZE);
+        final User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
+        user.setId(USER_ID);
+        final Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, RELEASE_DATE);
+        community.setId(COMMUNITY_ID);
+        final Post post = new Post(POST_TITLE, POST_BODY, user, community, false, null, LocalDateTime.now(), 0, false, POST_CATEGORY.getCategory());
+        post.setId(POST_ID);
         List<Post> mockPosts = Arrays.asList(
-                new Post(1L, "Test Post 1", "Body of Test Post 1", userId, "Test Community", false, -1L, LocalDateTime.now(), 0, false, "Test Category"),
-                new Post(2L, "Test Post 2", "Body of Test Post 2", userId, "Test Community", false, -1L, LocalDateTime.now(), 0, false, "Test Category"),
-                new Post(3L, "Test Post 3", "Body of Test Post 3", userId, "Test Community", false, -1L, LocalDateTime.now(), 0, false, "Test Category")
+                post, post, post
         );
 
         // Mock behavior of postDao methods
-        when(postDao.getTotalPostCount()).thenReturn(mockPosts.size());
-        when(postDao.getAllPostsPaginated(pageSize, offset)).thenReturn(mockPosts);
+        when(postDao.findCount(eq(POST_CATEGORY), eq(null))).thenReturn(mockPosts.size());
+        when(postDao.find(eq(PAGE_SIZE), eq((PAGE_NUMBER - 1) * PAGE_SIZE), eq(POST_CATEGORY), eq(POST_ORDERS), eq(null))).thenReturn(mockPosts);
 
         // Call the method to be tested
-        PaginatedDataWrapper<Post> result = postService.getAllPostsPaginated(request);
+        PaginatedDataWrapper<Post> result = postService.getAllPostsPaginated(POST_CATEGORY.getCategory(), POST_ORDERS.getOrder(), request);
 
         // Verify the result
-        assertEquals(pageNumber, result.getPageNumber());
+        assertEquals(PAGE_NUMBER.intValue(), result.getPageNumber());
         assertEquals(1, result.getTotalPages());
         assertEquals(mockPosts.size(), result.getTotalCount());
-        assertEquals(pageSize, result.getPageSize());
+        assertEquals(PAGE_SIZE.intValue(), result.getPageSize());
         assertEquals(mockPosts, result.getData());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetAllPostsPaginatedInvalidPageSize() {
+        PaginationRequest request = new PaginationRequest(1, 0);
+        postService.getAllPostsPaginated(null, null, request);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetAllPostsPaginatedInvalidPageNumber() {
+        PaginationRequest request = new PaginationRequest(0, 10);
+        postService.getAllPostsPaginated(null, null, request);
     }
 
     @Test
-    public void testGetPostsByUserPaginated() {
-        // Mock data for testing
-        long userId = 1L;
-        int pageSize = 10;
-        int pageNumber = 1;
-        int offset = 0;
-        PaginationRequest request = new PaginationRequest(pageNumber,pageSize);
+    public void testEditGroovinessSuccess() throws NoLoggedUserException, NoSuchPostException {
+        final User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
+        user.setId(USER_ID);
+        final Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, RELEASE_DATE);
+        community.setId(COMMUNITY_ID);
+        final Post post = new Post(POST_TITLE, POST_BODY, user, community, false, null, LocalDateTime.now(), 0, false, POST_CATEGORY.getCategory());
+        post.setId(POST_ID);
 
-        List<Post> mockPosts = Arrays.asList(
-                new Post(1L, "Test Post 1", "Body of Test Post 1", userId, "Test Community", false, -1L, LocalDateTime.now(), 0, false, "Test Category"),
-                new Post(2L, "Test Post 2", "Body of Test Post 2", userId, "Test Community", false, -1L, LocalDateTime.now(), 0, false, "Test Category"),
-                new Post(3L, "Test Post 3", "Body of Test Post 3", userId, "Test Community", false, -1L, LocalDateTime.now(), 0, false, "Test Category")
-        );
-
-        // Mock behavior of postDao methods
-        when(postDao.getTotalUserLikedPostCount(userId)).thenReturn(mockPosts.size());
-        when(postDao.getUserLikedPostPaginated(userId, pageSize, offset)).thenReturn(mockPosts);
-
-        // Call the method to be tested
-        PaginatedDataWrapper<Post> result = postService.getUserLikedPostsPaginated(userId, request);
-
-        // Verify the result
-        assertEquals(pageNumber, result.getPageNumber());
-        assertEquals(1, result.getTotalPages());
-        assertEquals(mockPosts.size(), result.getTotalCount());
-        assertEquals(pageSize, result.getPageSize());
-        assertEquals(mockPosts, result.getData());
+        when(postDao.findById(POST_ID)).thenReturn(Optional.of(post));
+        when(mockUserService.getLoggedUser()).thenReturn(Optional.of(user));
+        postService.editGrooviness(1, POST_ID.intValue());
     }
 
-    @Test
-    public void testGetUserLikedPostPaginated() {
-        // Mock data for testing
-        long userId = 1L;
-        int pageSize = 10;
-        int pageNumber = 1;
-        int offset = 0;
-        PaginationRequest request = new PaginationRequest(pageNumber,pageSize);
-
-        List<Post> mockPosts = Arrays.asList(
-                new Post(1L, "Test Post 1", "Body of Test Post 1", userId, "Test Community", false, -1L, LocalDateTime.now(), 0, false, "Test Category"),
-                new Post(2L, "Test Post 2", "Body of Test Post 2", userId, "Test Community", false, -1L, LocalDateTime.now(), 0, false, "Test Category"),
-                new Post(3L, "Test Post 3", "Body of Test Post 3", userId, "Test Community", false, -1L, LocalDateTime.now(), 0, false, "Test Category")
-        );
-
-        // Mock behavior of postDao methods
-        when(postDao.getTotalUserLikedPostCount(userId)).thenReturn(mockPosts.size());
-        when(postDao.getUserLikedPostPaginated(userId, pageSize, offset)).thenReturn(mockPosts);
-
-        // Call the method to be tested
-        PaginatedDataWrapper<Post> result = postService.getUserLikedPostsPaginated(userId, request);
-
-        // Verify the result
-        assertEquals(pageNumber, result.getPageNumber());
-        assertEquals(1, result.getTotalPages());
-        assertEquals(mockPosts.size(), result.getTotalCount());
-        assertEquals(pageSize, result.getPageSize());
-        assertEquals(mockPosts, result.getData());
+    @Test(expected = NoSuchPostException.class)
+    public void testEditGroovinessPostNotFound() throws NoSuchPostException, NoLoggedUserException {
+        final User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
+        user.setId(USER_ID);
+        when(mockUserService.getLoggedUser()).thenReturn(Optional.of(user));
+        when(postDao.findById(POST_ID)).thenReturn(Optional.empty());
+        postService.editGrooviness(1, POST_ID.intValue());
     }
 
-    @Test
-    public void testGetUserFollowedPostsPaginated() {
-        // Mock data for testing
-        long userId = 1L;
-        int pageSize = 10;
-        int pageNumber = 1;
-        int offset = 0;
-        PaginationRequest request = new PaginationRequest(pageNumber,pageSize);
-
-        List<Post> mockPosts = Arrays.asList(
-                new Post(1L, "Test Post 1", "Body of Test Post 1", userId, "Test Community", false, -1L, LocalDateTime.now(), 0, false, "Test Category"),
-                new Post(2L, "Test Post 2", "Body of Test Post 2", userId, "Test Community", false, -1L, LocalDateTime.now(), 0, false, "Test Category"),
-                new Post(3L, "Test Post 3", "Body of Test Post 3", userId, "Test Community", false, -1L, LocalDateTime.now(), 0, false, "Test Category")
-        );
-
-        // Mock behavior of postDao methods
-        when(postDao.getTotaltFollowedPostsByUserCount(userId)).thenReturn(mockPosts.size());
-        when(postDao.getFollowedPostsByUserPaginated(userId, pageSize, offset)).thenReturn(mockPosts);
-
-        // Call the method to be tested
-        PaginatedDataWrapper<Post> result = postService.getUserFollowedPostsPaginated(userId, request);
-
-        // Verify the result
-        assertEquals(pageNumber, result.getPageNumber());
-        assertEquals(1, result.getTotalPages());
-        assertEquals(mockPosts.size(), result.getTotalCount());
-        assertEquals(pageSize, result.getPageSize());
-        assertEquals(mockPosts, result.getData());
+    @Test(expected = IllegalArgumentException.class)
+    public void testEditGroovinessInvalidGrooviness() throws NoSuchPostException, NoLoggedUserException {
+        final User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
+        user.setId(USER_ID);
+        final Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, RELEASE_DATE);
+        community.setId(COMMUNITY_ID);
+        final Post post = new Post(POST_TITLE, POST_BODY, user, community, false, null, LocalDateTime.now(), 0, false, POST_CATEGORY.getCategory());
+        post.setId(POST_ID);
+        when(postDao.checkGrooviness(POST_ID, USER_ID)).thenReturn(Optional.of(true));
+        when(mockUserService.getLoggedUser()).thenReturn(Optional.of(user));
+        when(postDao.findById(POST_ID)).thenReturn(Optional.of(post));
+        postService.editGrooviness(-100, POST_ID.intValue());
     }
-
-
-    @Test
-    public void testGetUserFollowedPostsByCategoryPaginated() {
-        // Mock data for testing
-        long userId = 1L;
-        String category = "News";
-        int pageSize = 10;
-        int pageNumber = 1;
-        int offset = 0;
-        PaginationRequest request = new PaginationRequest(pageNumber,pageSize);
-
-        List<Post> mockPosts = Arrays.asList(
-                new Post(1L, "Test Post 1", "Body of Test Post 1", userId, "Test Community", false, -1L, LocalDateTime.now(), 0, false, category),
-                new Post(2L, "Test Post 2", "Body of Test Post 2", userId, "Test Community", false, -1L, LocalDateTime.now(), 0, false, category),
-                new Post(3L, "Test Post 3", "Body of Test Post 3", userId, "Test Community", false, -1L, LocalDateTime.now(), 0, false, category)
-        );
-
-        // Mock behavior of postDao methods
-        when(postDao.getTotalUserFollowedPostsByCategoryCount(userId,category)).thenReturn(mockPosts.size());
-        when(postDao.getUserFollowedPostsByCategoryPaginated(userId,category, pageSize, offset)).thenReturn(mockPosts);
-
-        // Call the method to be tested
-        PaginatedDataWrapper<Post> result = postService.getUserFollowedPostsByCategoryPaginated(category,userId, request);
-
-        // Verify the result
-        assertEquals(pageNumber, result.getPageNumber());
-        assertEquals(1, result.getTotalPages());
-        assertEquals(mockPosts.size(), result.getTotalCount());
-        assertEquals(pageSize, result.getPageSize());
-        assertEquals(mockPosts, result.getData());
-    }
-
-    @Test
-    public void testGetPostsByCategoryPaginated() {
-        // Mock data for testing
-        long userId = 1L;
-        String category = "News";
-        int pageSize = 10;
-        int pageNumber = 1;
-        int offset = 0;
-        PaginationRequest request = new PaginationRequest(pageNumber,pageSize);
-
-        List<Post> mockPosts = Arrays.asList(
-                new Post(1L, "Test Post 1", "Body of Test Post 1", userId, "Test Community", false, -1L, LocalDateTime.now(), 0, false, category),
-                new Post(2L, "Test Post 2", "Body of Test Post 2", userId, "Test Community", false, -1L, LocalDateTime.now(), 0, false, category),
-                new Post(3L, "Test Post 3", "Body of Test Post 3", userId, "Test Community", false, -1L, LocalDateTime.now(), 0, false, category)
-        );
-
-        // Mock behavior of postDao methods
-        when(postDao.getTotalPostByCategoryCount(category)).thenReturn(mockPosts.size());
-        when(postDao.getAllPostsByCategoryPaginated(category, pageSize, offset)).thenReturn(mockPosts);
-
-        // Call the method to be tested
-        PaginatedDataWrapper<Post> result = postService.getPostsByCategoryPaginated(category, request);
-
-        // Verify the result
-        assertEquals(pageNumber, result.getPageNumber());
-        assertEquals(1, result.getTotalPages());
-        assertEquals(mockPosts.size(), result.getTotalCount());
-        assertEquals(pageSize, result.getPageSize());
-        assertEquals(mockPosts, result.getData());
-    }
-
-    @Test
-    public void testgGetPostsByCommunityPaginated() {
-        // Mock data for testing
-        long userId = 1L;
-        String category = "News";
-        String communty = "Community";
-        int pageSize = 10;
-        int pageNumber = 1;
-        int offset = 0;
-        PaginationRequest request = new PaginationRequest(pageNumber,pageSize);
-
-        List<Post> mockPosts = Arrays.asList(
-                new Post(1L, "Test Post 1", "Body of Test Post 1", userId, communty, false, -1L, LocalDateTime.now(), 0, false, category),
-                new Post(2L, "Test Post 2", "Body of Test Post 2", userId, communty, false, -1L, LocalDateTime.now(), 0, false, category),
-                new Post(3L, "Test Post 3", "Body of Test Post 3", userId, communty, false, -1L, LocalDateTime.now(), 0, false, category)
-        );
-
-        // Mock behavior of postDao methods
-        when(postDao.getTotalPostByCommunityCount(communty)).thenReturn(mockPosts.size());
-        when(postDao.getPostsByCommunityPaginated(communty, pageSize, offset)).thenReturn(mockPosts);
-
-        // Call the method to be tested
-        PaginatedDataWrapper<Post> result = postService.getPostsByCommunityPaginated(communty, request);
-
-        // Verify the result
-        assertEquals(pageNumber, result.getPageNumber());
-        assertEquals(1, result.getTotalPages());
-        assertEquals(mockPosts.size(), result.getTotalCount());
-        assertEquals(pageSize, result.getPageSize());
-        assertEquals(mockPosts, result.getData());
-    }
-
-
 }

@@ -14,7 +14,6 @@ public interface PostDao {
 
     Post createPost(String title, String body, User author, Community community, boolean media, LocalDateTime now, String category);
 
-    List<Post> findPostsByCommunity(String communityId);
 
     List<Post> findByCategory(String category);
 
