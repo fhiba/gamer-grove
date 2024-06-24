@@ -102,7 +102,6 @@
     <c:forEach var="category" items="${community.category}">
     aux.push("${category.toString()}");
     </c:forEach>
-    console.log(aux);
     let addOptionToSelect = (category) => {
         let select = document.getElementById("select");
         let option = document.createElement("option");
@@ -133,10 +132,8 @@
     }
 
     createSelect = () => {
-        console.log("create select")
         let select = document.getElementById("select");
         if (select) {
-            console.log("select removed")
             select.remove();
         }
         select = document.createElement("select");

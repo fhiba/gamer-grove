@@ -224,7 +224,6 @@
         </c:forEach>
 
         <c:forEach var="category" items="${categories}">
-        console.log("${category}")
         if (!applyFilterArray.includes("${category}")) {
             selectArray.push("${category}");
 

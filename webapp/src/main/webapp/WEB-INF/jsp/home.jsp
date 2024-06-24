@@ -261,7 +261,6 @@
     const errorMessage = " <spring:message code="VerifyAccount.Error"/>";
     if(hasToast) {
         let toastMessage = document.URL.split("verifySuccess=")[1];
-        console.log(toastMessage);
         document.getElementById('toast_header').innerText = "<spring:message code="Toast.Title.Notification"/>";
         document.getElementById('toast_body').innerText = toastMessage === 'true' ? successMessage : errorMessage;
         document.getElementById('toastBox').style.display = 'block';

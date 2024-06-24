@@ -125,10 +125,8 @@
     }
 
     createSelect = () => {
-        console.log("create select")
         let select = document.getElementById("select");
         if (select) {
-            console.log("select removed")
             select.remove();
         }
         select = document.createElement("select");
@@ -210,7 +208,6 @@
     const previewImage = document.getElementById('preview-image');
     previewImage.style.display = 'none';
     imageInput.addEventListener('change', function(event) {
-        console.log(previewImage.style.display)
         const file = event.target.files[0];
         if (file) {
             const reader = new FileReader();

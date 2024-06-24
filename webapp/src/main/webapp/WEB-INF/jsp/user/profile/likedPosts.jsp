@@ -190,7 +190,6 @@
 </html>
 <script lang="javascript">
     let verified = ${user.isVerified()};
-    console.log(${isVerified});
     if(!verified){
         var myModal2 = new bootstrap.Modal(document.getElementById('unverifiedModal'))
         myModal2.show()

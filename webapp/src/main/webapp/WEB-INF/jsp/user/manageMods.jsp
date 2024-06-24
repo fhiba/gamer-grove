@@ -265,8 +265,6 @@
     // Call the function
     const result = replaceSubstring(originalString, substringToFind, substringToReplace);
 
-    console.log(new URL(result));
-    console.log(new URL(document.URL))
     const filterMods = () => {
         let url = replaceSubstring(document.URL, "addMod", "manageMods");
         let community = document.getElementById('filterByCommunities').value;

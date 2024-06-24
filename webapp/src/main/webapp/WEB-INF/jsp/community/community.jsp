@@ -313,7 +313,6 @@
         }
     }
     let postBody = document.getElementsByClassName('post-body');
-    console.log(postBody.length);
     for (let i = 0; i < postBody.length; i++) {
         if (postBody[i].innerText.length > 100) {
             postBody[i].innerText = postBody[i].innerText.substring(0, 100) + '...';

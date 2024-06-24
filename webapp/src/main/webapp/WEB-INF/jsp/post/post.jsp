@@ -395,7 +395,6 @@
             postBody[i].innerText = postBody[i].innerText.substring(0, 100) + '...';
         }
     }
-    console.log(document.getElementById("commentBody").placeholder)
     let otherPostTitle = document.getElementsByClassName('other-post-title');
     for (let i = 0; i < otherPostTitle.length; i++) {
         if (otherPostTitle[i].innerText.length > 30) {

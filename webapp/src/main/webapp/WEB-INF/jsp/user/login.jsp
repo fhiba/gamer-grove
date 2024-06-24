@@ -67,7 +67,6 @@
     const errorMessage = " <spring:message code="ForgotCredentials.Error"/>";
     if(hasToast) {
         let toastMessage = document.URL.split("resetPassword=")[1];
-        console.log(toastMessage);
         document.getElementById('toast_body').innerText = toastMessage === 'true' ? successMessage : errorMessage;
         document.getElementById('toastBox').style.display = 'block';
         new bootstrap.Toast(document.querySelector('.toast')).show();
@@ -77,7 +76,6 @@
     const resetErrorMessage = " <spring:message code="ResetPassword.Error"/>";
     if(hasToastSucceeded) {
         let toastMessage = document.URL.split("resetSuccess=")[1];
-        console.log(toastMessage);
         document.getElementById('toast_body').innerText = toastMessage === 'true' ? resetSuccessMessage : resetErrorMessage;
         document.getElementById('toastBox').style.display = 'block';
         new bootstrap.Toast(document.querySelector('.toast')).show();

@@ -337,7 +337,6 @@
         input.name = "categories";
         input.value = applyFilterArray.join(",");
         form.appendChild(input);
-        console.log(input.value);
 
         document.getElementById("searchWithCategoriesForm").submit();
     }
