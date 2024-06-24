@@ -246,7 +246,7 @@ public class UserController {
         ModelAndView mav = new ModelAndView("user/profile/followedCommunities");
         PaginatedDataWrapper<Community> communities;
 
-        List<String> selectedCategories = Arrays.asList(categories.split(","));
+        List<String> selectedCategories = Arrays.asList(categories.split(",")).stream().filter(s -> !s.isEmpty()).toList();
         PaginationRequest paginationRequest = new PaginationRequest(8);
         if (Objects.nonNull(pageNumber))
             paginationRequest.setPageNumber(pageNumber);

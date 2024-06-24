@@ -138,7 +138,7 @@
                             <c:if test="${empty followedCommunities.data}">
                                 <c:url value="/communities" var="communitiesUrl"/>
                                 <c:choose>
-                                    <c:when test="${communities.size() > 0}">
+                                    <c:when test="${selectedCategories.size() > 0}">
                                         <div class="mt-5 d-flex justify-content-center">
                                             <div class="mb-4 d-flex flex-column align-items-center">
                                                 <h6><spring:message code="Profile.NoMatchingCommunities"/></h6>
@@ -287,14 +287,13 @@
     }
     let initializeArray = () => {
         <c:forEach var="category" items="${selectedCategories}">
-        if ("${category}" !== null && "${category}" !== "") {
+        if ("${category}".length > 0 && "${category}" !== "") {
             applyFilterArray.push("${category}");
             createPill("${category}");
         }
         </c:forEach>
 
         <c:forEach var="category" items="${categories}">
-        console.log("${category}")
         if (!applyFilterArray.includes("${category}")) {
             selectArray.push("${category}");
 
@@ -325,7 +324,6 @@
 
 
     let verified = ${user.isVerified()};
-    console.log(${isVerified});
     if(!verified){
         var myModal2 = new bootstrap.Modal(document.getElementById('unverifiedModal'))
         myModal2.show()
@@ -339,11 +337,9 @@
         input.name = "categories";
         input.value = applyFilterArray.join(",");
         form.appendChild(input);
+        console.log(input.value);
 
         document.getElementById("searchWithCategoriesForm").submit();
     }
-
-
-    $('.dropdown-toggle').dropdown();
 
     </script>
