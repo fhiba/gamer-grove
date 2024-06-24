@@ -35,16 +35,9 @@ public class FileServiceTest {
     @InjectMocks
     private FileServiceImpl fileService;
 
-    public static final Long USER_ID = 1L;
-    public static final Long COMMENT_ID = 1L;
+
     public static final Long COMMUNITY_ID = 1L;
     public static final Long POST_ID = 1L;
-    public static final String USERNAME = "username";
-    public static final String EMAIL = "email";
-    public static final String PASSWORD = "password";
-    public static final String POST_TITLE = "Test post";
-    public static final String POST_BODY = "Test post body";
-    public static final PostCategories POST_CATEGORY = PostCategories.DISC;
     public static final String COMMUNITY_NAME = "Test community";
     public static final String COMMUNITY_DESCRIPTION = "Test community description";
     public static final String COMMUNITY_PUBLISHER = "Test community publisher";

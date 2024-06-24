@@ -95,8 +95,6 @@ public class CommentServiceTest {
         post.setId(POST_ID);
 
         Mockito.when(mockUserService.getLoggedUser()).thenReturn(Optional.empty());
-        Mockito.when(mockPostService.getPostById(POST_ID)).thenReturn(post);
-        Mockito.when(commentDao.createComment(eq(post), eq(COMMENT_BODY), eq(user), any(LocalDateTime.class), eq(USER_ID))).thenReturn(new Comment(post, user, COMMENT_BODY, LocalDateTime.now(), 0, false));
 
         Comment comment = commentService.createComment(POST_ID, COMMENT_BODY);
 
@@ -117,7 +115,6 @@ public class CommentServiceTest {
 
         Mockito.when(mockUserService.getLoggedUser()).thenReturn(Optional.of(user));
         Mockito.when(mockPostService.getPostById(POST_ID)).thenReturn(post);
-        Mockito.when(commentDao.createComment(eq(post), eq(COMMENT_BODY), eq(user), any(LocalDateTime.class), eq(USER_ID))).thenReturn(new Comment(post, user, COMMENT_BODY, LocalDateTime.now(), 0, false));
 
         Comment comment = commentService.createComment(POST_ID, COMMENT_BODY);
 
@@ -140,8 +137,6 @@ public class CommentServiceTest {
     @Test(expected = IllegalArgumentException.class)
     public void getPostCommentsPaginatedWithBadPageSize() {
         PaginationRequest request = new PaginationRequest(1,-3);
-        Mockito.when(commentDao.getPostCommentsTotalCount(eq(POST_ID))).thenReturn(10);
-        Mockito.when(commentDao.getPostCommentsPaginated(eq(POST_ID), eq(10), eq(0))).thenReturn(Arrays.asList(new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment()));
         PaginatedDataWrapper<Comment> comments = commentService.getPostCommentsPaginated(POST_ID, request);
         assertNotNull(comments);
         assertEquals(10, comments.getTotalCount());
@@ -150,8 +145,6 @@ public class CommentServiceTest {
     @Test(expected = IllegalArgumentException.class)
     public void getPostCommentsPaginatedWithBadPostId(){
         PaginationRequest request = new PaginationRequest(1,10);
-        Mockito.when(commentDao.getPostCommentsTotalCount(eq(POST_ID))).thenReturn(10);
-        Mockito.when(commentDao.getPostCommentsPaginated(eq(POST_ID), eq(10), eq(0))).thenReturn(Arrays.asList(new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment()));
         PaginatedDataWrapper<Comment> comments = commentService.getPostCommentsPaginated(0, request);
         assertNotNull(comments);
         assertEquals(10, comments.getTotalCount());
@@ -161,7 +154,6 @@ public class CommentServiceTest {
     public void getPostCommentsPaginatedWithBadPageNumber(){
         PaginationRequest request = new PaginationRequest(0,10);
         Mockito.when(commentDao.getPostCommentsTotalCount(eq(POST_ID))).thenReturn(10);
-        Mockito.when(commentDao.getPostCommentsPaginated(eq(POST_ID), eq(10), eq(0))).thenReturn(Arrays.asList(new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment()));
         PaginatedDataWrapper<Comment> comments = commentService.getPostCommentsPaginated(POST_ID, request);
         assertNotNull(comments);
         assertEquals(10, comments.getTotalCount());
@@ -171,7 +163,6 @@ public class CommentServiceTest {
     public void getPostCommentsPaginatedWithBadExceedingPageNumber(){
         PaginationRequest request = new PaginationRequest(0,10);
         Mockito.when(commentDao.getPostCommentsTotalCount(eq(POST_ID))).thenReturn(10);
-        Mockito.when(commentDao.getPostCommentsPaginated(eq(POST_ID), eq(10), eq(0))).thenReturn(Arrays.asList(new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment()));
         PaginatedDataWrapper<Comment> comments = commentService.getPostCommentsPaginated(POST_ID, request);
         assertNotNull(comments);
         assertEquals(10, comments.getTotalCount());
@@ -205,8 +196,6 @@ public class CommentServiceTest {
         GroovyCommentHistory gch = new GroovyCommentHistory(user, comment, post, true);
         Mockito.when(mockUserService.getLoggedUser()).thenReturn(Optional.empty());
         Mockito.when(commentDao.getCommentById(eq(COMMENT_ID))).thenReturn(Optional.of(comment));
-        Mockito.when(mockPostService.getPostById(eq(POST_ID))).thenReturn(post);
-        Mockito.when(mockGroovyCommentHistoryService.findGroovyCommentHistory(eq(user), eq(comment), eq(post))).thenReturn(Optional.of(gch));
         commentService.editGroovinessOnComment(COMMENT_ID, 1, POST_ID);
     }
 
@@ -222,8 +211,6 @@ public class CommentServiceTest {
         GroovyCommentHistory gch = new GroovyCommentHistory(user, comment, post, true);
         Mockito.when(mockUserService.getLoggedUser()).thenReturn(Optional.of(user));
         Mockito.when(commentDao.getCommentById(eq(COMMENT_ID))).thenReturn(Optional.empty());
-        Mockito.when(mockPostService.getPostById(eq(POST_ID))).thenReturn(post);
-        Mockito.when(mockGroovyCommentHistoryService.findGroovyCommentHistory(eq(user), eq(comment), eq(post))).thenReturn(Optional.of(gch));
         commentService.editGroovinessOnComment(COMMENT_ID, 1, POST_ID);
     }
     @Test(expected = IllegalArgumentException.class)
@@ -238,8 +225,6 @@ public class CommentServiceTest {
         GroovyCommentHistory gch = new GroovyCommentHistory(user, comment, post, true);
         Mockito.when(mockUserService.getLoggedUser()).thenReturn(Optional.of(user));
         Mockito.when(commentDao.getCommentById(eq(COMMENT_ID))).thenReturn(Optional.of(comment));
-        Mockito.when(mockPostService.getPostById(eq(POST_ID))).thenReturn(post);
-        Mockito.when(mockGroovyCommentHistoryService.findGroovyCommentHistory(eq(user), eq(comment), eq(post))).thenReturn(Optional.of(gch));
         commentService.editGroovinessOnComment(COMMENT_ID, 3, POST_ID);
     }
 
@@ -262,16 +247,8 @@ public class CommentServiceTest {
 
     @Test(expected = UserNotFoundException.class)
     public void TestGetUpGroovedCommentsWithNoUser() throws UserNotFoundException, NoSuchPostException, UserNotFoundException {
-        final User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
-        user.setId(USER_ID);
-        final Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, RELEASE_DATE);
-        community.setId(COMMUNITY_ID);
-        final Post post = new Post(POST_TITLE, POST_BODY, user, community, false, null, LocalDateTime.now(), 0, true, POST_CATEGORY.getCategory());
-        post.setId(POST_ID);
         Mockito.when(mockUserService.getLoggedUser()).thenReturn(Optional.empty());
-        Mockito.when(mockPostService.getPostById(eq(POST_ID))).thenReturn(post);
         List<Comment> comments = Arrays.asList(new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment());
-        Mockito.when(commentDao.getGroovedComments(eq(POST_ID), eq(USER_ID))).thenReturn(comments);
         List<Comment> upGroovedComments = commentService.getUpGroovedComments(POST_ID);
         assertNotNull(upGroovedComments);
         assertEquals(10, upGroovedComments.size());
@@ -281,12 +258,7 @@ public class CommentServiceTest {
     public void TestGetDownGroovedComments() throws UserNotFoundException, NoSuchPostException, UserNotFoundException {
         final User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
         user.setId(USER_ID);
-        final Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, RELEASE_DATE);
-        community.setId(COMMUNITY_ID);
-        final Post post = new Post(POST_TITLE, POST_BODY, user, community, false, null, LocalDateTime.now(), 0, true, POST_CATEGORY.getCategory());
-        post.setId(POST_ID);
         Mockito.when(mockUserService.getLoggedUser()).thenReturn(Optional.of(user));
-        Mockito.when(mockPostService.getPostById(eq(POST_ID))).thenReturn(post);
         List<Comment> comments = Arrays.asList(new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment());
         Mockito.when(commentDao.getDownGroovedComments(eq(POST_ID), eq(USER_ID))).thenReturn(comments);
         List<Comment> upGroovedComments = commentService.getDownGroovedComments(POST_ID);
@@ -296,16 +268,8 @@ public class CommentServiceTest {
 
     @Test(expected = UserNotFoundException.class)
     public void TestGetDownGroovedCommentsWithNoUser() throws UserNotFoundException, NoSuchPostException, UserNotFoundException {
-        final User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
-        user.setId(USER_ID);
-        final Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, RELEASE_DATE);
-        community.setId(COMMUNITY_ID);
-        final Post post = new Post(POST_TITLE, POST_BODY, user, community, false, null, LocalDateTime.now(), 0, true, POST_CATEGORY.getCategory());
-        post.setId(POST_ID);
         Mockito.when(mockUserService.getLoggedUser()).thenReturn(Optional.empty());
-        Mockito.when(mockPostService.getPostById(eq(POST_ID))).thenReturn(post);
         List<Comment> comments = Arrays.asList(new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment(), new Comment());
-        Mockito.when(commentDao.getDownGroovedComments(eq(POST_ID), eq(USER_ID))).thenReturn(comments);
         List<Comment> upGroovedComments = commentService.getDownGroovedComments(POST_ID);
         assertNotNull(upGroovedComments);
         assertEquals(10, upGroovedComments.size());
@@ -337,8 +301,6 @@ public class CommentServiceTest {
         post.setId(POST_ID);
         final Comment comment = new Comment(post, user, COMMENT_BODY, LocalDateTime.now(), 0, false);
         Mockito.when(commentDao.getCommentById(eq(COMMENT_ID))).thenReturn(Optional.empty());
-        Mockito.when(mockPostService.getPostById(eq(POST_ID))).thenReturn(post);
-        Mockito.when(commentDao.deleteComment(eq(comment))).thenReturn(1);
         int result = commentService.deleteComment(COMMENT_ID);
         assertTrue(result > 0);
     }
@@ -354,7 +316,6 @@ public class CommentServiceTest {
         final Comment comment = new Comment(post, user, COMMENT_BODY, LocalDateTime.now(), 0, false);
         Mockito.when(commentDao.getCommentById(eq(COMMENT_ID))).thenReturn(Optional.of(comment));
         Mockito.when(mockPostService.getPostById(eq(POST_ID))).thenReturn(post);
-        Mockito.when(commentDao.deleteComment(eq(comment))).thenReturn(1);
         int result = commentService.deleteComment(COMMENT_ID);
         assertTrue(result > 0);
     }

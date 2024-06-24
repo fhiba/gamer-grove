@@ -52,7 +52,6 @@ public class UserServiceTest {
     public static final String PASSWORD = "password";
     public static final String ENCODED_PASSWORD = "encodedPassword";
     public static final String TOKEN = "token";
-    public static final String LOCALE = "en";
 
     @Test
     public void testCreateSuccess() throws UserNotFoundException {

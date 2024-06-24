@@ -44,16 +44,11 @@ public class CommunityServiceTest {
     CommunityServiceImpl cs = new CommunityServiceImpl();
 
 
-    public static final Long COMMENT_ID = 1L;
     public static final Long COMMUNITY_ID = 1L;
-    public static final Long POST_ID = 1L;
     public static final Long USER_ID = 1L;
     public static final String USERNAME = "username";
     public static final String EMAIL = "email";
     public static final String PASSWORD = "password";
-    public static final String POST_TITLE = "Test post";
-    public static final String POST_BODY = "Test post body";
-    public static final PostCategories POST_CATEGORY = PostCategories.DISC;
     public static final String COMMUNITY_NAME = "Test community";
     public static final String COMMUNITY_DESCRIPTION = "Test community description";
     public static final String COMMUNITY_PUBLISHER = "Test community publisher";
@@ -252,7 +247,6 @@ public class CommunityServiceTest {
         final User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
         user.setId(USER_ID);
         PaginationRequest request = new PaginationRequest(1, 10);
-        String searchTerms = "test";
         List<String> categories = Arrays.asList("category1", "category2");
 
 
@@ -270,7 +264,6 @@ public class CommunityServiceTest {
         final User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
         user.setId(USER_ID);
         PaginationRequest request = new PaginationRequest(-1, 10);
-        String searchTerms = "test";
         List<String> categories = Arrays.asList("category1", "category2");
 
         cs.findFollowedCommunities(request, categories, user);
@@ -281,7 +274,6 @@ public class CommunityServiceTest {
         final User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
         user.setId(USER_ID);
         PaginationRequest request = new PaginationRequest(1, 0);
-        String searchTerms = "test";
         List<String> categories = Arrays.asList("category1", "category2");
 
         cs.findFollowedCommunities(request, categories, user);

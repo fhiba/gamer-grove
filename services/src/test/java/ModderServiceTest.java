@@ -27,7 +27,6 @@ import static org.mockito.Mockito.*;
 public class ModderServiceTest {
 
     public static final Long USER_ID = 1L;
-    public static final Long COMMENT_ID = 1L;
     public static final Long COMMUNITY_ID = 1L;
     public static final Long POST_ID = 1L;
     public static final String USERNAME = "username";
@@ -156,11 +155,9 @@ public class ModderServiceTest {
         user.setId(USER_ID);
         Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, RELEASE_DATE);
         community.setId(COMMUNITY_ID);
-        Mod mod = new Mod(user, community, LocalDateTime.now());
 
         when(mockUserService.findByUsername(USERNAME)).thenReturn(Optional.of(user));
         when(mockCommunityService.findById(COMMUNITY_ID)).thenReturn(community);
-        when(mockModderDao.findByid(user, community)).thenReturn(Optional.of(mod));
         when(mockUserService.findByUsername(USERNAME)).thenReturn(Optional.of(user));
         when(mockModderDao.isModderOfCommunity(user, community)).thenReturn(false);
 

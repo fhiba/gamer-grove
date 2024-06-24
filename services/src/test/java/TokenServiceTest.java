@@ -34,7 +34,6 @@ public class TokenServiceTest {
     public static final String EMAIL = "email";
     public static final String PASSWORD = "password";
     public static final Long USER_ID = 1L;
-    public static final UUID uuid = UUID.randomUUID();
 
     @Test
     public void testGenerateValidationTokenSuccess() throws UserNotFoundException {

@@ -30,7 +30,6 @@ public class PostServiceTest {
 
 
     public static final Long USER_ID = 1L;
-    public static final Long COMMENT_ID = 1L;
     public static final Long COMMUNITY_ID = 1L;
     public static final Long POST_ID = 1L;
     public static final String USERNAME = "username";
@@ -94,9 +93,7 @@ public class PostServiceTest {
         //	1.	Setup!
         when(mockUserService.getLoggedUser()).thenReturn(Optional.empty());
         // 	2.	"ejercito"	la	class	under	test
-
-        Post result = postService.createPost(POST_TITLE, POST_BODY, COMMUNITY_NAME, POST_CATEGORY.getCategory(), null);
-
+        postService.createPost(POST_TITLE, POST_BODY, COMMUNITY_NAME, POST_CATEGORY.getCategory(), null);
     }
 
     @Test
@@ -192,7 +189,6 @@ public class PostServiceTest {
         community.setId(COMMUNITY_ID);
         final Post post = new Post(POST_TITLE, POST_BODY, user, community, false, null, LocalDateTime.now(), 0, false, POST_CATEGORY.getCategory());
         post.setId(POST_ID);
-        when(postDao.checkGrooviness(POST_ID, USER_ID)).thenReturn(Optional.of(GroovyEnum.UP));
         when(mockUserService.getLoggedUser()).thenReturn(Optional.of(user));
         when(postDao.findById(POST_ID)).thenReturn(Optional.of(post));
         postService.editGrooviness(-100, POST_ID.intValue());
