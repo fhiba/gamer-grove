@@ -52,124 +52,113 @@
                             </div>
                         </div>
                     </div>
-                        <ul class="nav nav-tabs mb-3">
-                            <li class="nav-item">
-                                <c:url var="userPostsUrl" value="/user/${user.id}/userPosts"/>
-                                <a href="${userPostsUrl}" class="nav-link " aria-current="page"><spring:message
-                                        code="PublicProfile.Posts"/></a>
-                            </li>
-                            <li class="nav-item">
-                                <c:url var="likedPostsUrl" value="/user/${user.id}/likedPosts"/>
-                                <a class="nav-link" href="${likedPostsUrl}"><spring:message
-                                        code="PublicProfile.LikedPost"/></a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link active"><spring:message
-                                        code="PublicProfile.FollowedCommunities"/></a>
-                            </li>
-                        </ul>
+                    <ul class="nav nav-tabs mb-3">
+                        <li class="nav-item">
+                            <c:url var="userPostsUrl" value="/user/${user.id}/userPosts"/>
+                            <a href="${userPostsUrl}" class="nav-link " aria-current="page"><spring:message
+                                    code="PublicProfile.Posts"/></a>
+                        </li>
+                        <li class="nav-item">
+                            <c:url var="likedPostsUrl" value="/user/${user.id}/likedPosts"/>
+                            <a class="nav-link" href="${likedPostsUrl}"><spring:message
+                                    code="PublicProfile.LikedPost"/></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active"><spring:message
+                                    code="PublicProfile.FollowedCommunities"/></a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="d-flex row ">
+                    <div hidden="hidden">
+                        <c:url value="/user/${user.id}/followed" var="followedCommunitiesUrl"/>
+                        <form id="filterForm" action="${followedCommunitiesUrl}" method="GET">
+                        </form>
                     </div>
-                    <div class="d-flex row ">
-                        <div hidden="hidden">
-                            <c:url value="/user/${user.id}/followed" var="followedCommunitiesUrl"/>
-                            <form id="filterForm" action="${followedCommunitiesUrl}" method="GET">
-                            </form>
-                        </div>
-                        <div class="col-8">
-                            <c:if test="${empty followedCommunities.data}">
-                                <c:url value="/communities" var="communitiesUrl"/>
-                                <c:choose>
-                                    <c:when test="${communities.size() > 0}">
-                                        <div class="mt-5 d-flex justify-content-center">
-                                            <div class="mb-4 d-flex flex-column align-items-center">
-                                                <h6><spring:message code="Profile.NoMatchingCommunities"/></h6>
-                                                <form action="${communitiesUrl}" method="get"
-                                                      onsubmit="searchCategories()" id="searchWithCategoriesForm">
-                                                    <button class="btn btn-primary" type="submit"><spring:message
-                                                            code="Profile.findCommunities"/></button>
-                                                </form>
-                                            </div>
+                    <div class="col-8">
+                        <c:if test="${empty followedCommunities.data}">
+                            <c:url value="/user/${user.id}/followed" var="communitiesUrl"/>
+                            <div class="mt-5 d-flex justify-content-center">
+                                <div class="mb-4 d-flex flex-column align-items-center">
+                                    <h4><spring:message code="PublicProfile.NoFollowedCommunitiesMatch"/></h4>
+                                    <form action="${communitiesUrl}" method="get"
+                                          onsubmit="searchCategories()" id="searchWithCategoriesForm">
+                                        <button class="btn btn-primary" type="submit"><spring:message
+                                                code="PublicProfile.Clearfilter"/></button>
+                                    </form>
+                                </div>
+                            </div>
+
+                        </c:if>
+                        <c:forEach var="community" items="${followedCommunities.data}">
+                            <c:url value="/community/${community.encodedName}" var="communityUrl"/>
+                            <a href="${communityUrl}" class="card-link text-decoration-none">
+                                <div class="card mb-3">
+                                    <div class="card-body d-flex flex-row">
+                                        <div class="flex-column">
+                                            <c:if test="${empty community.portrait}">
+                                                <img src="${pageContext.request.contextPath}/images/default-community.png"
+                                                     class="very-small-profile-pic mb-1" alt="Profile Picture">
+                                            </c:if>
+                                            <c:if test="${not empty community.portrait}">
+                                                <img src="<c:url value='/image/${community.portrait.imageId}'/>"
+                                                     class="very-small-profile-pic mb-1" alt="Profile Picture">
+                                            </c:if>
                                         </div>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <div class="mt-5 d-flex justify-content-center">
-                                            <div class="mb-4 d-flex flex-column align-items-center">
-                                                <h4><spring:message code="PublicProfile.NoFollowedCommunities"/></h4>
-                                            </div>
-                                        </div>
-                                    </c:otherwise>
-                                </c:choose>
-                            </c:if>
-                            <c:forEach var="community" items="${followedCommunities.data}">
-                                <c:url value="/community/${community.encodedName}" var="communityUrl"/>
-                                <a href="${communityUrl}" class="card-link text-decoration-none">
-                                    <div class="card mb-3">
-                                        <div class="card-body d-flex flex-row">
-                                            <div class="flex-column">
-                                                <c:if test="${empty community.portrait}">
-                                                    <img src="${pageContext.request.contextPath}/images/default-community.png"
-                                                         class="very-small-profile-pic mb-1" alt="Profile Picture">
-                                                </c:if>
-                                                <c:if test="${not empty community.portrait}">
-                                                    <img src="<c:url value='/image/${community.portrait.imageId}'/>"
-                                                         class="very-small-profile-pic mb-1" alt="Profile Picture">
-                                                </c:if>
-                                            </div>
-                                            <div class="flex-column overflow-auto w-100">
-                                                <div class="d-flex justify-content-between">
-                                                    <h2 class="fw-semibold card-subtitle mb-1">
-                                                        /<c:out value="${community.name}" escapeXml="true"/>
-                                                    </h2>
-                                                    <div class="justify-content-end">
-                                                        <c:forEach var="communityCategories"
-                                                                   items="${community.category}">
-                                                            <span class="fs-6 cat-badge p-1 badge bg-dark-subtle text-dark">${communityCategories.toString()}</span>
-                                                        </c:forEach>
-                                                    </div>
+                                        <div class="flex-column overflow-auto w-100">
+                                            <div class="d-flex justify-content-between">
+                                                <h2 class="fw-semibold card-subtitle mb-1">
+                                                    /<c:out value="${community.name}" escapeXml="true"/>
+                                                </h2>
+                                                <div class="justify-content-end">
+                                                    <c:forEach var="communityCategories"
+                                                               items="${community.category}">
+                                                        <span class="fs-6 cat-badge p-1 badge bg-dark-subtle text-dark">${communityCategories.toString()}</span>
+                                                    </c:forEach>
                                                 </div>
-                                                <h6 class="card-title text-secondary"><c:out
-                                                        value="${community.description}" escapeXml="true"/></h6>
                                             </div>
+                                            <h6 class="card-title text-secondary"><c:out
+                                                    value="${community.description}" escapeXml="true"/></h6>
                                         </div>
                                     </div>
-                                </a>
-                            </c:forEach>
-                            <div class="d-flex justify-content-center align-items-center">
-                                <c:set var="paginatedDataWrapper" value="${followedCommunities}" scope="request"/>
-                                <c:set var="pageNumberName" value="pageNumber" scope="request"/>
-                                <jsp:include page="/WEB-INF/jsp/components/paginationFooter.jsp"/>
-                            </div>
+                                </div>
+                            </a>
+                        </c:forEach>
+                        <div class="d-flex justify-content-center align-items-center">
+                            <c:set var="paginatedDataWrapper" value="${followedCommunities}" scope="request"/>
+                            <c:set var="pageNumberName" value="pageNumber" scope="request"/>
+                            <jsp:include page="/WEB-INF/jsp/components/paginationFooter.jsp"/>
                         </div>
-                        <c:if test="${not empty followedCommunities.data}">
-                            <div class="col-4">
-                                <div class="card border-0 text-decoration-none">
-                                    <div class="card-body">
-                                        <h5><spring:message code="Home.FilterCategory"/></h5>
-                                        <div id="categoryPills" class="d-flex flex-row flex-wrap mb-3">
-                                        </div>
-                                        <div class="d-flex border border-dark-subtle">
-                                            <div class="accordion accordion-flush w-100" id="accordionFlushExample">
-                                                <div class="accordion-item">
-                                                    <h2 class="accordion-header" id="flush-headingOne">
-                                                        <button id="addCategoryButton"
-                                                                class="accordion-button btn-light collapsed bg-dark text-light"
-                                                                type="button"
-                                                                data-bs-toggle="collapse"
-                                                                data-bs-target="#flush-collapseOne"
-                                                                aria-expanded="false" aria-controls="flush-collapseOne">
-                                                            <spring:message code="Category.Add"/>
-                                                        </button>
-                                                    </h2>
-                                                    <div id="flush-collapseOne"
-                                                         class="accordion-collapse bg-dark collapse border border-top-light justify-content-evenly"
-                                                         aria-labelledby="flush-headingOne"
-                                                         data-bs-parent="#accordionFlushExample">
-                                                        <div id="categoriesBody" class="accordion-body">
+                    </div>
+                    <c:if test="${not empty followedCommunities.data}">
+                        <div class="col-4">
+                            <div class="card border-0 text-decoration-none">
+                                <div class="card-body">
+                                    <h5><spring:message code="Home.FilterCategory"/></h5>
+                                    <div id="categoryPills" class="d-flex flex-row flex-wrap mb-3">
+                                    </div>
+                                    <div class="d-flex border border-dark-subtle">
+                                        <div class="accordion accordion-flush w-100" id="accordionFlushExample">
+                                            <div class="accordion-item">
+                                                <h2 class="accordion-header" id="flush-headingOne">
+                                                    <button id="addCategoryButton"
+                                                            class="accordion-button btn-light collapsed bg-dark text-light"
+                                                            type="button"
+                                                            data-bs-toggle="collapse"
+                                                            data-bs-target="#flush-collapseOne"
+                                                            aria-expanded="false" aria-controls="flush-collapseOne">
+                                                        <spring:message code="Category.Add"/>
+                                                    </button>
+                                                </h2>
+                                                <div id="flush-collapseOne"
+                                                     class="accordion-collapse bg-dark collapse border border-top-light justify-content-evenly"
+                                                     aria-labelledby="flush-headingOne"
+                                                     data-bs-parent="#accordionFlushExample">
+                                                    <div id="categoriesBody" class="accordion-body">
 
-                                                            <p class="text-dark-emphasis m-1" hidden="hidden"
-                                                               id="emptyCatText">
-                                                                <spring:message code="Category.NoMore"/></p>
-                                                        </div>
+                                                        <p class="text-dark-emphasis m-1" hidden="hidden"
+                                                           id="emptyCatText">
+                                                            <spring:message code="Category.NoMore"/></p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -177,12 +166,13 @@
                                     </div>
                                 </div>
                             </div>
-                        </c:if>
-                    </div>
+                        </div>
+                    </c:if>
                 </div>
             </div>
         </div>
     </div>
+</div>
 </div>
 </body>
 </html>
