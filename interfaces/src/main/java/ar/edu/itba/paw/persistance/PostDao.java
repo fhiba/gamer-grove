@@ -17,15 +17,15 @@ public interface PostDao {
 
     List<Post> findByCategory(String category);
 
-    void editGrooviness(long postId, int i);
+    void editGrooviness(long postId, GroovyEnum groovy);
 
-    void addToGroovy(User user, Post post, boolean grooviness);
+    void addToGroovy(User user, Post post, GroovyEnum groovy);
 
-    Optional<Boolean> checkGrooviness(long postId, long userId);
+    Optional<GroovyEnum> checkGrooviness(long postId, long userId);
 
     void deleteGrooviness(long postId, long id);
 
-    void updateGroovyHistory(long postId, long id, boolean b);
+    void updateGroovyHistory(long postId, long id,GroovyEnum groovyEnum);
 
     List<Post> getMyFollowedPosts(long userId);
 

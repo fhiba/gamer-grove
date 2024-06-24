@@ -1,9 +1,6 @@
 package ar.edu.itba.paw.persistance;
 
-import ar.edu.itba.paw.models.Comment;
-import ar.edu.itba.paw.models.GroovyCommentHistory;
-import ar.edu.itba.paw.models.Post;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,7 +13,7 @@ public interface CommentDao {
 
     Optional<Comment> getCommentById(long commentId);
 
-    void editGrooviness(Comment comment, int i);
+    void editGrooviness(Comment comment, GroovyEnum groovyEnum);
 
     void insertGroovinessIntoComment(Comment comment, User user, Post post, boolean grooviness);
 

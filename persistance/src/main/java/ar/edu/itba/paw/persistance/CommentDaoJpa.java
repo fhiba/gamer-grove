@@ -1,9 +1,6 @@
 package ar.edu.itba.paw.persistance;
 
-import ar.edu.itba.paw.models.Comment;
-import ar.edu.itba.paw.models.GroovyCommentHistory;
-import ar.edu.itba.paw.models.Post;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Primary;
@@ -52,8 +49,8 @@ public class CommentDaoJpa implements CommentDao{
 
 
     @Override
-    public void editGrooviness(Comment comment, int i) {
-        comment.setGrooviness(comment.getGrooviness()+i);
+    public void editGrooviness(Comment comment, GroovyEnum groovyEnum) {
+        comment.setGrooviness(comment.getGrooviness()+ groovyEnum.getValue());
         em.merge(comment);
     }
 

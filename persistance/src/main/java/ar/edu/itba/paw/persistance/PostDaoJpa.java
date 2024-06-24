@@ -50,30 +50,30 @@ public class PostDaoJpa implements PostDao {
     }
 
     @Override
-    public void editGrooviness(long postId, int i) {
+    public void editGrooviness(long postId, GroovyEnum groovy) {
         em.createNativeQuery("UPDATE post SET grooviness = grooviness + :i WHERE id = :id")
                 .setParameter("id", postId)
-                .setParameter("i", i)
+                .setParameter("i", groovy.getValue())
                 .executeUpdate();
 
     }
 
     @Override
-    public void addToGroovy(User user, Post post, boolean grooviness) {
-        GroovyPostHistory gph = new GroovyPostHistory(user, post, grooviness);
+    public void addToGroovy(User user, Post post, GroovyEnum grooviness) {
+        GroovyPostHistory gph = new GroovyPostHistory(user, post, grooviness == GroovyEnum.UP);
         em.persist(gph);
     }
 
 
 
     @Override
-    public Optional<Boolean> checkGrooviness(long postId, long userId) {
+    public Optional<GroovyEnum> checkGrooviness(long postId, long userId) {
         @SuppressWarnings("unchecked")
         Optional<Boolean> result = em.createNativeQuery("SELECT groovy_type FROM groovy_post_history WHERE post_id = :postId AND user_id = :userId")
                 .setParameter("postId", postId)
                 .setParameter("userId", userId)
                 .getResultList().stream().findFirst();
-        return result;
+        return result.map(GroovyEnum::fromBoolean);
     }
 
 
@@ -88,9 +88,9 @@ public class PostDaoJpa implements PostDao {
     }
 
     @Override
-    public void updateGroovyHistory(long postId, long id, boolean b) {
+    public void updateGroovyHistory(long postId, long id, GroovyEnum groovy) {
         em.createNativeQuery("UPDATE groovy_post_history set groovy_type = :b where post_id =:postId and user_id = :id")
-                .setParameter("b",b)
+                .setParameter("b",groovy == GroovyEnum.UP)
                 .setParameter("postId",postId)
                 .setParameter("id",id)
                 .executeUpdate();

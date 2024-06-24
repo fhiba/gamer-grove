@@ -1,7 +1,4 @@
-import ar.edu.itba.paw.models.Comment;
-import ar.edu.itba.paw.models.Community;
-import ar.edu.itba.paw.models.Post;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.persistance.CommentDaoJpa;
 import org.junit.Assert;
 import org.junit.Before;
@@ -137,7 +134,7 @@ public class CommentDaoTest {
         Post post = new Post(POST_TITLE,POST_BODY, user, community,POST_MEDIA,null,EXISTING_POST,POST_GROOVINESS, POST_DELETED,POST_CAT);
         post.setId(POST_ID);
         Comment comment = commentDao.createComment(post, BODY, user, NOW, 10L);
-        commentDao.editGrooviness(comment, 1);
+        commentDao.editGrooviness(comment, GroovyEnum.UP);
         Assert.assertEquals(1, comment.getGrooviness().intValue());
     }
 

@@ -132,30 +132,36 @@ public class PostServiceImpl implements PostService{
             LOGGER.atWarn().setMessage("No post with id {} found").addArgument(postId).log();
             throw new NoSuchPostException("Post with id:" + postId + " not found");
         }
-        Optional<Boolean> isGroovy = postDao.checkGrooviness(postId, user.getId());
+        GroovyEnum groovyValue = GroovyEnum.fromValue(grooviness);
+        if(!GroovyEnum.isValidInput(grooviness) || groovyValue == null){
+            throw new IllegalArgumentException("Invalid grooviness value");
+        }
+
+        Optional<GroovyEnum> isGroovy = postDao.checkGrooviness(postId, user.getId());
         if(isGroovy.isEmpty()) {
-            postDao.addToGroovy(user, post.get(),(grooviness == 1));
-            postDao.editGrooviness(postId,grooviness);
+            postDao.addToGroovy(user, post.get(),groovyValue);
+            postDao.editGrooviness(postId,groovyValue);
             return;
         }
-        switch (grooviness){
-            case 1:
-                if(isGroovy.get()) {
+        GroovyEnum groovy = isGroovy.get();
+        switch (groovyValue){
+            case GroovyEnum.UP:
+                if(groovy == GroovyEnum.UP) {
                     postDao.deleteGrooviness(postId, user.getId());
-                    postDao.editGrooviness(postId, -1);
+                    postDao.editGrooviness(postId, GroovyEnum.DOWN);
                 } else {
-                    postDao.editGrooviness(postId,2);
-                    postDao.updateGroovyHistory(postId, user.getId(), true);
+                    postDao.editGrooviness(postId,GroovyEnum.UP_FROM_DOWN);
+                    postDao.updateGroovyHistory(postId, user.getId(), GroovyEnum.UP);
                 }
                 break;
-            case -1:
-                if(isGroovy.get()) {
-                    postDao.editGrooviness(postId,-2);
-                    postDao.updateGroovyHistory(postId, user.getId(), false);
+            case GroovyEnum.DOWN:
+                if(groovy == GroovyEnum.UP) {
+                    postDao.editGrooviness(postId,GroovyEnum.DOWN_FROM_UP);
+                    postDao.updateGroovyHistory(postId, user.getId(), GroovyEnum.DOWN);
                 }
                 else {
                     postDao.deleteGrooviness(postId, user.getId());
-                    postDao.editGrooviness(postId,1);
+                    postDao.editGrooviness(postId,GroovyEnum.UP);
                 }
                 break;
             default:
@@ -166,8 +172,8 @@ public class PostServiceImpl implements PostService{
 
     @Override
     public int checkGrooviness(long postId) {
-        Optional<Boolean> maybeGroovy = postDao.checkGrooviness(postId, userService.getLoggedUser().get().getId());
-        return maybeGroovy.map(aBoolean -> aBoolean ? 1 : -1).orElse(0);
+        Optional<GroovyEnum> maybeGroovy = postDao.checkGrooviness(postId, userService.getLoggedUser().get().getId());
+        return maybeGroovy.map(aBoolean -> aBoolean == GroovyEnum.UP ? 1 : -1).orElse(0);
     }
 
     @Override

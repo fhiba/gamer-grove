@@ -1,9 +1,6 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.models.Comment;
-import ar.edu.itba.paw.models.GroovyCommentHistory;
-import ar.edu.itba.paw.models.Post;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.persistance.GroovyCommentHistoryDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,8 +20,8 @@ public class GroovyCommentHistoryServiceImpl implements GroovyCommentHistoryServ
 
     @Transactional
     @Override
-    public GroovyCommentHistory createGroovyCommentHistory(User user, Comment comment, Post post, Boolean groovy) {
-        GroovyCommentHistory groovyCommentHistory = gchDao.createGroovyCommentHistory(user, comment, post, groovy);
+    public GroovyCommentHistory createGroovyCommentHistory(User user, Comment comment, Post post, GroovyEnum groovyEnum) {
+        GroovyCommentHistory groovyCommentHistory = gchDao.createGroovyCommentHistory(user, comment, post, groovyEnum == GroovyEnum.UP);
         LOGGER.atInfo().setMessage("User {} upvoted post {} succesfully").addArgument(()->user.getUsername()).addArgument(()->post.getId()).log();
         return groovyCommentHistory;
     }
@@ -50,8 +47,8 @@ public class GroovyCommentHistoryServiceImpl implements GroovyCommentHistoryServ
 
     @Transactional
     @Override
-    public GroovyCommentHistory updateGroovyCommentHistory(GroovyCommentHistory groovyCommentHistory, Boolean newValue) {
-        GroovyCommentHistory groovyCommentHistoryUpdated = gchDao.updateGroovyCommentHistory(groovyCommentHistory, newValue);
+    public GroovyCommentHistory updateGroovyCommentHistory(GroovyCommentHistory groovyCommentHistory, GroovyEnum newValue) {
+        GroovyCommentHistory groovyCommentHistoryUpdated = gchDao.updateGroovyCommentHistory(groovyCommentHistory, newValue == GroovyEnum.UP);
         LOGGER.atInfo().setMessage("User {} updated upvote post {} succesfully").addArgument(()->groovyCommentHistoryUpdated.getUser().getUsername()).addArgument(()->groovyCommentHistoryUpdated.getPost().getId()).log();
         return groovyCommentHistoryUpdated;
     }

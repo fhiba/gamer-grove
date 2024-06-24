@@ -192,7 +192,7 @@ public class PostServiceTest {
         community.setId(COMMUNITY_ID);
         final Post post = new Post(POST_TITLE, POST_BODY, user, community, false, null, LocalDateTime.now(), 0, false, POST_CATEGORY.getCategory());
         post.setId(POST_ID);
-        when(postDao.checkGrooviness(POST_ID, USER_ID)).thenReturn(Optional.of(true));
+        when(postDao.checkGrooviness(POST_ID, USER_ID)).thenReturn(Optional.of(GroovyEnum.UP));
         when(mockUserService.getLoggedUser()).thenReturn(Optional.of(user));
         when(postDao.findById(POST_ID)).thenReturn(Optional.of(post));
         postService.editGrooviness(-100, POST_ID.intValue());

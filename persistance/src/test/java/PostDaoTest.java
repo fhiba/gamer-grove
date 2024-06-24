@@ -1,5 +1,6 @@
 import ar.edu.itba.paw.exceptions.NoSuchPostException;
 import ar.edu.itba.paw.models.Community;
+import ar.edu.itba.paw.models.GroovyEnum;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistance.PostDaoJpa;
@@ -140,13 +141,13 @@ public class PostDaoTest {
         Post post = new Post(POST_TITLE,POST_BODY, user, community,POST_MEDIA,null,EXISTING_POST,POST_GROOVINESS, POST_DELETED,POST_CAT);
         post.setId(POST_ALT_ID);
         post = em.merge(post);
-        postDao.addToGroovy(user,post, true);
+        postDao.addToGroovy(user,post, GroovyEnum.UP);
         em.flush();
         Assert.assertEquals(2, JdbcTestUtils.countRowsInTable (jdbcTemplate, GPH_TABLE));
     }
     @Test
     public void testCheckGrooviness(){
-        Optional<Boolean> value = postDao.checkGrooviness(1L, 2L);
+        Optional<GroovyEnum> value = postDao.checkGrooviness(1L, 2L);
         Assert.assertFalse(value.isPresent());
     }
 
@@ -192,7 +193,7 @@ public class PostDaoTest {
         Post post = new Post(POST_TITLE,POST_BODY, user, community,POST_MEDIA,null,EXISTING_POST,POST_GROOVINESS, POST_DELETED,POST_CAT);
         post.setId(POST_ID);
         post = em.merge(post);
-        postDao.editGrooviness(post.getId(), -1);
+        postDao.editGrooviness(post.getId(), GroovyEnum.DOWN);
 
     }
 

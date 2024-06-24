@@ -1,11 +1,8 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.exceptions.*;
-import ar.edu.itba.paw.models.Comment;
-import ar.edu.itba.paw.models.GroovyCommentHistory;
+import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
-import ar.edu.itba.paw.models.Post;
-import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.pagination.PaginationRequest;
 import ar.edu.itba.paw.persistance.CommentDao;
 import org.slf4j.Logger;
@@ -103,6 +100,11 @@ public class CommentServiceImpl implements CommentService {
         Optional<Comment> comment = commentDao.getCommentById(commentId);
         User user = userService.getLoggedUser().orElseThrow(NoLoggedUserException::new);
 
+        GroovyEnum groovyValue = GroovyEnum.fromValue(grooviness);
+        if(!GroovyEnum.isValidInput(grooviness) || groovyValue == null){
+            throw new IllegalArgumentException("Invalid grooviness value");
+        }
+
         if(comment.isEmpty())
             throw new NoSuchCommentException("Comment not found");
         //checks whether the user has already grooved the comment
@@ -110,31 +112,30 @@ public class CommentServiceImpl implements CommentService {
 
         Optional<GroovyCommentHistory> maybeGCH = groovyCommentHistoryService.findGroovyCommentHistory(user, comment.get(), post);
         if(maybeGCH.isEmpty()) {
-            groovyCommentHistoryService.createGroovyCommentHistory(user, comment.get(), post, grooviness == 1);
-            commentDao.editGrooviness(comment.get(),grooviness);
+            groovyCommentHistoryService.createGroovyCommentHistory(user, comment.get(), post, groovyValue);
+            commentDao.editGrooviness(comment.get(),groovyValue);
             return;
         }
 
-
-        Boolean isGroovy = maybeGCH.get().isGroovy();
-        switch (grooviness){
-            case 1:
-                if(isGroovy) {
+        GroovyEnum groovy = maybeGCH.get().isGroovy()? GroovyEnum.UP: GroovyEnum.DOWN;
+        switch (groovyValue){
+            case GroovyEnum.UP:
+                if(groovy == GroovyEnum.UP) {
                     groovyCommentHistoryService.deleteGroovyCommentHistory(user, comment.get());
-                    commentDao.editGrooviness(comment.get(), -1);
+                    commentDao.editGrooviness(comment.get(), GroovyEnum.DOWN);
                 } else {
-                    commentDao.editGrooviness(comment.get(),2);
-                    groovyCommentHistoryService.updateGroovyCommentHistory(maybeGCH.get(), true);
+                    commentDao.editGrooviness(comment.get(),GroovyEnum.UP_FROM_DOWN);
+                    groovyCommentHistoryService.updateGroovyCommentHistory(maybeGCH.get(), GroovyEnum.UP);
                 }
                 break;
-            case -1:
-                if(isGroovy) {
-                    commentDao.editGrooviness(comment.get(),-2);
-                    groovyCommentHistoryService.updateGroovyCommentHistory(maybeGCH.get(), false);
+            case GroovyEnum.DOWN:
+                if(groovy == GroovyEnum.UP) {
+                    commentDao.editGrooviness(comment.get(),GroovyEnum.DOWN_FROM_UP);
+                    groovyCommentHistoryService.updateGroovyCommentHistory(maybeGCH.get(), GroovyEnum.DOWN);
                 }
                 else {
                     groovyCommentHistoryService.deleteGroovyCommentHistory(user, comment.get());
-                    commentDao.editGrooviness(comment.get(),1);
+                    commentDao.editGrooviness(comment.get(),GroovyEnum.UP);
                 }
                 break;
             default:
