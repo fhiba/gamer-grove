@@ -75,9 +75,9 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         final SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
         final Dotenv env = Dotenv.load();
         dataSource.setDriverClass(org.postgresql.Driver.class);
-        dataSource.setUrl(env.get(PROD_DB_URL_PARAMETER));
-        dataSource.setUsername(env.get(PROD_DB_USERNAME_PARAMETER));
-        dataSource.setPassword(env.get(PROD_DB_PASSWORD_PARAMETER));
+        dataSource.setUrl(env.get(DB_URL_PARAMETER));
+        dataSource.setUsername(env.get(DB_USERNAME_PARAMETER));
+        dataSource.setPassword(env.get(DB_PASSWORD_PARAMETER));
         return dataSource;
     }
 

@@ -17,6 +17,7 @@ import ar.edu.itba.paw.webapp.form.NewModForm;
 import ar.edu.itba.paw.webapp.form.RegisterUserForm;
 import ar.edu.itba.paw.webapp.form.RemoveModForm;
 import ar.edu.itba.paw.webapp.form.*;
+import org.glassfish.jersey.internal.guava.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,17 +27,23 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.WebAttributes;
-import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.validation.BindingResult;
+import ar.edu.itba.paw.webapp.dto.UserDTO;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
+import java.net.URI;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
-@Controller
+@Path("/users")
+@Component
 public class UserController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
@@ -51,6 +58,50 @@ public class UserController {
     private CommunityService cs;
     @Autowired
     private PostService ps;
+
+    @Context
+    private UriInfo uriInfo;
+    @GET
+    @Produces(value = MediaType.APPLICATION_JSON)
+    public Response listUsers(@QueryParam("page") @DefaultValue("1") final int page) {
+        List<UserDTO> users = us.listUsers(page).stream()
+                .map(UserDTO.mapper(uriInfo)).collect(Collectors.toList());
+
+        return Response.ok(new GenericEntity<>(users) {
+                })
+                .link(URI.create(""), "prev").link(URI.create(""), "next")
+                .link(URI.create(""), "first").link(URI.create(""), "last")
+                .build();
+    }
+
+    @POST
+    @Produces(value = { MediaType.APPLICATION_JSON, })
+    public Response createUser(final UserDTO userDto) throws UserNotFoundException {
+        final User user = us.create(userDto.getEmail(),userDto.getUsername(), userDto.getPassword());
+        final URI uri = uriInfo.getAbsolutePathBuilder()
+                .path(String.valueOf(user.getId())).build();
+        return Response.created(uri).build();
+    }
+    @GET
+    @Path("/{id}")
+    @Produces(value = { MediaType.APPLICATION_JSON, })
+    public Response getById(@PathParam("id") final long id) {
+        final Optional<User> maybeUser = us.findById(id);
+        if (maybeUser.isPresent()) {
+            User user = maybeUser.get();
+            return Response.ok(UserDTO.fromUser(uriInfo,user)).build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+    }
+    @DELETE
+    @Path("/{id}")
+    @Produces(value = { MediaType.APPLICATION_JSON, })
+    public Response deleteById(@PathParam("id") final long id) {
+        //TODO: implement method
+        //us.deleteById(id);
+        return Response.noContent().build();
+    }
 
     @RequestMapping(path = "/login")
     public ModelAndView getLogIn(@ModelAttribute("loginForm") final LogInForm loginForm) {

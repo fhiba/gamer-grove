@@ -7,6 +7,7 @@ import ar.edu.itba.paw.models.File;
 import ar.edu.itba.paw.models.User;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.List;
 public interface UserService {
@@ -34,4 +35,6 @@ public interface UserService {
     User updateImage(User user, File value);
 
     List<User> getFollowersOfCommunity(long communityId);
+
+    List<User> listUsers(int page);
 }

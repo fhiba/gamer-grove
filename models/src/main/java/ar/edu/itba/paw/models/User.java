@@ -30,7 +30,7 @@ public class User {
     @Column(name = "owner")
     private  Boolean Owner;
 
-        @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "modders", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "community_id"))
     private List<Community> modderCommunities;
 

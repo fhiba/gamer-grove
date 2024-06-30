@@ -15,10 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Transactional(readOnly = true)
 @Service
@@ -89,6 +86,10 @@ public class UserServiceImpl implements UserService {
         return userDao.getFollowersOfCommunity(communityId);
     }
 
+    @Override
+    public List<User> listUsers(int page) {
+        return Collections.emptyList();
+    }
 
 
     @Transactional
