@@ -61,18 +61,7 @@ public class UserController {
 
     @Context
     private UriInfo uriInfo;
-    @GET
-    @Produces(value = MediaType.APPLICATION_JSON)
-    public Response listUsers(@QueryParam("page") @DefaultValue("1") final int page) {
-        List<UserDTO> users = us.listUsers(page).stream()
-                .map(UserDTO.mapper(uriInfo)).collect(Collectors.toList());
 
-        return Response.ok(new GenericEntity<>(users) {
-                })
-                .link(URI.create(""), "prev").link(URI.create(""), "next")
-                .link(URI.create(""), "first").link(URI.create(""), "last")
-                .build();
-    }
 
     @POST
     @Produces(value = { MediaType.APPLICATION_JSON, })
@@ -82,6 +71,31 @@ public class UserController {
                 .path(String.valueOf(user.getId())).build();
         return Response.created(uri).build();
     }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response listUsers(@Context UriInfo uriInfo, @QueryParam("page") @DefaultValue("1") final int page) {
+        if(page < 0)
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        PaginationRequest paginationRequest = new PaginationRequest();
+        paginationRequest.setPageNumber(page);
+        try {
+            PaginatedDataWrapper<User> users = us.listUsers(paginationRequest);
+            List<UserDTO> userDTOs = users.getData().stream()
+                    .map(UserDTO.mapper(uriInfo))
+                    .toList();
+            return Response.ok(new GenericEntity<>(userDTOs) {
+                    })
+                    .link(uriInfo.getAbsolutePathBuilder().queryParam("page", users.getFirstPage()).build(), "first")
+                    .link(uriInfo.getAbsolutePathBuilder().queryParam("page", users.getTotalPages()).build(), "last")
+                    .link(uriInfo.getAbsolutePathBuilder().queryParam("page", users.getPreviousPage()).build(), "prev")
+                    .link(uriInfo.getAbsolutePathBuilder().queryParam("page", users.getNextPage()).build(), "next")
+                    .build();
+        }catch (IllegalArgumentException e){
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+    }
+
     @GET
     @Path("/{id}")
     @Produces(value = { MediaType.APPLICATION_JSON, })

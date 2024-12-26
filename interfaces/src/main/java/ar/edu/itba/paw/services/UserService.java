@@ -5,6 +5,8 @@ import ar.edu.itba.paw.exceptions.NoSuchTokenException;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.models.File;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
+import ar.edu.itba.paw.models.pagination.PaginationRequest;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
@@ -22,6 +24,7 @@ public interface UserService {
 
     Optional<User> getLoggedUser();
 
+
     void resetPassword(String token, String password) throws NoSuchTokenException;
 
     User verifyUser(String token) throws NoSuchTokenException;
@@ -36,5 +39,5 @@ public interface UserService {
 
     List<User> getFollowersOfCommunity(long communityId);
 
-    List<User> listUsers(int page);
+    PaginatedDataWrapper<User> listUsers(PaginationRequest request);
 }

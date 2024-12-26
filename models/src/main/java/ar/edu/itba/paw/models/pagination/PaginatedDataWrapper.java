@@ -25,6 +25,15 @@ public class PaginatedDataWrapper<T>{
         return (int) Math.ceil((double) totalCount / pageSize);
     }
 
+    public int getPreviousPage() {
+        return this.getPageNumber() >  1? this.getPageNumber() - 1: 1;
+    }
+    public int getNextPage() {
+        return this.getPageNumber() <  1? this.getPageNumber() - 1: this.getTotalPages();
+    }
+    public int getFirstPage() {
+        return 1;
+    }
     public int getPageNumber() {
         return pageNumber;
     }

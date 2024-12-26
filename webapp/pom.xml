@@ -18,6 +18,10 @@
   <properties>
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>21</maven.compiler.target>
+    <frontend-src-dir>${project.parent.basedir}/spa</frontend-src-dir>
+    <node.version>v20.15.0</node.version>
+    <npm.version>10.7.0</npm.version>
+    <maven.frontend.plugin.version>1.7.6</maven.frontend.plugin.version>
   </properties>
 
 
@@ -74,10 +78,6 @@
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-jdbc</artifactId>
     </dependency>
     <dependency>
       <groupId>ar.edu.itba.paw</groupId>
@@ -192,5 +192,54 @@
         </plugin>
       </plugins>
     </pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>com.github.eirslett</groupId>
+        <artifactId>frontend-maven-plugin</artifactId>
+        <!-- Use the latest released version:
+        https://repo1.maven.org/maven2/com/github/eirslett/frontend-maven-plugin/ -->
+        <version>${maven.frontend.plugin.version}</version>
+        <configuration>
+          <nodeVersion>${node.version}</nodeVersion>
+          <!-- optional: with node version greater than 4.0.0 will use npm provided by node distribution -->
+          <npmVersion>${npm.version}</npmVersion>
+
+          <installDirectory>target</installDirectory>
+
+        </configuration>
+        <executions>
+          <execution>
+            <!-- optional: you don't really need execution ids, but it looks nice in your build log. -->
+            <id>install node and npm</id>
+            <goals>
+              <goal>install-node-and-npm</goal>
+            </goals>
+            <!-- optional: default phase is "generate-resources" -->
+            <phase>generate-resources</phase>
+          </execution>
+          <execution>
+            <id>npm install</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <configuration>
+              <arguments>install</arguments>
+              <workingDirectory>${frontend-src-dir}</workingDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>npm build</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <configuration>
+              <arguments>run build</arguments>
+              <workingDirectory>${frontend-src-dir}</workingDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+    </plugins>
   </build>
 </project>

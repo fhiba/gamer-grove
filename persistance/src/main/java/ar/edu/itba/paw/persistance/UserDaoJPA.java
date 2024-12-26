@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.persistance;
 
 import ar.edu.itba.paw.models.File;
+import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
@@ -61,6 +62,28 @@ public class UserDaoJPA implements UserDao {
         query.setParameter("list",resultList);
         return query.getResultList();
     }
+
+    @Override
+    public List<User> getUsers(int pageSize, int offset) {
+        Query nativeQuery = em.createNativeQuery("SELECT id FROM users");
+        nativeQuery.setFirstResult(offset);
+        nativeQuery.setMaxResults(pageSize);
+
+        List<Long> resultList = ((Stream<Number>) nativeQuery.getResultStream()).map(Number::longValue).toList();
+
+        TypedQuery<User> query = em.createQuery("from User as u where u.id IN :ids", User.class);
+        query.setParameter("ids", resultList);
+        return query.getResultList();
+    }
+
+    @Override
+    public int getUsersCount() {
+        String hql = "SELECT COUNT(u) FROM User u";
+        Query query = em.createQuery(hql);
+        return ((Long) query.getSingleResult()).intValue();
+    }
+
+
 
     @Override
     public User updatePassword(User user, String password) {

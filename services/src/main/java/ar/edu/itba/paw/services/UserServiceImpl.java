@@ -3,8 +3,9 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchTokenException;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
-import ar.edu.itba.paw.models.File;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
+import ar.edu.itba.paw.models.pagination.PaginationRequest;
 import ar.edu.itba.paw.persistance.UserDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,8 @@ import java.util.*;
 @Service
 public class UserServiceImpl implements UserService {
 
+
+    private static final int PAGE_SIZE  = 10;
     private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 
 
@@ -87,8 +90,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> listUsers(int page) {
-        return Collections.emptyList();
+    public PaginatedDataWrapper<User> listUsers(PaginationRequest request) {
+        if( request.getPageSize() < 1){
+            throw new IllegalArgumentException("Invalid Page size");
+        }
+        if(request.getPageNumber() <1 ){
+            throw new IllegalArgumentException("Invalid Page number");
+        }
+        int totalCount = userDao.getUsersCount();
+
+        if(totalCount == 0){
+            return new PaginatedDataWrapper<>(Collections.emptyList(), request.getPageNumber(), totalCount, request.getPageSize());
+        }
+        int offset = (request.getPageNumber() - 1) * request.getPageSize();
+        List<User> data = userDao.getUsers(request.getPageSize(), offset);
+        PaginatedDataWrapper<User> dataWrapper = new PaginatedDataWrapper<>(data, request.getPageNumber(), totalCount, request.getPageSize());
+        if(request.getPageNumber() > dataWrapper.getTotalPages() && dataWrapper.getTotalPages() != 0) {
+            throw new IllegalArgumentException("Invalid Page number");
+        }
+        return dataWrapper;
     }
 
 

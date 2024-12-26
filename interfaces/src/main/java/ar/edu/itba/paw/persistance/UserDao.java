@@ -5,22 +5,28 @@ import ar.edu.itba.paw.models.User;
 
 import java.util.Optional;
 import java.util.List;
+
 public interface UserDao {
-        Optional<User> findById(long id);
+    Optional<User> findById(long id);
 
-        Optional<User> findByEmail(final String mail);
+    Optional<User> findByEmail(final String mail);
 
-        Optional<User> findByUsername(final String username);
+    Optional<User> findByUsername(final String username);
 
-        User create(final String username, final String email, final String password);
+    User create(final String username, final String email, final String password);
 
-        User updatePassword(User user, String password);
+    User updatePassword(User user, String password);
 
-        User verifyUser(User user);
+    User verifyUser(User user);
 
-        User updateLocale(User user, String locale);
+    User updateLocale(User user, String locale);
 
-        User updateImage(User user, File image);
+    User updateImage(User user, File image);
 
-        List<User> getFollowersOfCommunity(long communityId);
+    List<User> getFollowersOfCommunity(long communityId);
+
+
+    List<User> getUsers(int page, int pageSize);
+
+    int getUsersCount();
 }
