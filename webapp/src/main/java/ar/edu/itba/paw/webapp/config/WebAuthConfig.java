@@ -1,7 +1,5 @@
 package ar.edu.itba.paw.webapp.config;
 
-import ar.edu.itba.paw.webapp.auth.CustomAccessDeniedHandler;
-import ar.edu.itba.paw.webapp.auth.PawUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -9,22 +7,42 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.access.AccessDecisionManager;
+import org.springframework.security.access.AccessDecisionVoter;
+import org.springframework.security.access.vote.AuthenticatedVoter;
+import org.springframework.security.access.vote.RoleVoter;
+import org.springframework.security.access.vote.UnanimousBased;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
+import org.springframework.security.web.access.expression.WebExpressionVoter;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import javax.servlet.http.HttpServletResponse;
+
+import ar.edu.itba.paw.webapp.auth.*;
+import static org.springframework.web.cors.CorsConfiguration.ALL;
 
 @EnableWebSecurity
 @Configuration
@@ -37,74 +55,135 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
     @Value("classpath:rememberMe.key")
     private Resource rememberMeKey;
 
+    @Autowired
+    private BasicAuthFilter basicAuthFilter;
+
+    @Autowired
+    private JwtFilter jwtFilter;
+
+    @Autowired
+    private AccessControl accessControl;
+
+    @Bean
+    public AuthenticationEntryPoint authenticationEntryPoint() {
+        return new UnauthorizedRequestHandler();
+    }
+
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
     }
+
     @Bean
-    public AuthenticationFailureHandler authenticationFailureHandler() {
-        SimpleUrlAuthenticationFailureHandler simpleUrlAuthenticationFailureHandler = new SimpleUrlAuthenticationFailureHandler("/loginFailed");
-        simpleUrlAuthenticationFailureHandler.setUseForward(true);
-        return simpleUrlAuthenticationFailureHandler;
+    public AccessDecisionManager accessDecisionManager() {
+        List<AccessDecisionVoter<?>> decisionVoters = Arrays.asList(
+                webExpressionVoter(),
+                new RoleVoter(),
+                new AuthenticatedVoter());
+        return new UnanimousBased(decisionVoters);
     }
+
+    @Bean
+
+    public WebExpressionVoter webExpressionVoter() {
+        WebExpressionVoter webExpressionVoter = new WebExpressionVoter();
+        webExpressionVoter.setExpressionHandler(webSecurityExpressionHandler());
+        return webExpressionVoter;
+    }
+
     @Bean
     public AccessDeniedHandler accessDeniedHandler() {
         return new CustomAccessDeniedHandler();
     }
 
+    @Bean
+    public DefaultWebSecurityExpressionHandler webSecurityExpressionHandler() {
+        DefaultWebSecurityExpressionHandler expressionHandler = new DefaultWebSecurityExpressionHandler();
+        // TODO: CHECK IF NEEDED
+        // expressionHandler.setRoleHierarchy(roleHierarchy());
+        return expressionHandler;
+    }
 
     @Bean
-    public AuthenticationManager authenticationManager() throws Exception{
+    public JwtUtil jwtUtil(@Value("classpath:jwt.key") Resource jwtKeyResource) throws Exception {
+        return new JwtUtil(rememberMeKey);
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Collections.singletonList(ALL));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        configuration.addAllowedHeader(ALL);
+
+        configuration.setExposedHeaders(Arrays.asList("Authorization", "Link", "Location", "ETag", "Total-Elements"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
+    @Override
+    @Bean
+    public AuthenticationManager authenticationManager() throws Exception {
         return super.authenticationManager();
     }
+
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/css/**","/images/**","/js/**"); //Apago SpringSecurity para los assets publicos
+        web.ignoring().antMatchers("/css/**", "/images/**", "/js/**"); // Apago SpringSecurity para los assets publicos
     }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
-        http.sessionManagement()
-                .invalidSessionUrl("/login")
-            .and().authorizeRequests()
-                .antMatchers("/login","/register", "/auth/forgotCredentials", "/auth/resetPassword").anonymous()
-                .antMatchers("/profile","/profile/**").authenticated()
-                .antMatchers("/user/**").authenticated()
-                .antMatchers("/auth/resend-verification").authenticated()
-                .antMatchers("/home").authenticated()
-                .antMatchers("/community/{communityName}/new","/community/{communityName}/follow", "/post","/community/{communityName}/rate").hasRole("VERIFIED")
-                .antMatchers(HttpMethod.POST,"/post/{postId}/+").hasRole("VERIFIED")
-                .antMatchers(HttpMethod.POST,"/post/{postId}/up").hasRole("VERIFIED")
-                .antMatchers(HttpMethod.POST,"/post").hasRole("VERIFIED")
-                .antMatchers(HttpMethod.POST,"/comment").hasRole("VERIFIED")
-                .antMatchers(HttpMethod.POST,"/community/{communityName}").hasRole("VERIFIED")
-                .antMatchers(HttpMethod.POST,"/community/{communityName}/deleteRating").hasRole("VERIFIED")
-                .antMatchers(HttpMethod.POST,"/profile").authenticated()
-                .antMatchers(HttpMethod.POST,"/new-community").hasRole("ADMIN")
-                .antMatchers(HttpMethod.POST,"/addMod").hasRole("ADMIN")
-                .antMatchers(HttpMethod.POST,"/removeMod").hasRole("ADMIN")
-                .antMatchers("/community/{communityName}/info").access("@modderServiceImpl.canEditCommunityInfo(#communityName) or hasRole('ADMIN')")
-                .antMatchers("/post/{postId}/delete","/comment/{postId}/delete").access("@modderServiceImpl.canRemovePostAlternative(#postId) or hasRole('ADMIN')")
-                .antMatchers("/new-community", "/manageMods").hasRole("ADMIN")
-                .antMatchers("/**").permitAll()
-            .and().formLogin()
-                .usernameParameter("username")
-                .passwordParameter("password")
-                .defaultSuccessUrl("/home",	false)
-                .loginPage("/login")
-                .failureHandler(authenticationFailureHandler())
-            .and().rememberMe()
-                .rememberMeParameter("j_rememberme")
-                .userDetailsService(userDetailsService)
-                .key(FileCopyUtils.copyToString(new InputStreamReader(rememberMeKey.getInputStream())))
-                .tokenValiditySeconds((int)	TimeUnit.DAYS.toSeconds(30))
-            .and().logout()
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/login")
-            .and().exceptionHandling().accessDeniedHandler(accessDeniedHandler())
-            .and().csrf().disable();
+        http
+                .sessionManagement()
+                // Set stateless sesh
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+
+                // Exception handling
+                .and().exceptionHandling()
+                // unauth
+                .authenticationEntryPoint(new UnauthorizedRequestHandler())
+                // forbidden
+                .accessDeniedHandler(new ForbiddenRequestHandler())
+                .and().headers().cacheControl().disable()
+
+                // Set permissions on endpoints
+                .and().authorizeRequests()
+                .accessDecisionManager(accessDecisionManager())
+
+                /*
+                 * Users
+                 */
+                .antMatchers(HttpMethod.GET, "/api/users")
+                .anonymous()
+                .antMatchers(HttpMethod.POST, "/api/users")
+                .anonymous()
+                .antMatchers(HttpMethod.GET, "/api/users/{id}")
+                .anonymous()
+
+                .antMatchers("/api/**")
+                .permitAll()
+
+                .and()
+                .exceptionHandling()
+                .authenticationEntryPoint((request, response, ex) -> {
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ex.getMessage());
+                })
+
+                // Disable client-side cache handling
+                .and().headers().cacheControl().disable()
+
+                .and()
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(basicAuthFilter, UsernamePasswordAuthenticationFilter.class)
+
+                // Enable CORS and disable csrf rules
+                .cors().and().csrf().disable();
     }
 }

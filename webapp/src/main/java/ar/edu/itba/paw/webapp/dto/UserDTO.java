@@ -9,20 +9,25 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
+import java.util.Map;
 import java.util.function.Function;
+import java.util.HashMap;
 
 public class UserDTO {
-    private  String username;
-    private  String password;
+    private String username;
+    private String password;
     private String email;
-    private  Boolean verified;
+    private Boolean verified;
     private String locale;
 
-    private  Boolean owner;
+    private Boolean owner;
 
     private URI profileImage;
     private URI self;
 
+    private URI posts;
+    private URI likedPosts;
+    private URI followedCommunities;
 
     public static Function<User, UserDTO> mapper(UriInfo uriInfo) {
         return u -> fromUser(uriInfo, u);
@@ -47,7 +52,37 @@ public class UserDTO {
         }
         dto.self = uriInfo.getBaseUriBuilder()
                 .path("users").path(String.valueOf(u.getId())).build();
+
+        dto.posts = uriInfo.getBaseUriBuilder().path("posts").queryParam("author", u.getId()).build();
+        // TODO: Add liked posts **RE VER**
+        dto.likedPosts = uriInfo.getBaseUriBuilder().path("posts").queryParam("likedBy", u.getId()).build();
+        dto.followedCommunities = uriInfo.getBaseUriBuilder().path("communities").queryParam("followedBy", u.getId())
+                .build();
         return dto;
+    }
+
+    public URI getPosts() {
+        return posts;
+    }
+
+    public void setPosts(URI posts) {
+        this.posts = posts;
+    }
+
+    public URI getLikedPosts() {
+        return likedPosts;
+    }
+
+    public void setLikedPosts(URI likedPosts) {
+        this.likedPosts = likedPosts;
+    }
+
+    public URI getFollowedCommunities() {
+        return followedCommunities;
+    }
+
+    public void setFollowedCommunities(URI followedCommunities) {
+        this.followedCommunities = followedCommunities;
     }
 
     public String getUsername() {

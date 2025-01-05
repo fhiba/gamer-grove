@@ -1,6 +1,5 @@
 package ar.edu.itba.paw.webapp.validators;
 
-
 import ar.edu.itba.paw.services.UserService;
 import ar.edu.itba.paw.webapp.validators.interfaces.UniqueEmailConstraint;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +18,7 @@ public class UniqueEmailConstraintValidator implements ConstraintValidator<Uniqu
 
     @Override
     public boolean isValid(String s, ConstraintValidatorContext constraintValidatorContext) {
+
         return us.findByEmail(s).isEmpty();
     }
 }

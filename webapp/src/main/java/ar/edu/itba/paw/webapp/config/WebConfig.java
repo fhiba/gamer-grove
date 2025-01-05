@@ -35,43 +35,48 @@ import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 @EnableTransactionManagement
-@ComponentScan({"ar.edu.itba.paw.webapp.controller", "ar.edu.itba.paw.services","ar.edu.itba.paw.persistance"})
-@EnableWebMvc
+@ComponentScan({ "ar.edu.itba.paw.webapp.controller", "ar.edu.itba.paw.services", "ar.edu.itba.paw.persistance",
+        "ar.edu.itba.paw.webapp.mapper" })
+// @EnableWebMvc
 @Configuration
 public class WebConfig extends WebMvcConfigurerAdapter {
 
-    private final static Long MAX_FILE_SIZE = (long) 5*1000*1000;
+    private final static Long MAX_FILE_SIZE = (long) 5 * 1000 * 1000;
     private static final String DB_URL_PARAMETER = "DB_URL";
     private static final String DB_USERNAME_PARAMETER = "DB_USERNAME";
-    private static final String DB_PASSWORD_PARAMETER="DB_PASSWORD";
+    private static final String DB_PASSWORD_PARAMETER = "DB_PASSWORD";
 
     private static final String PROD_DB_URL_PARAMETER = "PROD_DB_URL";
     private static final String PROD_DB_USERNAME_PARAMETER = "PROD_DB_USERNAME";
-    private static final String PROD_DB_PASSWORD_PARAMETER="PROD_DB_PASSWORD";
+    private static final String PROD_DB_PASSWORD_PARAMETER = "PROD_DB_PASSWORD";
 
-
-    @Bean
-    public ViewResolver viewResolver() {
-        final InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
-        viewResolver.setViewClass(JstlView.class);
-        viewResolver.setPrefix("/WEB-INF/jsp/");
-        viewResolver.setSuffix(".jsp");
-        return viewResolver;
-    }
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // Call the super method to ensure default behavior
-        super.addResourceHandlers(registry);
-        registry.addResourceHandler("/css/**")
-                .addResourceLocations("/css/");
-        registry.addResourceHandler("/js/**")
-                .addResourceLocations("/js/");
-        registry.addResourceHandler("/images/**")
-                .addResourceLocations("/images/");
-    }
-
-    //paw-2024a-09
-    //Zg1uq0uQi
+    //
+    // @Bean
+    // public ViewResolver viewResolver() {
+    // final InternalResourceViewResolver viewResolver = new
+    // InternalResourceViewResolver();
+    // viewResolver.setViewClass(JstlView.class);
+    // viewResolver.setPrefix("/WEB-INF/jsp/");
+    // viewResolver.setSuffix(".jsp");
+    // return viewResolver;
+    // }
+    //
+    // @Override
+    // public void addResourceHandlers(ResourceHandlerRegistry registry) {
+    // // Call the super method to ensure default behavior
+    // super.addResourceHandlers(registry);
+    // registry.addResourceHandler("/css/**")
+    // .addResourceLocations("/css/");
+    // registry.addResourceHandler("/js/**")
+    // .addResourceLocations("/js/");
+    // registry.addResourceHandler("/images/**")
+    // .addResourceLocations("/images/");
+    // }
+    //
+    //
+    //
+    // paw-2024a-09
+    // Zg1uq0uQi
     @Bean
     public DataSource dataSource() {
         final SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
@@ -82,7 +87,6 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         dataSource.setPassword(env.get(DB_PASSWORD_PARAMETER));
         return dataSource;
     }
-
 
     @Bean
     public MessageSource messageSource() {
@@ -111,10 +115,12 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         localeChangeInterceptor.setParamName("lang");
         return localeChangeInterceptor;
     }
+
     @Bean
     public CustomLocaleChangeInterceptor customLocaleChangeInterceptor() {
         return new CustomLocaleChangeInterceptor();
     }
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(customLocaleChangeInterceptor());
@@ -123,8 +129,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-        final LocalContainerEntityManagerFactoryBean factoryBean = new
-                LocalContainerEntityManagerFactoryBean();
+        final LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
         factoryBean.setPackagesToScan("ar.edu.itba.paw.models");
         factoryBean.setDataSource(dataSource());
         final JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
