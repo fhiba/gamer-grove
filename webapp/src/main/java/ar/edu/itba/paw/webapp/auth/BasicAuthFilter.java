@@ -17,12 +17,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import ar.edu.itba.paw.services.TokenService;
 import ar.edu.itba.paw.services.UserService;
 
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Component
 public class BasicAuthFilter extends OncePerRequestFilter {
@@ -42,8 +46,27 @@ public class BasicAuthFilter extends OncePerRequestFilter {
     @Autowired
     private UserService us;
 
+    @Autowired
+    private TokenService ts;
     private static final Logger LOGGER = LoggerFactory.getLogger(BasicAuthFilter.class);
 
+    @Autowired
+    private PawUserDetailsService pawUserDetailsService;
+
+    /*
+     * if(userService.getLoggedUser().isPresent()) {
+     * Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+     * List<GrantedAuthority> updatedAuthorities = new
+     * ArrayList<>(auth.getAuthorities());
+     * updatedAuthorities.add(new SimpleGrantedAuthority("ROLE_VERIFIED"));
+     * Authentication newAuth = new
+     * UsernamePasswordAuthenticationToken(auth.getPrincipal(),
+     * auth.getCredentials(), updatedAuthorities);
+     * SecurityContextHolder.getContext().setAuthentication(newAuth);
+     * }
+     *
+     */
+    // TODO: FIXEAR ESTO
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -56,13 +79,18 @@ public class BasicAuthFilter extends OncePerRequestFilter {
 
         try {
             String[] credentials = extractAndDecodeCredentials(header);
+            if (ts.verifyVerifyToken(credentials[PASSWORD])) {
+                us.verifyUser(credentials[PASSWORD]);
+            }
             final Authentication authentication = authenticationManager
-                    .authenticate(new UsernamePasswordAuthenticationToken(credentials[USER], credentials[PASSWORD]));
+                    .authenticate(
+                            new UsernamePasswordAuthenticationToken(credentials[USER], credentials[PASSWORD]));
             us.findByUsername(credentials[USER]).ifPresent(user -> {
                 response.setHeader(HttpHeaders.AUTHORIZATION, jwtUtil.createToken(user));
             });
-            
-        } catch (Exception e) {
+        } catch (
+
+        Exception e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             authenticationEntryPoint.commence(request, response, new BadCredentialsException("Invalid credentials"));
             return;

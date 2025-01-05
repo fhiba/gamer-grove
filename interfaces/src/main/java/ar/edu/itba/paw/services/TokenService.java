@@ -8,16 +8,19 @@ import java.util.Optional;
 
 public interface TokenService {
 
-    Optional<Long> getUserIdFromToken(String token, String type)throws NoSuchTokenException;
+    Optional<Long> getUserIdFromToken(String token, String type) throws NoSuchTokenException;
 
     Optional<User> getUserFromToken(String token, String type) throws NoSuchTokenException;
 
-    Boolean verifyResetToken(String token)throws NoSuchTokenException;
+    Boolean verifyResetToken(String token) throws NoSuchTokenException;
+
+    Boolean verifyVerifyToken(String token) throws NoSuchTokenException;
 
     void deleteVerifyTokens(Long userId);
 
     void deleteResetTokens(Long userId);
 
     String generateValidationToken(Long userId) throws UserNotFoundException;
+
     String generateResetToken(Long userId) throws UserNotFoundException;
 }
