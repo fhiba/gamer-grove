@@ -8,23 +8,23 @@ import ar.edu.itba.paw.webapp.validators.interfaces.FieldsMustMatchConstraint;
 import ar.edu.itba.paw.webapp.validators.interfaces.UniqueEmailConstraint;
 import ar.edu.itba.paw.webapp.validators.interfaces.UniqueUsernameConstraint;
 
-@FieldsMustMatchConstraint(first = "password", second = "repeatPassword", message = "{FieldsMustMatch}")
+@FieldsMustMatchConstraint(first = "password", second = "repeatPassword")
 public class UserCreationDTO {
 
-    @NotBlank(message = "{NotBlank}")
-    @Size(min = 4, max = 50, message = "{Size}")
-    @UniqueUsernameConstraint(message = "{UniqueUsername}")
+    @NotBlank
+    @Size(min = 4, max = 50)
+    @UniqueUsernameConstraint
     private String username;
-    @NotBlank(message = "{NotBlank}")
-    @Email(message = "{Email}")
-    @UniqueEmailConstraint(message = "{UniqueEmail}")
+    @NotBlank
+    @Email
+    @UniqueEmailConstraint
     private String email;
-    @NotBlank(message = "{NotBlank}")
-    @Size(min = 6, max = 50, message = "{Size}")
+    @NotBlank
+    @Size(min = 6, max = 50)
     private String password;
 
-    @NotBlank(message = "{NotBlank}")
-    @Size(min = 6, max = 50, message = "{Size}")
+    @NotBlank
+    @Size(min = 6, max = 50)
     private String repeatPassword;
 
     public String getUsername() {

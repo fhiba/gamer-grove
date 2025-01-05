@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Singleton;
-
+import ar.edu.itba.paw.webapp.dto.ErrorValidationDTO;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.ws.rs.core.GenericEntity;
@@ -22,20 +22,29 @@ import java.util.List;
 @Provider
 public class ConstraintViolationExceptionMapper implements ExceptionMapper<ConstraintViolationException> {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConstraintViolationExceptionMapper.class);
+
     @Override
-    public Response toResponse(ConstraintViolationException exception) {
-        return Response.status(Response.Status.NOT_FOUND)
-                .entity(prepareMessage(exception))
-                .type("text/plain")
+    public Response toResponse(ConstraintViolationException e) {
+        List<ErrorValidationDTO> errors = new ArrayList<>();
+
+        e.getConstraintViolations().forEach(violation -> errors.add(
+                ErrorValidationDTO.fromValidationError(getViolationPropertyName(violation), violation.getMessage())));
+
+        LOGGER.error("{}: {}",
+                e.getClass().getName(),
+                e.getConstraintViolations());
+
+        return Response
+                .status(Response.Status.BAD_REQUEST)
+                .entity(new GenericEntity<Collection<ErrorValidationDTO>>(errors) {
+                })
+                .type(MediaType.APPLICATION_JSON)
                 .build();
     }
 
-    private String prepareMessage(ConstraintViolationException exception) {
-
-        StringBuilder message = new StringBuilder();
-        for (ConstraintViolation<?> cv : exception.getConstraintViolations()) {
-            message.append(cv.getPropertyPath() + " " + cv.getMessage() + "\n");
-        }
-        return message.toString();
+    private String getViolationPropertyName(ConstraintViolation<?> violation) {
+        final String propertyPath = violation.getPropertyPath().toString();
+        return propertyPath.substring(propertyPath.lastIndexOf(".") + 1);
     }
 }
