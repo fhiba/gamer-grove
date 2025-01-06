@@ -116,7 +116,8 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.addAllowedHeader(ALL);
 
-        configuration.setExposedHeaders(Arrays.asList("Authorization", "Link", "Location", "ETag", "Total-Elements"));
+        configuration.setExposedHeaders(Arrays.asList("Authorization", "Link", "Location", "ETag", "Total-Elements",
+                "X-GamerGrove-AuthToken", "X-GamerGrove-RefreshToken", "WWW-Authenticate"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
@@ -165,6 +166,12 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/api/users")
                 .anonymous()
                 .antMatchers(HttpMethod.GET, "/api/users/{id}")
+                .anonymous()
+                // reset password
+                .antMatchers(HttpMethod.PATCH, "/api/users/{id}")
+                .anonymous()
+                // get token for password reset
+                .antMatchers(HttpMethod.POST, "/api/users/reset-password-token")
                 .anonymous()
 
                 .antMatchers("/api/**")

@@ -7,6 +7,7 @@ import java.security.Key;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -21,7 +22,14 @@ import ar.edu.itba.paw.models.User;
 
 @Component
 public class JwtUtil {
-    private static final int LIFE_TIME = 7 * 24 * 60 * 60 * 1000; // 1 week (in millis)
+    private static final int AUTH_TOKEN_LIFE_TIME = 15 * 60 * 1000; // 15 minutes (in millis)
+    private static final int REFRESH_TOKEN_LIFE_TIME = 7 * 24 * 60 * 60 * 1000; // 1 week (in millis)
+    private static final String CLAIM_TYPE = "type";
+    private static final String CLAIM_ROLE = "role";
+    private static final String ROLE_USER = "ROLE_USER";
+    private static final String ROLE_VERIFIED = "ROLE_VERIFIED";
+    private static final String ROLE_ADMIN = "ROLE_ADMIN";
+
     @Autowired
     private UserDetailsService userDetailsService;
 
@@ -33,40 +41,52 @@ public class JwtUtil {
                         .getBytes(StandardCharsets.UTF_8));
     }
 
-    public UserDetails parseToken(String jwt) {
-        try {
-            final Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(jwtKey)
-                    .build()
-                    .parseClaimsJws(jwt)
-                    .getBody();
-
-            if (new Date(System.currentTimeMillis()).after(claims.getExpiration())) {
-                return null;
-            }
-
-            final String username = claims.getSubject();
-
-            return userDetailsService.loadUserByUsername(username);
-
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    public String createToken(User user) {
+    public String createTokenHeader(User user, JwtType type) {
         Claims claims = Jwts.claims();
 
-        claims.setSubject(user.getUsername());
-        claims.put("ownership", user.getOwner());
-        claims.put("mod", user.getModderCommunities());
-        return "Bearer " + Jwts.builder()
+        long lifeTime;
+        if (type == JwtType.REFRESH) {
+            lifeTime = REFRESH_TOKEN_LIFE_TIME;
+            claims.put(CLAIM_TYPE, JwtType.REFRESH.toString());
+
+        } else {
+            lifeTime = AUTH_TOKEN_LIFE_TIME;
+            claims.put(CLAIM_TYPE, JwtType.AUTH.toString());
+            claims.put(CLAIM_ROLE, user.getOwner() ? ROLE_ADMIN : (user.isVerified() ? ROLE_VERIFIED : ROLE_USER));
+
+        }
+
+        return Jwts.builder()
                 .setClaims(claims)
+                .setSubject(user.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + LIFE_TIME))
+                .setExpiration(new Date(System.currentTimeMillis() + lifeTime))
                 .signWith(jwtKey)
                 .compact();
 
     }
 
+    public JwtDetails validateToken(String token) {
+        try {
+            final Jws<Claims> parsedClaims = Jwts.parserBuilder()
+                    .setSigningKey(jwtKey)
+                    .build()
+                    .parseClaimsJws(token);
+            final Claims claims = parsedClaims.getBody();
+            if (claims.getExpiration().before(new Date(System.currentTimeMillis()))) {
+                return null;
+            }
+            return new JwtDetails.Builder()
+                    .token(token)
+                    .username(claims.getSubject())
+                    .issuedDate(claims.getIssuedAt())
+                    .expirationDate(claims.getExpiration())
+                    .tokenType(JwtType.fromString(claims.get(CLAIM_TYPE, String.class)))
+                    .build();
+
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+        return null;
+    }
 }

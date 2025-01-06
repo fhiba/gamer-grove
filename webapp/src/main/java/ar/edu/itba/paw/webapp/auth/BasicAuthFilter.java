@@ -33,6 +33,9 @@ public class BasicAuthFilter extends OncePerRequestFilter {
 
     private static final int USER = 0;
     private static final int PASSWORD = 1;
+    private static final String BASIC = "Basic";
+    private static final String AUTH_HEADER = "X-GamerGrove-AuthToken";
+    private static final String REFRESH_HEADER = "X-GamerGrove-RefreshToken";
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -53,41 +56,38 @@ public class BasicAuthFilter extends OncePerRequestFilter {
     @Autowired
     private PawUserDetailsService pawUserDetailsService;
 
-    /*
-     * if(userService.getLoggedUser().isPresent()) {
-     * Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-     * List<GrantedAuthority> updatedAuthorities = new
-     * ArrayList<>(auth.getAuthorities());
-     * updatedAuthorities.add(new SimpleGrantedAuthority("ROLE_VERIFIED"));
-     * Authentication newAuth = new
-     * UsernamePasswordAuthenticationToken(auth.getPrincipal(),
-     * auth.getCredentials(), updatedAuthorities);
-     * SecurityContextHolder.getContext().setAuthentication(newAuth);
-     * }
-     *
-     */
-    // TODO: FIXEAR ESTO
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        final String header = request.getHeader("Authorization");
-        if (header == null || !header.startsWith("Basic ")) {
-
+        final String header = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (header == null || !header.startsWith(BASIC + " ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
         try {
             String[] credentials = extractAndDecodeCredentials(header);
+            // asume formato Basic base64(user:token)
             if (ts.verifyVerifyToken(credentials[PASSWORD])) {
+                LOGGER.debug("Token {}, is a verify token", credentials[PASSWORD]);
                 us.verifyUser(credentials[PASSWORD]);
+                final UserDetails userDetails = pawUserDetailsService.loadUserByUsername(credentials[USER]);
+                final UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                        userDetails.getUsername(), userDetails.getPassword(), userDetails.getAuthorities());
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            } else {
+
+                final Authentication authentication = authenticationManager
+                        .authenticate(
+                                new UsernamePasswordAuthenticationToken(credentials[USER], credentials[PASSWORD]));
+                SecurityContextHolder.getContext().setAuthentication(authentication);
             }
-            final Authentication authentication = authenticationManager
-                    .authenticate(
-                            new UsernamePasswordAuthenticationToken(credentials[USER], credentials[PASSWORD]));
             us.findByUsername(credentials[USER]).ifPresent(user -> {
-                response.setHeader(HttpHeaders.AUTHORIZATION, jwtUtil.createToken(user));
+                response.setHeader(REFRESH_HEADER, jwtUtil.createTokenHeader(user, JwtType.REFRESH));
+                response.setHeader(AUTH_HEADER, jwtUtil.createTokenHeader(user, JwtType.AUTH));
             });
+
         } catch (
 
         Exception e) {
