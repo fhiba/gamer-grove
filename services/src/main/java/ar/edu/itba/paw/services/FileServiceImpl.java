@@ -13,17 +13,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
 
 @Transactional(readOnly = true)
 @Service
-public class FileServiceImpl implements FileService{
+public class FileServiceImpl implements FileService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FileServiceImpl.class);
-
 
     @Autowired
     private FileDao fd;
@@ -33,6 +31,7 @@ public class FileServiceImpl implements FileService{
 
     @Autowired
     private UserService us;
+
     @Override
     public Optional<File> getFile(long imageId) {
         return fd.getFile(imageId);
@@ -43,7 +42,7 @@ public class FileServiceImpl implements FileService{
     public Optional<File> uploadCommunityImage(String communityId, MultipartFile file) throws NoSuchCommunityException {
         Community community = cs.findByName(communityId);
         Optional<File> image;
-        if(Objects.isNull(community.getPortrait())) {
+        if (Objects.isNull(community.getPortrait())) {
             try {
                 image = fd.uploadImage(file.getBytes());
                 image.ifPresent(value -> cs.updateCommunityImageId(community.getId(), value.getImageId()));
@@ -59,40 +58,32 @@ public class FileServiceImpl implements FileService{
                 throw new RuntimeException(e);
             }
         }
-        if(image.isPresent()) {
-            LOGGER.atInfo().setMessage("New image {} upload successfully to community {}").addArgument(()->image.get().getImageId()).addArgument(communityId).log();
+        if (image.isPresent()) {
+            LOGGER.atInfo().setMessage("New image {} upload successfully to community {}")
+                    .addArgument(() -> image.get().getImageId()).addArgument(communityId).log();
         }
         return image;
     }
 
     @Transactional
     @Override
-    public Optional<File> uploadUserImage(MultipartFile file) throws NoLoggedUserException {
+    public Optional<File> uploadUserImage(byte[] file) throws NoLoggedUserException {
         Optional<User> maybeUser = us.getLoggedUser();
-        if(maybeUser.isEmpty() ){
+        if (maybeUser.isEmpty()) {
             LOGGER.atError().setMessage("Error while uploading user image because there is no logged user").log();
             throw new NoLoggedUserException();
         }
         User user = maybeUser.get();
         Optional<File> image;
-        if(Objects.isNull(user.getImage())) {
-            try {
-                image = fd.uploadImage(file.getBytes());
-                image.ifPresent(value -> us.updateImage(user, value));
-            } catch (IOException e) {
-                LOGGER.atError().setMessage("Error uploading image").log();
-                throw new RuntimeException(e);
-            }
+        if (Objects.isNull(user.getImage())) {
+            image = fd.uploadImage(file);
+            image.ifPresent(value -> us.updateImage(user, value));
         } else {
-            try {
-                image = fd.updateFile(user.getImage(), file.getBytes());
-            } catch (IOException e) {
-                LOGGER.atError().setMessage("Error updating image").log();
-                throw new RuntimeException(e);
-            }
+            image = fd.updateFile(user.getImage(), file);
         }
-        if(image.isPresent()) {
-            LOGGER.atInfo().setMessage("New image {} upload successfully to user {}").addArgument(()->image.get().getImageId()).addArgument(()->user.getUsername()).log();
+        if (image.isPresent()) {
+            LOGGER.atInfo().setMessage("New image {} upload successfully to user {}")
+                    .addArgument(() -> image.get().getImageId()).addArgument(() -> user.getUsername()).log();
         }
         return image;
     }
@@ -102,9 +93,10 @@ public class FileServiceImpl implements FileService{
     public void uploadPostImage(MultipartFile file, long id) {
         try {
             Optional<File> postImage = fd.uploadImage(file.getBytes());
-            if(postImage.isPresent()){
+            if (postImage.isPresent()) {
                 fd.uploadPostImage(id, postImage.get().getImageId());
-                LOGGER.atInfo().setMessage("New image {} upload successfully to post {}").addArgument(()->postImage.get().getImageId()).addArgument(id).log();
+                LOGGER.atInfo().setMessage("New image {} upload successfully to post {}")
+                        .addArgument(() -> postImage.get().getImageId()).addArgument(id).log();
             }
         } catch (IOException e) {
             LOGGER.atError().setMessage("Error uploading post image").log();

@@ -1,17 +1,17 @@
 package ar.edu.itba.paw.webapp.validators.interfaces;
 
-import ar.edu.itba.paw.webapp.validators.FileMustBeImageConstraintValidator;
-
 import javax.validation.Constraint;
 import javax.validation.Payload;
+
+import ar.edu.itba.paw.webapp.validators.MustBeAcceptedLanguageConstraintValidator;
+
 import java.lang.annotation.*;
 
-@Target({ ElementType.METHOD, ElementType.FIELD, ElementType.ANNOTATION_TYPE, ElementType.PARAMETER })
+@Target({ ElementType.METHOD, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Constraint(validatedBy = FileMustBeImageConstraintValidator.class)
-public @interface FileMustBeImageConstraint {
-
+@Constraint(validatedBy = MustBeAcceptedLanguageConstraintValidator.class)
+public @interface MustBeAcceptedLanguage {
     String message() default "";
 
     Class<?>[] groups() default {};

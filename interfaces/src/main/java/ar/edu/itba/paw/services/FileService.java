@@ -13,7 +13,7 @@ public interface FileService {
 
     Optional<File> uploadCommunityImage(String communityId, MultipartFile file) throws NoSuchCommunityException;
 
-    Optional<File> uploadUserImage( MultipartFile file) throws NoLoggedUserException;
+    Optional<File> uploadUserImage(byte[] file) throws NoLoggedUserException;
 
     void uploadPostImage(MultipartFile file, long id);
 }

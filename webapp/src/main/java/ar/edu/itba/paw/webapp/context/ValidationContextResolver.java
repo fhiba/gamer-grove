@@ -1,4 +1,4 @@
-package ar.edu.itba.paw.webapp.config;
+package ar.edu.itba.paw.webapp.context;
 
 import org.glassfish.jersey.server.validation.ValidationConfig;
 import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator;
@@ -26,7 +26,14 @@ public class ValidationContextResolver implements ContextResolver<ValidationConf
         private final MessageInterpolator defaultInterpolator;
 
         public LocaleContextHolderMessageInterpolator() {
-            defaultInterpolator = Validation.byDefaultProvider().configure().getDefaultMessageInterpolator();
+            defaultInterpolator = Validation
+                    .byDefaultProvider()
+                    .configure()
+                    .messageInterpolator(
+                            new ResourceBundleMessageInterpolator(
+                                    new PlatformResourceBundleLocator("i18n/ValidationMessages")))
+                    .buildValidatorFactory()
+                    .getMessageInterpolator();
         }
 
         @Override

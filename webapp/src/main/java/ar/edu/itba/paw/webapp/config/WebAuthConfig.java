@@ -167,12 +167,21 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 .anonymous()
                 .antMatchers(HttpMethod.GET, "/api/users/{id}")
                 .anonymous()
-                // reset password
-                .antMatchers(HttpMethod.PATCH, "/api/users/{id}")
-                .anonymous()
+                // reset password & update locale
+                .requestMatchers(HttpMethod.PATCH, "/api/users/{id}")
+                .permitAll()
+
                 // get token for password reset
                 .antMatchers(HttpMethod.POST, "/api/users/reset-password-token")
                 .anonymous()
+                // resend verify email
+                .requestMatchers(HttpMethod.POST, "/api/users/{id}/verification-token")
+                .access("hasRole('ROLE_USER')")
+
+                //
+                // update profile picture
+                .requestMatchers(HttpMethod.PUT, "/api/users/{id}")
+                .access("hasRole('ROLE_USER')")
 
                 .antMatchers("/api/**")
                 .permitAll()

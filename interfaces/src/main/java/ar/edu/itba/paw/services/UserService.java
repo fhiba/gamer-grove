@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.List;
+
 public interface UserService {
 
     Optional<User> findById(final long id);
@@ -24,7 +25,6 @@ public interface UserService {
 
     Optional<User> getLoggedUser();
 
-
     void resetPassword(String token, String password) throws NoSuchTokenException;
 
     User verifyUser(String token) throws NoSuchTokenException;
@@ -33,7 +33,7 @@ public interface UserService {
 
     void resendVerification() throws NoLoggedUserException, UserNotFoundException;
 
-    void updateProfile(String locale, MultipartFile profilePic) throws NoLoggedUserException;
+    void updateProfile(String locale, byte[] profilePic) throws NoLoggedUserException;
 
     User updateImage(User user, File value);
 

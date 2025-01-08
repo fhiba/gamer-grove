@@ -22,10 +22,8 @@ import java.util.*;
 @Service
 public class UserServiceImpl implements UserService {
 
-
-    private static final int PAGE_SIZE  = 10;
+    private static final int PAGE_SIZE = 10;
     private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
-
 
     @Autowired
     private UserDao userDao;
@@ -59,28 +57,29 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public User create(final String username, final String email, final String password) throws UserNotFoundException {
-        User user =  userDao.create(username, email, passwordEncoder.encode(password));
+        User user = userDao.create(username, email, passwordEncoder.encode(password));
         String token = tokenService.generateValidationToken(user.getId());
         mailingService.sendValidationEmail(email, username, token, Locale.getDefault());
-        LOGGER.atInfo().setMessage("Created new user {} sucessfully").addArgument(token).addArgument(()->user.getUsername()).log();
+        LOGGER.atInfo().setMessage("Created new user {} sucessfully").addArgument(token)
+                .addArgument(() -> user.getUsername()).log();
         return user;
     }
 
     @Override
     public Optional<User> getLoggedUser() {
-        return SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof org.springframework.security.core.userdetails.User ?
-                findByUsername(((org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername())
-                : Optional.empty();
+        return SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal() instanceof java.lang.String
+                        ? findByUsername((java.lang.String) SecurityContextHolder.getContext().getAuthentication()
+                                .getPrincipal())
+                        : Optional.empty();
     }
-
-
-
 
     @Transactional
     @Override
     public User updateImage(User user, File image) {
         User updatedUser = userDao.updateImage(user, image);
-        LOGGER.atInfo().setMessage("Profile image {} of user updated successfully").addArgument(()->user.getImage().getImageId()).addArgument(()->user.getUsername()).log();
+        LOGGER.atInfo().setMessage("Profile image {} of user updated successfully")
+                .addArgument(() -> user.getImage().getImageId()).addArgument(() -> user.getUsername()).log();
         return updatedUser;
     }
 
@@ -91,46 +90,49 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public PaginatedDataWrapper<User> listUsers(PaginationRequest request) {
-        if( request.getPageSize() < 1){
+        if (request.getPageSize() < 1) {
             throw new IllegalArgumentException("Invalid Page size");
         }
-        if(request.getPageNumber() <1 ){
+        if (request.getPageNumber() < 1) {
             throw new IllegalArgumentException("Invalid Page number");
         }
         int totalCount = userDao.getUsersCount();
 
-        if(totalCount == 0){
-            return new PaginatedDataWrapper<>(Collections.emptyList(), request.getPageNumber(), totalCount, request.getPageSize());
+        if (totalCount == 0) {
+            return new PaginatedDataWrapper<>(Collections.emptyList(), request.getPageNumber(), totalCount,
+                    request.getPageSize());
         }
         int offset = (request.getPageNumber() - 1) * request.getPageSize();
         List<User> data = userDao.getUsers(request.getPageSize(), offset);
-        PaginatedDataWrapper<User> dataWrapper = new PaginatedDataWrapper<>(data, request.getPageNumber(), totalCount, request.getPageSize());
-        if(request.getPageNumber() > dataWrapper.getTotalPages() && dataWrapper.getTotalPages() != 0) {
+        PaginatedDataWrapper<User> dataWrapper = new PaginatedDataWrapper<>(data, request.getPageNumber(), totalCount,
+                request.getPageSize());
+        if (request.getPageNumber() > dataWrapper.getTotalPages() && dataWrapper.getTotalPages() != 0) {
             throw new IllegalArgumentException("Invalid Page number");
         }
         return dataWrapper;
     }
-
 
     @Transactional
     @Override
     public void resetPassword(String token, String password) throws NoSuchTokenException {
         Optional<Long> maybeId = tokenService.getUserIdFromToken(token, "ResetPass");
         if (maybeId.isEmpty()) {
-            LOGGER.atError().setMessage("Token {} does not exist when trying to reset password").addArgument(token).log();
+            LOGGER.atError().setMessage("Token {} does not exist when trying to reset password").addArgument(token)
+                    .log();
             throw new NoSuchTokenException("Token " + token + " does not exist");
         }
         User user = userDao.findById(maybeId.orElseThrow()).orElseThrow();
         userDao.updatePassword(user, passwordEncoder.encode(password));
         tokenService.deleteResetTokens(maybeId.get());
-        LOGGER.atInfo().setMessage("Password of user {} updated with token {}").addArgument(()->user.getUsername()).addArgument(token).log();
+        LOGGER.atInfo().setMessage("Password of user {} updated with token {}").addArgument(() -> user.getUsername())
+                .addArgument(token).log();
     }
 
     @Transactional
     @Override
-    public User verifyUser(String token) throws NoSuchTokenException{
+    public User verifyUser(String token) throws NoSuchTokenException {
 
-        if(token == null || token.isEmpty()) {
+        if (token == null || token.isEmpty()) {
             LOGGER.atError().setMessage("Empty token provided when reseting password").log();
             throw new NoSuchTokenException("token is empty or null");
         }
@@ -139,11 +141,11 @@ public class UserServiceImpl implements UserService {
         if (maybeUser.isEmpty()) {
             LOGGER.atError().setMessage("Token {} does not exist").addArgument(token).log();
             throw new NoSuchTokenException("Token " + token + " does not exist");
-        }else{
+        } else {
             User user = maybeUser.get();
             userDao.verifyUser(user);
             tokenService.deleteVerifyTokens(user.getId());
-            LOGGER.atInfo().setMessage("User {} has been verified").addArgument(()->user.getUsername()).log();
+            LOGGER.atInfo().setMessage("User {} has been verified").addArgument(() -> user.getUsername()).log();
             return user;
         }
     }
@@ -152,7 +154,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Boolean startResetPassword(String email) throws UserNotFoundException {
         Optional<User> maybeUser = findByEmail(email);
-        if(maybeUser.isEmpty()) {
+        if (maybeUser.isEmpty()) {
             LOGGER.atWarn().setMessage("Cannot reset password of not existing user: {}").addArgument(email).log();
             return false;
         }
@@ -163,17 +165,18 @@ public class UserServiceImpl implements UserService {
         return true;
     }
 
-
     @Transactional
     @Override
     public void resendVerification() throws NoLoggedUserException, UserNotFoundException {
         Optional<User> maybeUser = getLoggedUser();
-        if(maybeUser.isPresent()) {
+        if (maybeUser.isPresent()) {
             User loggedUser = maybeUser.get();
             String token = tokenService.generateValidationToken(loggedUser.getId());
-            mailingService.sendValidationEmail(loggedUser.getEmail(), loggedUser.getUsername(), token, Locale.of(loggedUser.getLocale()));
-            LOGGER.atInfo().setMessage("Email to reset password of user {} has been re-sent").addArgument(() -> loggedUser.getEmail()).log();
-        }else{
+            mailingService.sendValidationEmail(loggedUser.getEmail(), loggedUser.getUsername(), token,
+                    Locale.of(loggedUser.getLocale()));
+            LOGGER.atInfo().setMessage("Email to reset password of user {} has been re-sent")
+                    .addArgument(() -> loggedUser.getEmail()).log();
+        } else {
             LOGGER.atError().setMessage("No user logged when trying to resend verification email").log();
             throw new NoLoggedUserException();
         }
@@ -181,16 +184,27 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void updateProfile(String locale, MultipartFile profilePic) throws NoLoggedUserException {
-        if(!profilePic.isEmpty() && !Objects.isNull(profilePic)) {
-            fs.uploadUserImage(profilePic);
-        }
+    public void updateProfile(String locale, byte[] profilePic) throws NoLoggedUserException {
         Optional<User> maybeUser = getLoggedUser();
-        if(maybeUser.isPresent()) {
-            userDao.updateLocale(maybeUser.get(), locale);
-            LOGGER.atInfo().setMessage("Updated profile picture of user {} successfully").addArgument(()->maybeUser.get().getUsername()).log();
-        }else{
-            LOGGER.atError().setMessage("No user logged when trying to update profile picture").log();
+        if (maybeUser.isPresent()) {
+            LOGGER.atInfo().setMessage("Updating profile picture/locale of user {}")
+                    .addArgument(() -> maybeUser.get().getUsername()).log();
+            if (profilePic != null && profilePic.length > 0) {
+
+                fs.uploadUserImage(profilePic);
+                LOGGER.atInfo().setMessage("Updated profile picture of user {} successfully")
+                        .addArgument(() -> maybeUser.get().getUsername()).log();
+
+            }
+            if (locale != null && !locale.isEmpty()) {
+                userDao.updateLocale(maybeUser.get(), locale);
+                LOGGER.atInfo().setMessage("Updated locale of user {} successfully")
+                        .addArgument(() -> maybeUser.get().getUsername()).log();
+
+            }
+
+        } else {
+            LOGGER.atError().setMessage("No user logged when trying to update profile picture/locale").log();
             throw new NoLoggedUserException();
         }
     }

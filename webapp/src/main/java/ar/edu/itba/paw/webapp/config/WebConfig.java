@@ -96,37 +96,38 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         messageSource.setCacheSeconds((int) TimeUnit.MINUTES.toSeconds(5));
         return messageSource;
     }
+    //
+    // @Bean(name = "multipartResolver")
+    // public CommonsMultipartResolver multipartResolver() {
+    // CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
+    // multipartResolver.setMaxUploadSize(MAX_FILE_SIZE);
+    // return multipartResolver;
+    // }
+    //
+    // @Bean
+    // public LocaleResolver localeResolver() {
+    // return new ApplicationLocaleResolver();
+    // }
+    //
+    // @Bean
+    // public LocaleChangeInterceptor localeChangeInterceptor() {
+    // LocaleChangeInterceptor localeChangeInterceptor = new
+    // LocaleChangeInterceptor();
+    // localeChangeInterceptor.setParamName("lang");
+    // return localeChangeInterceptor;
+    // }
 
-    @Bean(name = "multipartResolver")
-    public CommonsMultipartResolver multipartResolver() {
-        CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
-        multipartResolver.setMaxUploadSize(MAX_FILE_SIZE);
-        return multipartResolver;
-    }
-
-    @Bean
-    public LocaleResolver localeResolver() {
-        return new ApplicationLocaleResolver();
-    }
-
-    @Bean
-    public LocaleChangeInterceptor localeChangeInterceptor() {
-        LocaleChangeInterceptor localeChangeInterceptor = new LocaleChangeInterceptor();
-        localeChangeInterceptor.setParamName("lang");
-        return localeChangeInterceptor;
-    }
-
-    @Bean
-    public CustomLocaleChangeInterceptor customLocaleChangeInterceptor() {
-        return new CustomLocaleChangeInterceptor();
-    }
-
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(customLocaleChangeInterceptor());
-
-    }
-
+    // @Bean
+    // public CustomLocaleChangeInterceptor customLocaleChangeInterceptor() {
+    // return new CustomLocaleChangeInterceptor();
+    // }
+    //
+    // @Override
+    // public void addInterceptors(InterceptorRegistry registry) {
+    // registry.addInterceptor(customLocaleChangeInterceptor());
+    //
+    // }
+    //
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         final LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();

@@ -44,7 +44,7 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         final String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-
+        LOGGER.info("Header: {}", header);
         if (header == null || !header.startsWith(BEARER + " ")) {
             filterChain.doFilter(request, response);
             return;
@@ -52,8 +52,9 @@ public class JwtFilter extends OncePerRequestFilter {
 
         final String token = header.split(" ")[1].trim();
         final JwtDetails jwtDetails = jwtUtil.validateToken(token);
+
         if (jwtDetails == null) {
-            LOGGER.debug("Invalid JWT token");
+            LOGGER.info("Invalid JWT token");
 
             response.addHeader("WWW-Authenticate", "Bearer realm=\"GamerGrove\"");
             filterChain.doFilter(request, response);
@@ -63,7 +64,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if (userDetails == null || !userDetails.isEnabled()
                 || SecurityContextHolder.getContext().getAuthentication() != null) {
-            LOGGER.debug("Invalid user details isEnabled:{}", userDetails != null ? userDetails.isEnabled() : "null");
+            LOGGER.info("Invalid user details isEnabled:{}", userDetails != null ? userDetails.isEnabled() : "null");
 
             response.addHeader("WWW-Authenticate", "Bearer realm=\"GamerGrove\"");
             filterChain.doFilter(request, response);
@@ -82,6 +83,8 @@ public class JwtFilter extends OncePerRequestFilter {
         final UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
 
                 userDetails.getUsername(), userDetails.getPassword(), userDetails.getAuthorities());
+        LOGGER.info("User {} authenticated, setting security context, with authorities: {}", userDetails.getUsername(),
+                userDetails.getAuthorities());
 
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
