@@ -67,7 +67,6 @@ public class UserController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
-    private final static int MAX_FILE_SIZE = (int) 5 * 1000 * 1000;
 
     @Autowired
     private UserService us;
@@ -172,23 +171,5 @@ public class UserController {
         return Response.ok().build();
     }
 
-    @PUT
-    @Path("/{id}")
-    @Consumes(value = { MediaType.MULTIPART_FORM_DATA })
-    public Response updateProfileImage(@PathParam("id") final long id,
-            @Size(max = MAX_FILE_SIZE, message = "{FileSize}") @FormDataParam("image") byte[] bytes,
-            @FileMustBeImageConstraint(message = "{Image}") @FormDataParam("image") final FormDataBodyPart fileDetails)
-            throws NoLoggedUserException {
 
-        us.updateProfile(null, bytes);
-
-        File file = us.getLoggedUser().get().getImage();
-        URI uri = uriInfo.getBaseUriBuilder()
-                .path("images")
-                .path(String.valueOf(file.getImageId()))
-                .build();
-        return Response.ok()
-                .contentLocation(uri)
-                .build();
-    }
 }

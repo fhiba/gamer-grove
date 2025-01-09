@@ -197,6 +197,14 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 .requestMatchers(HttpMethod.PUT, "/api/users/{id}/locale")
                 .access(ACCESS_CONTROL_CHECK_USER + AND + HAS_ROLE_VERIFIED)
 
+                //images
+                .requestMatchers(HttpMethod.GET, "/api/images/{id}")
+                .permitAll()
+
+                //create image
+                .requestMatchers(HttpMethod.POST, "/api/images")
+                .permitAll()
+
                 .antMatchers("/api/**")
                 .permitAll()
 
