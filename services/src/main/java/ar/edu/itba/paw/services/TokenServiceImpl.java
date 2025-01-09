@@ -39,7 +39,7 @@ public class TokenServiceImpl implements TokenService {
     public Boolean verifyResetToken(String token) throws NoSuchTokenException {
         if (token == null || token.isEmpty()) {
             LOGGER.atError().setMessage("Empty token provided when reseting password").log();
-            throw new NoSuchTokenException("token is empty or null");
+            throw new NoSuchTokenException();
         }
         return tokenDao.verifyResetToken(token);
     }
@@ -48,7 +48,7 @@ public class TokenServiceImpl implements TokenService {
     public Boolean verifyVerifyToken(String token) throws NoSuchTokenException {
         if (token == null || token.isEmpty()) {
             LOGGER.atError().setMessage("Empty token provided when verifying user").log();
-            throw new NoSuchTokenException("token is empty or null");
+            throw new NoSuchTokenException();
         }
         return tokenDao.verifyValidationToken(token);
     }
@@ -76,7 +76,7 @@ public class TokenServiceImpl implements TokenService {
         if (maybeUser.isEmpty()) {
             LOGGER.atError().setMessage("Trying to generate validation token of unexsiting user with id {}")
                     .addArgument(userId).log();
-            throw new UserNotFoundException("User with id " + userId + " does not exist");
+            throw new UserNotFoundException();
         }
         User user = maybeUser.get();
         tokenDao.createValidationToken(user, token);
@@ -94,7 +94,7 @@ public class TokenServiceImpl implements TokenService {
         if (maybeUser.isEmpty()) {
             LOGGER.atError().setMessage("Trying to reset token of unexsiting user with id {}").addArgument(userId)
                     .log();
-            throw new UserNotFoundException("User with id " + userId + " does not exist");
+            throw new UserNotFoundException();
         }
         tokenDao.createResetToken(maybeUser.get(), token);
         LOGGER.atInfo().setMessage("Generated reset token {} of user {} sucessfully").addArgument(token)

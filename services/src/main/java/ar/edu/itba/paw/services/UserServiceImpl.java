@@ -1,7 +1,9 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.exceptions.IllegalPageException;
 import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchTokenException;
+import ar.edu.itba.paw.exceptions.PageNotFoundException;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
@@ -89,12 +91,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PaginatedDataWrapper<User> listUsers(PaginationRequest request) {
+    public PaginatedDataWrapper<User> listUsers(PaginationRequest request)
+            throws IllegalPageException, PageNotFoundException {
         if (request.getPageSize() < 1) {
             throw new IllegalArgumentException("Invalid Page size");
         }
         if (request.getPageNumber() < 1) {
-            throw new IllegalArgumentException("Invalid Page number");
+            throw new IllegalPageException();
         }
         int totalCount = userDao.getUsersCount();
 
@@ -107,7 +110,7 @@ public class UserServiceImpl implements UserService {
         PaginatedDataWrapper<User> dataWrapper = new PaginatedDataWrapper<>(data, request.getPageNumber(), totalCount,
                 request.getPageSize());
         if (request.getPageNumber() > dataWrapper.getTotalPages() && dataWrapper.getTotalPages() != 0) {
-            throw new IllegalArgumentException("Invalid Page number");
+            throw new PageNotFoundException();
         }
         return dataWrapper;
     }
@@ -119,7 +122,7 @@ public class UserServiceImpl implements UserService {
         if (maybeId.isEmpty()) {
             LOGGER.atError().setMessage("Token {} does not exist when trying to reset password").addArgument(token)
                     .log();
-            throw new NoSuchTokenException("Token " + token + " does not exist");
+            throw new NoSuchTokenException();
         }
         User user = userDao.findById(maybeId.orElseThrow()).orElseThrow();
         userDao.updatePassword(user, passwordEncoder.encode(password));
@@ -134,13 +137,13 @@ public class UserServiceImpl implements UserService {
 
         if (token == null || token.isEmpty()) {
             LOGGER.atError().setMessage("Empty token provided when reseting password").log();
-            throw new NoSuchTokenException("token is empty or null");
+            throw new NoSuchTokenException();
         }
 
         Optional<User> maybeUser = tokenService.getUserFromToken(token, "Validation");
         if (maybeUser.isEmpty()) {
             LOGGER.atError().setMessage("Token {} does not exist").addArgument(token).log();
-            throw new NoSuchTokenException("Token " + token + " does not exist");
+            throw new NoSuchTokenException();
         } else {
             User user = maybeUser.get();
             userDao.verifyUser(user);

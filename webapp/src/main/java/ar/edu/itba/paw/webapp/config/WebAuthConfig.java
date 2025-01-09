@@ -49,6 +49,13 @@ import static org.springframework.web.cors.CorsConfiguration.ALL;
 @ComponentScan("ar.edu.itba.paw.webapp.auth")
 public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 
+    private static final String ACCESS_CONTROL_CHECK_USER = "@accessControl.checkUser(request, #id)";
+    private static final String AND = " and ";
+    private static final String HAS_ROLE_USER = "hasRole('ROLE_USER')";
+    private static final String HAS_ROLE_ADMIN = "hasRole('ROLE_ADMIN')";
+    private static final String HAS_ROLE_VERIFIED = "hasRole('ROLE_VERIFIED')";
+    private static final String NOT = "!";
+    private static final String IS_AUTHENTICATED = "isAuthenticated()";
     @Autowired
     private PawUserDetailsService userDetailsService;
 
@@ -161,36 +168,37 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 /*
                  * Users
                  */
-                .antMatchers(HttpMethod.GET, "/api/users")
-                .anonymous()
+                // create user
                 .antMatchers(HttpMethod.POST, "/api/users")
                 .anonymous()
+                // GETs
+                .antMatchers(HttpMethod.GET, "/api/users")
+                .access(HAS_ROLE_ADMIN)
                 .antMatchers(HttpMethod.GET, "/api/users/{id}")
-                .anonymous()
-                // reset password & update locale
-                .requestMatchers(HttpMethod.PATCH, "/api/users/{id}")
                 .permitAll()
+                // reset password
+                .requestMatchers(HttpMethod.PATCH, "/api/users/{id}")
+                .anonymous()
 
                 // get token for password reset
                 .antMatchers(HttpMethod.POST, "/api/users/reset-password-token")
                 .anonymous()
+
                 // resend verify email
                 .requestMatchers(HttpMethod.POST, "/api/users/{id}/verification-token")
-                .access("hasRole('ROLE_USER')")
+                .access(ACCESS_CONTROL_CHECK_USER + AND + HAS_ROLE_USER + AND + NOT
+                        + HAS_ROLE_VERIFIED)
 
-                //
                 // update profile picture
                 .requestMatchers(HttpMethod.PUT, "/api/users/{id}")
-                .access("hasRole('ROLE_USER')")
+                .access(ACCESS_CONTROL_CHECK_USER + AND + HAS_ROLE_VERIFIED)
+
+                // update locale
+                .requestMatchers(HttpMethod.PUT, "/api/users/{id}/locale")
+                .access(ACCESS_CONTROL_CHECK_USER + AND + HAS_ROLE_VERIFIED)
 
                 .antMatchers("/api/**")
                 .permitAll()
-
-                .and()
-                .exceptionHandling()
-                .authenticationEntryPoint((request, response, ex) -> {
-                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ex.getMessage());
-                })
 
                 // Disable client-side cache handling
                 .and().headers().cacheControl().disable()

@@ -1,7 +1,7 @@
 package ar.edu.itba.paw.exceptions;
 
-public class NoLoggedUserException extends Exception{
+public class NoLoggedUserException extends StatusCodedRuntimeException {
     public NoLoggedUserException() {
-        super("No logged user");
+        super(StatusCodes.UNAUTHORIZED.getCode(), "Exception.NoLogged");
     }
 }

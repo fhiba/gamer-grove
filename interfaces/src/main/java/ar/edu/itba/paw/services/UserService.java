@@ -8,7 +8,8 @@ import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
 import ar.edu.itba.paw.models.pagination.PaginationRequest;
 import org.springframework.web.multipart.MultipartFile;
-
+import ar.edu.itba.paw.exceptions.IllegalPageException;
+import ar.edu.itba.paw.exceptions.PageNotFoundException;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.List;
@@ -39,5 +40,5 @@ public interface UserService {
 
     List<User> getFollowersOfCommunity(long communityId);
 
-    PaginatedDataWrapper<User> listUsers(PaginationRequest request);
+    PaginatedDataWrapper<User> listUsers(PaginationRequest request) throws IllegalPageException, PageNotFoundException;
 }

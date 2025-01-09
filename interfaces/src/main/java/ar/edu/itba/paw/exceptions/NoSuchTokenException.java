@@ -1,8 +1,9 @@
 package ar.edu.itba.paw.exceptions;
 
-public class NoSuchTokenException extends Exception{
+public class NoSuchTokenException extends StatusCodedException {
 
-        public NoSuchTokenException(String message) {
-                    super(message);
-                }
+    public NoSuchTokenException() {
+        super(StatusCodes.NOT_FOUND.getCode(), "Exception.NoSuchToken");
+
+    }
 }

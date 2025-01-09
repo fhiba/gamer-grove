@@ -1,15 +1,17 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.exceptions.AlreadyModException;
+import ar.edu.itba.paw.exceptions.IllegalPageException;
 import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
+import ar.edu.itba.paw.exceptions.NoSuchTokenException;
+import ar.edu.itba.paw.exceptions.PageNotFoundException;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
 import ar.edu.itba.paw.models.pagination.PaginationRequest;
 import ar.edu.itba.paw.services.CommunityService;
 import ar.edu.itba.paw.services.ModderService;
-import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.services.PostService;
 import ar.edu.itba.paw.services.UserService;
 import ar.edu.itba.paw.webapp.form.LogInForm;
@@ -94,44 +96,39 @@ public class UserController {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response listUsers(@Context UriInfo uriInfo, @QueryParam("page") @DefaultValue("1") final int page) {
-        if (page < 0)
-            return Response.status(Response.Status.BAD_REQUEST).build();
+    public Response listUsers(@Context UriInfo uriInfo, @QueryParam("page") @DefaultValue("1") final int page)
+            throws PageNotFoundException, IllegalPageException {
+
         PaginationRequest paginationRequest = new PaginationRequest();
         paginationRequest.setPageNumber(page);
-        try {
-            PaginatedDataWrapper<User> users = us.listUsers(paginationRequest);
+        PaginatedDataWrapper<User> users = us.listUsers(paginationRequest);
 
-            if (users.getData().size() == 0) {
-                return Response.noContent().build();
-            }
-            List<UserDTO> userDTOs = users.getData().stream()
-                    .map(UserDTO.mapper(uriInfo))
-                    .toList();
-
-            return Response.ok(new GenericEntity<>(userDTOs) {
-            })
-                    .link(uriInfo.getAbsolutePathBuilder().queryParam("page", users.getFirstPage()).build(), "first")
-                    .link(uriInfo.getAbsolutePathBuilder().queryParam("page", users.getTotalPages()).build(), "last")
-                    .link(uriInfo.getAbsolutePathBuilder().queryParam("page", users.getPreviousPage()).build(), "prev")
-                    .link(uriInfo.getAbsolutePathBuilder().queryParam("page", users.getNextPage()).build(), "next")
-                    .build();
-        } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+        if (users.getData().size() == 0) {
+            return Response.noContent().build();
         }
+        List<UserDTO> userDTOs = users.getData().stream()
+                .map(UserDTO.mapper(uriInfo))
+                .toList();
+
+        return Response.ok(new GenericEntity<>(userDTOs) {
+        })
+                .link(uriInfo.getAbsolutePathBuilder().queryParam("page", users.getFirstPage()).build(), "first")
+                .link(uriInfo.getAbsolutePathBuilder().queryParam("page", users.getTotalPages()).build(), "last")
+                .link(uriInfo.getAbsolutePathBuilder().queryParam("page", users.getPreviousPage()).build(), "prev")
+                .link(uriInfo.getAbsolutePathBuilder().queryParam("page", users.getNextPage()).build(), "next")
+                .build();
     }
 
     @GET
     @Path("/{id}")
     @Produces(value = { VendorType.APPLICATION_USER, })
-    public Response getById(@PathParam("id") final long id) {
+    public Response getById(@PathParam("id") final long id) throws UserNotFoundException {
         final Optional<User> maybeUser = us.findById(id);
         if (maybeUser.isPresent()) {
             User user = maybeUser.get();
             return Response.ok(UserDTO.fromUser(uriInfo, user)).build();
-        } else {
-            return Response.status(Response.Status.NOT_FOUND).build();
         }
+        throw new UserNotFoundException();
     }
 
     @POST
@@ -141,93 +138,57 @@ public class UserController {
         try {
             us.startResetPassword(emailDTO.getEmail());
         } catch (UserNotFoundException e) {
-
+            // No hay que devolver nada (por cuestiones de seguridad)
         }
-        return Response.ok().entity(new MessageDTO("Email sent")).build();
+        return Response.ok().build();
     }
 
     @PATCH
     @Path("/{id}")
     @Consumes(value = { VendorType.APPLICATION_PASSWORD_RESET })
-    public Response resetPassword(@PathParam("id") final long id, @Valid final ResetPasswordDTO resetPasswordDTO) {
-        try {
-            us.resetPassword(resetPasswordDTO.getToken(), resetPasswordDTO.getPassword());
-        } catch (Exception e) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        }
-        return Response.ok().entity(new MessageDTO("Password reset")).build();
+    public Response resetPassword(@PathParam("id") final long id, @Valid final ResetPasswordDTO resetPasswordDTO)
+            throws NoSuchTokenException {
+        us.resetPassword(resetPasswordDTO.getToken(), resetPasswordDTO.getPassword());
+        return Response
+                .ok()
+                .build();
     }
 
-
-    @PATCH
-    @Path("/{id}")
+    @PUT
+    @Path("/{id}/locale")
     @Consumes(value = { VendorType.APPLICATION_LOCALE })
     public Response updateLocale(@PathParam("id") final long id,
-        @Valid final LocaleDTO localeDTO) throws NoLoggedUserException {
-         final Optional<User> maybeUser = us.findById(id);
-        if (maybeUser.isEmpty()) {
-            LOGGER.atError().setMessage("User not found").log();
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        }
-        final User user = maybeUser.get();
-        us.updateProfile(localeDTO.getLocale(),null);
-        LOGGER.info("PUT /{}: User {} locale updated", uriInfo.getPath(), user.getUsername());
-        return Response.ok().entity(new MessageDTO("Locale updated")).build();
-
+            @Valid final LocaleDTO localeDTO) throws NoLoggedUserException {
+        us.updateProfile(localeDTO.getLocale(), null);
+        return Response.ok().build();
     }
 
     @POST
     @Path("/{id}/verification-token")
-    public Response sendVerificationToken(@PathParam("id") final long id) {
-        try {
-            us.resendVerification();
+    public Response sendVerificationToken(@PathParam("id") final long id)
+            throws NoLoggedUserException, UserNotFoundException {
+        us.resendVerification();
 
-        } catch (NoLoggedUserException e) {
-            LOGGER.atError().setMessage("No user logged in the resend verification request").log();
-
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        } catch (UserNotFoundException e) {
-            LOGGER.atError().setMessage("No user found in the resend verification request").log();
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-        return Response.ok().entity(new MessageDTO("Verification email sent")).build();
+        return Response.ok().build();
     }
 
     @PUT
     @Path("/{id}")
     @Consumes(value = { MediaType.MULTIPART_FORM_DATA })
     public Response updateProfileImage(@PathParam("id") final long id,
-            @Size(max = MAX_FILE_SIZE, message = "{FileSize.image}") @FormDataParam("image") byte[] bytes,
+            @Size(max = MAX_FILE_SIZE, message = "{FileSize}") @FormDataParam("image") byte[] bytes,
             @FileMustBeImageConstraint(message = "{Image}") @FormDataParam("image") final FormDataBodyPart fileDetails)
             throws NoLoggedUserException {
 
-        final Optional<User> maybeUser = us.findById(id);
-        if (maybeUser.isEmpty()) {
-            LOGGER.atError().setMessage("User not found").log();
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        }
-        final User user = maybeUser.get();
         us.updateProfile(null, bytes);
 
-        LOGGER.info("PUT /{}: User {} image updated", uriInfo.getPath(), user.getUsername());
-        File file = user.getImage();
-        LOGGER.info("image is null? {}", Objects.isNull(file));
+        File file = us.getLoggedUser().get().getImage();
         URI uri = uriInfo.getBaseUriBuilder()
                 .path("images")
-                .path(String.valueOf(user.getImage().getImageId()))
+                .path(String.valueOf(file.getImageId()))
                 .build();
         return Response.ok()
                 .contentLocation(uri)
                 .build();
     }
-
-    @DELETE
-    @Path("/{id}")
-    @Produces(value = { MediaType.APPLICATION_JSON, })
-    public Response deleteById(@PathParam("id") final long id) {
-        // TODO: implement method
-        // us.deleteById(id);
-        return Response.noContent().build();
-    }
-
 }

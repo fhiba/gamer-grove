@@ -12,6 +12,7 @@ import javax.ws.rs.core.HttpHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -55,8 +56,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if (jwtDetails == null) {
             LOGGER.info("Invalid JWT token");
-
-            response.addHeader("WWW-Authenticate", "Bearer realm=\"GamerGrove\"");
             filterChain.doFilter(request, response);
             return;
         }
@@ -66,7 +65,6 @@ public class JwtFilter extends OncePerRequestFilter {
                 || SecurityContextHolder.getContext().getAuthentication() != null) {
             LOGGER.info("Invalid user details isEnabled:{}", userDetails != null ? userDetails.isEnabled() : "null");
 
-            response.addHeader("WWW-Authenticate", "Bearer realm=\"GamerGrove\"");
             filterChain.doFilter(request, response);
             return;
         }

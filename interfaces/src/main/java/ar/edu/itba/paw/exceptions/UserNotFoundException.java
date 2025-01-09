@@ -1,8 +1,8 @@
 package ar.edu.itba.paw.exceptions;
 
-public class UserNotFoundException extends Exception{
+public class UserNotFoundException extends StatusCodedException {
 
-        public UserNotFoundException(String message) {
-                    super(message);
-                }
+    public UserNotFoundException() {
+        super(StatusCodes.NOT_FOUND.getCode(), "Exception.UserNotFound");
+    }
 }
