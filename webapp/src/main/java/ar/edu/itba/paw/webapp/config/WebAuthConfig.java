@@ -50,11 +50,20 @@ import static org.springframework.web.cors.CorsConfiguration.ALL;
 public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 
     private static final String ACCESS_CONTROL_CHECK_USER = "@accessControl.checkUser(request, #id)";
+    private static final String ACCESS_CONTROL_USER_HAS_IMAGE = "@accessControl.userHasImage(request)";
+    private static final String ACCESS_CONTROL_IMAGE_IS_USER_IMAGE = "@accessControl.imageIsUserImage(request, #id)";
+
+
+
+
+
+
     private static final String AND = " and ";
     private static final String HAS_ROLE_USER = "hasRole('ROLE_USER')";
     private static final String HAS_ROLE_ADMIN = "hasRole('ROLE_ADMIN')";
     private static final String HAS_ROLE_VERIFIED = "hasRole('ROLE_VERIFIED')";
     private static final String NOT = "!";
+
     private static final String IS_AUTHENTICATED = "isAuthenticated()";
     @Autowired
     private PawUserDetailsService userDetailsService;
@@ -203,6 +212,18 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 
                 //create image
                 .requestMatchers(HttpMethod.POST, "/api/images")
+                .permitAll()
+
+                //update image
+                .requestMatchers(HttpMethod.PUT, "/api/images/{id}")
+                .access(ACCESS_CONTROL_USER_HAS_IMAGE + AND + HAS_ROLE_VERIFIED + AND + ACCESS_CONTROL_IMAGE_IS_USER_IMAGE)
+
+                //get all comunities paginated
+                .requestMatchers(HttpMethod.GET, "/api/communities")
+                .permitAll()
+
+                //get comunity by name
+                .requestMatchers(HttpMethod.GET, "/api/communities/{communityName}")
                 .permitAll()
 
                 .antMatchers("/api/**")

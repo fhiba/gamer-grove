@@ -24,4 +24,16 @@ public class AccessControl {
         return user.isPresent() ? user.get().getId().equals(userId) : false;
     }
 
+    @Transactional
+    public boolean userHasImage(HttpServletRequest request){
+        Optional<User> user = us.getLoggedUser();
+        return user.filter(value -> value.getImage() != null).isPresent();
+    }
+
+    @Transactional
+    public boolean imageIsUserImage(HttpServletRequest request, long imageId){
+        Optional<User> user = us.getLoggedUser();
+        return user.filter(value -> value.getImage() != null && value.getImage().getImageId() == imageId).isPresent();
+    }
+
 }

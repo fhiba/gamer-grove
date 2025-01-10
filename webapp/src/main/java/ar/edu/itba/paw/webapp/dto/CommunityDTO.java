@@ -44,7 +44,9 @@ public class CommunityDTO {
         dto.releaseDate = c.getReleaseDate();
         dto.ratingCount = c.getRatingCount();
         dto.publisher = c.getPublisher();
-        dto.portrait = uriInfo.getBaseUriBuilder().path("images").path(String.valueOf(c.getPortrait().getImageId())).build();
+        if(c.getPortrait() != null){
+            dto.portrait = uriInfo.getBaseUriBuilder().path("images").path(String.valueOf(c.getPortrait().getImageId())).build();
+        }
         dto.totalRating = c.getTotalRating();;
         return dto;
     }

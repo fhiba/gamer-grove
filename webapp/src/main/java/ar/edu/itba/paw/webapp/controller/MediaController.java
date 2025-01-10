@@ -75,4 +75,26 @@ public class MediaController {
                 .build();
     }
 
+
+    // Hay que hacer el Access Control para que solo puedan entrar si ya tiene una image
+    //con pedro lo decidimos asi por motivos REST ya que no se esta creando una nueva entidad
+    @PUT
+    @Path("/{id}")
+    @Consumes(value = { MediaType.MULTIPART_FORM_DATA })
+    public Response updateImage(@Size(max = MAX_FILE_SIZE, message = "{FileSize}") @FormDataParam("image") byte[] bytes,
+                                @FileMustBeImageConstraint(message = "{Image}") @FormDataParam("image") final FormDataBodyPart fileDetails)
+            throws NoLoggedUserException {
+
+        us.updateProfile(null, bytes);
+
+        File file = us.getLoggedUser().get().getImage();
+        URI uri = uriInfo.getBaseUriBuilder()
+                .path("images")
+                .path(String.valueOf(file.getImageId()))
+                .build();
+        return Response.ok()
+                .contentLocation(uri)
+                .build();
+    }
+
 }
