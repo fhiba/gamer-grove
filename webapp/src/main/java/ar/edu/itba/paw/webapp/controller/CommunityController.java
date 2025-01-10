@@ -55,14 +55,19 @@ public class CommunityController {
 
 
 
+
+
+    //TODO: HACER QUE ACEPTE SEARCHTERMS Y CATEGORIES
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response listCommunities(@Context UriInfo uriInfo, @QueryParam("page") @DefaultValue("1") final int page)
+    public Response listCommunities(@Context UriInfo uriInfo, @QueryParam("page") @DefaultValue("1") final int page,@QueryParam("query") @DefaultValue("") final String query,
+                                    @QueryParam("categories") @DefaultValue("") final String categories)
             throws PageNotFoundException, IllegalPageException {
 
+        List<String> selectedCategories = Arrays.asList(categories.split(","));
         PaginationRequest paginationRequest = new PaginationRequest();
         paginationRequest.setPageNumber(page);
-        PaginatedDataWrapper<Community> communities = cs.find(paginationRequest,"", Collections.emptyList());
+        PaginatedDataWrapper<Community> communities = cs.find(paginationRequest,query,selectedCategories);
 
         if (communities.getData().size() == 0) {
             return Response.noContent().build();
