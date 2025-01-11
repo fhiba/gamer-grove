@@ -12,28 +12,34 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-
 public interface CommunityService {
-    Optional<Community> createCommunity(final String name, final String description, String categories, String developer, String publisher, LocalDateTime releaseDate, MultipartFile image) throws NoSuchCommunityException;
+    Optional<Community> createCommunity(final String name, final String description, String categories,
+            String developer, String publisher, LocalDateTime releaseDate, MultipartFile image)
+            throws NoSuchCommunityException;
 
     List<Community> getAllCommunities();
 
     Community findByName(final String communityName) throws NoSuchCommunityException;
 
-    Community findById(final long communityId)throws NoSuchCommunityException;
+    Community findById(final long communityId) throws NoSuchCommunityException;
 
     Community updateRating(Long community_id, float rating) throws NoSuchCommunityException, NoLoggedUserException;
 
     Community discountRating(String communityName, Float rating) throws NoSuchCommunityException, NoLoggedUserException;
 
-    void modifyUserOnCommunity(int communityId,String communityName) throws NoLoggedUserException, NoSuchCommunityException;
+    void modifyUserOnCommunity(int communityId, String communityName)
+            throws NoLoggedUserException, NoSuchCommunityException;
 
     Boolean checkIfUserFollowsCommunity(int communityId) throws NoLoggedUserException, NoSuchCommunityException;
 
     List<Community> getFollowedCommunities(User user);
 
-    PaginatedDataWrapper<Community> find(PaginationRequest request, final String searchTerms, List<String> categories);
-    PaginatedDataWrapper<Community> findFollowedCommunities(PaginationRequest request, List<String> categories, User user) throws NoLoggedUserException;
+    PaginatedDataWrapper<Community> find(PaginationRequest request, final String searchTerms, List<String> categories,
+            Long userId);
+
+    PaginatedDataWrapper<Community> findFollowedCommunities(PaginationRequest request, List<String> categories,
+            User user) throws NoLoggedUserException;
+
     void addCategory(final long id, String category) throws NoSuchCommunityException;
 
     void removeCategory(final long id, String category) throws NoSuchCommunityException;
@@ -42,6 +48,7 @@ public interface CommunityService {
 
     void updateCommunityImageId(long id, long imageId);
 
-    void editCommunityInfo(String communityName, String description, String publisher, String developer, MultipartFile image, String categories) throws NoSuchCommunityException;
+    void editCommunityInfo(String communityName, String description, String publisher, String developer,
+            MultipartFile image, String categories) throws NoSuchCommunityException;
 
 }

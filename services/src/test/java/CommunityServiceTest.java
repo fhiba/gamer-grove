@@ -18,7 +18,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import ar.edu.itba.paw.services.CommunityServiceImpl;
 import org.springframework.web.multipart.MultipartFile;
 
-
 import java.time.LocalDateTime;
 
 import java.util.*;
@@ -26,7 +25,6 @@ import java.util.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
-
 
 @RunWith(MockitoJUnitRunner.class)
 public class CommunityServiceTest {
@@ -43,7 +41,6 @@ public class CommunityServiceTest {
     @InjectMocks
     CommunityServiceImpl cs = new CommunityServiceImpl();
 
-
     public static final Long COMMUNITY_ID = 1L;
     public static final Long USER_ID = 1L;
     public static final String USERNAME = "username";
@@ -55,19 +52,24 @@ public class CommunityServiceTest {
     public static final String COMMUNITY_DEVELOPER = "Test community developer";
     public static LocalDateTime RELEASE_DATE = LocalDateTime.now();
     public static final Float RATING = 4.0f;
+
     @Test
     public void testCreateCommunity() throws NoSuchCommunityException {
-        Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, RELEASE_DATE);
+        Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER,
+                COMMUNITY_DEVELOPER, RELEASE_DATE);
         community.setId(COMMUNITY_ID);
         MultipartFile mockMultipartFile = Mockito.mock(MultipartFile.class);
-        Mockito.when(mockDao.createCommunity(eq(COMMUNITY_NAME), eq(COMMUNITY_DESCRIPTION), eq(COMMUNITY_DEVELOPER), eq(COMMUNITY_PUBLISHER), eq(RELEASE_DATE))).thenReturn(community);
-        Optional<Community> result = cs.createCommunity(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, null, COMMUNITY_DEVELOPER, COMMUNITY_PUBLISHER, RELEASE_DATE,mockMultipartFile);
+        Mockito.when(mockDao.createCommunity(eq(COMMUNITY_NAME), eq(COMMUNITY_DESCRIPTION), eq(COMMUNITY_DEVELOPER),
+                eq(COMMUNITY_PUBLISHER), eq(RELEASE_DATE))).thenReturn(community);
+        Optional<Community> result = cs.createCommunity(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, null,
+                COMMUNITY_DEVELOPER, COMMUNITY_PUBLISHER, RELEASE_DATE, mockMultipartFile);
         Assert.assertTrue(result.isPresent());
     }
 
     @Test
     public void testFindByName() throws NoSuchCommunityException {
-        Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, RELEASE_DATE);
+        Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER,
+                COMMUNITY_DEVELOPER, RELEASE_DATE);
         community.setId(COMMUNITY_ID);
         Mockito.when(mockDao.findByName(COMMUNITY_NAME)).thenReturn(Optional.of(community));
         Community result = cs.findByName(COMMUNITY_NAME);
@@ -82,7 +84,8 @@ public class CommunityServiceTest {
 
     @Test
     public void testFindById() throws NoSuchCommunityException {
-        Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, RELEASE_DATE);
+        Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER,
+                COMMUNITY_DEVELOPER, RELEASE_DATE);
         community.setId(COMMUNITY_ID);
         Mockito.when(mockDao.findById(COMMUNITY_ID)).thenReturn(Optional.of(community));
         Community result = cs.findById(COMMUNITY_ID);
@@ -97,11 +100,12 @@ public class CommunityServiceTest {
 
     @Test
     public void testUpdateRatingWithValidCommunityAndUser() throws NoSuchCommunityException, NoLoggedUserException {
-        Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, RELEASE_DATE);
+        Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER,
+                COMMUNITY_DEVELOPER, RELEASE_DATE);
         community.setId(COMMUNITY_ID);
         final User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
         user.setId(USER_ID);
-        final Rating rating = new Rating( user, community, RATING);
+        final Rating rating = new Rating(user, community, RATING);
         when(mockDao.findById(COMMUNITY_ID)).thenReturn(Optional.of(community));
         when(mockUserService.getLoggedUser()).thenReturn(Optional.of(user));
         when(mockRatingService.createRating(any(User.class), any(Community.class), anyFloat())).thenReturn(rating);
@@ -118,7 +122,8 @@ public class CommunityServiceTest {
 
     @Test(expected = NoLoggedUserException.class)
     public void testUpdateRatingWithNoLoggedUser() throws NoSuchCommunityException, NoLoggedUserException {
-        Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, RELEASE_DATE);
+        Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER,
+                COMMUNITY_DEVELOPER, RELEASE_DATE);
         community.setId(COMMUNITY_ID);
         when(mockDao.findById(COMMUNITY_ID)).thenReturn(Optional.of(community));
         when(mockUserService.getLoggedUser()).thenReturn(Optional.empty());
@@ -128,11 +133,12 @@ public class CommunityServiceTest {
 
     @Test
     public void testDiscountRatingWithValidCommunityAndUser() throws NoSuchCommunityException, NoLoggedUserException {
-        Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, RELEASE_DATE);
+        Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER,
+                COMMUNITY_DEVELOPER, RELEASE_DATE);
         community.setId(COMMUNITY_ID);
         final User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
         user.setId(USER_ID);
-        final Rating rating = new Rating( user, community, RATING);
+        final Rating rating = new Rating(user, community, RATING);
         when(mockDao.findByName(COMMUNITY_NAME)).thenReturn(Optional.of(community));
         when(mockUserService.getLoggedUser()).thenReturn(Optional.of(user));
         cs.discountRating(COMMUNITY_NAME, RATING);
@@ -147,7 +153,8 @@ public class CommunityServiceTest {
 
     @Test(expected = NoLoggedUserException.class)
     public void testDiscountRatingWithNoLoggedUser() throws NoSuchCommunityException, NoLoggedUserException {
-        Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, RELEASE_DATE);
+        Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER,
+                COMMUNITY_DEVELOPER, RELEASE_DATE);
         community.setId(COMMUNITY_ID);
         when(mockDao.findByName(COMMUNITY_NAME)).thenReturn(Optional.of(community));
         when(mockUserService.getLoggedUser()).thenReturn(Optional.empty());
@@ -168,7 +175,7 @@ public class CommunityServiceTest {
         when(mockDao.find(anyInt(), anyInt(), anyString(), anyList(), any())).thenReturn(communities);
         when(mockDao.findCount(anyString(), anyList(), any())).thenReturn(communities.size());
 
-        PaginatedDataWrapper<Community> result = cs.find(request, searchTerms, categories);
+        PaginatedDataWrapper<Community> result = cs.find(request, searchTerms, categories, null);
 
         Assert.assertEquals(2, result.getData().size());
         Assert.assertEquals(1, result.getPageNumber());
@@ -186,7 +193,7 @@ public class CommunityServiceTest {
         when(mockDao.find(anyInt(), anyInt(), anyString(), anyList(), any())).thenReturn(Collections.emptyList());
         when(mockDao.findCount(anyString(), anyList(), any())).thenReturn(0);
 
-        PaginatedDataWrapper<Community> result = cs.find(request, searchTerms, categories);
+        PaginatedDataWrapper<Community> result = cs.find(request, searchTerms, categories, null);
 
         Assert.assertEquals(0, result.getData().size());
         Assert.assertEquals(1, result.getPageNumber());
@@ -201,7 +208,7 @@ public class CommunityServiceTest {
         String searchTerms = "test";
         List<String> categories = Arrays.asList("category1", "category2");
 
-        cs.find(request, searchTerms, categories);
+        cs.find(request, searchTerms, categories, null);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -210,7 +217,7 @@ public class CommunityServiceTest {
         String searchTerms = "test";
         List<String> categories = Arrays.asList("category1", "category2");
 
-        cs.find(request, searchTerms, categories);
+        cs.find(request, searchTerms, categories, null);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -226,7 +233,7 @@ public class CommunityServiceTest {
         when(mockDao.find(anyInt(), anyInt(), anyString(), anyList(), any())).thenReturn(communities);
         when(mockDao.findCount(anyString(), anyList(), any())).thenReturn(communities.size());
 
-        PaginatedDataWrapper<Community> result = cs.find(request, searchTerms, categories);
+        PaginatedDataWrapper<Community> result = cs.find(request, searchTerms, categories, null);
     }
 
     @Test
@@ -248,7 +255,6 @@ public class CommunityServiceTest {
         user.setId(USER_ID);
         PaginationRequest request = new PaginationRequest(1, 10);
         List<String> categories = Arrays.asList("category1", "category2");
-
 
         PaginatedDataWrapper<Community> result = cs.findFollowedCommunities(request, categories, user);
 
@@ -284,7 +290,8 @@ public class CommunityServiceTest {
         long id = 1L;
         String category = "category1";
 
-        Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, RELEASE_DATE);
+        Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER,
+                COMMUNITY_DEVELOPER, RELEASE_DATE);
         community.setId(id);
 
         when(mockDao.findById(id)).thenReturn(Optional.of(community));
@@ -302,13 +309,13 @@ public class CommunityServiceTest {
         cs.addCategory(id, category);
     }
 
-
     @Test
     public void testRemoveCategoryWithValidCommunityAndCategory() throws NoSuchCommunityException {
         long id = 1L;
         String category = "category1";
 
-        Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, RELEASE_DATE);
+        Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER,
+                COMMUNITY_DEVELOPER, RELEASE_DATE);
         community.setId(id);
 
         when(mockDao.findById(id)).thenReturn(Optional.of(community));
@@ -341,7 +348,8 @@ public class CommunityServiceTest {
     }
 
     @Test
-    public void testModifyUserOnCommunityUserDoesNotFollowCommunity() throws NoLoggedUserException, NoSuchCommunityException {
+    public void testModifyUserOnCommunityUserDoesNotFollowCommunity()
+            throws NoLoggedUserException, NoSuchCommunityException {
         int communityId = 1;
         String communityName = "Test Community";
 
@@ -364,18 +372,19 @@ public class CommunityServiceTest {
         cs.modifyUserOnCommunity(communityId, communityName);
     }
 
-
     @Test
     public void testEditCommunityInfoWithValidCommunity() throws NoSuchCommunityException {
         MultipartFile mockMultipartFile = Mockito.mock(MultipartFile.class);
 
-        Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, RELEASE_DATE);
+        Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER,
+                COMMUNITY_DEVELOPER, RELEASE_DATE);
         community.setCategory(Arrays.asList(CommunityCategories.Action, CommunityCategories.Adventure));
         community.setId(COMMUNITY_ID);
 
         when(mockDao.findByName(COMMUNITY_NAME)).thenReturn(Optional.of(community));
         when(mockDao.findById(COMMUNITY_ID)).thenReturn(Optional.of(community));
-        cs.editCommunityInfo(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, mockMultipartFile, "RPG");
+        cs.editCommunityInfo(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER,
+                mockMultipartFile, "RPG");
     }
 
     @Test(expected = NoSuchCommunityException.class)
@@ -384,11 +393,13 @@ public class CommunityServiceTest {
 
         when(mockDao.findByName(COMMUNITY_NAME)).thenReturn(Optional.empty());
 
-        cs.editCommunityInfo(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, mockMultipartFile, "RPG");
+        cs.editCommunityInfo(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER,
+                mockMultipartFile, "RPG");
     }
 
     @Test
-    public void testCheckIfUserFollowsCommunityUserFollowsCommunity() throws NoLoggedUserException, NoSuchCommunityException {
+    public void testCheckIfUserFollowsCommunityUserFollowsCommunity()
+            throws NoLoggedUserException, NoSuchCommunityException {
         User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
         user.setId(USER_ID);
 
@@ -401,7 +412,8 @@ public class CommunityServiceTest {
     }
 
     @Test
-    public void testCheckIfUserFollowsCommunityUserDoesNotFollowCommunity() throws NoLoggedUserException, NoSuchCommunityException {
+    public void testCheckIfUserFollowsCommunityUserDoesNotFollowCommunity()
+            throws NoLoggedUserException, NoSuchCommunityException {
         User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
         user.setId(USER_ID);
 

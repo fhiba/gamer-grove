@@ -52,12 +52,8 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
     private static final String ACCESS_CONTROL_CHECK_USER = "@accessControl.checkUser(request, #id)";
     private static final String ACCESS_CONTROL_USER_HAS_IMAGE = "@accessControl.userHasImage(request)";
     private static final String ACCESS_CONTROL_IMAGE_IS_USER_IMAGE = "@accessControl.imageIsUserImage(request, #id)";
-
-
-
-
-
-
+    private static final String ACCESS_CONTROL_FOLLOWED_BY_IS_USER = "@accessControl.followedByIsUser(request)";
+    private static final String PERMIT_ALL = "permitAll()";
     private static final String AND = " and ";
     private static final String HAS_ROLE_USER = "hasRole('ROLE_USER')";
     private static final String HAS_ROLE_ADMIN = "hasRole('ROLE_ADMIN')";
@@ -206,23 +202,24 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 .requestMatchers(HttpMethod.PUT, "/api/users/{id}/locale")
                 .access(ACCESS_CONTROL_CHECK_USER + AND + HAS_ROLE_VERIFIED)
 
-                //images
+                // images
                 .requestMatchers(HttpMethod.GET, "/api/images/{id}")
                 .permitAll()
 
-                //create image
+                // create image
                 .requestMatchers(HttpMethod.POST, "/api/images")
                 .permitAll()
 
-                //update image
+                // update image
                 .requestMatchers(HttpMethod.PUT, "/api/images/{id}")
-                .access(ACCESS_CONTROL_USER_HAS_IMAGE + AND + HAS_ROLE_VERIFIED + AND + ACCESS_CONTROL_IMAGE_IS_USER_IMAGE)
+                .access(ACCESS_CONTROL_USER_HAS_IMAGE + AND + HAS_ROLE_VERIFIED + AND
+                        + ACCESS_CONTROL_IMAGE_IS_USER_IMAGE)
 
-                //get all comunities paginated
+                // get all comunities paginated
                 .requestMatchers(HttpMethod.GET, "/api/communities")
-                .permitAll()
+                .access(ACCESS_CONTROL_FOLLOWED_BY_IS_USER)
 
-                //get comunity by name
+                // get comunity by name
                 .requestMatchers(HttpMethod.GET, "/api/communities/{communityName}")
                 .permitAll()
 
