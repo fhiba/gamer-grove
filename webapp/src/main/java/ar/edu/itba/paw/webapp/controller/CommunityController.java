@@ -61,7 +61,7 @@ public class CommunityController {
             @QueryParam("categories") @DefaultValue("") final String categories,
             @QueryParam("followedBy") final int followedBy)
             throws PageNotFoundException, IllegalPageException {
-
+        LOGGER.info("GET /communities with followedBy: {}", followedBy);
         List<String> selectedCategories = Arrays.asList(categories.split(","));
         PaginationRequest paginationRequest = new PaginationRequest();
         paginationRequest.setPageNumber(page);

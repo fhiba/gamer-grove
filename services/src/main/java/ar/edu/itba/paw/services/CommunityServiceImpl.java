@@ -120,6 +120,7 @@ public class CommunityServiceImpl implements CommunityService {
     @Override
     public PaginatedDataWrapper<Community> find(PaginationRequest request, final String searchTerms,
             List<String> categories, final Long userId) {
+
         if (request.getPageSize() < 1) {
             throw new IllegalArgumentException("Invalid Page size");
         }
@@ -131,7 +132,7 @@ public class CommunityServiceImpl implements CommunityService {
             newList = categories.stream().map(category -> category.replaceAll("([%_\\\\])", "\\\\$1")).toList();
         }
         int totalCount = communityDao.findCount(searchTerms.replaceAll("([%_\\\\])", "\\\\$1"),
-                newList == null ? List.of() : newList, userId);
+                newList == null ? List.of() : newList, (userId == null || userId == 0)? null:userId);
 
         int offset = (request.getPageNumber() - 1) * request.getPageSize();
 
