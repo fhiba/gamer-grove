@@ -1,8 +1,8 @@
 package ar.edu.itba.paw.exceptions;
 
-public class NoSuchPostException extends Exception{
+public class NoSuchPostException extends StatusCodedException {
 
-    public NoSuchPostException(String message) {
-                super(message);
-            }
+    public NoSuchPostException() {
+        super(StatusCodes.NOT_FOUND.getCode(), "Exception.NoSuchPost");
+    }
 }

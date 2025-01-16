@@ -5,42 +5,40 @@ import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
 import ar.edu.itba.paw.models.pagination.PaginationRequest;
 import ar.edu.itba.paw.services.*;
-import ar.edu.itba.paw.webapp.form.*;
-import org.jetbrains.annotations.NotNull;
+import ar.edu.itba.paw.webapp.validators.interfaces.FilesMustBeImagesConstraint;
+import ar.edu.itba.paw.webapp.validators.interfaces.ValidCommunityConstraint;
+import ar.edu.itba.paw.webapp.validators.interfaces.ValidPostCategoryConstraint;
+
+import org.glassfish.jersey.media.multipart.BodyPart;
+import org.glassfish.jersey.media.multipart.ContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 import javax.validation.Valid;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import java.time.format.DateTimeFormatter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
 import java.util.*;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.validation.BindingResult;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import javax.ws.rs.*;
-import javax.ws.rs.core.*;
 
+import ar.edu.itba.paw.webapp.dto.GrooveDTO;
+import ar.edu.itba.paw.webapp.dto.GroovyPostHistoryDTO;
 import ar.edu.itba.paw.webapp.dto.PostDTO;
 
-@Path("/posts")
+@Path("/api/posts")
 @Component
 public class PostController {
 
@@ -64,279 +62,398 @@ public class PostController {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response listPosts(@Context UriInfo uriInfo, @QueryParam("page") @DefaultValue("1") final int page) {
-        if (page < 0)
-            return Response.status(Response.Status.BAD_REQUEST).build();
+    public Response listPosts(@Context UriInfo uriInfo,
+            @QueryParam("page") @DefaultValue("1") final int page,
+            @QueryParam("community") final String community,
+            @QueryParam("likedBy") final Long likerId,
+            @QueryParam("author") final Long authorId,
+            @QueryParam("orderBy") @DefaultValue("default") final String orderBy,
+            @QueryParam("category") final String category,
+            @QueryParam("followedCommunitiesPosts") @DefaultValue("false") final Boolean followedCommunities)
+            throws IllegalPageException, PageNotFoundException, NoLoggedUserException {
         PaginationRequest paginationRequest = new PaginationRequest();
         paginationRequest.setPageNumber(page);
-        try {
-            PaginatedDataWrapper<Post> posts = ps.getAllPostsPaginated(null, null, paginationRequest);
-
-            if (posts.getData().size() == 0) {
-                return Response.noContent().build();
-            }
-            List<PostDTO> postsDTOs = posts.getData().stream()
-                    .map(PostDTO.mapper(uriInfo))
-                    .toList();
-
-            return Response.ok(new GenericEntity<>(postsDTOs) {
-            })
-                    .link(uriInfo.getAbsolutePathBuilder().queryParam("page", posts.getFirstPage()).build(), "first")
-                    .link(uriInfo.getAbsolutePathBuilder().queryParam("page", posts.getTotalPages()).build(), "last")
-                    .link(uriInfo.getAbsolutePathBuilder().queryParam("page", posts.getPreviousPage()).build(), "prev")
-                    .link(uriInfo.getAbsolutePathBuilder().queryParam("page", posts.getNextPage()).build(), "next")
-                    .build();
-        } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+        LOGGER.info("followedCommunitiesPosts: {}", followedCommunities);
+        PaginatedDataWrapper<Post> posts = ps.getAllPostsPaginated(category, orderBy, paginationRequest, likerId,
+                authorId, community, followedCommunities);
+        if (posts.getData().size() == 0) {
+            return Response.noContent().build();
         }
+        List<PostDTO> postsDTOs = posts.getData().stream()
+                .map(PostDTO.mapper(uriInfo))
+                .toList();
+
+        return Response.ok(new GenericEntity<>(postsDTOs) {
+        })
+                .link(uriInfo.getAbsolutePathBuilder().queryParam("page", posts.getFirstPage()).build(), "first")
+                .link(uriInfo.getAbsolutePathBuilder().queryParam("page", posts.getTotalPages()).build(), "last")
+                .link(uriInfo.getAbsolutePathBuilder().queryParam("page", posts.getPreviousPage()).build(), "prev")
+                .link(uriInfo.getAbsolutePathBuilder().queryParam("page", posts.getNextPage()).build(), "next")
+                .build();
     }
 
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getPostById(@Context UriInfo uriInfo, @PathParam("id") final long id) {
-        try {
-            Post post = ps.getPostById(id);
-            return Response.ok(PostDTO.mapper(uriInfo).apply(post)).build();
-        } catch (NoSuchPostException e) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
+    public Response getPostById(@Context UriInfo uriInfo, @PathParam("id") final long id) throws NoSuchPostException {
+        Post post = ps.getPostById(id);
+        return Response.ok(PostDTO.mapper(uriInfo).apply(post)).build();
     }
 
-    @RequestMapping(path = "/post", method = RequestMethod.POST)
-    public ModelAndView newPost(@Valid @ModelAttribute("newPostForm") final NewPostForm newPostForm,
-            final BindingResult errors) throws NoLoggedUserException, NoSuchCommunityException {
-        Post post;
-        if (errors.hasErrors()) {
-            return getNewPost(newPostForm);
-        }
-        try {
-            post = ps.createPost(newPostForm.getTitle(), newPostForm.getBody(), newPostForm.getCommunity(),
-                    newPostForm.getCategory(), newPostForm.getFiles());
-        } catch (NoLoggedUserException | NoSuchCommunityException e) {
-            LOGGER.atError().setMessage("Error creating new post: {}").addArgument(() -> e.getMessage()).log();
-            throw e;
-        }
-        return new ModelAndView("redirect:/post/" + post.getId());
-    }
+    // TODO: Crear constraint para ver que toda la lista sean imagenes
+    @POST
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public Response createPost(@FilesMustBeImagesConstraint(message="{Images}") @FormDataParam("images") FormDataBodyPart imageDetails,
+            @NotBlank @Size(min = 1, max = 150) @FormDataParam("title") String title,
+            @NotBlank @Size(min = 1) @FormDataParam("body") String body,
+            @NotBlank @ValidCommunityConstraint @FormDataParam("community") String community,
+            @NotBlank @ValidPostCategoryConstraint @FormDataParam("category") String category)
+            throws NoSuchCommunityException, IOException {
+        LOGGER.info("images {}", imageDetails);
+        List<byte[]> files = new ArrayList<>();
+        if (imageDetails != null && imageDetails.getParent() != null) {
+            for (BodyPart part : imageDetails.getParent().getBodyParts()) {
+                LOGGER.info("imageDetail {}", part.getContentDisposition().getType());
+                ContentDisposition meta = part.getContentDisposition();
+                LOGGER.info("imageDetail {}", meta.getFileName());
+                if (meta.getFileName() != null) {
+                    InputStream is = part.getEntityAs(InputStream.class);
+                    files.add(is.readAllBytes());
 
-    @RequestMapping(path = "/post", method = RequestMethod.GET)
-    public ModelAndView getNewPost(@ModelAttribute("newPostForm") final NewPostForm newPostForm) {
-        ModelAndView mav = new ModelAndView("post/newPost");
-        Optional<User> maybeUser = us.getLoggedUser();
-        List<Community> followedCommunities;
-        Boolean isAdmin = false;
-        List<String> categories = Arrays.stream(PostCategories.values()).map(PostCategories::getCategory).toList();
-        boolean isLogged = false;
-        if (maybeUser.isPresent()) {
-            User user = maybeUser.get();
-            followedCommunities = cs.getFollowedCommunities(user);
-            isAdmin = user.getOwner();
-            isLogged = true;
-        } else {
-            followedCommunities = cs.getAllCommunities();
-        }
-        mav.addObject("isAdmin", isAdmin);
-        mav.addObject("followedCommunities", followedCommunities);
-        mav.addObject("isLogged", isLogged);
-        mav.addObject("allCommunities", cs.getAllCommunities());
-        mav.addObject("categories", categories);
-        mav.addObject("news", ps.getByCategory(PostCategories.NEWS.getCategory()));
-
-        return mav;
-    }
-
-    @RequestMapping(path = "/post/{postId}/up", method = RequestMethod.POST)
-    public ModelAndView groovyPost(@Valid @ModelAttribute("newPostGroovyForm") NewPostGroovyForm newPostGroovyForm,
-            final BindingResult errors) throws NoSuchPostException, UserNotFoundException, NoLoggedUserException {
-        if (!errors.hasErrors())
-            ps.editGrooviness(newPostGroovyForm.isGroovyType() ? 1 : -1, newPostGroovyForm.getPostId());
-        return new ModelAndView("redirect:/post/" + newPostGroovyForm.getPostId());
-    }
-
-    @RequestMapping(path = { "/home" }, method = RequestMethod.GET)
-    public ModelAndView getHomePosts(@RequestParam(required = false) Integer pageNumber,
-            @RequestParam(value = "category", required = false) final String category,
-            @RequestParam(value = "order", required = false) String order) {
-        ModelAndView mav = new ModelAndView("/home");
-        List<Community> communities;
-        Boolean isAdmin;
-        List<String> categories = ps.getUsedCategories();
-        Optional<User> userOptional = us.getLoggedUser();
-        PaginatedDataWrapper<Post> posts;
-        PaginationRequest paginationRequest = new PaginationRequest();
-        if (Objects.nonNull(pageNumber))
-            paginationRequest.setPageNumber(pageNumber);
-
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            communities = cs.getFollowedCommunities(user);
-            isAdmin = user.getOwner();
-
-            try {
-                posts = ps.getUserFollowedPostsPaginated(category, order, user.getId(), paginationRequest);
-            } catch (IllegalArgumentException e) {
-                posts = null;
+                }
             }
-        } else {
-            return new ModelAndView("redirect:/all/");
+
         }
-        mav.addObject("isAdmin", isAdmin);
-        mav.addObject("isLogged", true);
-        mav.addObject("posts", posts);
-        mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
-        return homeAndAllConfig(category, order, mav, communities, categories, userOptional);
+        Post post = ps.createPost(title, body, community, category, files);
+        URI uri = uriInfo.getAbsolutePathBuilder().path("posts").path(String.valueOf(post.getId())).build();
+        return Response.created(uri).build();
     }
 
-    @NotNull
-    private ModelAndView homeAndAllConfig(@RequestParam(value = "category", required = false) String category,
-            @RequestParam(value = "order", required = false) String order, ModelAndView mav,
-            List<Community> communities, List<String> categories, Optional<User> userOptional) {
-        mav.addObject("communities", communities);
-        mav.addObject("topPost", ps.topFivePosts());
-        mav.addObject("news", ps.getNewsLimited(5));
-        mav.addObject("categories", categories);
-        mav.addObject("isVerified", userOptional.isPresent() && userOptional.get().isVerified());
-        mav.addObject("category", category);
-        mav.addObject("order", order);
-        mav.addObject("orders", Arrays.stream(PostOrders.values()).filter(o -> !o.equals(PostOrders.DEFAULT))
-                .map(PostOrders::getOrder).toList());
-        return mav;
-    }
+    @POST
+    @Path("/{id}/groovyness")
+    public Response groovePost(@PathParam("id") Long postId, @Valid final GrooveDTO payload)
+            throws NoLoggedUserException, NoSuchPostException {
 
-    @RequestMapping(path = { "/", "/all" }, method = RequestMethod.GET)
-    public ModelAndView getAllPosts(@RequestParam(required = false) Integer pageNumber,
-            @RequestParam(value = "category", required = false) final String category,
-            @RequestParam(value = "order", required = false) String order) {
-        ModelAndView mav = new ModelAndView("/home");
-        PaginatedDataWrapper<Post> posts;
-        List<Community> communities;
-        Boolean isAdmin = false;
-        List<String> categories = ps.getUsedCategories();
-        PaginationRequest paginationRequest = new PaginationRequest();
-        Optional<User> optionalUser = us.getLoggedUser();
-        if (Objects.nonNull(pageNumber))
-            paginationRequest.setPageNumber(pageNumber);
+        ps.createGrooviness(GroovyEnum.fromValue(payload.getGroovy()), postId);
 
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-            communities = cs.getFollowedCommunities(user);
-            isAdmin = user.getOwner();
-        } else {
-            communities = cs.getAllCommunities();
-        }
-
-        try {
-            posts = ps.getAllPostsPaginated(category, order, paginationRequest);
-        } catch (IllegalArgumentException e) {
-            posts = null;
-        }
-
-        mav.addObject("isAdmin", isAdmin);
-        mav.addObject("isLogged", optionalUser.isPresent());
-        mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
-        mav.addObject("posts", posts);
-        return homeAndAllConfig(category, order, mav, communities, categories, optionalUser);
-    }
-
-    @RequestMapping(path = "/post/{postId}", method = RequestMethod.GET)
-    public ModelAndView singlePost(@PathVariable("postId") final long postId,
-            @RequestParam(required = false) Integer pageNumber,
-            @ModelAttribute("newPostGroovyForm") final NewPostGroovyForm newPostGroovyForm,
-            @ModelAttribute("newCommentForm") final NewCommentForm newCommentForm,
-            @ModelAttribute("newCommentGroovyForm") final NewCommentGroovyForm newCommentGroovyForm,
-            @ModelAttribute("postDeleteForm") final PostDeleteForm postDeleteForm,
-            @ModelAttribute("commentDeleteForm") final CommentDeleteForm commentDeleteForm,
-            @ModelAttribute("followCommunityForm") final FollowCommunityForm followCommunityForm)
-            throws UserNotFoundException, NoSuchPostException, NoSuchCommunityException, NoLoggedUserException {
-        ModelAndView mav = new ModelAndView("/post/post");
-        mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
-        Post post;
-        Community community;
-        List<Community> communities;
-        PaginationRequest paginationRequest = new PaginationRequest(5);
-        if (!Objects.isNull(pageNumber))
-            paginationRequest.setPageNumber(pageNumber);
-
-        List<Comment> grooviedComments = Collections.emptyList();
-        List<Comment> negativeGrooviedComments = Collections.emptyList();
-        Boolean isFollowing = false;
-        Boolean isAdmin = false;
-        boolean canDelete = false;
-        int isGrooved = 0;
-
-        try {
-            post = ps.getPostByIdWithImage(postId);
-            mav.addObject("post", post);
-            community = cs.findByName(post.getcommunity().getName());
-        } catch (NoSuchPostException | NoSuchCommunityException e) {
-            LOGGER.atError().setMessage("Error getting post with id {}").addArgument(postId).log();
-            throw e;
-        }
-        PaginatedDataWrapper<Comment> comments;
-        try {
-            comments = commentService.getPostCommentsPaginated(postId, paginationRequest);
-        } catch (IllegalArgumentException e) {
-            comments = null;
-        }
         Optional<User> maybeUser = us.getLoggedUser();
-        if (maybeUser.isPresent()) {
-            User user = maybeUser.get();
-            communities = cs.getFollowedCommunities(user);
-            grooviedComments = commentService.getUpGroovedComments(postId);
-            negativeGrooviedComments = commentService.getDownGroovedComments(postId);
-            isGrooved = ps.checkGrooviness(postId);
-            canDelete = ms.canRemovePost(user, postId);
-            isAdmin = user.getOwner();
-            isFollowing = cs.checkIfUserFollowsCommunity(community.getId().intValue());
-        } else {
-            communities = cs.getAllCommunities();
-        }
-        mav.addObject("isAdmin", isAdmin);
-        mav.addObject("isFollowing", isFollowing);
-        mav.addObject("community", community);
-        mav.addObject("isLogged", maybeUser.isPresent());
-        mav.addObject("isGrooved", isGrooved);
-        mav.addObject("newPostGroovyForm", newPostGroovyForm);
-        mav.addObject("upComments", grooviedComments);
-        mav.addObject("downComments", negativeGrooviedComments);
-        mav.addObject("newCommentForm", newCommentForm);
-        mav.addObject("comments", comments);
-        Optional<User> author = us.findById(post.getAuthor().getId());
-        mav.addObject("author", author.isPresent() ? author.get().getUsername() : "[deleted]");
-        mav.addObject("communities", communities);
-        mav.addObject("canDelete", canDelete);
 
-        return mav;
+        URI uri = uriInfo.getAbsolutePathBuilder()
+                .path("posts")
+                .path(String.valueOf(postId))
+                .path("groovyness")
+                .path(String.valueOf(maybeUser
+                        .map(User::getId)
+                        .orElseThrow(NoLoggedUserException::new)))
+                .build();
+        return Response.created(uri).build();
     }
 
-    @RequestMapping(path = "/comment", method = RequestMethod.POST)
-    public ModelAndView newComment(@RequestParam(required = false) Integer pageNumber,
-            @ModelAttribute("newPostGroovyForm") final NewPostGroovyForm newPostGroovyForm,
-            @ModelAttribute("newCommentGroovyForm") final NewCommentGroovyForm newCommentGroovyForm,
-            @ModelAttribute("postDeleteForm") final PostDeleteForm postDeleteForm,
-            @ModelAttribute("commentDeleteForm") final CommentDeleteForm commentDeleteForm,
-            @ModelAttribute("followCommunityForm") final FollowCommunityForm followCommunityForm,
-            @Valid @ModelAttribute("newCommentForm") final NewCommentForm newCommentForm, final BindingResult errors)
-            throws NoLoggedUserException, NoSuchPostException, PostIsDeletedException, UserNotFoundException,
-            NoSuchCommunityException {
-        if (errors.hasErrors()) {
-            return singlePost(newCommentForm.getPostId(), pageNumber, newPostGroovyForm, newCommentForm,
-                    newCommentGroovyForm, postDeleteForm, commentDeleteForm, followCommunityForm);
-        }
+    // TODO: Only accessible for MODS of given community/ Admin/Same User as userId
+    @GET
+    @Path("/{id}/groovyness/{userId}")
+    public Response getGroove(@PathParam("id") Long postId, @PathParam("userId") Long userId)
+            throws NoSuchPostException, UserNotFoundException {
 
-        commentService.createComment(newCommentForm.getPostId(), newCommentForm.getBody());
-        return new ModelAndView("redirect:/post/" + newCommentForm.getPostId());
+        Optional<GroovyEnum> groovy = ps.checkGrooviness(postId);
+
+        // TODO: Maybe hacer la exception propia
+        return Response.ok()
+                .entity(GroovyPostHistoryDTO.fromRating(uriInfo, groovy.orElseThrow(NotFoundException::new))).build();
     }
 
-    @RequestMapping(path = "/post/{postId}/delete", method = RequestMethod.POST)
-    public ModelAndView deletePost(@Valid @ModelAttribute("postDeleteForm") final PostDeleteForm postDeleteForm,
-            final BindingResult errors) throws NoSuchPostException {
-        if (errors.hasErrors()) {
-            return new ModelAndView("redirect:/post/" + postDeleteForm.getPostId());
-        }
-        ps.removePost(postDeleteForm.getPostId());
-        return new ModelAndView("redirect:/post/" + postDeleteForm.getPostId());
+    @PUT
+    @Path("/{id}/groovyness/{userId}")
+    public Response updateGroove(@PathParam("id") Long postId, @PathParam("userId") Long userId,
+            @Valid @NotNull final GrooveDTO payload)
+            throws NoSuchPostException, UserNotFoundException {
+        ps.editGrooviness(GroovyEnum.fromValue(payload.getGroovy()), postId);
+
+        return Response.ok().build();
     }
 
+    @DELETE
+    @Path("/{id}/groovyness/{userId}")
+    public Response deleteGroove(@PathParam("id") Long postId, @PathParam("userId") Long userId)
+            throws NoSuchPostException, UserNotFoundException {
+        ps.deleteGrooviness(postId);
+
+        return Response.ok().build();
+    }
+
+    //
+    // @RequestMapping(path = "/post", method = RequestMethod.POST)
+    // public ModelAndView newPost(@Valid @ModelAttribute("newPostForm") final
+    // NewPostForm newPostForm,
+    // final BindingResult errors) throws NoLoggedUserException,
+    // NoSuchCommunityException {
+    // Post post;
+    // if (errors.hasErrors()) {
+    // return getNewPost(newPostForm);
+    // }
+    // try {
+    // post = ps.createPost(newPostForm.getTitle(), newPostForm.getBody(),
+    // newPostForm.getCommunity(),
+    // newPostForm.getCategory(), newPostForm.getFiles());
+    // } catch (NoLoggedUserException | NoSuchCommunityException e) {
+    // LOGGER.atError().setMessage("Error creating new post: {}").addArgument(() ->
+    // e.getMessage()).log();
+    // throw e;
+    // }
+    // return new ModelAndView("redirect:/post/" + post.getId());
+    // }
+    //
+    // @RequestMapping(path = "/post", method = RequestMethod.GET)
+    // public ModelAndView getNewPost(@ModelAttribute("newPostForm") final
+    // NewPostForm newPostForm) {
+    // ModelAndView mav = new ModelAndView("post/newPost");
+    // Optional<User> maybeUser = us.getLoggedUser();
+    // List<Community> followedCommunities;
+    // Boolean isAdmin = false;
+    // List<String> categories =
+    // Arrays.stream(PostCategories.values()).map(PostCategories::getCategory).toList();
+    // boolean isLogged = false;
+    // if (maybeUser.isPresent()) {
+    // User user = maybeUser.get();
+    // followedCommunities = cs.getFollowedCommunities(user);
+    // isAdmin = user.getOwner();
+    // isLogged = true;
+    // } else {
+    // followedCommunities = cs.getAllCommunities();
+    // }
+    // mav.addObject("isAdmin", isAdmin);
+    // mav.addObject("followedCommunities", followedCommunities);
+    // mav.addObject("isLogged", isLogged);
+    // mav.addObject("allCommunities", cs.getAllCommunities());
+    // mav.addObject("categories", categories);
+    // mav.addObject("news", ps.getByCategory(PostCategories.NEWS.getCategory()));
+    //
+    // return mav;
+    // }
+    //
+    // @RequestMapping(path = "/post/{postId}/up", method = RequestMethod.POST)
+    // public ModelAndView groovyPost(@Valid @ModelAttribute("newPostGroovyForm")
+    // NewPostGroovyForm newPostGroovyForm,
+    // final BindingResult errors) throws NoSuchPostException,
+    // UserNotFoundException, NoLoggedUserException {
+    // if (!errors.hasErrors())
+    // ps.editGrooviness(newPostGroovyForm.isGroovyType() ? 1 : -1,
+    // newPostGroovyForm.getPostId());
+    // return new ModelAndView("redirect:/post/" + newPostGroovyForm.getPostId());
+    // }
+    //
+    // @RequestMapping(path = { "/home" }, method = RequestMethod.GET)
+    // public ModelAndView getHomePosts(@RequestParam(required = false) Integer
+    // pageNumber,
+    // @RequestParam(value = "category", required = false) final String category,
+    // @RequestParam(value = "order", required = false) String order) {
+    // ModelAndView mav = new ModelAndView("/home");
+    // List<Community> communities;
+    // Boolean isAdmin;
+    // List<String> categories = ps.getUsedCategories();
+    // Optional<User> userOptional = us.getLoggedUser();
+    // PaginatedDataWrapper<Post> posts;
+    // PaginationRequest paginationRequest = new PaginationRequest();
+    // if (Objects.nonNull(pageNumber))
+    // paginationRequest.setPageNumber(pageNumber);
+    //
+    // if (userOptional.isPresent()) {
+    // User user = userOptional.get();
+    // communities = cs.getFollowedCommunities(user);
+    // isAdmin = user.getOwner();
+    //
+    // try {
+    // posts = ps.getUserFollowedPostsPaginated(category, order, user.getId(),
+    // paginationRequest);
+    // } catch (IllegalArgumentException e) {
+    // posts = null;
+    // }
+    // } else {
+    // return new ModelAndView("redirect:/all/");
+    // }
+    // mav.addObject("isAdmin", isAdmin);
+    // mav.addObject("isLogged", true);
+    // mav.addObject("posts", posts);
+    // mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+    // return homeAndAllConfig(category, order, mav, communities, categories,
+    // userOptional);
+    // }
+    //
+    // @NotNull
+    // private ModelAndView homeAndAllConfig(@RequestParam(value = "category",
+    // required = false) String category,
+    // @RequestParam(value = "order", required = false) String order, ModelAndView
+    // mav,
+    // List<Community> communities, List<String> categories, Optional<User>
+    // userOptional) {
+    // mav.addObject("communities", communities);
+    // mav.addObject("topPost", ps.topFivePosts());
+    // mav.addObject("news", ps.getNewsLimited(5));
+    // mav.addObject("categories", categories);
+    // mav.addObject("isVerified", userOptional.isPresent() &&
+    // userOptional.get().isVerified());
+    // mav.addObject("category", category);
+    // mav.addObject("order", order);
+    // mav.addObject("orders", Arrays.stream(PostOrders.values()).filter(o ->
+    // !o.equals(PostOrders.DEFAULT))
+    // .map(PostOrders::getOrder).toList());
+    // return mav;
+    // }
+    //
+    // @RequestMapping(path = { "/", "/all" }, method = RequestMethod.GET)
+    // public ModelAndView getAllPosts(@RequestParam(required = false) Integer
+    // pageNumber,
+    // @RequestParam(value = "category", required = false) final String category,
+    // @RequestParam(value = "order", required = false) String order) {
+    // ModelAndView mav = new ModelAndView("/home");
+    // PaginatedDataWrapper<Post> posts;
+    // List<Community> communities;
+    // Boolean isAdmin = false;
+    // List<String> categories = ps.getUsedCategories();
+    // PaginationRequest paginationRequest = new PaginationRequest();
+    // Optional<User> optionalUser = us.getLoggedUser();
+    // if (Objects.nonNull(pageNumber))
+    // paginationRequest.setPageNumber(pageNumber);
+    //
+    // if (optionalUser.isPresent()) {
+    // User user = optionalUser.get();
+    // communities = cs.getFollowedCommunities(user);
+    // isAdmin = user.getOwner();
+    // } else {
+    // communities = cs.getAllCommunities();
+    // }
+    //
+    // try {
+    // posts = ps.getAllPostsPaginated(category, order, paginationRequest);
+    // } catch (IllegalArgumentException e) {
+    // posts = null;
+    // }
+    //
+    // mav.addObject("isAdmin", isAdmin);
+    // mav.addObject("isLogged", optionalUser.isPresent());
+    // mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+    // mav.addObject("posts", posts);
+    // return homeAndAllConfig(category, order, mav, communities, categories,
+    // optionalUser);
+    // }
+    //
+    // @RequestMapping(path = "/post/{postId}", method = RequestMethod.GET)
+    // public ModelAndView singlePost(@PathVariable("postId") final long postId,
+    // @RequestParam(required = false) Integer pageNumber,
+    // @ModelAttribute("newPostGroovyForm") final NewPostGroovyForm
+    // newPostGroovyForm,
+    // @ModelAttribute("newCommentForm") final NewCommentForm newCommentForm,
+    // @ModelAttribute("newCommentGroovyForm") final NewCommentGroovyForm
+    // newCommentGroovyForm,
+    // @ModelAttribute("postDeleteForm") final PostDeleteForm postDeleteForm,
+    // @ModelAttribute("commentDeleteForm") final CommentDeleteForm
+    // commentDeleteForm,
+    // @ModelAttribute("followCommunityForm") final FollowCommunityForm
+    // followCommunityForm)
+    // throws UserNotFoundException, NoSuchPostException, NoSuchCommunityException,
+    // NoLoggedUserException {
+    // ModelAndView mav = new ModelAndView("/post/post");
+    // mav.addObject("format", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+    // Post post;
+    // Community community;
+    // List<Community> communities;
+    // PaginationRequest paginationRequest = new PaginationRequest(5);
+    // if (!Objects.isNull(pageNumber))
+    // paginationRequest.setPageNumber(pageNumber);
+    //
+    // List<Comment> grooviedComments = Collections.emptyList();
+    // List<Comment> negativeGrooviedComments = Collections.emptyList();
+    // Boolean isFollowing = false;
+    // Boolean isAdmin = false;
+    // boolean canDelete = false;
+    // int isGrooved = 0;
+    //
+    // try {
+    // post = ps.getPostByIdWithImage(postId);
+    // mav.addObject("post", post);
+    // community = cs.findByName(post.getcommunity().getName());
+    // } catch (NoSuchPostException | NoSuchCommunityException e) {
+    // LOGGER.atError().setMessage("Error getting post with id
+    // {}").addArgument(postId).log();
+    // throw e;
+    // }
+    // PaginatedDataWrapper<Comment> comments;
+    // try {
+    // comments = commentService.getPostCommentsPaginated(postId,
+    // paginationRequest);
+    // } catch (IllegalArgumentException e) {
+    // comments = null;
+    // }
+    // Optional<User> maybeUser = us.getLoggedUser();
+    // if (maybeUser.isPresent()) {
+    // User user = maybeUser.get();
+    // communities = cs.getFollowedCommunities(user);
+    // grooviedComments = commentService.getUpGroovedComments(postId);
+    // negativeGrooviedComments = commentService.getDownGroovedComments(postId);
+    // isGrooved = ps.checkGrooviness(postId);
+    // canDelete = ms.canRemovePost(user, postId);
+    // isAdmin = user.getOwner();
+    // isFollowing = cs.checkIfUserFollowsCommunity(community.getId().intValue());
+    // } else {
+    // communities = cs.getAllCommunities();
+    // }
+    // mav.addObject("isAdmin", isAdmin);
+    // mav.addObject("isFollowing", isFollowing);
+    // mav.addObject("community", community);
+    // mav.addObject("isLogged", maybeUser.isPresent());
+    // mav.addObject("isGrooved", isGrooved);
+    // mav.addObject("newPostGroovyForm", newPostGroovyForm);
+    // mav.addObject("upComments", grooviedComments);
+    // mav.addObject("downComments", negativeGrooviedComments);
+    // mav.addObject("newCommentForm", newCommentForm);
+    // mav.addObject("comments", comments);
+    // Optional<User> author = us.findById(post.getAuthor().getId());
+    // mav.addObject("author", author.isPresent() ? author.get().getUsername() :
+    // "[deleted]");
+    // mav.addObject("communities", communities);
+    // mav.addObject("canDelete", canDelete);
+    //
+    // return mav;
+    // }
+    //
+    // @RequestMapping(path = "/comment", method = RequestMethod.POST)
+    // public ModelAndView newComment(@RequestParam(required = false) Integer
+    // pageNumber,
+    // @ModelAttribute("newPostGroovyForm") final NewPostGroovyForm
+    // newPostGroovyForm,
+    // @ModelAttribute("newCommentGroovyForm") final NewCommentGroovyForm
+    // newCommentGroovyForm,
+    // @ModelAttribute("postDeleteForm") final PostDeleteForm postDeleteForm,
+    // @ModelAttribute("commentDeleteForm") final CommentDeleteForm
+    // commentDeleteForm,
+    // @ModelAttribute("followCommunityForm") final FollowCommunityForm
+    // followCommunityForm,
+    // @Valid @ModelAttribute("newCommentForm") final NewCommentForm newCommentForm,
+    // final BindingResult errors)
+    // throws NoLoggedUserException, NoSuchPostException, PostIsDeletedException,
+    // UserNotFoundException,
+    // NoSuchCommunityException {
+    // if (errors.hasErrors()) {
+    // return singlePost(newCommentForm.getPostId(), pageNumber, newPostGroovyForm,
+    // newCommentForm,
+    // newCommentGroovyForm, postDeleteForm, commentDeleteForm,
+    // followCommunityForm);
+    // }
+    //
+    // commentService.createComment(newCommentForm.getPostId(),
+    // newCommentForm.getBody());
+    // return new ModelAndView("redirect:/post/" + newCommentForm.getPostId());
+    // }
+    //
+    // @RequestMapping(path = "/post/{postId}/delete", method = RequestMethod.POST)
+    // public ModelAndView deletePost(@Valid @ModelAttribute("postDeleteForm") final
+    // PostDeleteForm postDeleteForm,
+    // final BindingResult errors) throws NoSuchPostException {
+    // if (errors.hasErrors()) {
+    // return new ModelAndView("redirect:/post/" + postDeleteForm.getPostId());
+    // }
+    // ps.removePost(postDeleteForm.getPostId());
+    // return new ModelAndView("redirect:/post/" + postDeleteForm.getPostId());
+    // }
+    //
 }

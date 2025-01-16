@@ -1,8 +1,8 @@
 package ar.edu.itba.paw.exceptions;
 
-public class NoSuchCommentException extends Exception{
+public class NoSuchCommentException extends StatusCodedException {
 
-        public NoSuchCommentException(String message) {
-                    super(message);
-                }
+    public NoSuchCommentException() {
+        super(StatusCodes.NOT_FOUND.getCode(), "Exception.CommentNotFound");
+    }
 }

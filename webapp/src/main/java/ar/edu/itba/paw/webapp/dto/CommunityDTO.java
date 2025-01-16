@@ -36,7 +36,7 @@ public class CommunityDTO {
 
     public static CommunityDTO fromCommunity(UriInfo uriInfo, Community c) {
         final CommunityDTO dto = new CommunityDTO();
-        dto.self = uriInfo.getBaseUriBuilder().path("communities").path(String.valueOf(c.getId())).build();
+        dto.self = uriInfo.getBaseUriBuilder().path("communities").path(c.getName()).build();
         dto.category = c.getCategoriesEnum();
         dto.description = c.getDescription();
         dto.name = c.getName();
@@ -44,10 +44,12 @@ public class CommunityDTO {
         dto.releaseDate = c.getReleaseDate();
         dto.ratingCount = c.getRatingCount();
         dto.publisher = c.getPublisher();
-        if(c.getPortrait() != null){
-            dto.portrait = uriInfo.getBaseUriBuilder().path("images").path(String.valueOf(c.getPortrait().getImageId())).build();
+        if (c.getPortrait() != null) {
+            dto.portrait = uriInfo.getBaseUriBuilder().path("images").path(String.valueOf(c.getPortrait().getImageId()))
+                    .build();
         }
-        dto.totalRating = c.getTotalRating();;
+        dto.totalRating = c.getTotalRating();
+        ;
         return dto;
     }
 
@@ -114,7 +116,6 @@ public class CommunityDTO {
     public void setReleaseDate(LocalDateTime releaseDate) {
         this.releaseDate = releaseDate;
     }
-
 
     public Float getTotalRating() {
         return totalRating;

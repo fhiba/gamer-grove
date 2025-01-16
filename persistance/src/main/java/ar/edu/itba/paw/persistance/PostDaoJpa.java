@@ -23,6 +23,7 @@ public class PostDaoJpa implements PostDao {
     private EntityManager em;
 
     private Logger LOGGER = LoggerFactory.getLogger(PostDaoJpa.class);
+
     @Override
     public Optional<Post> findById(long id) {
         return Optional.ofNullable(em.find(Post.class, id));
@@ -36,7 +37,8 @@ public class PostDaoJpa implements PostDao {
     }
 
     @Override
-    public Post createPost(String title, String body, User author, Community community, boolean media, LocalDateTime now, String category) {
+    public Post createPost(String title, String body, User author, Community community, boolean media,
+            LocalDateTime now, String category) {
         final Post post = new Post(title, body, author, community, media, null, now, 0, false, category);
         em.persist(post);
         return post;
@@ -64,38 +66,34 @@ public class PostDaoJpa implements PostDao {
         em.persist(gph);
     }
 
-
-
     @Override
     public Optional<GroovyEnum> checkGrooviness(long postId, long userId) {
         @SuppressWarnings("unchecked")
-        Optional<Boolean> result = em.createNativeQuery("SELECT groovy_type FROM groovy_post_history WHERE post_id = :postId AND user_id = :userId")
+        Optional<Boolean> result = em
+                .createNativeQuery(
+                        "SELECT groovy_type FROM groovy_post_history WHERE post_id = :postId AND user_id = :userId")
                 .setParameter("postId", postId)
                 .setParameter("userId", userId)
                 .getResultList().stream().findFirst();
         return result.map(GroovyEnum::fromBoolean);
     }
 
-
-
-
     @Override
     public void deleteGrooviness(long postId, long id) {
         em.createNativeQuery("DELETE FROM groovy_post_history where post_id = :post_id and user_id = :id")
-                .setParameter("post_id",postId)
-                .setParameter("id",id)
+                .setParameter("post_id", postId)
+                .setParameter("id", id)
                 .executeUpdate();
     }
 
     @Override
     public void updateGroovyHistory(long postId, long id, GroovyEnum groovy) {
         em.createNativeQuery("UPDATE groovy_post_history set groovy_type = :b where post_id =:postId and user_id = :id")
-                .setParameter("b",groovy == GroovyEnum.UP)
-                .setParameter("postId",postId)
-                .setParameter("id",id)
+                .setParameter("b", groovy == GroovyEnum.UP)
+                .setParameter("postId", postId)
+                .setParameter("id", id)
                 .executeUpdate();
     }
-
 
     @Override
     public List<Post> getMyFollowedPosts(long userId) {
@@ -121,7 +119,6 @@ public class PostDaoJpa implements PostDao {
         return query.getResultList();
     }
 
-
     @Override
     public List<String> getUsedCategories() {
         String sql = "SELECT p.category FROM post p WHERE p.category IS NOT NULL AND deleted=false GROUP BY p.category";
@@ -145,9 +142,10 @@ public class PostDaoJpa implements PostDao {
 
     @Override
     public List<Post> getPostsByCommunityPaginated(String communityName, int pageSize, int offset) {
-        Query nativeQuery = em.createNativeQuery("SELECT id FROM post WHERE deleted = false and community_name = :name ORDER BY post_date DESC");
+        Query nativeQuery = em.createNativeQuery(
+                "SELECT id FROM post WHERE deleted = false and community_name = :name ORDER BY post_date DESC");
         nativeQuery.setFirstResult(offset);
-        nativeQuery.setParameter("name",communityName);
+        nativeQuery.setParameter("name", communityName);
         nativeQuery.setMaxResults(pageSize);
 
         List<Long> resultList = ((Stream<Number>) nativeQuery.getResultStream()).map(Number::longValue).toList();
@@ -167,9 +165,10 @@ public class PostDaoJpa implements PostDao {
 
     @Override
     public List<Post> getUserLikedPostPaginated(long userId, int pageSize, int offset) {
-        Query nativeQuery = em.createNativeQuery("SELECT post_id FROM groovy_post_history JOIN post ON groovy_post_history.post_id = post.id WHERE user_id = :userId and groovy_type = true ORDER BY post_date DESC");
+        Query nativeQuery = em.createNativeQuery(
+                "SELECT post_id FROM groovy_post_history JOIN post ON groovy_post_history.post_id = post.id WHERE user_id = :userId and groovy_type = true ORDER BY post_date DESC");
         nativeQuery.setFirstResult(offset);
-        nativeQuery.setParameter("userId",userId);
+        nativeQuery.setParameter("userId", userId);
         nativeQuery.setMaxResults(pageSize);
 
         List<Long> resultList = ((Stream<Number>) nativeQuery.getResultStream()).map(Number::longValue).toList();
@@ -189,8 +188,9 @@ public class PostDaoJpa implements PostDao {
 
     @Override
     public List<Post> getPostsByUserPaginated(long id, int pageSize, int offset) {
-        Query nativeQuery = em.createNativeQuery("SELECT id FROM post where author_id = :authorId ORDER BY post_date DESC");
-        nativeQuery.setParameter("authorId",id);
+        Query nativeQuery = em
+                .createNativeQuery("SELECT id FROM post where author_id = :authorId ORDER BY post_date DESC");
+        nativeQuery.setParameter("authorId", id);
         nativeQuery.setFirstResult(offset);
         nativeQuery.setMaxResults(pageSize);
         List<Long> resultList = ((Stream<Number>) nativeQuery.getResultStream()).map(Number::longValue).toList();
@@ -201,9 +201,9 @@ public class PostDaoJpa implements PostDao {
 
     @Override
     public int getTotalPostsByUser(long id) {
-        Query query= em.createQuery("select count(*) from Post as p where p.author.id = :id")
+        Query query = em.createQuery("select count(*) from Post as p where p.author.id = :id")
                 .setParameter("id", id);
-        return((Number) query.getSingleResult()).intValue();
+        return ((Number) query.getSingleResult()).intValue();
     }
 
     @Override
@@ -213,7 +213,8 @@ public class PostDaoJpa implements PostDao {
 
     @Override
     public List<Post> topFivePosts() {
-        TypedQuery<Post> query = em.createQuery("from Post as p where p.deleted = false order by p.grooviness desc", Post.class);
+        TypedQuery<Post> query = em.createQuery("from Post as p where p.deleted = false order by p.grooviness desc",
+                Post.class);
         query.setMaxResults(5);
         return query.getResultList();
     }
@@ -221,7 +222,7 @@ public class PostDaoJpa implements PostDao {
     private class QueryBuilder {
         private static final String COUNT = "SELECT COUNT(post.id) FROM post WHERE post.deleted = false ";
         private static final String SELECT = "SELECT post.id FROM post WHERE post.deleted = false ";
-        private static final String COMMUNITY_FILTERED = " AND post.community_name IN (SELECT cu.community_name FROM community_user AS cu WHERE cu.user_id = :userId)";
+        private static final String FOLLOWED_COMMUNITY_FILTERED = " AND post.community_name IN (SELECT cu.community_name FROM community_user AS cu WHERE cu.user_id = :userId)";
         private static final String CATEGORY = " AND post.category = :category";
         private static final String DEFAULT_ORDER_BY = " ORDER BY post.post_date DESC";
         private static final String OLDEST_ORDER_BY = " ORDER BY post.post_date ASC";
@@ -229,16 +230,37 @@ public class PostDaoJpa implements PostDao {
         private static final String DEFAULT_RETRIEVE = "from Post as p where p.id IN :ids order by p.date desc";
         private static final String OLD_RETRIEVE = "from Post as p where p.id IN :ids order by p.date asc";
         private static final String HOTTEST_RETRIEVE = "from Post as p where p.id IN :ids order by p.grooviness desc";
+        private static final String AUTHOR = " AND post.author_id = :authorId";
+        private static final String COMMUNITY = " AND post.community_name ILIKE :community";
+        private static final String LIKED_BY_USER = " AND post.id IN (SELECT gph.post_id FROM groovy_post_history AS gph WHERE gph.groovy_type=true AND gph.user_id=:likerId)";
         private PostCategories category;
         private PostOrders order;
         private Long userId;
+        private Long likerId;
+        private String community;
+        private Long authorId;
 
-         public QueryBuilder() {
+        public QueryBuilder() {
 
         }
 
         public QueryBuilder forUser(Long userId) {
             this.userId = userId;
+            return this;
+        }
+
+        public QueryBuilder likedByUser(Long userId) {
+            this.likerId = userId;
+            return this;
+        }
+
+        public QueryBuilder fromCommunity(String community) {
+            this.community = community;
+            return this;
+        }
+
+        public QueryBuilder withAuthor(Long userId) {
+            this.authorId = userId;
             return this;
         }
 
@@ -258,8 +280,18 @@ public class PostDaoJpa implements PostDao {
                 queryString.append(CATEGORY);
             }
             if (userId != null) {
-                queryString.append(COMMUNITY_FILTERED);
+                queryString.append(FOLLOWED_COMMUNITY_FILTERED);
             }
+            if (likerId != null) {
+                queryString.append(LIKED_BY_USER);
+            }
+            if (community != null) {
+                queryString.append(COMMUNITY);
+            }
+            if (authorId != null) {
+                queryString.append(AUTHOR);
+            }
+
             switch (order) {
 
                 case OLDEST:
@@ -274,6 +306,8 @@ public class PostDaoJpa implements PostDao {
                     break;
             }
 
+            LOGGER.info("Query: " + queryString.toString());
+
             Query nativeQuery = em.createNativeQuery(queryString.toString());
             if (category != null) {
                 nativeQuery.setParameter("category", category.getCategory());
@@ -281,30 +315,40 @@ public class PostDaoJpa implements PostDao {
             if (userId != null) {
                 nativeQuery.setParameter("userId", userId);
             }
+            if (likerId != null) {
+                nativeQuery.setParameter("likerId", likerId);
+            }
+            if (community != null) {
+                nativeQuery.setParameter("community", "%" + community + "%");
+            }
+            if (authorId != null) {
+                nativeQuery.setParameter("authorId", authorId);
+            }
             nativeQuery.setFirstResult(offset);
             nativeQuery.setMaxResults(pageSize);
+
             return ((Stream<Number>) nativeQuery.getResultStream()).map(Number::longValue).toList();
         }
 
         List<Post> build(Integer pageSize, Integer offset) {
-             List<Long> ids = getIds(pageSize, offset);
-             String query;
-             switch (order) {
-                 case OLDEST:
-                     query = OLD_RETRIEVE;
-                     break;
-                 case HOTTEST:
-                     query = HOTTEST_RETRIEVE;
-                     break;
-                 case NEWEST:
-                 case DEFAULT:
-                 default:
-                     query = DEFAULT_RETRIEVE;
-                     break;
-             }
-                TypedQuery<Post> typedQuery = em.createQuery(query, Post.class);
-                typedQuery.setParameter("ids", ids);
-                return typedQuery.getResultList();
+            List<Long> ids = getIds(pageSize, offset);
+            String query;
+            switch (order) {
+                case OLDEST:
+                    query = OLD_RETRIEVE;
+                    break;
+                case HOTTEST:
+                    query = HOTTEST_RETRIEVE;
+                    break;
+                case NEWEST:
+                case DEFAULT:
+                default:
+                    query = DEFAULT_RETRIEVE;
+                    break;
+            }
+            TypedQuery<Post> typedQuery = em.createQuery(query, Post.class);
+            typedQuery.setParameter("ids", ids);
+            return typedQuery.getResultList();
         }
 
         Integer buildCount() {
@@ -313,8 +357,19 @@ public class PostDaoJpa implements PostDao {
                 queryString.append(CATEGORY);
             }
             if (userId != null) {
-                queryString.append(COMMUNITY_FILTERED);
+                queryString.append(FOLLOWED_COMMUNITY_FILTERED);
             }
+
+            if (likerId != null) {
+                queryString.append(LIKED_BY_USER);
+            }
+            if (community != null) {
+                queryString.append(COMMUNITY);
+            }
+            if (authorId != null) {
+                queryString.append(AUTHOR);
+            }
+
             Query query = em.createNativeQuery(queryString.toString());
             if (category != null) {
                 query.setParameter("category", category.getCategory());
@@ -322,19 +377,34 @@ public class PostDaoJpa implements PostDao {
             if (userId != null) {
                 query.setParameter("userId", userId);
             }
+            if (likerId != null) {
+                query.setParameter("likerId", likerId);
+            }
+            if (community != null) {
+                query.setParameter("community", community);
+            }
+            if (authorId != null) {
+                query.setParameter("authorId", authorId);
+            }
+
             return ((Number) query.getSingleResult()).intValue();
         }
     }
 
-    public List<Post> find(int pageSize, int offset, PostCategories category, PostOrders order, Long userId) {
-         return new QueryBuilder()
+    public List<Post> find(int pageSize, int offset, PostCategories category, PostOrders order, Long userId,
+            Long authorId, String community, Long likerId) {
+        return new QueryBuilder()
                 .fromCategory(category)
                 .orderBy(order)
                 .forUser(userId)
+                .withAuthor(authorId)
+                .fromCommunity(community)
+                .likedByUser(likerId)
                 .build(pageSize, offset);
     }
 
-    public Integer findCount(PostCategories category, Long userId) {
+    public Integer findCount(PostCategories category, Long userId,
+            Long authorId, String community, Long likerId) {
         return new QueryBuilder()
                 .fromCategory(category)
                 .forUser(userId)

@@ -1,7 +1,9 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.exceptions.IllegalPageException;
 import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
+import ar.edu.itba.paw.exceptions.PageNotFoundException;
 import ar.edu.itba.paw.models.Community;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
@@ -36,10 +38,10 @@ public class CommunityServiceImpl implements CommunityService {
     @Transactional
     @Override
     public Optional<Community> createCommunity(final String name, final String description, final String categories,
-            String developer, String publisher, LocalDateTime releaseDate, MultipartFile image)
+            String developer, String publisher, LocalDateTime releaseDate, byte[] image)
             throws NoSuchCommunityException {
         Community community = communityDao.createCommunity(name, description, developer, publisher, releaseDate);
-        if (!image.isEmpty())
+        if (!Objects.isNull(image) && image.length > 0)
             fileService.uploadCommunityImage(community.getName(), image);
         if (categories != null && !categories.isEmpty()) {
             addCategories(community.getId(), List.of(categories.split(",")));
@@ -68,7 +70,7 @@ public class CommunityServiceImpl implements CommunityService {
                 .findByName(URLDecoder.decode(communityName, StandardCharsets.UTF_8));
         if (possibleCommunity.isEmpty()) {
             LOGGER.atError().setMessage("Community {} not found").addArgument(() -> communityName).log();
-            throw new NoSuchCommunityException("Community " + communityName + " not found");
+            throw new NoSuchCommunityException();
         }
         return possibleCommunity.get();
     }
@@ -78,7 +80,7 @@ public class CommunityServiceImpl implements CommunityService {
         Optional<Community> maybeCommunity = communityDao.findById(communityId);
         if (maybeCommunity.isEmpty()) {
             LOGGER.atError().setMessage("Communuty with id {} not found").addArgument(() -> communityId).log();
-            throw new NoSuchCommunityException("Community " + communityId + " not found");
+            throw new NoSuchCommunityException();
         }
         return maybeCommunity.get();
     }
@@ -119,20 +121,20 @@ public class CommunityServiceImpl implements CommunityService {
 
     @Override
     public PaginatedDataWrapper<Community> find(PaginationRequest request, final String searchTerms,
-            List<String> categories, final Long userId) {
+            List<String> categories, final Long userId) throws IllegalPageException, PageNotFoundException {
 
         if (request.getPageSize() < 1) {
             throw new IllegalArgumentException("Invalid Page size");
         }
         if (request.getPageNumber() < 1) {
-            throw new IllegalArgumentException("Invalid Page number");
+            throw new IllegalPageException();
         }
         List<String> newList = null;
         if (!categories.isEmpty() && !categories.getFirst().isEmpty()) {
             newList = categories.stream().map(category -> category.replaceAll("([%_\\\\])", "\\\\$1")).toList();
         }
         int totalCount = communityDao.findCount(searchTerms.replaceAll("([%_\\\\])", "\\\\$1"),
-                newList == null ? List.of() : newList, (userId == null || userId == 0)? null:userId);
+                newList == null ? List.of() : newList, (userId == null || userId == 0) ? null : userId);
 
         int offset = (request.getPageNumber() - 1) * request.getPageSize();
 
@@ -141,19 +143,19 @@ public class CommunityServiceImpl implements CommunityService {
         PaginatedDataWrapper<Community> dataWrapper = new PaginatedDataWrapper<>(data, request.getPageNumber(),
                 totalCount, request.getPageSize());
         if (request.getPageNumber() > dataWrapper.getTotalPages() && dataWrapper.getTotalPages() != 0) {
-            throw new IllegalArgumentException("Invalid Page number");
+            throw new PageNotFoundException();
         }
         return dataWrapper;
     }
 
     @Override
     public PaginatedDataWrapper<Community> findFollowedCommunities(PaginationRequest request, List<String> categories,
-            User user) throws NoLoggedUserException {
+            User user) throws NoLoggedUserException, PageNotFoundException, IllegalPageException {
         if (request.getPageSize() < 1) {
             throw new IllegalArgumentException("Invalid Page size");
         }
         if (request.getPageNumber() < 1) {
-            throw new IllegalArgumentException("Invalid Page number");
+            throw new IllegalPageException();
         }
 
         List<String> newList = null;
@@ -168,7 +170,7 @@ public class CommunityServiceImpl implements CommunityService {
         PaginatedDataWrapper<Community> dataWrapper = new PaginatedDataWrapper<>(data, request.getPageNumber(),
                 totalCount, request.getPageSize());
         if (request.getPageNumber() > dataWrapper.getTotalPages() && dataWrapper.getTotalPages() != 0) {
-            throw new IllegalArgumentException("Invalid Page number");
+            throw new PageNotFoundException();
         }
         return dataWrapper;
     }
@@ -178,7 +180,7 @@ public class CommunityServiceImpl implements CommunityService {
     public void addCategory(long id, String category) throws NoSuchCommunityException {
         Optional<Community> community = communityDao.findById(id);
         if (community.isEmpty())
-            throw new NoSuchCommunityException("Community " + id + " not found");
+            throw new NoSuchCommunityException();
         communityDao.addCategory(community.get().getId(), category);
         LOGGER.atInfo().setMessage("Category {} added successfully to community {}").addArgument(category)
                 .addArgument(id).log();
@@ -189,7 +191,7 @@ public class CommunityServiceImpl implements CommunityService {
     public void removeCategory(long id, String category) throws NoSuchCommunityException {
         Optional<Community> community = communityDao.findById(id);
         if (community.isEmpty())
-            throw new NoSuchCommunityException("Community " + id + " not found");
+            throw new NoSuchCommunityException();
         communityDao.removeCategory(community.get(), category);
         LOGGER.atInfo().setMessage("Category {} removed successfully to community {}").addArgument(category)
                 .addArgument(id).log();
@@ -233,10 +235,10 @@ public class CommunityServiceImpl implements CommunityService {
     @Transactional
     @Override
     public void editCommunityInfo(String communityName, String description, String publisher, String developer,
-            MultipartFile image, String categories) throws NoSuchCommunityException {
+            byte[] image, String categories) throws NoSuchCommunityException {
         String decodedName = URLDecoder.decode(communityName, StandardCharsets.UTF_8);
         communityDao.editCommunityInfo(decodedName, description, publisher, developer);
-        if (!image.isEmpty())
+        if (!Objects.isNull(image) && image.length > 0)
             fileService.uploadCommunityImage(decodedName, image);
 
         Community community = findByName(decodedName);

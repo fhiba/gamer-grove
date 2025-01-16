@@ -7,10 +7,8 @@ import ar.edu.itba.paw.models.File;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
 import ar.edu.itba.paw.models.pagination.PaginationRequest;
-import org.springframework.web.multipart.MultipartFile;
 import ar.edu.itba.paw.exceptions.IllegalPageException;
 import ar.edu.itba.paw.exceptions.PageNotFoundException;
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.List;
 
@@ -26,7 +24,7 @@ public interface UserService {
 
     Optional<User> getLoggedUser();
 
-    void resetPassword(String token, String password) throws NoSuchTokenException;
+    void resetPassword(String token, String password) throws NoSuchTokenException, UserNotFoundException;
 
     User verifyUser(String token) throws NoSuchTokenException;
 

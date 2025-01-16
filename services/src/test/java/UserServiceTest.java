@@ -1,24 +1,18 @@
-import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchTokenException;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.persistance.UserDao;
 import ar.edu.itba.paw.services.MailingService;
 import ar.edu.itba.paw.services.TokenService;
 import ar.edu.itba.paw.services.UserServiceImpl;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import ar.edu.itba.paw.models.User;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Locale;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
@@ -29,7 +23,6 @@ import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserServiceTest {
-
 
     @Mock
     private UserDao mockUserDao;
@@ -62,7 +55,7 @@ public class UserServiceTest {
         when(mockUserDao.create(eq(USERNAME), eq(EMAIL), anyString())).thenReturn(user);
         when(mockPasswordEncoder.encode(eq(PASSWORD))).thenReturn(ENCODED_PASSWORD);
 
-        User result = userService.create(USERNAME,EMAIL, PASSWORD);
+        User result = userService.create(USERNAME, EMAIL, PASSWORD);
 
         assertNotNull(result);
         assertEquals(USERNAME, result.getUsername());
@@ -71,7 +64,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testResetPasswordSuccess() throws NoSuchTokenException {
+    public void testResetPasswordSuccess() throws NoSuchTokenException, UserNotFoundException {
         final User user = new User(USERNAME, ENCODED_PASSWORD, EMAIL, true, "es", true);
         user.setId(USER_ID);
 
@@ -81,11 +74,10 @@ public class UserServiceTest {
 
         userService.resetPassword(TOKEN, PASSWORD);
 
-
     }
 
     @Test(expected = NoSuchTokenException.class)
-    public void testResetPasswordNoSuchToken() throws NoSuchTokenException {
+    public void testResetPasswordNoSuchToken() throws NoSuchTokenException, UserNotFoundException {
         String password = "testPassword";
 
         when(mockTokenService.getUserIdFromToken(TOKEN, "ResetPass")).thenReturn(Optional.empty());
@@ -138,4 +130,3 @@ public class UserServiceTest {
     }
 
 }
-

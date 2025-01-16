@@ -48,8 +48,8 @@ import static org.springframework.web.cors.CorsConfiguration.ALL;
 @Configuration
 @ComponentScan("ar.edu.itba.paw.webapp.auth")
 public class WebAuthConfig extends WebSecurityConfigurerAdapter {
-
-    private static final String ACCESS_CONTROL_CHECK_USER = "@accessControl.checkUser(request, #id)";
+    private static final String ACCESS_CONTROL_NOT_GROOVED_YET = "@accessControl.notGroovedYet(request, #id)";
+    private static final String ACCESS_CONTROL_CHECK_USER = "@accessControl.checkUser(request, #userId)";
     private static final String ACCESS_CONTROL_USER_HAS_IMAGE = "@accessControl.userHasImage(request)";
     private static final String ACCESS_CONTROL_IMAGE_IS_USER_IMAGE = "@accessControl.imageIsUserImage(request, #id)";
     private static final String ACCESS_CONTROL_FOLLOWED_BY_IS_USER = "@accessControl.followedByIsUser(request)";
@@ -190,16 +190,16 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 .anonymous()
 
                 // resend verify email
-                .requestMatchers(HttpMethod.POST, "/api/users/{id}/verification-token")
+                .requestMatchers(HttpMethod.POST, "/api/users/{userId}/verification-token")
                 .access(ACCESS_CONTROL_CHECK_USER + AND + HAS_ROLE_USER + AND + NOT
                         + HAS_ROLE_VERIFIED)
 
                 // update profile picture
-                .requestMatchers(HttpMethod.PUT, "/api/users/{id}")
+                .requestMatchers(HttpMethod.PUT, "/api/users/{userId}")
                 .access(ACCESS_CONTROL_CHECK_USER + AND + HAS_ROLE_VERIFIED)
 
                 // update locale
-                .requestMatchers(HttpMethod.PUT, "/api/users/{id}/locale")
+                .requestMatchers(HttpMethod.PUT, "/api/users/{userId}/locale")
                 .access(ACCESS_CONTROL_CHECK_USER + AND + HAS_ROLE_VERIFIED)
 
                 // images
@@ -208,7 +208,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 
                 // create image
                 .requestMatchers(HttpMethod.POST, "/api/images")
-                .permitAll()
+                .access(HAS_ROLE_VERIFIED)
 
                 // update image
                 .requestMatchers(HttpMethod.PUT, "/api/images/{id}")
@@ -222,6 +222,34 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 // get comunity by name
                 .requestMatchers(HttpMethod.GET, "/api/communities/{communityName}")
                 .permitAll()
+
+                // create community
+                .requestMatchers(HttpMethod.POST, "/api/communities")
+                .access(HAS_ROLE_ADMIN)
+                // .permitAll()
+
+                .requestMatchers(HttpMethod.GET, "/api/posts")
+                .permitAll()
+
+                .requestMatchers(HttpMethod.GET, "/api/posts/{id}")
+                .permitAll()
+
+                .requestMatchers(HttpMethod.POST, "/api/posts")
+                .access(HAS_ROLE_VERIFIED)
+
+                .requestMatchers(HttpMethod.POST, "/api/posts/{id}/groovyness")
+                .access(HAS_ROLE_VERIFIED + AND + ACCESS_CONTROL_NOT_GROOVED_YET)
+
+                .requestMatchers(HttpMethod.PUT, "/api/posts/{postId}/groovyness/{userId}")
+                .access(HAS_ROLE_VERIFIED + AND + ACCESS_CONTROL_CHECK_USER + AND + NOT
+                        + ACCESS_CONTROL_NOT_GROOVED_YET)
+
+                // TODO: Revisar por que no falla??
+                .requestMatchers(HttpMethod.DELETE, "/api/posts/{postId}/groovyness/{userId}")
+                .access(HAS_ROLE_VERIFIED + AND + ACCESS_CONTROL_CHECK_USER + AND + NOT
+                        + ACCESS_CONTROL_NOT_GROOVED_YET)
+                .requestMatchers(HttpMethod.GET, "/api/posts/{postId}/groovyness/{userId}")
+                .access(HAS_ROLE_VERIFIED + AND + ACCESS_CONTROL_CHECK_USER)
 
                 .antMatchers("/api/**")
                 .permitAll()

@@ -36,7 +36,7 @@
             ar.edu.itba.paw.webapp.mapper,
             ar.edu.itba.paw.webapp.context,
             ar.edu.itba.paw.webapp.filter,
-            ar.edut.itba.paw.webapp.auth
+            ar.edu.itba.paw.webapp.auth
         </param-value>
     </init-param>
     <!-- pass to next filter if Jersey/App returns 404 -->

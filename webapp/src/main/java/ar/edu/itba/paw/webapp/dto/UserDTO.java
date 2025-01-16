@@ -54,7 +54,6 @@ public class UserDTO {
                 .path("users").path(String.valueOf(u.getId())).build();
 
         dto.posts = uriInfo.getBaseUriBuilder().path("posts").queryParam("author", u.getId()).build();
-        // TODO: Add liked posts **RE VER**
         dto.likedPosts = uriInfo.getBaseUriBuilder().path("posts").queryParam("likedBy", u.getId()).build();
         dto.followedCommunities = uriInfo.getBaseUriBuilder().path("communities").queryParam("followedBy", u.getId())
                 .build();

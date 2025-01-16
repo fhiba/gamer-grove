@@ -39,24 +39,14 @@ public class FileServiceImpl implements FileService {
 
     @Transactional
     @Override
-    public Optional<File> uploadCommunityImage(String communityId, MultipartFile file) throws NoSuchCommunityException {
+    public Optional<File> uploadCommunityImage(String communityId, byte[] file) throws NoSuchCommunityException {
         Community community = cs.findByName(communityId);
         Optional<File> image;
         if (Objects.isNull(community.getPortrait())) {
-            try {
-                image = fd.uploadImage(file.getBytes());
-                image.ifPresent(value -> cs.updateCommunityImageId(community.getId(), value.getImageId()));
-            } catch (IOException e) {
-                LOGGER.atError().setMessage("Error uploading image").log();
-                throw new RuntimeException(e);
-            }
+            image = fd.uploadImage(file);
+            image.ifPresent(value -> cs.updateCommunityImageId(community.getId(), value.getImageId()));
         } else {
-            try {
-                image = fd.updateFile(community.getPortrait(), file.getBytes());
-            } catch (IOException e) {
-                LOGGER.atError().setMessage("Error updating image").log();
-                throw new RuntimeException(e);
-            }
+            image = fd.updateFile(community.getPortrait(), file);
         }
         if (image.isPresent()) {
             LOGGER.atInfo().setMessage("New image {} upload successfully to community {}")
@@ -90,17 +80,12 @@ public class FileServiceImpl implements FileService {
 
     @Transactional
     @Override
-    public void uploadPostImage(MultipartFile file, long id) {
-        try {
-            Optional<File> postImage = fd.uploadImage(file.getBytes());
-            if (postImage.isPresent()) {
-                fd.uploadPostImage(id, postImage.get().getImageId());
-                LOGGER.atInfo().setMessage("New image {} upload successfully to post {}")
-                        .addArgument(() -> postImage.get().getImageId()).addArgument(id).log();
-            }
-        } catch (IOException e) {
-            LOGGER.atError().setMessage("Error uploading post image").log();
-            throw new RuntimeException(e);
+    public void uploadPostImage(byte[] file, long id) {
+        Optional<File> postImage = fd.uploadImage(file);
+        if (postImage.isPresent()) {
+            fd.uploadPostImage(id, postImage.get().getImageId());
+            LOGGER.atInfo().setMessage("New image {} upload successfully to post {}")
+                    .addArgument(() -> postImage.get().getImageId()).addArgument(id).log();
         }
     }
 }

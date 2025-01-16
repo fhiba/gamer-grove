@@ -110,7 +110,7 @@ public class CommentServiceImpl implements CommentService {
         }
 
         if (comment.isEmpty())
-            throw new NoSuchCommentException("Comment not found");
+            throw new NoSuchCommentException();
         // checks whether the user has already grooved the comment
         Post post = postService.getPostById(postId);
 
@@ -175,7 +175,7 @@ public class CommentServiceImpl implements CommentService {
         Optional<Comment> comment = commentDao.getCommentById(commentId);
         if (comment.isEmpty()) {
             LOGGER.atError().setMessage("Comment with id {} not found").addArgument(commentId).log();
-            throw new NoSuchCommentException("Comment not found");
+            throw new NoSuchCommentException();
         }
         Post post = postService.getPostById(comment.get().getPostId());
         if (post.getDeleted()) {

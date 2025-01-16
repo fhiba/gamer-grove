@@ -7,13 +7,16 @@ import ar.edu.itba.paw.exceptions.PageNotFoundException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
 import ar.edu.itba.paw.models.pagination.PaginationRequest;
-import ar.edu.itba.paw.services.CommunityService;
-import ar.edu.itba.paw.services.PostService;
-import ar.edu.itba.paw.services.UserService;
+import ar.edu.itba.paw.webapp.dto.CommunityCreationDTO;
 import ar.edu.itba.paw.webapp.dto.CommunityDTO;
 import ar.edu.itba.paw.webapp.dto.UserDTO;
 import ar.edu.itba.paw.webapp.form.*;
+import ar.edu.itba.paw.webapp.mediaType.VendorType;
+import ar.edu.itba.paw.webapp.validators.interfaces.FileMustBeImageConstraint;
 import ar.edu.itba.paw.services.*;
+
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,11 +28,18 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+
+import java.net.URI;
 
 @Component
 @Path("/api/communities")
@@ -50,10 +60,11 @@ public class CommunityController {
     @Autowired
     private RatingService rs;
 
+    private final static int MAX_FILE_SIZE = (int) 5 * 1000 * 1000;
+
     @Context
     private UriInfo uriInfo;
 
-    // TODO: HACER QUE ACEPTE SEARCHTERMS Y CATEGORIES
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response listCommunities(@Context UriInfo uriInfo, @QueryParam("page") @DefaultValue("1") final int page,
@@ -90,7 +101,28 @@ public class CommunityController {
     public Response getCommunity(@PathParam("communityName") final String communityName)
             throws NoSuchCommunityException {
         final Community community = cs.findByName(communityName);
+
         return Response.ok(CommunityDTO.fromCommunity(uriInfo, community)).build();
+    }
+
+    @POST
+    public Response createCommunity(
+            @Size(max = MAX_FILE_SIZE, message = "{FileSize}") @FormDataParam("image") byte[] bytes,
+            @FileMustBeImageConstraint(message = "{Image}") @FormDataParam("image") final FormDataBodyPart fileDetails,
+            @NotBlank @Pattern(regexp = "^[a-zA-Z0-9_. -]*$") @FormDataParam("name") final String name,
+            @FormDataParam("description") final String description,
+            @FormDataParam("categories") final String categories,
+            @FormDataParam("publisher") final String publisher,
+            @FormDataParam("developer") final String developer) throws NoSuchCommunityException {
+        LOGGER.info("POST /communities");
+        Optional<Community> community = cs.createCommunity(name, description, categories, developer, publisher,
+                LocalDateTime.now(), bytes);
+        final URI uri = uriInfo.getAbsolutePathBuilder().path("communities")
+                .path(String.valueOf(community.get().getId()))
+                .build();
+
+        return Response.created(uri).build();
+
     }
 
     // @RequestMapping(path = "/new-community", method = RequestMethod.GET)
@@ -191,7 +223,7 @@ public class CommunityController {
     // final String communityName,
     // @ModelAttribute("newRatingForm") final NewRatingForm newRatingForm,
     // @ModelAttribute("followCommunityForm") final FollowCommunityForm
-    // followCommunityForm,
+    // followCommunityForm,;
     // @Valid @ModelAttribute("newPostForm") final NewPostForm newPostForm,
     // BindingResult errors)
     // throws NoLoggedUserException, NoSuchCommunityException {

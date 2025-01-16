@@ -41,7 +41,6 @@ public class ModderServiceTest {
     public static final String COMMUNITY_DEVELOPER = "Test community developer";
     public static LocalDateTime RELEASE_DATE = LocalDateTime.now();
 
-
     @Mock
     ModderDao mockModderDao;
     @Mock
@@ -62,12 +61,14 @@ public class ModderServiceTest {
     public void testAddModderSuccess() throws NoSuchCommunityException, UserNotFoundException, AlreadyModException {
         User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", false);
         user.setId(USER_ID);
-        Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, RELEASE_DATE);
+        Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER,
+                COMMUNITY_DEVELOPER, RELEASE_DATE);
         community.setId(COMMUNITY_ID);
 
         Mockito.when(mockUserService.findByUsername(USERNAME)).thenReturn(Optional.of(user));
         Mockito.when(mockCommunityService.findById(COMMUNITY_ID)).thenReturn(community);
-        Mockito.when(mockModderDao.addModder(user, community)).thenReturn(new Mod(user, community, LocalDateTime.now()));
+        Mockito.when(mockModderDao.addModder(user, community))
+                .thenReturn(new Mod(user, community, LocalDateTime.now()));
         Mockito.when(mockModderDao.isModderOfCommunity(user, community)).thenReturn(false);
         boolean result = modderService.addModder(USERNAME, COMMUNITY_ID);
 
@@ -75,19 +76,21 @@ public class ModderServiceTest {
     }
 
     @Test(expected = UserNotFoundException.class)
-    public void testAddModderUserNotFound() throws NoSuchCommunityException, UserNotFoundException, AlreadyModException {
+    public void testAddModderUserNotFound()
+            throws NoSuchCommunityException, UserNotFoundException, AlreadyModException {
         when(mockUserService.findByUsername(USERNAME)).thenReturn(Optional.empty());
 
         modderService.addModder(USERNAME, COMMUNITY_ID);
     }
 
     @Test(expected = NoSuchCommunityException.class)
-    public void testAddModderCommunityNotFound() throws NoSuchCommunityException, UserNotFoundException, AlreadyModException {
+    public void testAddModderCommunityNotFound()
+            throws NoSuchCommunityException, UserNotFoundException, AlreadyModException {
         User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
         user.setId(USER_ID);
 
         when(mockUserService.findByUsername(USERNAME)).thenReturn(Optional.of(user));
-        when(mockCommunityService.findById(COMMUNITY_ID)).thenThrow(new NoSuchCommunityException("no such community"));
+        when(mockCommunityService.findById(COMMUNITY_ID)).thenThrow(new NoSuchCommunityException());
 
         modderService.addModder(USERNAME, COMMUNITY_ID);
     }
@@ -96,13 +99,13 @@ public class ModderServiceTest {
     public void testAddModderAlreadyMod() throws NoSuchCommunityException, UserNotFoundException, AlreadyModException {
         User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
         user.setId(USER_ID);
-        Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, RELEASE_DATE);
+        Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER,
+                COMMUNITY_DEVELOPER, RELEASE_DATE);
         community.setId(COMMUNITY_ID);
 
         Mockito.when(mockUserService.findByUsername(USERNAME)).thenReturn(Optional.of(user));
         Mockito.when(mockCommunityService.findById(COMMUNITY_ID)).thenReturn(community);
         Mockito.when(mockModderDao.isModderOfCommunity(user, community)).thenReturn(true);
-
 
         modderService.addModder(USERNAME, COMMUNITY_ID);
     }
@@ -117,7 +120,8 @@ public class ModderServiceTest {
     public void testRemoveModderSuccess() throws NoSuchCommunityException, UserNotFoundException {
         User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
         user.setId(USER_ID);
-        Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, RELEASE_DATE);
+        Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER,
+                COMMUNITY_DEVELOPER, RELEASE_DATE);
         community.setId(COMMUNITY_ID);
         Mod mod = new Mod(user, community, LocalDateTime.now());
 
@@ -140,20 +144,22 @@ public class ModderServiceTest {
     }
 
     @Test(expected = NoSuchCommunityException.class)
-    public void testRemoveModderCommunityNotFound() throws NoSuchCommunityException, UserNotFoundException{
+    public void testRemoveModderCommunityNotFound() throws NoSuchCommunityException, UserNotFoundException {
         User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
         user.setId(USER_ID);
 
         when(mockUserService.findByUsername(USERNAME)).thenReturn(Optional.of(user));
-        when(mockCommunityService.findById(COMMUNITY_ID)).thenThrow(new NoSuchCommunityException("no such community"));
+        when(mockCommunityService.findById(COMMUNITY_ID)).thenThrow(new NoSuchCommunityException());
 
         modderService.removeModder(USERNAME, COMMUNITY_ID);
     }
+
     @Test
     public void testRemoveModderNotAMod() throws NoSuchCommunityException, UserNotFoundException {
         User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
         user.setId(USER_ID);
-        Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, RELEASE_DATE);
+        Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER,
+                COMMUNITY_DEVELOPER, RELEASE_DATE);
         community.setId(COMMUNITY_ID);
 
         when(mockUserService.findByUsername(USERNAME)).thenReturn(Optional.of(user));
@@ -200,9 +206,11 @@ public class ModderServiceTest {
     public void testCanRemovePostAlternativeSuccess() throws NoSuchPostException, NoSuchCommunityException {
         final User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
         user.setId(USER_ID);
-        final Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, RELEASE_DATE);
+        final Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER,
+                COMMUNITY_DEVELOPER, RELEASE_DATE);
         community.setId(COMMUNITY_ID);
-        final Post post = new Post(POST_TITLE, POST_BODY, user, community, false, null, LocalDateTime.now(), 0, false, POST_CATEGORY.getCategory());
+        final Post post = new Post(POST_TITLE, POST_BODY, user, community, false, null, LocalDateTime.now(), 0, false,
+                POST_CATEGORY.getCategory());
         post.setId(POST_ID);
 
         when(mockPostService.getPostById(POST_ID)).thenReturn(post);
@@ -219,9 +227,11 @@ public class ModderServiceTest {
     public void testCanRemovePostAlternativeNoLoggedUser() throws NoSuchPostException, NoSuchCommunityException {
         final User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
         user.setId(USER_ID);
-        final Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, RELEASE_DATE);
+        final Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER,
+                COMMUNITY_DEVELOPER, RELEASE_DATE);
         community.setId(COMMUNITY_ID);
-        final Post post = new Post(POST_TITLE, POST_BODY, user, community, false, null, LocalDateTime.now(), 0, false, POST_CATEGORY.getCategory());
+        final Post post = new Post(POST_TITLE, POST_BODY, user, community, false, null, LocalDateTime.now(), 0, false,
+                POST_CATEGORY.getCategory());
         post.setId(POST_ID);
 
         when(mockPostService.getPostById(POST_ID)).thenReturn(post);
@@ -235,7 +245,7 @@ public class ModderServiceTest {
 
     @Test()
     public void testCanRemovePostAlternativeNoSuchPost() throws NoSuchPostException, NoSuchCommunityException {
-        when(mockPostService.getPostById(POST_ID)).thenThrow(new NoSuchPostException("no such post"));
+        when(mockPostService.getPostById(POST_ID)).thenThrow(new NoSuchPostException());
 
         Assert.assertFalse(modderService.canRemovePostAlternative(POST_ID));
     }
@@ -244,13 +254,15 @@ public class ModderServiceTest {
     public void testCanRemovePostAlternativeNoSuchCommunity() throws NoSuchPostException, NoSuchCommunityException {
         final User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
         user.setId(USER_ID);
-        final Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, RELEASE_DATE);
+        final Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER,
+                COMMUNITY_DEVELOPER, RELEASE_DATE);
         community.setId(COMMUNITY_ID);
-        final Post post = new Post(POST_TITLE, POST_BODY, user, community, false, null, LocalDateTime.now(), 0, false, POST_CATEGORY.getCategory());
+        final Post post = new Post(POST_TITLE, POST_BODY, user, community, false, null, LocalDateTime.now(), 0, false,
+                POST_CATEGORY.getCategory());
         post.setId(POST_ID);
 
         when(mockPostService.getPostById(POST_ID)).thenReturn(post);
-        when(mockCommunityService.findByName(anyString())).thenThrow(new NoSuchCommunityException("no such community"));
+        when(mockCommunityService.findByName(anyString())).thenThrow(new NoSuchCommunityException());
         Assert.assertFalse(modderService.canRemovePostAlternative(POST_ID));
     }
 
@@ -258,9 +270,11 @@ public class ModderServiceTest {
     public void testCanRemovePostAlternativeNotAMod() throws NoSuchPostException, NoSuchCommunityException {
         final User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", false);
         user.setId(USER_ID);
-        final Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, RELEASE_DATE);
+        final Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER,
+                COMMUNITY_DEVELOPER, RELEASE_DATE);
         community.setId(COMMUNITY_ID);
-        final Post post = new Post(POST_TITLE, POST_BODY, user, community, false, null, LocalDateTime.now(), 0, false, POST_CATEGORY.getCategory());
+        final Post post = new Post(POST_TITLE, POST_BODY, user, community, false, null, LocalDateTime.now(), 0, false,
+                POST_CATEGORY.getCategory());
         post.setId(POST_ID);
 
         when(mockPostService.getPostById(POST_ID)).thenReturn(post);

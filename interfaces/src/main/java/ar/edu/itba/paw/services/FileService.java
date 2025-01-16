@@ -11,9 +11,9 @@ public interface FileService {
 
     Optional<File> getFile(long imageId);
 
-    Optional<File> uploadCommunityImage(String communityId, MultipartFile file) throws NoSuchCommunityException;
+    Optional<File> uploadCommunityImage(String communityId, byte[] file) throws NoSuchCommunityException;
 
     Optional<File> uploadUserImage(byte[] file) throws NoLoggedUserException;
 
-    void uploadPostImage(MultipartFile file, long id);
+    void uploadPostImage(byte[] file, long id);
 }

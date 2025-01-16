@@ -1,5 +1,7 @@
+import ar.edu.itba.paw.exceptions.IllegalPageException;
 import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
+import ar.edu.itba.paw.exceptions.PageNotFoundException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
 import ar.edu.itba.paw.models.pagination.PaginationRequest;
@@ -7,7 +9,6 @@ import ar.edu.itba.paw.persistance.CommunityDao;
 import ar.edu.itba.paw.services.FileService;
 import ar.edu.itba.paw.services.RatingService;
 import ar.edu.itba.paw.services.UserService;
-import javassist.bytecode.analysis.MultiType;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,11 +59,12 @@ public class CommunityServiceTest {
         Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER,
                 COMMUNITY_DEVELOPER, RELEASE_DATE);
         community.setId(COMMUNITY_ID);
+        byte[] image = { 0 };
         MultipartFile mockMultipartFile = Mockito.mock(MultipartFile.class);
         Mockito.when(mockDao.createCommunity(eq(COMMUNITY_NAME), eq(COMMUNITY_DESCRIPTION), eq(COMMUNITY_DEVELOPER),
                 eq(COMMUNITY_PUBLISHER), eq(RELEASE_DATE))).thenReturn(community);
         Optional<Community> result = cs.createCommunity(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, null,
-                COMMUNITY_DEVELOPER, COMMUNITY_PUBLISHER, RELEASE_DATE, mockMultipartFile);
+                COMMUNITY_DEVELOPER, COMMUNITY_PUBLISHER, RELEASE_DATE, image);
         Assert.assertTrue(result.isPresent());
     }
 
@@ -163,7 +165,8 @@ public class CommunityServiceTest {
     }
 
     @Test
-    public void testFindWithValidRequestAndSearchTermsAndCategories() {
+    public void testFindWithValidRequestAndSearchTermsAndCategories()
+            throws IllegalPageException, PageNotFoundException {
         PaginationRequest request = new PaginationRequest(1, 10);
         String searchTerms = "test";
         List<String> categories = Arrays.asList("category1", "category2");
@@ -185,7 +188,7 @@ public class CommunityServiceTest {
     }
 
     @Test
-    public void testFindWithNoCommunities() {
+    public void testFindWithNoCommunities() throws IllegalPageException, PageNotFoundException {
         PaginationRequest request = new PaginationRequest(1, 10);
         String searchTerms = "test";
         List<String> categories = Arrays.asList("category1", "category2");
@@ -202,8 +205,8 @@ public class CommunityServiceTest {
 
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testFindWithNegativePageNumber() {
+    @Test(expected = IllegalPageException.class)
+    public void testFindWithNegativePageNumber() throws IllegalPageException, PageNotFoundException {
         PaginationRequest request = new PaginationRequest(-1, 10);
         String searchTerms = "test";
         List<String> categories = Arrays.asList("category1", "category2");
@@ -212,7 +215,7 @@ public class CommunityServiceTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testFindWithZeroPageSize() {
+    public void testFindWithZeroPageSize() throws IllegalPageException, PageNotFoundException {
         PaginationRequest request = new PaginationRequest(1, 0);
         String searchTerms = "test";
         List<String> categories = Arrays.asList("category1", "category2");
@@ -220,8 +223,8 @@ public class CommunityServiceTest {
         cs.find(request, searchTerms, categories, null);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testFindWithPageNumberExceeded() {
+    @Test(expected = PageNotFoundException.class)
+    public void testFindWithPageNumberExceeded() throws IllegalPageException, PageNotFoundException {
         PaginationRequest request = new PaginationRequest(4, 10);
         String searchTerms = "test";
         List<String> categories = Arrays.asList("category1", "category2");
@@ -237,7 +240,8 @@ public class CommunityServiceTest {
     }
 
     @Test
-    public void testFindFollowedWithValidRequestAndUser() throws NoLoggedUserException {
+    public void testFindFollowedWithValidRequestAndUser()
+            throws NoLoggedUserException, IllegalPageException, PageNotFoundException {
         final User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
         user.setId(USER_ID);
         PaginationRequest request = new PaginationRequest(1, 10);
@@ -250,7 +254,8 @@ public class CommunityServiceTest {
     }
 
     @Test
-    public void testFindFollowedWithNoCommunities() throws NoLoggedUserException {
+    public void testFindFollowedWithNoCommunities()
+            throws NoLoggedUserException, IllegalPageException, PageNotFoundException {
         final User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
         user.setId(USER_ID);
         PaginationRequest request = new PaginationRequest(1, 10);
@@ -265,8 +270,9 @@ public class CommunityServiceTest {
 
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testFindFollowedWithNegativePageNumber() throws NoLoggedUserException {
+    @Test(expected = IllegalPageException.class)
+    public void testFindFollowedWithNegativePageNumber()
+            throws NoLoggedUserException, IllegalPageException, PageNotFoundException {
         final User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
         user.setId(USER_ID);
         PaginationRequest request = new PaginationRequest(-1, 10);
@@ -276,7 +282,8 @@ public class CommunityServiceTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testFindFollowedWithZeroPageSize() throws NoLoggedUserException {
+    public void testFindFollowedWithZeroPageSize()
+            throws NoLoggedUserException, PageNotFoundException, IllegalPageException {
         final User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
         user.setId(USER_ID);
         PaginationRequest request = new PaginationRequest(1, 0);
@@ -375,7 +382,7 @@ public class CommunityServiceTest {
     @Test
     public void testEditCommunityInfoWithValidCommunity() throws NoSuchCommunityException {
         MultipartFile mockMultipartFile = Mockito.mock(MultipartFile.class);
-
+        byte[] image = { 0 };
         Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER,
                 COMMUNITY_DEVELOPER, RELEASE_DATE);
         community.setCategory(Arrays.asList(CommunityCategories.Action, CommunityCategories.Adventure));
@@ -384,17 +391,18 @@ public class CommunityServiceTest {
         when(mockDao.findByName(COMMUNITY_NAME)).thenReturn(Optional.of(community));
         when(mockDao.findById(COMMUNITY_ID)).thenReturn(Optional.of(community));
         cs.editCommunityInfo(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER,
-                mockMultipartFile, "RPG");
+                image, "RPG");
     }
 
     @Test(expected = NoSuchCommunityException.class)
     public void testEditCommunityInfoWithInvalidCommunity() throws NoSuchCommunityException {
         MultipartFile mockMultipartFile = Mockito.mock(MultipartFile.class);
 
+        byte[] image = { 0 };
         when(mockDao.findByName(COMMUNITY_NAME)).thenReturn(Optional.empty());
 
         cs.editCommunityInfo(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER,
-                mockMultipartFile, "RPG");
+                image, "RPG");
     }
 
     @Test

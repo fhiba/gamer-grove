@@ -10,7 +10,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import ar.edu.itba.paw.services.PostService;
 import ar.edu.itba.paw.services.UserService;
+import ar.edu.itba.paw.exceptions.NoSuchPostException;
 import ar.edu.itba.paw.models.User;
 
 @Component
@@ -21,8 +23,23 @@ public class AccessControl {
     @Autowired
     private UserService us;
 
+    @Autowired
+    private PostService ps;
+
+    @Transactional(readOnly = true)
+    public boolean notGroovedYet(HttpServletRequest request, long postId) throws NoSuchPostException {
+        Optional<User> user = us.getLoggedUser();
+
+        if (user.isEmpty()) {
+            return false;
+        }
+
+        return ps.checkGrooviness(postId).isEmpty();
+    }
+
     @Transactional(readOnly = true)
     public boolean checkUser(HttpServletRequest request, long userId) {
+
         Optional<User> user = us.getLoggedUser();
         return user.isPresent() ? user.get().getId().equals(userId) : false;
     }

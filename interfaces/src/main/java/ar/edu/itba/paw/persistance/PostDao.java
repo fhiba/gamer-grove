@@ -12,8 +12,8 @@ public interface PostDao {
 
     List<Post> findAllPosts();
 
-    Post createPost(String title, String body, User author, Community community, boolean media, LocalDateTime now, String category);
-
+    Post createPost(String title, String body, User author, Community community, boolean media, LocalDateTime now,
+            String category);
 
     List<Post> findByCategory(String category);
 
@@ -25,7 +25,7 @@ public interface PostDao {
 
     void deleteGrooviness(long postId, long id);
 
-    void updateGroovyHistory(long postId, long id,GroovyEnum groovyEnum);
+    void updateGroovyHistory(long postId, long id, GroovyEnum groovyEnum);
 
     List<Post> getMyFollowedPosts(long userId);
 
@@ -55,7 +55,9 @@ public interface PostDao {
 
     List<Post> topFivePosts();
 
-    List<Post> find(int pageSize, int offset, PostCategories category, PostOrders order, Long userId);
+    List<Post> find(int pageSize, int offset, PostCategories category, PostOrders order, Long userId,
+            Long authorId, String community, Long likerId);
 
-    Integer findCount(PostCategories category, Long userId);
+    Integer findCount(PostCategories category, Long userId,
+            Long authorId, String community, Long likerId);
 }

@@ -35,7 +35,6 @@ public class FileServiceTest {
     @InjectMocks
     private FileServiceImpl fileService;
 
-
     public static final Long COMMUNITY_ID = 1L;
     public static final Long POST_ID = 1L;
     public static final String COMMUNITY_NAME = "Test community";
@@ -45,8 +44,10 @@ public class FileServiceTest {
     public static LocalDateTime RELEASE_DATE = LocalDateTime.now();
 
     @Test
-    public void testUploadCommunityImageNewImage() throws NoSuchCommunityException, IOException, IOException, NoSuchCommunityException {
-        Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, RELEASE_DATE);
+    public void testUploadCommunityImageNewImage()
+            throws NoSuchCommunityException, IOException, IOException, NoSuchCommunityException {
+        Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER,
+                COMMUNITY_DEVELOPER, RELEASE_DATE);
         community.setId(COMMUNITY_ID);
         File file = new File();
         file.setImageId(1L);
@@ -55,14 +56,15 @@ public class FileServiceTest {
 
         Mockito.when(mockCommunityService.findByName(COMMUNITY_NAME)).thenReturn(community);
         Mockito.when(mockDao.uploadImage(any())).thenReturn(Optional.of(file));
-        Optional<File> result = fileService.uploadCommunityImage(COMMUNITY_NAME, mf);
+        Optional<File> result = fileService.uploadCommunityImage(COMMUNITY_NAME, "Hello, World!".getBytes());
 
         Assert.assertTrue(result.isPresent());
     }
 
     @Test
     public void testUploadCommunityImageUpdateImage() throws NoSuchCommunityException, IOException {
-        Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER, COMMUNITY_DEVELOPER, RELEASE_DATE);
+        Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER,
+                COMMUNITY_DEVELOPER, RELEASE_DATE);
         community.setId(COMMUNITY_ID);
         community.setPortrait(new File());
 
@@ -72,7 +74,7 @@ public class FileServiceTest {
         Mockito.when(mockCommunityService.findByName(COMMUNITY_NAME)).thenReturn(community);
         Mockito.when(mockDao.updateFile(any(), any())).thenReturn(Optional.of(new File()));
 
-        Optional<File> result = fileService.uploadCommunityImage(COMMUNITY_NAME, file);
+        Optional<File> result = fileService.uploadCommunityImage(COMMUNITY_NAME, "Hello, World!".getBytes());
 
         Assert.assertTrue(result.isPresent());
     }
@@ -81,9 +83,10 @@ public class FileServiceTest {
     public void testUploadCommunityImageNoSuchCommunity() throws NoSuchCommunityException, IOException {
         MultipartFile file = Mockito.mock(MultipartFile.class);
 
-        Mockito.when(mockCommunityService.findByName(COMMUNITY_NAME)).thenThrow(new NoSuchCommunityException("test throw"));
+        Mockito.when(mockCommunityService.findByName(COMMUNITY_NAME))
+                .thenThrow(new NoSuchCommunityException());
 
-        fileService.uploadCommunityImage(COMMUNITY_NAME, file);
+        fileService.uploadCommunityImage(COMMUNITY_NAME, "Hello, World!".getBytes());
     }
 
     @Test
@@ -96,7 +99,7 @@ public class FileServiceTest {
 
         Mockito.when(mockDao.uploadImage(any())).thenReturn(Optional.of(image));
 
-        fileService.uploadPostImage(file, POST_ID);
+        fileService.uploadPostImage("Hello world!".getBytes(), POST_ID);
 
     }
 
@@ -107,8 +110,7 @@ public class FileServiceTest {
 
         Mockito.when(mockDao.uploadImage(any())).thenReturn(Optional.empty());
 
-        fileService.uploadPostImage(file, POST_ID);
+        fileService.uploadPostImage("Hello world!".getBytes(), POST_ID);
     }
-
 
 }

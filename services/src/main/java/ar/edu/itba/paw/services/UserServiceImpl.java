@@ -16,7 +16,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 
@@ -24,7 +23,6 @@ import java.util.*;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private static final int PAGE_SIZE = 10;
     private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Autowired
@@ -117,14 +115,15 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void resetPassword(String token, String password) throws NoSuchTokenException {
+    public void resetPassword(String token, String password) throws NoSuchTokenException, UserNotFoundException {
         Optional<Long> maybeId = tokenService.getUserIdFromToken(token, "ResetPass");
         if (maybeId.isEmpty()) {
             LOGGER.atError().setMessage("Token {} does not exist when trying to reset password").addArgument(token)
                     .log();
             throw new NoSuchTokenException();
         }
-        User user = userDao.findById(maybeId.orElseThrow()).orElseThrow();
+        User user = userDao.findById(maybeId.get())
+                .orElseThrow(UserNotFoundException::new);
         userDao.updatePassword(user, passwordEncoder.encode(password));
         tokenService.deleteResetTokens(maybeId.get());
         LOGGER.atInfo().setMessage("Password of user {} updated with token {}").addArgument(() -> user.getUsername())

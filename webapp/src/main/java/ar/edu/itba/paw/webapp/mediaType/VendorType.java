@@ -7,4 +7,5 @@ public class VendorType {
     public static final String APPLICATION_PASSWORD_RESET = "application/vnd.password_reset.v1+json";
     public static final String APPLICATION_IMAGE = "application/vnd.images.v1+json";
     public static final String APPLICATION_LOCALE = "application/vnd.locale.v1+json";
+    public static final String APPLICATION_COMMUNITY = "application/vnd.communities.v1+json";
 }
