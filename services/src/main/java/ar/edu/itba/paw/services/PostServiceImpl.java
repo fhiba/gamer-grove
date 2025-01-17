@@ -131,14 +131,17 @@ public class PostServiceImpl implements PostService {
 
     @Transactional
     @Override
-    public void createGrooviness(GroovyEnum groovyness, long postId) throws NoSuchPostException, NoLoggedUserException {
+    public void createGrooviness(GroovyEnum groovyness, long postId)
+            throws NoSuchPostException, NoLoggedUserException, PostAlreadyGroovedException {
         Optional<Post> post = postDao.findById(postId);
         User user = userService.getLoggedUser().orElseThrow(NoLoggedUserException::new);
         if (post.isEmpty()) {
             LOGGER.atWarn().setMessage("No post with id {} found").addArgument(postId).log();
             throw new NoSuchPostException();
         }
-
+        if (checkGrooviness(post.get().getId()).isPresent()) {
+            throw new PostAlreadyGroovedException();
+        }
         postDao.addToGroovy(user, post.get(), groovyness);
         postDao.editGrooviness(postId, groovyness);
 
@@ -146,7 +149,8 @@ public class PostServiceImpl implements PostService {
 
     @Transactional
     @Override
-    public void deleteGrooviness(long postId) throws NoSuchPostException, NoLoggedUserException {
+    public void deleteGrooviness(long postId)
+            throws NoSuchPostException, NoLoggedUserException, NoSuchGroovyPostHistory {
         Optional<Post> post = postDao.findById(postId);
         User user = userService.getLoggedUser().orElseThrow(NoLoggedUserException::new);
         if (post.isEmpty()) {
@@ -154,7 +158,7 @@ public class PostServiceImpl implements PostService {
         }
         Optional<GroovyEnum> groovyness = postDao.checkGrooviness(postId, user.getId());
         if (groovyness.isEmpty()) {
-            return;
+            throw new NoSuchGroovyPostHistory();
         }
         postDao.deleteGrooviness(postId, user.getId());
         GroovyEnum modifier = groovyness.get() == GroovyEnum.UP ? GroovyEnum.DOWN : GroovyEnum.UP;
@@ -163,19 +167,21 @@ public class PostServiceImpl implements PostService {
 
     @Transactional
     @Override
-    public void editGrooviness(GroovyEnum grooviness, long postId) throws NoSuchPostException, NoLoggedUserException {
+    public void editGrooviness(GroovyEnum grooviness, long postId)
+            throws NoSuchPostException, NoLoggedUserException, NoSuchGroovyPostHistory {
         Optional<Post> post = postDao.findById(postId);
         User user = userService.getLoggedUser().orElseThrow(NoLoggedUserException::new);
         if (post.isEmpty()) {
             LOGGER.atWarn().setMessage("No post with id {} found").addArgument(postId).log();
-            // TODO: Ver que este ya fixeado en la interface para no pifiar los msjs
             throw new NoSuchPostException();
         }
 
         Optional<GroovyEnum> isGroovy = postDao.checkGrooviness(postId, user.getId());
-        // TODO: tecnicamente si no existe no deberia dejarte seguir... Controlado en el
-        // TODO: auth y 500 por hacer un get si es null
+        if (isGroovy.isEmpty()) {
+            throw new NoSuchGroovyPostHistory();
+        }
         GroovyEnum toUpdate = isGroovy.get();
+        LOGGER.info("To update: {} - Update value: {}", toUpdate.getValue(), grooviness.getValue());
         switch (grooviness) {
             case GroovyEnum.UP:
                 if (toUpdate == GroovyEnum.UP) {

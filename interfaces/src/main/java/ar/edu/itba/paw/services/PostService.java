@@ -3,15 +3,14 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.exceptions.IllegalPageException;
 import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
+import ar.edu.itba.paw.exceptions.NoSuchGroovyPostHistory;
 import ar.edu.itba.paw.exceptions.NoSuchPostException;
 import ar.edu.itba.paw.exceptions.PageNotFoundException;
-import ar.edu.itba.paw.exceptions.UserNotFoundException;
+import ar.edu.itba.paw.exceptions.PostAlreadyGroovedException;
 import ar.edu.itba.paw.models.GroovyEnum;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
 import ar.edu.itba.paw.models.pagination.PaginationRequest;
-import org.springframework.web.multipart.MultipartFile;
-import ar.edu.itba.paw.models.User;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,13 +29,15 @@ public interface PostService {
     Post getPostByIdWithImage(long postId) throws NoSuchPostException;
 
     void editGrooviness(GroovyEnum grooviness, long postId)
-            throws NoSuchPostException, NoLoggedUserException;
+            throws NoSuchPostException, NoLoggedUserException, NoSuchGroovyPostHistory;
 
-    void deleteGrooviness(long postId) throws NoSuchPostException, NoLoggedUserException;
+    void deleteGrooviness(long postId) throws NoSuchPostException, NoLoggedUserException, NoSuchGroovyPostHistory;
 
-    void createGrooviness(GroovyEnum groovyness, long postId) throws NoSuchPostException, NoLoggedUserException;
+    void createGrooviness(GroovyEnum groovyness, long postId)
+            throws NoSuchPostException, NoLoggedUserException, PostAlreadyGroovedException;
 
-    Optional<GroovyEnum> checkGrooviness(long postId) throws NoLoggedUserException, NoSuchPostException;
+    Optional<GroovyEnum> checkGrooviness(long postId)
+            throws NoLoggedUserException, NoSuchPostException, NoSuchGroovyPostHistory;
 
     PaginatedDataWrapper<Post> getUserFollowedPostsPaginated(String category, String order, long userId,
             PaginationRequest request);

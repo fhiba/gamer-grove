@@ -5,8 +5,6 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,18 +25,7 @@ public class AccessControl {
     private PostService ps;
 
     @Transactional(readOnly = true)
-    public boolean notGroovedYet(HttpServletRequest request, long postId) throws NoSuchPostException {
-        Optional<User> user = us.getLoggedUser();
-
-        if (user.isEmpty()) {
-            return false;
-        }
-
-        return ps.checkGrooviness(postId).isEmpty();
-    }
-
-    @Transactional(readOnly = true)
-    public boolean checkUser(HttpServletRequest request, long userId) {
+    public boolean checkUser(HttpServletRequest request, Long userId) {
 
         Optional<User> user = us.getLoggedUser();
         return user.isPresent() ? user.get().getId().equals(userId) : false;
@@ -51,7 +38,7 @@ public class AccessControl {
     }
 
     @Transactional(readOnly = true)
-    public boolean imageIsUserImage(HttpServletRequest request, long imageId) {
+    public boolean imageIsUserImage(HttpServletRequest request, Long imageId) {
         Optional<User> user = us.getLoggedUser();
         return user.filter(value -> value.getImage() != null && value.getImage().getImageId() == imageId).isPresent();
     }
@@ -65,7 +52,6 @@ public class AccessControl {
         try {
             id = Long.valueOf(param);
         } catch (Exception e) {
-            // TODO: handle exception
             LOGGER.error("Error parsing followedBy parameter");
             return false;
         }

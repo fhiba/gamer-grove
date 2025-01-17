@@ -100,10 +100,10 @@ public class PostController {
         return Response.ok(PostDTO.mapper(uriInfo).apply(post)).build();
     }
 
-    // TODO: Crear constraint para ver que toda la lista sean imagenes
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public Response createPost(@FilesMustBeImagesConstraint(message="{Images}") @FormDataParam("images") FormDataBodyPart imageDetails,
+    public Response createPost(
+            @FilesMustBeImagesConstraint(message = "{Images}") @FormDataParam("images") FormDataBodyPart imageDetails,
             @NotBlank @Size(min = 1, max = 150) @FormDataParam("title") String title,
             @NotBlank @Size(min = 1) @FormDataParam("body") String body,
             @NotBlank @ValidCommunityConstraint @FormDataParam("community") String community,
@@ -132,7 +132,7 @@ public class PostController {
     @POST
     @Path("/{id}/groovyness")
     public Response groovePost(@PathParam("id") Long postId, @Valid final GrooveDTO payload)
-            throws NoLoggedUserException, NoSuchPostException {
+            throws NoLoggedUserException, NoSuchPostException, PostAlreadyGroovedException {
 
         ps.createGrooviness(GroovyEnum.fromValue(payload.getGroovy()), postId);
 
@@ -153,20 +153,20 @@ public class PostController {
     @GET
     @Path("/{id}/groovyness/{userId}")
     public Response getGroove(@PathParam("id") Long postId, @PathParam("userId") Long userId)
-            throws NoSuchPostException, UserNotFoundException {
+            throws NoSuchPostException, UserNotFoundException, NoSuchGroovyPostHistory {
 
         Optional<GroovyEnum> groovy = ps.checkGrooviness(postId);
 
-        // TODO: Maybe hacer la exception propia
         return Response.ok()
-                .entity(GroovyPostHistoryDTO.fromRating(uriInfo, groovy.orElseThrow(NotFoundException::new))).build();
+                .entity(GroovyPostHistoryDTO.fromRating(uriInfo, groovy.orElseThrow(NoSuchGroovyPostHistory::new)))
+                .build();
     }
 
     @PUT
     @Path("/{id}/groovyness/{userId}")
     public Response updateGroove(@PathParam("id") Long postId, @PathParam("userId") Long userId,
             @Valid @NotNull final GrooveDTO payload)
-            throws NoSuchPostException, UserNotFoundException {
+            throws NoSuchPostException, UserNotFoundException, NoSuchGroovyPostHistory {
         ps.editGrooviness(GroovyEnum.fromValue(payload.getGroovy()), postId);
 
         return Response.ok().build();
@@ -175,7 +175,7 @@ public class PostController {
     @DELETE
     @Path("/{id}/groovyness/{userId}")
     public Response deleteGroove(@PathParam("id") Long postId, @PathParam("userId") Long userId)
-            throws NoSuchPostException, UserNotFoundException {
+            throws NoSuchPostException, UserNotFoundException, NoSuchGroovyPostHistory {
         ps.deleteGrooviness(postId);
 
         return Response.ok().build();
