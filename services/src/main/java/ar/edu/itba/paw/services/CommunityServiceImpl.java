@@ -1,5 +1,7 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.exceptions.AlreadyFollowedException;
+import ar.edu.itba.paw.exceptions.CommunityNotFollowedException;
 import ar.edu.itba.paw.exceptions.IllegalPageException;
 import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
@@ -203,6 +205,37 @@ public class CommunityServiceImpl implements CommunityService {
         for (String category : categories) {
             addCategory(id, category);
         }
+    }
+
+    @Transactional
+    @Override
+    public Boolean unfollowCommunity(String communityName)
+            throws NoSuchCommunityException, NoLoggedUserException, CommunityNotFollowedException {
+        User user = userService.getLoggedUser().orElseThrow(NoLoggedUserException::new);
+        Community community = findByName(communityName);
+        if (!communityDao.checkIfUserFollowsCommunity(user.getId(), community.getId())) {
+            LOGGER.atError().setMessage("User {} does not follow community {}").addArgument(() -> user.getUsername())
+                    .addArgument(communityName).log();
+            throw new CommunityNotFollowedException();
+        }
+        communityDao.unfollowCommunity(user.getId(), community.getId());
+        return true;
+    }
+
+    @Transactional
+    @Override
+    public Boolean followCommunity(String communityName)
+            throws NoLoggedUserException, NoSuchCommunityException, AlreadyFollowedException {
+        User user = userService.getLoggedUser().orElseThrow(NoLoggedUserException::new);
+        Community community = findByName(communityName);
+        if (communityDao.checkIfUserFollowsCommunity(user.getId(), community.getId())) {
+            LOGGER.atError().setMessage("User {} already follows community {}").addArgument(() -> user.getUsername())
+                    .addArgument(communityName).log();
+            throw new AlreadyFollowedException();
+        }
+        communityDao.followCommunity(user.getId(), community.getId(), communityName);
+        return true;
+
     }
 
     @Transactional

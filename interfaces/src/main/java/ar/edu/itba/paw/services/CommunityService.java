@@ -1,5 +1,7 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.exceptions.AlreadyFollowedException;
+import ar.edu.itba.paw.exceptions.CommunityNotFollowedException;
 import ar.edu.itba.paw.exceptions.IllegalPageException;
 import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
@@ -52,4 +54,9 @@ public interface CommunityService {
     void editCommunityInfo(String communityName, String description, String publisher, String developer,
             byte[] image, String categories) throws NoSuchCommunityException;
 
+    Boolean followCommunity(String communityName)
+            throws NoSuchCommunityException, AlreadyFollowedException, NoLoggedUserException;
+
+    Boolean unfollowCommunity(String communityName) throws NoSuchCommunityException, NoLoggedUserException,
+            CommunityNotFollowedException;
 }

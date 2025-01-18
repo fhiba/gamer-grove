@@ -230,7 +230,6 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 
                 .requestMatchers(HttpMethod.POST, "/api/posts/{postId}/groovyness")
                 .access(HAS_ROLE_VERIFIED)
-
                 .requestMatchers(HttpMethod.PUT, "/api/posts/{postId}/groovyness/{userId}")
                 .access(HAS_ROLE_VERIFIED + AND + ACCESS_CONTROL_CHECK_USER)
 
@@ -239,10 +238,19 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 .requestMatchers(HttpMethod.GET, "/api/posts/{postId}/groovyness/{userId}")
                 .access(HAS_ROLE_VERIFIED + AND + ACCESS_CONTROL_CHECK_USER)
 
-                .antMatchers("/api/**")
-                .permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/communities/{communityName}/followers")
+                .access(HAS_ROLE_VERIFIED)
 
-                // Disable client-side cache handling
+                .requestMatchers(HttpMethod.DELETE, "/api/communities/{communityName}/followers/{userId}")
+                .access(HAS_ROLE_VERIFIED + AND + ACCESS_CONTROL_CHECK_USER)
+
+                // TODO: Pensar como exponer el following
+                // .requestMatchers(HttpMethod.GET,
+                // "/api/communities/{communityName}/followers/{userId}")
+                // .access(HAS_ROLE_VERIFIED + AND + ACCESS_CONTROL_CHECK_USER)
+
+                .antMatchers("/api/**")
+                .permitAll() // Disable client-side cache handling
                 .and().headers().cacheControl().disable()
 
                 .and()
