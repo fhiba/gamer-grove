@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.exceptions.NoSuchRatingException;
 import ar.edu.itba.paw.models.Community;
 import ar.edu.itba.paw.models.Rating;
 import ar.edu.itba.paw.models.User;
@@ -14,16 +15,21 @@ import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
-public class RatingServiceImpl implements RatingService{
+public class RatingServiceImpl implements RatingService {
     private static final Logger LOGGER = LoggerFactory.getLogger(RatingServiceImpl.class);
 
     @Autowired
     private RatingDao ratingDao;
+
     @Override
     @Transactional
     public Rating createRating(User user, Community community, Float ratingValue) {
         Rating rating = ratingDao.createRating(user, community, ratingValue);
-        LOGGER.atInfo().setMessage("User {} rate community {} with {} sucessfully").addArgument(()->user.getUsername()).addArgument(()->community.getName()).addArgument(ratingValue).log();
+
+        LOGGER.atInfo().setMessage("User {} rate community {} with {} sucessfully")
+                .addArgument(() -> user.getUsername()).addArgument(() -> community.getName()).addArgument(ratingValue)
+                .log();
+        LOGGER.info("Rating: {}", rating);
         return rating;
     }
 
@@ -34,14 +40,24 @@ public class RatingServiceImpl implements RatingService{
 
     @Transactional
     @Override
+    public Rating updateRating(User user, Community community, Float rating) throws NoSuchRatingException {
+        Rating maybeRating = getRatingById(user, community).orElseThrow(NoSuchRatingException::new);
+
+        return ratingDao.updateRating(maybeRating, rating);
+    };
+
+    @Transactional
+    @Override
     public Boolean deleteRating(User user, Community community) {
-        Optional<Rating> maybeRating = getRatingById(user,community);
-        if(maybeRating.isPresent()) {
+        Optional<Rating> maybeRating = getRatingById(user, community);
+        if (maybeRating.isPresent()) {
             ratingDao.deleteRating(maybeRating.get());
-            LOGGER.atInfo().setMessage("Deleted rating of user {} in community {} sucessfully").addArgument(()->user.getUsername()).addArgument(()->community.getName()).log();
+            LOGGER.atInfo().setMessage("Deleted rating of user {} in community {} sucessfully")
+                    .addArgument(() -> user.getUsername()).addArgument(() -> community.getName()).log();
             return true;
         }
-        LOGGER.atWarn().setMessage("Cannot delete a rating that does not exists, {} {}").addArgument(()->user.getUsername()).addArgument(()->community.getName()).log();
+        LOGGER.atWarn().setMessage("Cannot delete a rating that does not exists, {} {}")
+                .addArgument(() -> user.getUsername()).addArgument(() -> community.getName()).log();
         return false;
     }
 }

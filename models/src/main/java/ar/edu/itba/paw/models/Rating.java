@@ -68,10 +68,13 @@ public class Rating {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o)
+                return true;
+            if (o == null || getClass() != o.getClass())
+                return false;
             RatingKey ratingKey = (RatingKey) o;
-            return Objects.equals(user.getId(), ratingKey.user.getId()) && Objects.equals(community.getId(), ratingKey.community.getId());
+            return Objects.equals(user.getId(), ratingKey.user.getId())
+                    && Objects.equals(community.getId(), ratingKey.community.getId());
         }
 
         @Override

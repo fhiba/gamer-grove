@@ -5,8 +5,12 @@ import ar.edu.itba.paw.exceptions.CommunityNotFollowedException;
 import ar.edu.itba.paw.exceptions.IllegalPageException;
 import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
+import ar.edu.itba.paw.exceptions.NoSuchRatingException;
 import ar.edu.itba.paw.exceptions.PageNotFoundException;
+import ar.edu.itba.paw.exceptions.NotRatedCommunityException;
+import ar.edu.itba.paw.exceptions.AlreadyRatedCommunityException;
 import ar.edu.itba.paw.models.Community;
+import ar.edu.itba.paw.models.Rating;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
 import ar.edu.itba.paw.models.pagination.PaginationRequest;
@@ -26,7 +30,14 @@ public interface CommunityService {
 
     Community findById(final long communityId) throws NoSuchCommunityException;
 
-    Community updateRating(Long community_id, float rating) throws NoSuchCommunityException, NoLoggedUserException;
+    Rating updateRating(String communityName, float rating)
+            throws NoSuchCommunityException, NoLoggedUserException, NotRatedCommunityException, NoSuchRatingException;
+
+    Boolean deleteRating(String communityName)
+            throws NoLoggedUserException, NoSuchCommunityException, NotRatedCommunityException;
+
+    Rating getRatingFromLoggedUser(String communityName)
+            throws NoSuchCommunityException, NoLoggedUserException, NoSuchRatingException;
 
     Community discountRating(String communityName, Float rating) throws NoSuchCommunityException, NoLoggedUserException;
 
@@ -59,4 +70,7 @@ public interface CommunityService {
 
     Boolean unfollowCommunity(String communityName) throws NoSuchCommunityException, NoLoggedUserException,
             CommunityNotFollowedException;
+
+    Rating giveRating(String communityName, Float rating)
+            throws NoSuchCommunityException, NoLoggedUserException, AlreadyRatedCommunityException;
 }

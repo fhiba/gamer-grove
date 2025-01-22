@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @Repository
 @Primary
-public class RatingDaoJpa implements RatingDao{
+public class RatingDaoJpa implements RatingDao {
 
     @PersistenceContext
     private EntityManager em;
@@ -21,6 +21,7 @@ public class RatingDaoJpa implements RatingDao{
     public Rating createRating(User user, Community community, Float rating) {
         Rating newRating = new Rating(user, community, rating);
         em.persist(newRating);
+
         return newRating;
     }
 

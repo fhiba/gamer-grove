@@ -5,8 +5,12 @@ import ar.edu.itba.paw.exceptions.CommunityNotFollowedException;
 import ar.edu.itba.paw.exceptions.IllegalPageException;
 import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
+import ar.edu.itba.paw.exceptions.NoSuchRatingException;
+import ar.edu.itba.paw.exceptions.NotRatedCommunityException;
 import ar.edu.itba.paw.exceptions.PageNotFoundException;
+import ar.edu.itba.paw.exceptions.AlreadyRatedCommunityException;
 import ar.edu.itba.paw.models.Community;
+import ar.edu.itba.paw.models.Rating;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
 import ar.edu.itba.paw.models.pagination.PaginationRequest;
@@ -89,18 +93,45 @@ public class CommunityServiceImpl implements CommunityService {
 
     @Override
     @Transactional
-    public Community updateRating(Long communityId, float rating)
-            throws NoSuchCommunityException, NoLoggedUserException {
-        Community community = findById(communityId);
-        Optional<User> user = userService.getLoggedUser();
-        if (user.isEmpty()) {
-            LOGGER.atError().setMessage("Error while trying updating rating because there is no logged user").log();
-            throw new NoLoggedUserException();
+    public Rating updateRating(String communityName, float rating)
+            throws NoSuchCommunityException, NoLoggedUserException, NotRatedCommunityException, NoSuchRatingException {
+        Community community = communityDao.findByName(communityName).orElseThrow(NoSuchCommunityException::new);
+        User user = userService.getLoggedUser().orElseThrow(NoLoggedUserException::new);
+
+        Optional<Rating> rate = ratingService.getRatingById(user, community);
+        if (rate.isEmpty()) {
+            throw new NotRatedCommunityException();
         }
-        ratingService.createRating(user.get(), community, rating);
-        LOGGER.atInfo().setMessage("Rating of community {} updated {}").addArgument(communityId)
-                .addArgument(() -> community.getRatingCount()).log();
-        return communityDao.updateRating(community, rating, 1);
+
+        Float diff = rating - rate.get().getRating();
+
+        community = communityDao.updateRating(community, diff, 0);
+        return ratingService.updateRating(user, community, rating);
+    }
+
+    @Override
+    @Transactional
+    public Boolean deleteRating(String communityName)
+            throws NoLoggedUserException, NoSuchCommunityException, NotRatedCommunityException {
+        Community community = communityDao.findByName(communityName).orElseThrow(NoSuchCommunityException::new);
+        User user = userService.getLoggedUser().orElseThrow(NoLoggedUserException::new);
+
+        Rating rating = ratingService.getRatingById(user, community).orElseThrow(NotRatedCommunityException::new);
+
+        communityDao.updateRating(community, -rating.getRating(), -1);
+        return ratingService.deleteRating(user, community);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Rating getRatingFromLoggedUser(String communityName)
+            throws NoSuchCommunityException, NoLoggedUserException, NoSuchRatingException {
+
+        Community community = findByName(communityName);
+        LOGGER.info("Community found: {}", community.getName());
+        User user = userService.getLoggedUser().orElseThrow(NoLoggedUserException::new);
+        LOGGER.info("User found: {}", user.getId());
+        return ratingService.getRatingById(user, community).orElseThrow(NoSuchRatingException::new);
     }
 
     @Transactional
@@ -311,5 +342,21 @@ public class CommunityServiceImpl implements CommunityService {
         if (followedCommunities.isEmpty())
             return Collections.emptyList();
         return followedCommunities;
+    }
+
+    @Override
+    @Transactional
+    public Rating giveRating(String communityName, Float rating)
+            throws NoSuchCommunityException, NoLoggedUserException, AlreadyRatedCommunityException {
+        Community community = findByName(communityName);
+        User user = userService.getLoggedUser().orElseThrow(NoLoggedUserException::new);
+        if (ratingService.getRatingById(user, community).isPresent()) {
+            throw new AlreadyRatedCommunityException();
+        }
+        Rating r = ratingService.createRating(user, community, rating);
+
+        communityDao.updateRating(community, rating, 1);
+        return r;
+
     }
 }

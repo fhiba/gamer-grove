@@ -249,6 +249,18 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 // "/api/communities/{communityName}/followers/{userId}")
                 // .access(HAS_ROLE_VERIFIED + AND + ACCESS_CONTROL_CHECK_USER)
 
+                .requestMatchers(HttpMethod.POST, "/api/communities/{communityName}/ratings")
+                .access(HAS_ROLE_VERIFIED)
+
+                .requestMatchers(HttpMethod.PUT, "/api/communities/{communityName}/ratings/{userId}")
+                .access(HAS_ROLE_VERIFIED + AND + ACCESS_CONTROL_CHECK_USER)
+
+                .requestMatchers(HttpMethod.GET, "/api/communities/{communityName}/ratings/{userId}")
+                .access(HAS_ROLE_VERIFIED + AND + ACCESS_CONTROL_CHECK_USER)
+
+                .requestMatchers(HttpMethod.DELETE, "/api/communities/{communityName}/ratings/{userId}")
+                .access(HAS_ROLE_VERIFIED + AND + ACCESS_CONTROL_CHECK_USER)
+
                 .antMatchers("/api/**")
                 .permitAll() // Disable client-side cache handling
                 .and().headers().cacheControl().disable()
