@@ -1,11 +1,7 @@
 package ar.edu.itba.paw.webapp.dto;
 
 import ar.edu.itba.paw.models.Comment;
-import ar.edu.itba.paw.models.Community;
-import ar.edu.itba.paw.models.Post;
-import ar.edu.itba.paw.models.User;
 
-import javax.persistence.*;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.time.LocalDateTime;
@@ -33,7 +29,8 @@ public class CommentDTO {
 
     public static CommentDTO fromComment(UriInfo uriInfo, Comment c) {
         final CommentDTO dto = new CommentDTO();
-        dto.self = uriInfo.getBaseUriBuilder().path("comments").path(String.valueOf(c.getId())).build();
+        dto.self = uriInfo.getBaseUriBuilder().path("posts").path(c.getPost().getId().toString()).path("comments")
+                .path(String.valueOf(c.getId())).build();
         dto.author = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(c.getAuthor().getId())).build();
         dto.post = uriInfo.getBaseUriBuilder().path("posts").path(String.valueOf(c.getPost().getId())).build();
         dto.body = c.getBody();

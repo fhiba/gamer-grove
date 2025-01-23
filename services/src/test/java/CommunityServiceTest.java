@@ -1,6 +1,8 @@
 import ar.edu.itba.paw.exceptions.IllegalPageException;
 import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
+import ar.edu.itba.paw.exceptions.NoSuchRatingException;
+import ar.edu.itba.paw.exceptions.NotRatedCommunityException;
 import ar.edu.itba.paw.exceptions.PageNotFoundException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
@@ -101,36 +103,39 @@ public class CommunityServiceTest {
     }
 
     @Test
-    public void testUpdateRatingWithValidCommunityAndUser() throws NoSuchCommunityException, NoLoggedUserException {
+    public void testUpdateRatingWithValidCommunityAndUser()
+            throws NoSuchCommunityException, NoLoggedUserException, NoSuchRatingException, NotRatedCommunityException {
         Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER,
                 COMMUNITY_DEVELOPER, RELEASE_DATE);
         community.setId(COMMUNITY_ID);
         final User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
         user.setId(USER_ID);
         final Rating rating = new Rating(user, community, RATING);
-        when(mockDao.findById(COMMUNITY_ID)).thenReturn(Optional.of(community));
+        when(mockDao.findByName(COMMUNITY_NAME)).thenReturn(Optional.of(community));
         when(mockUserService.getLoggedUser()).thenReturn(Optional.of(user));
         when(mockRatingService.createRating(any(User.class), any(Community.class), anyFloat())).thenReturn(rating);
         when(mockDao.updateRating(any(Community.class), anyFloat(), anyInt())).thenReturn(community);
-        cs.updateRating(COMMUNITY_ID, RATING);
+        cs.updateRating(COMMUNITY_NAME, RATING);
     }
 
     @Test(expected = NoSuchCommunityException.class)
-    public void testUpdateRatingWithInvalidCommunity() throws NoSuchCommunityException, NoLoggedUserException {
-        when(mockDao.findById(COMMUNITY_ID)).thenReturn(Optional.empty());
+    public void testUpdateRatingWithInvalidCommunity()
+            throws NoSuchCommunityException, NoLoggedUserException, NoSuchRatingException, NotRatedCommunityException {
+        when(mockDao.findByName(COMMUNITY_NAME)).thenReturn(Optional.empty());
 
-        cs.updateRating(COMMUNITY_ID, RATING);
+        cs.updateRating(COMMUNITY_NAME, RATING);
     }
 
     @Test(expected = NoLoggedUserException.class)
-    public void testUpdateRatingWithNoLoggedUser() throws NoSuchCommunityException, NoLoggedUserException {
+    public void testUpdateRatingWithNoLoggedUser()
+            throws NoSuchCommunityException, NoLoggedUserException, NoSuchRatingException, NotRatedCommunityException {
         Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER,
                 COMMUNITY_DEVELOPER, RELEASE_DATE);
         community.setId(COMMUNITY_ID);
-        when(mockDao.findById(COMMUNITY_ID)).thenReturn(Optional.of(community));
+        when(mockDao.findByName(COMMUNITY_NAME)).thenReturn(Optional.of(community));
         when(mockUserService.getLoggedUser()).thenReturn(Optional.empty());
 
-        cs.updateRating(COMMUNITY_ID, RATING);
+        cs.updateRating(COMMUNITY_NAME, RATING);
     }
 
     @Test

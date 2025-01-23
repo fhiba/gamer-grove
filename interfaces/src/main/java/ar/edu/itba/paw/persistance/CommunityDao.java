@@ -11,7 +11,8 @@ public interface CommunityDao {
 
     Optional<Community> findById(final long id);
 
-    Community createCommunity(String name, String description, String developer, String publisher, LocalDateTime releaseDate);
+    Community createCommunity(String name, String description, String developer, String publisher,
+            LocalDateTime releaseDate);
 
     List<Community> findAllCommunities();
 
@@ -19,22 +20,21 @@ public interface CommunityDao {
 
     Community updateRating(Community community, float rating, Integer count);
 
-
-    List<Community> find(int pageSize,int offset,String searchTerms, List<String> categories, Long userId);
+    List<Community> find(int pageSize, int offset, String searchTerms, List<String> categories, Long userId);
 
     Boolean addCategory(final long id, String category);
+
     Community addCategory(Community community, String category);
 
     Boolean removeCategory(final long id, String category);
 
     Community removeCategory(Community community, String category);
 
-    Boolean checkIfUserFollowsCommunity(long userId, int communityId);
+    Boolean checkIfUserFollowsCommunity(long userId, long communityId);
 
-    void unfollowCommunity(long id, int communityId);
+    void unfollowCommunity(long id, long communityId);
 
-
-    void followCommunity(long id, int communityId,String communityName);
+    void followCommunity(long id, long communityId, String communityName);
 
     List<Community> getFollowedCommunitiesLimitedBy(Long userId, Integer limit);
 
@@ -43,6 +43,5 @@ public interface CommunityDao {
     void editCommunityInfo(String communityName, String description, String publisher, String developer);
 
     int findCount(String searchTerms, List<String> categories, Long userId);
-
 
 }

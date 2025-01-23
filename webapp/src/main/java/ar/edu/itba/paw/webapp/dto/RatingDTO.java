@@ -22,7 +22,8 @@ public class RatingDTO {
     public static RatingDTO fromRating(UriInfo uriInfo, Rating r) {
         final RatingDTO dto = new RatingDTO();
         dto.user = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(r.getUser().getId())).build();
-        dto.community = uriInfo.getBaseUriBuilder().path("communities").path(String.valueOf(r.getUser().getId())).build();
+        dto.community = uriInfo.getBaseUriBuilder().path("communities").path(String.valueOf(r.getCommunity().getName()))
+                .build();
         dto.rating = r.getRating();
         return dto;
     }

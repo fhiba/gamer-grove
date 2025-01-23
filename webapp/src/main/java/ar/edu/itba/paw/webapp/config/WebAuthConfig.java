@@ -25,21 +25,14 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.access.expression.WebExpressionVoter;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import javax.servlet.http.HttpServletResponse;
 
 import ar.edu.itba.paw.webapp.auth.*;
 import static org.springframework.web.cors.CorsConfiguration.ALL;
@@ -48,7 +41,6 @@ import static org.springframework.web.cors.CorsConfiguration.ALL;
 @Configuration
 @ComponentScan("ar.edu.itba.paw.webapp.auth")
 public class WebAuthConfig extends WebSecurityConfigurerAdapter {
-    private static final String ACCESS_CONTROL_NOT_GROOVED_YET = "@accessControl.notGroovedYet(request, #id)";
     private static final String ACCESS_CONTROL_CHECK_USER = "@accessControl.checkUser(request, #userId)";
     private static final String ACCESS_CONTROL_USER_HAS_IMAGE = "@accessControl.userHasImage(request)";
     private static final String ACCESS_CONTROL_IMAGE_IS_USER_IMAGE = "@accessControl.imageIsUserImage(request, #id)";
@@ -60,7 +52,6 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
     private static final String HAS_ROLE_VERIFIED = "hasRole('ROLE_VERIFIED')";
     private static final String NOT = "!";
 
-    private static final String IS_AUTHENTICATED = "isAuthenticated()";
     @Autowired
     private PawUserDetailsService userDetailsService;
 
@@ -237,24 +228,64 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 .requestMatchers(HttpMethod.POST, "/api/posts")
                 .access(HAS_ROLE_VERIFIED)
 
-                .requestMatchers(HttpMethod.POST, "/api/posts/{id}/groovyness")
-                .access(HAS_ROLE_VERIFIED + AND + ACCESS_CONTROL_NOT_GROOVED_YET)
-
+                .requestMatchers(HttpMethod.POST, "/api/posts/{postId}/groovyness")
+                .access(HAS_ROLE_VERIFIED)
                 .requestMatchers(HttpMethod.PUT, "/api/posts/{postId}/groovyness/{userId}")
-                .access(HAS_ROLE_VERIFIED + AND + ACCESS_CONTROL_CHECK_USER + AND + NOT
-                        + ACCESS_CONTROL_NOT_GROOVED_YET)
+                .access(HAS_ROLE_VERIFIED + AND + ACCESS_CONTROL_CHECK_USER)
 
-                // TODO: Revisar por que no falla??
                 .requestMatchers(HttpMethod.DELETE, "/api/posts/{postId}/groovyness/{userId}")
-                .access(HAS_ROLE_VERIFIED + AND + ACCESS_CONTROL_CHECK_USER + AND + NOT
-                        + ACCESS_CONTROL_NOT_GROOVED_YET)
+                .access(HAS_ROLE_VERIFIED + AND + ACCESS_CONTROL_CHECK_USER)
                 .requestMatchers(HttpMethod.GET, "/api/posts/{postId}/groovyness/{userId}")
                 .access(HAS_ROLE_VERIFIED + AND + ACCESS_CONTROL_CHECK_USER)
 
-                .antMatchers("/api/**")
-                .permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/communities/{communityName}/followers")
+                .access(HAS_ROLE_VERIFIED)
 
-                // Disable client-side cache handling
+                .requestMatchers(HttpMethod.DELETE, "/api/communities/{communityName}/followers/{userId}")
+                .access(HAS_ROLE_VERIFIED + AND + ACCESS_CONTROL_CHECK_USER)
+
+                // TODO: Pensar como exponer el following
+                // .requestMatchers(HttpMethod.GET,
+                // "/api/communities/{communityName}/followers/{userId}")
+                // .access(HAS_ROLE_VERIFIED + AND + ACCESS_CONTROL_CHECK_USER)
+
+                .requestMatchers(HttpMethod.POST, "/api/communities/{communityName}/ratings")
+                .access(HAS_ROLE_VERIFIED)
+
+                .requestMatchers(HttpMethod.PUT, "/api/communities/{communityName}/ratings/{userId}")
+                .access(HAS_ROLE_VERIFIED + AND + ACCESS_CONTROL_CHECK_USER)
+
+                .requestMatchers(HttpMethod.GET, "/api/communities/{communityName}/ratings/{userId}")
+                .access(HAS_ROLE_VERIFIED + AND + ACCESS_CONTROL_CHECK_USER)
+
+                .requestMatchers(HttpMethod.DELETE, "/api/communities/{communityName}/ratings/{userId}")
+                .access(HAS_ROLE_VERIFIED + AND + ACCESS_CONTROL_CHECK_USER)
+
+                .requestMatchers(HttpMethod.POST, "/api/posts/{postId}/comments")
+                .access(HAS_ROLE_VERIFIED)
+
+                .requestMatchers(HttpMethod.GET, "/api/posts/{postId}/comments")
+                .permitAll()
+                //
+                // .requestMatchers(HttpMethod.GET, "/api/posts/{postId}/comments/{commentId}")
+                // .permitAll()
+                //
+                // .requestMatchers(HttpMethod.DELETE,
+                // "/api/posts/{postId}/comments/{commentId}")
+                // .access(HAS_ROLE_ADMIN)
+
+                .requestMatchers(HttpMethod.POST, "/api/posts/{postId}/comments/{commentId}/groovyness")
+                .access(HAS_ROLE_VERIFIED)
+                .requestMatchers(HttpMethod.PUT, "/api/posts/{postId}/comments/{commentId}/groovyness/{userId}")
+                .access(HAS_ROLE_VERIFIED + AND + ACCESS_CONTROL_CHECK_USER)
+
+                .requestMatchers(HttpMethod.DELETE, "/api/posts/{postId}/comments/{commentId}/groovyness/{userId}")
+                .access(HAS_ROLE_VERIFIED + AND + ACCESS_CONTROL_CHECK_USER)
+                .requestMatchers(HttpMethod.GET, "/api/posts/{postId}/comments/{commentId}/groovyness/{userId}")
+                .access(HAS_ROLE_VERIFIED + AND + ACCESS_CONTROL_CHECK_USER)
+
+                .antMatchers("/api/**")
+                .permitAll() // Disable client-side cache handling
                 .and().headers().cacheControl().disable()
 
                 .and()

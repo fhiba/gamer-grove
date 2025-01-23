@@ -1,8 +1,10 @@
 import ar.edu.itba.paw.exceptions.IllegalPageException;
 import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
+import ar.edu.itba.paw.exceptions.NoSuchGroovyPostHistory;
 import ar.edu.itba.paw.exceptions.NoSuchPostException;
 import ar.edu.itba.paw.exceptions.PageNotFoundException;
+import ar.edu.itba.paw.exceptions.PostIsDeletedException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
 import ar.edu.itba.paw.models.pagination.PaginationRequest;
@@ -16,7 +18,6 @@ import org.mockito.Mock;
 
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
@@ -170,7 +171,8 @@ public class PostServiceTest {
     }
 
     @Test
-    public void testEditGroovinessSuccess() throws NoLoggedUserException, NoSuchPostException {
+    public void testEditGroovinessSuccess()
+            throws NoLoggedUserException, NoSuchPostException, NoSuchGroovyPostHistory, PostIsDeletedException {
         final User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
         user.setId(USER_ID);
         final Community community = new Community(COMMUNITY_NAME, COMMUNITY_DESCRIPTION, COMMUNITY_PUBLISHER,
@@ -186,7 +188,8 @@ public class PostServiceTest {
     }
 
     @Test(expected = NoSuchPostException.class)
-    public void testEditGroovinessPostNotFound() throws NoSuchPostException, NoLoggedUserException {
+    public void testEditGroovinessPostNotFound()
+            throws NoSuchPostException, NoLoggedUserException, NoSuchGroovyPostHistory, PostIsDeletedException {
         final User user = new User(USERNAME, PASSWORD, EMAIL, true, "es", true);
         user.setId(USER_ID);
         when(mockUserService.getLoggedUser()).thenReturn(Optional.of(user));

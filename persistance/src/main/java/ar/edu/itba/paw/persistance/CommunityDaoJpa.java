@@ -63,7 +63,7 @@ public class CommunityDaoJpa implements CommunityDao {
         List<Long> idList = new QueryBuilder()
                 .withSearchTerms(searchTerms)
                 .withCategories(categories)
-                .followedBy(userId == 0? null: userId)
+                .followedBy(userId == 0 ? null : userId)
                 .build(pageSize, offset);
         TypedQuery<Community> query = em.createQuery("SELECT c FROM Community c WHERE c.id IN :ids", Community.class);
         query.setParameter("ids", idList);
@@ -192,7 +192,7 @@ public class CommunityDaoJpa implements CommunityDao {
     }
 
     @Override
-    public Boolean checkIfUserFollowsCommunity(long userId, int communityId) {
+    public Boolean checkIfUserFollowsCommunity(long userId, long communityId) {
         return em
                 .createNativeQuery(
                         "SELECT 1 FROM community_user WHERE user_id = :userId AND community_id = :communityId")
@@ -202,7 +202,7 @@ public class CommunityDaoJpa implements CommunityDao {
     }
 
     @Override
-    public void unfollowCommunity(long id, int communityId) {
+    public void unfollowCommunity(long id, long communityId) {
         em.createNativeQuery("DELETE FROM community_user WHERE user_id = :id AND community_id = :communityId")
                 .setParameter("id", id)
                 .setParameter("communityId", communityId)
@@ -210,7 +210,7 @@ public class CommunityDaoJpa implements CommunityDao {
     }
 
     @Override
-    public void followCommunity(long id, int communityId, String communityName) {
+    public void followCommunity(long id, long communityId, String communityName) {
         em.createNativeQuery(
                 "INSERT INTO community_user (user_id, community_id, community_name, community_role) VALUES (:id, :communityId, :communityName, :role)")
                 .setParameter("id", id)
