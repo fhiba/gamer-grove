@@ -132,12 +132,15 @@ public class PostServiceImpl implements PostService {
     @Transactional
     @Override
     public void createGrooviness(GroovyEnum groovyness, long postId)
-            throws NoSuchPostException, NoLoggedUserException, PostAlreadyGroovedException {
+            throws NoSuchPostException, NoLoggedUserException, PostAlreadyGroovedException, PostIsDeletedException {
         Optional<Post> post = postDao.findById(postId);
         User user = userService.getLoggedUser().orElseThrow(NoLoggedUserException::new);
         if (post.isEmpty()) {
             LOGGER.atWarn().setMessage("No post with id {} found").addArgument(postId).log();
             throw new NoSuchPostException();
+        }
+        if (post.get().getDeleted()) {
+            throw new PostIsDeletedException();
         }
         if (checkGrooviness(post.get().getId()).isPresent()) {
             throw new PostAlreadyGroovedException();
@@ -150,11 +153,14 @@ public class PostServiceImpl implements PostService {
     @Transactional
     @Override
     public void deleteGrooviness(long postId)
-            throws NoSuchPostException, NoLoggedUserException, NoSuchGroovyPostHistory {
+            throws NoSuchPostException, NoLoggedUserException, NoSuchGroovyPostHistory, PostIsDeletedException {
         Optional<Post> post = postDao.findById(postId);
         User user = userService.getLoggedUser().orElseThrow(NoLoggedUserException::new);
         if (post.isEmpty()) {
             LOGGER.atWarn().setMessage("No post with id {} found").addArgument(postId).log();
+        }
+        if (post.get().getDeleted()) {
+            throw new PostIsDeletedException();
         }
         Optional<GroovyEnum> groovyness = postDao.checkGrooviness(postId, user.getId());
         if (groovyness.isEmpty()) {
@@ -168,14 +174,16 @@ public class PostServiceImpl implements PostService {
     @Transactional
     @Override
     public void editGrooviness(GroovyEnum grooviness, long postId)
-            throws NoSuchPostException, NoLoggedUserException, NoSuchGroovyPostHistory {
+            throws NoSuchPostException, NoLoggedUserException, NoSuchGroovyPostHistory, PostIsDeletedException {
         Optional<Post> post = postDao.findById(postId);
         User user = userService.getLoggedUser().orElseThrow(NoLoggedUserException::new);
         if (post.isEmpty()) {
             LOGGER.atWarn().setMessage("No post with id {} found").addArgument(postId).log();
             throw new NoSuchPostException();
         }
-
+        if (post.get().getDeleted()) {
+            throw new PostIsDeletedException();
+        }
         Optional<GroovyEnum> isGroovy = postDao.checkGrooviness(postId, user.getId());
         if (isGroovy.isEmpty()) {
             throw new NoSuchGroovyPostHistory();

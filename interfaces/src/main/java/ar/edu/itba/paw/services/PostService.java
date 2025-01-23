@@ -7,6 +7,7 @@ import ar.edu.itba.paw.exceptions.NoSuchGroovyPostHistory;
 import ar.edu.itba.paw.exceptions.NoSuchPostException;
 import ar.edu.itba.paw.exceptions.PageNotFoundException;
 import ar.edu.itba.paw.exceptions.PostAlreadyGroovedException;
+import ar.edu.itba.paw.exceptions.PostIsDeletedException;
 import ar.edu.itba.paw.models.GroovyEnum;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
@@ -29,12 +30,13 @@ public interface PostService {
     Post getPostByIdWithImage(long postId) throws NoSuchPostException;
 
     void editGrooviness(GroovyEnum grooviness, long postId)
-            throws NoSuchPostException, NoLoggedUserException, NoSuchGroovyPostHistory;
+            throws NoSuchPostException, NoLoggedUserException, NoSuchGroovyPostHistory, PostIsDeletedException;
 
-    void deleteGrooviness(long postId) throws NoSuchPostException, NoLoggedUserException, NoSuchGroovyPostHistory;
+    void deleteGrooviness(long postId)
+            throws NoSuchPostException, NoLoggedUserException, NoSuchGroovyPostHistory, PostIsDeletedException;
 
     void createGrooviness(GroovyEnum groovyness, long postId)
-            throws NoSuchPostException, NoLoggedUserException, PostAlreadyGroovedException;
+            throws NoSuchPostException, NoLoggedUserException, PostAlreadyGroovedException, PostIsDeletedException;
 
     Optional<GroovyEnum> checkGrooviness(long postId)
             throws NoLoggedUserException, NoSuchPostException, NoSuchGroovyPostHistory;

@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.exceptions.*;
+import ar.edu.itba.paw.exceptions.CommentAlreadyGroovedException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
 import ar.edu.itba.paw.models.pagination.PaginationRequest;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 
 @Transactional(readOnly = true)
@@ -49,7 +51,7 @@ public class CommentServiceImpl implements CommentService {
         Post post = postService.getPostById(postId);
         if (post.getDeleted()) {
             LOGGER.atError().setMessage("Post with id {} is deleted").addArgument(postId).log();
-            throw new PostIsDeletedException("Post is deleted");
+            throw new PostIsDeletedException();
         }
         long userId = user.get().getId();
         User username = user.get();
@@ -95,6 +97,94 @@ public class CommentServiceImpl implements CommentService {
         }
 
         return dataWrapper;
+    }
+
+    @Override
+    @Transactional
+    public GroovyCommentHistory giveGrooviness(long commentId, GroovyEnum value, long postId)
+            throws NoSuchCommentException, NoLoggedUserException, NoSuchPostException, CommentAlreadyGroovedException,
+            CommentIsDeletedException {
+
+        Comment comment = commentDao.getCommentById(commentId).orElseThrow(NoSuchCommentException::new);
+        if (comment.getDeleted()) {
+            throw new CommentIsDeletedException();
+        }
+        User user = userService.getLoggedUser().orElseThrow(NoLoggedUserException::new);
+        Post post = postService.getPostById(postId);
+        if (groovyCommentHistoryService.findGroovyCommentHistory(user,
+                comment, post).isPresent()) {
+            throw new CommentAlreadyGroovedException();
+        }
+
+        commentDao.editGrooviness(comment, value);
+        return groovyCommentHistoryService.createGroovyCommentHistory(user, comment, post, value);
+    }
+
+    @Override
+    @Transactional
+    public GroovyCommentHistory editGroovyness(long commentId, long postId, GroovyEnum value)
+            throws NoLoggedUserException, NoSuchCommentException, NoSuchPostException, NoSuchGroovyCommentHistory,
+            CommentIsDeletedException {
+        Comment comment = commentDao.getCommentById(commentId).orElseThrow(NoSuchCommentException::new);
+        if (comment.getDeleted()) {
+            throw new CommentIsDeletedException();
+        }
+        User user = userService.getLoggedUser().orElseThrow(NoLoggedUserException::new);
+        Post post = postService.getPostById(postId);
+        GroovyCommentHistory groovyCommentHistory = groovyCommentHistoryService.findGroovyCommentHistory(user,
+                comment, post).orElseThrow(NoSuchGroovyCommentHistory::new);
+        GroovyEnum toUpdate = groovyCommentHistory.isGroovy() ? GroovyEnum.UP : GroovyEnum.DOWN;
+        GroovyCommentHistory newHistory = null;
+        switch (value) {
+            case GroovyEnum.UP:
+                if (toUpdate == GroovyEnum.DOWN) {
+                    commentDao.editGrooviness(comment, GroovyEnum.UP_FROM_DOWN);
+                    newHistory = groovyCommentHistoryService.updateGroovyCommentHistory(groovyCommentHistory,
+                            GroovyEnum.UP);
+                }
+                break;
+            case GroovyEnum.DOWN:
+                if (toUpdate == GroovyEnum.UP) {
+                    commentDao.editGrooviness(comment, GroovyEnum.DOWN_FROM_UP);
+                    newHistory = groovyCommentHistoryService.updateGroovyCommentHistory(groovyCommentHistory,
+                            GroovyEnum.DOWN);
+                }
+
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid grooviness value");
+        }
+
+        return Objects.isNull(newHistory) ? groovyCommentHistory : newHistory;
+    }
+
+    @Transactional
+    @Override
+    public void deleteGroovyCommentHistory(long commentId, long postId)
+            throws NoSuchCommentException, NoSuchGroovyCommentHistory, NoSuchPostException, NoLoggedUserException,
+            CommentIsDeletedException {
+        Comment comment = commentDao.getCommentById(commentId).orElseThrow(NoSuchCommentException::new);
+        if (comment.getDeleted()) {
+            throw new CommentIsDeletedException();
+        }
+        User user = userService.getLoggedUser().orElseThrow(NoLoggedUserException::new);
+        Post post = postService.getPostById(postId);
+        GroovyCommentHistory groovyCommentHistory = groovyCommentHistoryService.findGroovyCommentHistory(user,
+                comment, post).orElseThrow(NoSuchGroovyCommentHistory::new);
+
+        groovyCommentHistoryService.deleteGroovyCommentHistory(user, comment);
+        commentDao.editGrooviness(comment, groovyCommentHistory.isGroovy() ? GroovyEnum.DOWN : GroovyEnum.UP);
+    }
+
+    @Override
+    public Optional<GroovyCommentHistory> findGroovyCommentHistory(long commentId, long postId)
+            throws NoSuchCommentException, NoSuchPostException, NoLoggedUserException {
+        Comment comment = commentDao.getCommentById(commentId).orElseThrow(NoSuchCommentException::new);
+        Post post = postService.getPostById(postId);
+        User user = userService.getLoggedUser().orElseThrow(NoLoggedUserException::new);
+        return groovyCommentHistoryService.findGroovyCommentHistory(user,
+                comment, post);
+
     }
 
     @Transactional
@@ -181,7 +271,7 @@ public class CommentServiceImpl implements CommentService {
         if (post.getDeleted()) {
             LOGGER.atError().setMessage("Post with id {} is deleted").addArgument(() -> comment.get().getPostId())
                     .log();
-            throw new PostIsDeletedException("Post not found");
+            throw new PostIsDeletedException();
         }
         int ret = commentDao.deleteComment(comment.get());
         notifyCommentDeletion(comment.get());

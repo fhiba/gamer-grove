@@ -1,5 +1,7 @@
 package ar.edu.itba.paw.webapp.dto;
+
 import ar.edu.itba.paw.models.GroovyCommentHistory;
+import ar.edu.itba.paw.models.GroovyEnum;
 import ar.edu.itba.paw.models.Rating;
 
 import javax.ws.rs.core.UriInfo;
@@ -13,8 +15,7 @@ public class GroovyCommentHistoryDTO {
 
     private URI post;
 
-    private  Boolean groovy;
-
+    private int groovy;
 
     public static Function<GroovyCommentHistory, GroovyCommentHistoryDTO> mapper(UriInfo uriInfo) {
         return g -> fromRating(uriInfo, g);
@@ -23,11 +24,13 @@ public class GroovyCommentHistoryDTO {
     public static GroovyCommentHistoryDTO fromRating(UriInfo uriInfo, GroovyCommentHistory g) {
         final GroovyCommentHistoryDTO dto = new GroovyCommentHistoryDTO();
         dto.user = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(g.getUser().getId())).build();
-        dto.comment = uriInfo.getBaseUriBuilder().path("comments").path(String.valueOf(g.getUser().getId())).build();
+        dto.comment = uriInfo.getBaseUriBuilder().path("posts").path(String.valueOf(g.getUser().getId()))
+                .path("comments").path(String.valueOf(g.getUser().getId())).build();
         dto.post = uriInfo.getBaseUriBuilder().path("posts").path(String.valueOf(g.getUser().getId())).build();
-        dto.groovy = g.isGroovy();
+        dto.groovy = g.isGroovy() ? GroovyEnum.UP.getValue() : GroovyEnum.DOWN.getValue();
         return dto;
     }
+
     public URI getUser() {
         return user;
     }
@@ -52,11 +55,11 @@ public class GroovyCommentHistoryDTO {
         this.post = post;
     }
 
-    public Boolean getGroovy() {
+    public int getGroovy() {
         return groovy;
     }
 
-    public void setGroovy(Boolean groovy) {
+    public void setGroovy(int groovy) {
         this.groovy = groovy;
     }
 }

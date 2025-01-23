@@ -34,7 +34,10 @@ import org.springframework.stereotype.Component;
 
 import javax.ws.rs.*;
 
+import ar.edu.itba.paw.webapp.dto.CommentCreationDTO;
+import ar.edu.itba.paw.webapp.dto.CommentDTO;
 import ar.edu.itba.paw.webapp.dto.GrooveDTO;
+import ar.edu.itba.paw.webapp.dto.GroovyCommentHistoryDTO;
 import ar.edu.itba.paw.webapp.dto.GroovyPostHistoryDTO;
 import ar.edu.itba.paw.webapp.dto.PostDTO;
 
@@ -131,8 +134,8 @@ public class PostController {
 
     @POST
     @Path("/{id}/groovyness")
-    public Response groovePost(@PathParam("id") Long postId, @Valid final GrooveDTO payload)
-            throws NoLoggedUserException, NoSuchPostException, PostAlreadyGroovedException {
+    public Response groovePost(@PathParam("id") Long postId, @Valid @NotNull final GrooveDTO payload)
+            throws NoLoggedUserException, NoSuchPostException, PostAlreadyGroovedException, PostIsDeletedException {
 
         ps.createGrooviness(GroovyEnum.fromValue(payload.getGroovy()), postId);
 
@@ -166,7 +169,7 @@ public class PostController {
     @Path("/{id}/groovyness/{userId}")
     public Response updateGroove(@PathParam("id") Long postId, @PathParam("userId") Long userId,
             @Valid @NotNull final GrooveDTO payload)
-            throws NoSuchPostException, UserNotFoundException, NoSuchGroovyPostHistory {
+            throws NoSuchPostException, UserNotFoundException, NoSuchGroovyPostHistory, PostIsDeletedException {
         ps.editGrooviness(GroovyEnum.fromValue(payload.getGroovy()), postId);
 
         return Response.ok().build();
@@ -175,12 +178,99 @@ public class PostController {
     @DELETE
     @Path("/{id}/groovyness/{userId}")
     public Response deleteGroove(@PathParam("id") Long postId, @PathParam("userId") Long userId)
-            throws NoSuchPostException, UserNotFoundException, NoSuchGroovyPostHistory {
+            throws NoSuchPostException, UserNotFoundException, NoSuchGroovyPostHistory, PostIsDeletedException {
         ps.deleteGrooviness(postId);
 
         return Response.ok().build();
     }
 
+    @GET
+    @Path("/{id}/comments")
+    public Response getComments(@Context UriInfo uriInfo, @PathParam("id") Long postId,
+            @QueryParam("page") @DefaultValue("1") int pageNumber)
+            throws NoSuchPostException, NoSuchCommentException {
+        PaginationRequest paginationRequest = new PaginationRequest();
+        paginationRequest.setPageNumber(pageNumber);
+
+        PaginatedDataWrapper<Comment> comments = commentService.getPostCommentsPaginated(postId, paginationRequest);
+
+        if (comments.getData().size() == 0) {
+            return Response.noContent().build();
+        }
+
+        List<CommentDTO> commentsDTOs = comments.getData().stream()
+                .map(CommentDTO.mapper(uriInfo))
+                .toList();
+
+        return Response.ok(new GenericEntity<>(commentsDTOs) {
+        })
+                .link(uriInfo.getAbsolutePathBuilder().queryParam("page", comments.getFirstPage()).build(), "first")
+                .link(uriInfo.getAbsolutePathBuilder().queryParam("page", comments.getTotalPages()).build(), "last")
+                .link(uriInfo.getAbsolutePathBuilder().queryParam("page", comments.getPreviousPage()).build(), "prev")
+                .link(uriInfo.getAbsolutePathBuilder().queryParam("page", comments.getNextPage()).build(), "next")
+                .build();
+
+    }
+
+    @POST
+    @Path("{id}/comments")
+    public Response createComment(@PathParam("id") Long postId, @Valid @NotNull final CommentCreationDTO payload)
+            throws NoSuchPostException, NoLoggedUserException, UserNotFoundException, PostIsDeletedException {
+        Comment comment = commentService.createComment(postId, payload.getBody());
+        URI uri = uriInfo.getAbsolutePathBuilder()
+                .path(String.valueOf(comment.getId()))
+                .build();
+        return Response.created(uri).build();
+    }
+
+    @POST
+    @Path("{id}/comments/{commentId}/groovyness")
+    public Response giveGroovyToComment(@PathParam("id") Long postId, @PathParam("commentId") long commentId,
+            @Valid @NotNull final GrooveDTO payload)
+            throws NoLoggedUserException, NoSuchPostException, NoSuchCommentException, CommentAlreadyGroovedException,
+            CommentIsDeletedException {
+        GroovyCommentHistory groovy = commentService.giveGrooviness(commentId,
+                GroovyEnum.fromValue(payload.getGroovy()), postId);
+        URI uri = uriInfo.getAbsolutePathBuilder()
+                .path(String.valueOf(groovy.getUser().getId()))
+                .build();
+
+        return Response.created(uri).build();
+    }
+
+    @PUT
+    @Path("{id}/comments/{commentId}/groovyness/{userId}")
+    public Response updateGroovyFromComment(@PathParam("id") Long postId, @PathParam("commentId") long commentId,
+            @PathParam("userId") long userId, @Valid @NotNull final GrooveDTO payload)
+            throws NoSuchCommentException, NoSuchPostException, UserNotFoundException, NoSuchGroovyCommentHistory,
+            CommentIsDeletedException, NoLoggedUserException {
+        commentService.editGroovyness(commentId, postId,
+                GroovyEnum.fromValue(payload.getGroovy()));
+        return Response.ok().build();
+    }
+
+    @DELETE
+    @Path("{id}/comments/{commentId}/groovyness/{userId}")
+    public Response deleteGroovyFromComment(@PathParam("id") Long postId, @PathParam("commentId") long commentId,
+            @PathParam("userId") long userId)
+            throws NoSuchCommentException, NoSuchGroovyCommentHistory, NoSuchPostException, NoLoggedUserException,
+            CommentIsDeletedException {
+        commentService.deleteGroovyCommentHistory(commentId, postId);
+        return Response.ok().build();
+    }
+
+    @GET
+    @Path("{id}/comments/{commentId}/groovyness/{userId}")
+    public Response getGroove(@Context UriInfo uriInfo, @PathParam("id") Long postId, @PathParam("userId") Long userId,
+            @PathParam("commentId") Long commentId)
+            throws NoSuchPostException, UserNotFoundException, NoSuchGroovyCommentHistory, NoSuchCommentException {
+
+        GroovyCommentHistory gch = commentService.findGroovyCommentHistory(commentId, postId)
+                .orElseThrow(NoSuchGroovyCommentHistory::new);
+        return Response.ok()
+                .entity(GroovyCommentHistoryDTO.fromRating(uriInfo, gch))
+                .build();
+    }
     //
     // @RequestMapping(path = "/post", method = RequestMethod.POST)
     // public ModelAndView newPost(@Valid @ModelAttribute("newPostForm") final

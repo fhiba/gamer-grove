@@ -261,6 +261,29 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 .requestMatchers(HttpMethod.DELETE, "/api/communities/{communityName}/ratings/{userId}")
                 .access(HAS_ROLE_VERIFIED + AND + ACCESS_CONTROL_CHECK_USER)
 
+                .requestMatchers(HttpMethod.POST, "/api/posts/{postId}/comments")
+                .access(HAS_ROLE_VERIFIED)
+
+                .requestMatchers(HttpMethod.GET, "/api/posts/{postId}/comments")
+                .permitAll()
+                //
+                // .requestMatchers(HttpMethod.GET, "/api/posts/{postId}/comments/{commentId}")
+                // .permitAll()
+                //
+                // .requestMatchers(HttpMethod.DELETE,
+                // "/api/posts/{postId}/comments/{commentId}")
+                // .access(HAS_ROLE_ADMIN)
+
+                .requestMatchers(HttpMethod.POST, "/api/posts/{postId}/comments/{commentId}/groovyness")
+                .access(HAS_ROLE_VERIFIED)
+                .requestMatchers(HttpMethod.PUT, "/api/posts/{postId}/comments/{commentId}/groovyness/{userId}")
+                .access(HAS_ROLE_VERIFIED + AND + ACCESS_CONTROL_CHECK_USER)
+
+                .requestMatchers(HttpMethod.DELETE, "/api/posts/{postId}/comments/{commentId}/groovyness/{userId}")
+                .access(HAS_ROLE_VERIFIED + AND + ACCESS_CONTROL_CHECK_USER)
+                .requestMatchers(HttpMethod.GET, "/api/posts/{postId}/comments/{commentId}/groovyness/{userId}")
+                .access(HAS_ROLE_VERIFIED + AND + ACCESS_CONTROL_CHECK_USER)
+
                 .antMatchers("/api/**")
                 .permitAll() // Disable client-side cache handling
                 .and().headers().cacheControl().disable()
