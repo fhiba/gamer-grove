@@ -1,7 +1,7 @@
 const nextConfig = {
-  // experimental: {
-  // ppr: "incremental",
-  // },
+  experimental: {
+    ppr: "incremental",
+  },
 };
 
 module.exports = nextConfig;
