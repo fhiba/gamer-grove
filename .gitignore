@@ -2,7 +2,23 @@
 # You should customize this list as applicable to your project.
 # Learn more about .gitignore:
 #     https://www.atlassian.com/git/tutorials/saving-changes/gitignore
-
+.project
+.settings/
+interfaces/.classpath
+interfaces/.project
+interfaces/.settings/
+models/.classpath
+models/.project
+models/.settings/
+persistance/.classpath
+persistance/.project
+persistance/.settings/
+services/.classpath
+services/.project
+services/.settings/
+webapp/.classpath
+webapp/.project
+webapp/.settings/
 # Node artifact files
 node_modules/
 dist/
