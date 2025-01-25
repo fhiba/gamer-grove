@@ -134,8 +134,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/css/**", "/images/**", "/js/**", "/favicon.ico", "/index.html", "resources/**",
-                "/403"); // Apago SpringSecurity para los assets publicos
+        web.ignoring().antMatchers("static/**"); // Apago SpringSecurity para los assets publicos
     }
 
     @Bean

@@ -134,17 +134,6 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         return factoryBean;
     }
 
-    @Override
-    public void addResourceHandlers(final ResourceHandlerRegistry registry) {
-        // High cache time
-        registry.addResourceHandler("/index.html").addResourceLocations("/index.html").setCachePeriod(31556926);
-    }
-
-    @Override
-    public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/").setViewName("forward:/index.html");
-    }
-
     @Bean
     public PlatformTransactionManager transactionManager(final EntityManagerFactory emf) {
         return new JpaTransactionManager(emf);

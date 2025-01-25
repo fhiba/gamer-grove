@@ -18,9 +18,6 @@
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
-        <node.version>v20.15.0</node.version>
-        <maven.frontend.plugin.version>1.15.1</maven.frontend.plugin.version>
-        <frontend-src-dir>${project.parent.basedir}/spa</frontend-src-dir>
     </properties>
 
 
@@ -119,6 +116,12 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
+            <groupId>ar.edu.itba.paw</groupId>
+            <artifactId>spa</artifactId>
+            <version>${project.parent.version}</version>
+            <type>pom</type>
+        </dependency>
+        <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
         </dependency>
@@ -190,7 +193,11 @@
                     <version>3.2.2</version>
                     <configuration>
                         <packagingExcludes>**/logback-test.xml</packagingExcludes>
-                        
+                        <webResources>
+                            <resource>
+                                <directory>../spa/dist</directory>
+                            </resource>
+                        </webResources>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -215,45 +222,6 @@
                 </plugin>
             </plugins>
         </pluginManagement>
-        <plugins>
-            <plugin>
-                <groupId>com.github.eirslett</groupId>
-                <artifactId>frontend-maven-plugin</artifactId>
-                <version>${maven.frontend.plugin.version}</version>
-                <configuration>
-                    <workingDirectory>${frontend-src-dir}</workingDirectory>
-                    <installDirectory>target</installDirectory>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>install node and npm</id>
-                        <goals>
-                            <goal>install-node-and-npm</goal>
-                        </goals>
-                        <configuration>
-                            <nodeVersion>${node.version}</nodeVersion>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>npm install</id>
-                        <goals>
-                            <goal>npm</goal>
-                        </goals>
-                        <configuration>
-                            <arguments>ci</arguments>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>npm run build</id>
-                        <goals>
-                            <goal>npm</goal>
-                        </goals>
-                        <configuration>
-                            <arguments>run build</arguments>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
+        
     </build>
 </project>
