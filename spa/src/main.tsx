@@ -1,30 +1,43 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
-import App from "./App.tsx";
 import { BrowserRouter, Routes, Route } from "react-router";
-import Home from "./Home.tsx";
-import All from "./All.tsx";
-import Community from "./Community.tsx";
-import Post from "./Post.tsx";
-import Communities from "./Communities";
-import ManageMods from "./ManageMods";
-import NewCommunity from "./NewCommunity.tsx";
-import Profile from "./Profile.tsx";
-import UserPosts from "./UserPosts.tsx";
-import LikedPosts from "./LikedPosts.tsx";
-import Followed from "./Followed.tsx";
+import Home from "./pages/Home.tsx";
+import All from "./pages/All.tsx";
+import Community from "./pages/Community.tsx";
+import Post from "./pages/Post.tsx";
+import Communities from "./pages/Communities.tsx";
+import ManageMods from "./pages/ManageMods.tsx";
+import NewCommunity from "./pages/NewCommunity.tsx";
+import Profile from "./pages/Profile.tsx";
+import UserPosts from "./pages/UserPosts.tsx";
+import LikedPosts from "./pages/LikedPosts.tsx";
+import Followed from "./pages/Followed.tsx";
+import { AuthProvider } from "./context/AuthContext";
+import Login from "./pages/Login.tsx";
+import Register from "./pages/Register.tsx";
+import ProtectedRoute from "./components/ProtectedRoute.tsx";
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
+    <AuthProvider >
     <BrowserRouter basename={import.meta.env.BASE_URL}>
       <Routes>
-        <Route path="/" element={<App />} />
         <Route path="/home" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
         <Route path="/all" element={<All />} />
+        <Route path="/" element={<All />} />
         <Route path="/community/:communityName" element={<Community />} />
         <Route path="/post/:postId" element={<Post />} />
         <Route path="/communities" element={<Communities />} />
-        <Route path="/manageMods" element={<ManageMods />} />
+        <Route
+          path="/manageMods"
+          element={
+            <ProtectedRoute>
+              <ManageMods/>
+            </ProtectedRoute>
+          }
+        />
         <Route path="/newCommunity" element={<NewCommunity />} />
         <Route path="/user/:userId">
           <Route path="userPosts" element={<UserPosts />} />
@@ -39,5 +52,6 @@ createRoot(document.getElementById("root")!).render(
         </Route>
       </Routes>
     </BrowserRouter>
+    </AuthProvider>
   </StrictMode>,
 );
