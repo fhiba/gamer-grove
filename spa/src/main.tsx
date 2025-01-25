@@ -10,7 +10,10 @@ import Post from "./Post.tsx";
 import Communities from "./Communities";
 import ManageMods from "./ManageMods";
 import NewCommunity from "./NewCommunity.tsx";
-
+import Profile from "./Profile.tsx";
+import UserPosts from "./UserPosts.tsx";
+import LikedPosts from "./LikedPosts.tsx";
+import Followed from "./Followed.tsx";
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter basename={import.meta.env.BASE_URL}>
@@ -23,6 +26,17 @@ createRoot(document.getElementById("root")!).render(
         <Route path="/communities" element={<Communities />} />
         <Route path="/manageMods" element={<ManageMods />} />
         <Route path="/newCommunity" element={<NewCommunity />} />
+        <Route path="/user/:userId">
+          <Route path="userPosts" element={<UserPosts />} />
+          <Route path="followed" element={<Followed />} />
+          <Route path="likedPosts" element={<LikedPosts />} />
+        </Route>
+        <Route path="/profile">
+          <Route element={<Profile />} />
+          <Route path="userPosts" element={<UserPosts />} />
+          <Route path="followed" element={<Followed />} />
+          <Route path="likedPosts" element={<LikedPosts />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   </StrictMode>,
