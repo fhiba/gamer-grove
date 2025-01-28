@@ -1,12 +1,70 @@
-import { Outlet, Link } from "react-router-dom";
-export default function Home() {
-  return  <div>
-  <nav style={{ marginBottom: "1rem" }}>
-    <Link to="/">Home</Link> |{" "}
-    <Link to="/login">Login</Link> |{" "}
-    <Link to="/register">Register</Link> |{" "}
-    <Link to="/dashboard">Dashboard</Link>
-  </nav>
-  <Outlet />
-  </div>;
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+interface Post {
+  id: number;
+  title: string;
+  body: string;
 }
+
+const Home: React.FC = () => {
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:8080/paw-2024a-09/api/posts",
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch posts");
+        }
+        const data: Post[] = await response.json();
+        setPosts(data);
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "An unknown error occurred",
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPosts();
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
+  return (
+    <div>
+      <h1>POR AHORA ES IGUAL A ALL(falta filtrar por followed communities)</h1>
+      {posts.length > 0 ? (
+        <ul>
+          {posts.map((post, i) => (
+            <li
+              key={i}
+              onClick={() => navigate(`/post/${post.id}`)}
+              style={{ cursor: "pointer", marginBottom: "10px" }}
+            >
+              <h2>{post.title}</h2>
+              <p>{post.body}</p>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>No posts found.</p>
+      )}
+    </div>
+  );
+};
+
+export default Home;
