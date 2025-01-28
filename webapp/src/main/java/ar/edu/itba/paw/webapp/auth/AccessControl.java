@@ -10,7 +10,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ar.edu.itba.paw.services.PostService;
 import ar.edu.itba.paw.services.UserService;
+import ar.edu.itba.paw.webapp.mapper.ExceptionMapper;
+import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchPostException;
+import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
 
 @Component
@@ -54,8 +57,24 @@ public class AccessControl {
         } catch (Exception e) {
             LOGGER.error("Error parsing followedBy parameter");
             return false;
+
         }
         Optional<User> user = us.getLoggedUser();
         return user.filter(value -> value.getId().equals(Long.valueOf(id)) && value.getVerified()).isPresent();
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isModPost(HttpServletRequest request, Long postId) {
+        Post post;
+        try {
+            post = ps.getPostById(postId);
+        } catch (NoSuchPostException e) {
+            return true;
+        }
+        Optional<User> user = us.getLoggedUser();
+        if (!user.isPresent()) {
+            return false;
+        }
+        return post.getcommunity().getModders().contains(user.get());
     }
 }

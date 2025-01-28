@@ -1,7 +1,6 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.exceptions.*;
-import ar.edu.itba.paw.exceptions.CommentAlreadyGroovedException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.models.pagination.PaginatedDataWrapper;
 import ar.edu.itba.paw.models.pagination.PaginationRequest;
@@ -109,8 +108,15 @@ public class CommentServiceImpl implements CommentService {
         if (comment.getDeleted()) {
             throw new CommentIsDeletedException();
         }
-        User user = userService.getLoggedUser().orElseThrow(NoLoggedUserException::new);
         Post post = postService.getPostById(postId);
+
+        if (!comment.getPost().getId().equals(postId)) {
+            LOGGER.atError().setMessage("Comment with id {} does not belong to post with id {}").addArgument(commentId)
+                    .addArgument(postId).log();
+            throw new NoSuchCommentException();
+        }
+        User user = userService.getLoggedUser().orElseThrow(NoLoggedUserException::new);
+
         if (groovyCommentHistoryService.findGroovyCommentHistory(user,
                 comment, post).isPresent()) {
             throw new CommentAlreadyGroovedException();
@@ -129,8 +135,15 @@ public class CommentServiceImpl implements CommentService {
         if (comment.getDeleted()) {
             throw new CommentIsDeletedException();
         }
-        User user = userService.getLoggedUser().orElseThrow(NoLoggedUserException::new);
         Post post = postService.getPostById(postId);
+
+        if (!comment.getPost().getId().equals(postId)) {
+            LOGGER.atError().setMessage("Comment with id {} does not belong to post with id {}").addArgument(commentId)
+                    .addArgument(postId).log();
+            throw new NoSuchCommentException();
+        }
+        User user = userService.getLoggedUser().orElseThrow(NoLoggedUserException::new);
+
         GroovyCommentHistory groovyCommentHistory = groovyCommentHistoryService.findGroovyCommentHistory(user,
                 comment, post).orElseThrow(NoSuchGroovyCommentHistory::new);
         GroovyEnum toUpdate = groovyCommentHistory.isGroovy() ? GroovyEnum.UP : GroovyEnum.DOWN;
@@ -167,8 +180,14 @@ public class CommentServiceImpl implements CommentService {
         if (comment.getDeleted()) {
             throw new CommentIsDeletedException();
         }
-        User user = userService.getLoggedUser().orElseThrow(NoLoggedUserException::new);
         Post post = postService.getPostById(postId);
+        if (!comment.getPost().getId().equals(postId)) {
+            LOGGER.atError().setMessage("Comment with id {} does not belong to post with id {}").addArgument(commentId)
+                    .addArgument(postId).log();
+            throw new NoSuchCommentException();
+        }
+        User user = userService.getLoggedUser().orElseThrow(NoLoggedUserException::new);
+
         GroovyCommentHistory groovyCommentHistory = groovyCommentHistoryService.findGroovyCommentHistory(user,
                 comment, post).orElseThrow(NoSuchGroovyCommentHistory::new);
 
@@ -181,6 +200,11 @@ public class CommentServiceImpl implements CommentService {
             throws NoSuchCommentException, NoSuchPostException, NoLoggedUserException {
         Comment comment = commentDao.getCommentById(commentId).orElseThrow(NoSuchCommentException::new);
         Post post = postService.getPostById(postId);
+        if (!comment.getPost().getId().equals(postId)) {
+            LOGGER.atError().setMessage("Comment with id {} does not belong to post with id {}").addArgument(commentId)
+                    .addArgument(postId).log();
+            throw new NoSuchCommentException();
+        }
         User user = userService.getLoggedUser().orElseThrow(NoLoggedUserException::new);
         return groovyCommentHistoryService.findGroovyCommentHistory(user,
                 comment, post);
@@ -203,7 +227,11 @@ public class CommentServiceImpl implements CommentService {
             throw new NoSuchCommentException();
         // checks whether the user has already grooved the comment
         Post post = postService.getPostById(postId);
-
+        if (!comment.get().getPost().getId().equals(post.getId())) {
+            LOGGER.atError().setMessage("Comment with id {} does not belong to post with id {}").addArgument(commentId)
+                    .addArgument(postId).log();
+            throw new NoSuchCommentException();
+        }
         Optional<GroovyCommentHistory> maybeGCH = groovyCommentHistoryService.findGroovyCommentHistory(user,
                 comment.get(), post);
         if (maybeGCH.isEmpty()) {
@@ -260,19 +288,23 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional
     @Override
-    public int deleteComment(long commentId)
-            throws NoSuchCommentException, NoSuchPostException, PostIsDeletedException {
+    public int deleteComment(Long commentId, Long postId)
+            throws NoSuchCommentException, NoSuchPostException, PostIsDeletedException, CommentIsDeletedException {
         Optional<Comment> comment = commentDao.getCommentById(commentId);
         if (comment.isEmpty()) {
             LOGGER.atError().setMessage("Comment with id {} not found").addArgument(commentId).log();
             throw new NoSuchCommentException();
         }
-        Post post = postService.getPostById(comment.get().getPostId());
-        if (post.getDeleted()) {
-            LOGGER.atError().setMessage("Post with id {} is deleted").addArgument(() -> comment.get().getPostId())
-                    .log();
-            throw new PostIsDeletedException();
+        if (!comment.get().getPost().getId().equals(postId)) {
+            LOGGER.atError().setMessage("Comment with id {} does not belong to post with id {}").addArgument(commentId)
+                    .addArgument(postId).log();
+            throw new NoSuchCommentException();
         }
+        if (comment.get().getDeleted()) {
+            LOGGER.atError().setMessage("Comment with id {} is already deleted").addArgument(commentId).log();
+            throw new CommentIsDeletedException();
+        }
+
         int ret = commentDao.deleteComment(comment.get());
         notifyCommentDeletion(comment.get());
         LOGGER.atInfo().setMessage("Comment {} deleted successfully").addArgument(() -> comment.get().getId()).log();

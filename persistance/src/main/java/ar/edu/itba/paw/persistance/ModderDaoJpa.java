@@ -11,33 +11,36 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 @Repository
 @Primary
-public class ModderDaoJpa implements ModderDao{
+public class ModderDaoJpa implements ModderDao {
     @PersistenceContext
     private EntityManager em;
 
     @Override
-    public Mod addModder(User user,Community community) {
-        Mod mod = new Mod(user,community, LocalDateTime.now());
+    public Mod addModder(User user, Community community) {
+        Mod mod = new Mod(user, community, LocalDateTime.now());
         em.persist(mod);
         return mod;
     }
 
     @Override
     public Boolean isModderOfCommunity(User user, Community community) {
-        TypedQuery<Mod> query = em.createQuery("from Mod as m where m.community.id = :communityId and m.user.id = :userId", Mod.class);
+        TypedQuery<Mod> query = em
+                .createQuery("from Mod as m where m.community.id = :communityId and m.user.id = :userId", Mod.class);
         query.setParameter("communityId", community.getId());
-        query.setParameter("userId",user.getId());
+        query.setParameter("userId", user.getId());
         return !query.getResultList().isEmpty();
     }
 
     @Override
     public Optional<Mod> findByid(User user, Community community) {
-        TypedQuery<Mod> query = em.createQuery("from Mod as m where m.community.id = :communityId and m.user.id = :userId", Mod.class);
+        TypedQuery<Mod> query = em
+                .createQuery("from Mod as m where m.community.id = :communityId and m.user.id = :userId", Mod.class);
         query.setParameter("communityId", community.getId());
         query.setParameter("userId", user.getId());
         return query.getResultList().stream().findFirst();
@@ -63,7 +66,9 @@ public class ModderDaoJpa implements ModderDao{
             userIds.add(userId);
             communityIds.add(communityId);
         }
-        TypedQuery<Mod> query = em.createQuery("from Mod as m where m.user.id IN :userIds and m.community.id in :communityIds order by m.sinceDate desc", Mod.class);
+        TypedQuery<Mod> query = em.createQuery(
+                "from Mod as m where m.user.id IN :userIds and m.community.id in :communityIds order by m.sinceDate desc",
+                Mod.class);
         query.setParameter("userIds", userIds);
         query.setParameter("communityIds", communityIds);
         return query.getResultList();
@@ -71,47 +76,96 @@ public class ModderDaoJpa implements ModderDao{
 
     @Override
     public List<Mod> getModdersPaginatedByCommunity(Long communityId, int pageSize, int offset) {
-        Query nativeQuery = em.createNativeQuery("SELECT user_id FROM modders WHERE community_id = :communityId order by since_date desc");
+        Query nativeQuery = em.createNativeQuery(
+                "SELECT user_id FROM modders WHERE community_id = :communityId order by since_date desc");
         nativeQuery.setFirstResult(offset);
         nativeQuery.setMaxResults(pageSize);
-        nativeQuery.setParameter("communityId",communityId);
+        nativeQuery.setParameter("communityId", communityId);
         List<Long> resultList = ((Stream<Number>) nativeQuery.getResultStream()).map(Number::longValue).toList();
 
-        TypedQuery<Mod> query = em.createQuery("from Mod as m where m.user.id IN :ids and m.community.id = :communityId order by m.sinceDate desc", Mod.class);
+        TypedQuery<Mod> query = em.createQuery(
+                "from Mod as m where m.user.id IN :ids and m.community.id = :communityId order by m.sinceDate desc",
+                Mod.class);
         query.setParameter("ids", resultList);
         query.setParameter("communityId", communityId);
         return query.getResultList();
     }
+
     @Override
     public int getTotalModders() {
-        Query query= em.createQuery("select count(*) from Mod");
-        return((Number) query.getSingleResult()).intValue();
+        Query query = em.createQuery("select count(*) from Mod");
+        return ((Number) query.getSingleResult()).intValue();
     }
 
     @Override
     public int getTotalModdersByCommunity(Long communityId) {
-        Query query= em.createQuery("select count(*) from Mod as m where m.community.id = :id")
+        Query query = em.createQuery("select count(*) from Mod as m where m.community.id = :id")
                 .setParameter("id", communityId);
-        return((Number) query.getSingleResult()).intValue();
+        return ((Number) query.getSingleResult()).intValue();
     }
 
     @Override
     public int getTotalModdersByUserId(Long userId) {
-        Query query= em.createQuery("select count(*) from Mod as m where m.user.id = :id")
+        Query query = em.createQuery("select count(*) from Mod as m where m.user.id = :id")
                 .setParameter("id", userId);
-        return((Number) query.getSingleResult()).intValue();
+        return ((Number) query.getSingleResult()).intValue();
     }
 
     @Override
     public List<Mod> getModdersPaginatedByUserId(Long userId, int pageSize, int offset) {
-        Query nativeQuery = em.createNativeQuery("SELECT user_id FROM modders WHERE user_id = :userId order by since_date desc");
+        Query nativeQuery = em
+                .createNativeQuery("SELECT user_id FROM modders WHERE user_id = :userId order by since_date desc");
         nativeQuery.setFirstResult(offset);
         nativeQuery.setMaxResults(pageSize);
-        nativeQuery.setParameter("userId",userId);
+        nativeQuery.setParameter("userId", userId);
         List<Long> resultList = ((Stream<Number>) nativeQuery.getResultStream()).map(Number::longValue).toList();
 
-        TypedQuery<Mod> query = em.createQuery("from Mod as m where m.user.id IN :ids order by m.sinceDate desc", Mod.class);
+        TypedQuery<Mod> query = em.createQuery("from Mod as m where m.user.id IN :ids order by m.sinceDate desc",
+                Mod.class);
         query.setParameter("ids", resultList);
         return query.getResultList();
     }
+
+    @Override
+    public List<Mod> findModsPaginated(String userName, Long communityId, int pageSize, int offset) {
+
+        String sqlString = "SELECT m.user_id FROM modders as m JOIN users as u ON m.user_id = u.id WHERE u.username ILIKE :userName"
+                + (Objects.isNull(communityId) ? "" : " AND m.community_id = :communityId")
+                + " ORDER BY m.since_date desc";
+        Query nativeQuery = em.createNativeQuery(
+                sqlString);
+        if (Objects.nonNull(communityId)) {
+            nativeQuery.setParameter("communityId", communityId);
+        }
+        nativeQuery.setParameter("userName", "%" + userName + "%");
+        nativeQuery.setFirstResult(offset);
+        nativeQuery.setMaxResults(pageSize);
+
+        List<Long> resultList = ((Stream<Number>) nativeQuery.getResultStream()).map(Number::longValue).toList();
+
+        TypedQuery<Mod> query = em.createQuery(
+                "from Mod as m where m.user.id IN :ids "
+                        + (Objects.isNull(communityId) ? "" : " and m.community.id = :communityId")
+                        + " order by m.sinceDate desc",
+                Mod.class);
+        query.setParameter("ids", resultList);
+        if (Objects.nonNull(communityId)) {
+            query.setParameter("communityId", communityId);
+        }
+        return query.getResultList();
+
+    }
+
+    @Override
+    public Long findTotalMods(String userName, Long communityId) {
+        String sqlString = "SELECT COUNT(m.user_id) FROM modders as m JOIN users as u ON m.user_id = u.id WHERE u.username ILIKE :userName "
+                + (Objects.isNull(communityId) ? "" : "AND m.community_id = :communityId");
+        Query nativeQuery = em.createNativeQuery(sqlString);
+        if (Objects.nonNull(communityId)) {
+            nativeQuery.setParameter("communityId", communityId);
+        }
+        nativeQuery.setParameter("userName", "%" + userName + "%");
+        return ((Number) nativeQuery.getSingleResult()).longValue();
+    }
+
 }

@@ -35,22 +35,25 @@ import java.util.Collections;
 import java.util.List;
 
 import ar.edu.itba.paw.webapp.auth.*;
+
 import static org.springframework.web.cors.CorsConfiguration.ALL;
 
 @EnableWebSecurity
 @Configuration
-@ComponentScan("ar.edu.itba.paw.webapp.auth")
+@ComponentScan({ "ar.edu.itba.paw.webapp.auth", "ar.edu.itba.paw.webapp.mapper" })
 public class WebAuthConfig extends WebSecurityConfigurerAdapter {
     private static final String ACCESS_CONTROL_CHECK_USER = "@accessControl.checkUser(request, #userId)";
     private static final String ACCESS_CONTROL_USER_HAS_IMAGE = "@accessControl.userHasImage(request)";
     private static final String ACCESS_CONTROL_IMAGE_IS_USER_IMAGE = "@accessControl.imageIsUserImage(request, #id)";
     private static final String ACCESS_CONTROL_FOLLOWED_BY_IS_USER = "@accessControl.followedByIsUser(request)";
-    private static final String PERMIT_ALL = "permitAll()";
     private static final String AND = " and ";
     private static final String HAS_ROLE_USER = "hasRole('ROLE_USER')";
     private static final String HAS_ROLE_ADMIN = "hasRole('ROLE_ADMIN')";
     private static final String HAS_ROLE_VERIFIED = "hasRole('ROLE_VERIFIED')";
     private static final String NOT = "!";
+    private static final String OR = " or ";
+    private static final String ACCESS_CONTROL_IS_MOD_POST = HAS_ROLE_USER + AND
+            + "@accessControl.isModPost(request, #postId)";
 
     @Autowired
     private PawUserDetailsService userDetailsService;
@@ -92,11 +95,6 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
         WebExpressionVoter webExpressionVoter = new WebExpressionVoter();
         webExpressionVoter.setExpressionHandler(webSecurityExpressionHandler());
         return webExpressionVoter;
-    }
-
-    @Bean
-    public AccessDeniedHandler accessDeniedHandler() {
-        return new CustomAccessDeniedHandler();
     }
 
     @Bean
@@ -228,6 +226,9 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 .requestMatchers(HttpMethod.POST, "/api/posts")
                 .access(HAS_ROLE_VERIFIED)
 
+                .requestMatchers(HttpMethod.DELETE, "/api/posts/{postId}")
+                .access(HAS_ROLE_ADMIN + OR + ACCESS_CONTROL_IS_MOD_POST)
+
                 .requestMatchers(HttpMethod.POST, "/api/posts/{postId}/groovyness")
                 .access(HAS_ROLE_VERIFIED)
                 .requestMatchers(HttpMethod.PUT, "/api/posts/{postId}/groovyness/{userId}")
@@ -244,11 +245,6 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 .requestMatchers(HttpMethod.DELETE, "/api/communities/{communityName}/followers/{userId}")
                 .access(HAS_ROLE_VERIFIED + AND + ACCESS_CONTROL_CHECK_USER)
 
-                // TODO: Pensar como exponer el following
-                // .requestMatchers(HttpMethod.GET,
-                // "/api/communities/{communityName}/followers/{userId}")
-                // .access(HAS_ROLE_VERIFIED + AND + ACCESS_CONTROL_CHECK_USER)
-
                 .requestMatchers(HttpMethod.POST, "/api/communities/{communityName}/ratings")
                 .access(HAS_ROLE_VERIFIED)
 
@@ -264,15 +260,11 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 .requestMatchers(HttpMethod.POST, "/api/posts/{postId}/comments")
                 .access(HAS_ROLE_VERIFIED)
 
+                .requestMatchers(HttpMethod.DELETE, "/api/posts/{postId}/comments/{commentId}")
+                .access(HAS_ROLE_ADMIN + OR + ACCESS_CONTROL_IS_MOD_POST)
+
                 .requestMatchers(HttpMethod.GET, "/api/posts/{postId}/comments")
                 .permitAll()
-                //
-                // .requestMatchers(HttpMethod.GET, "/api/posts/{postId}/comments/{commentId}")
-                // .permitAll()
-                //
-                // .requestMatchers(HttpMethod.DELETE,
-                // "/api/posts/{postId}/comments/{commentId}")
-                // .access(HAS_ROLE_ADMIN)
 
                 .requestMatchers(HttpMethod.POST, "/api/posts/{postId}/comments/{commentId}/groovyness")
                 .access(HAS_ROLE_VERIFIED)
@@ -283,6 +275,13 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 .access(HAS_ROLE_VERIFIED + AND + ACCESS_CONTROL_CHECK_USER)
                 .requestMatchers(HttpMethod.GET, "/api/posts/{postId}/comments/{commentId}/groovyness/{userId}")
                 .access(HAS_ROLE_VERIFIED + AND + ACCESS_CONTROL_CHECK_USER)
+
+                .requestMatchers(HttpMethod.POST, "/api/mods")
+                .access(HAS_ROLE_ADMIN)
+                .requestMatchers(HttpMethod.GET, "/api/mods")
+                .access(HAS_ROLE_ADMIN)
+                .requestMatchers(HttpMethod.DELETE, "/api/mods/{communityName}/{userId}")
+                .access(HAS_ROLE_ADMIN)
 
                 .antMatchers("/api/**")
                 .permitAll() // Disable client-side cache handling

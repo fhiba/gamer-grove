@@ -23,7 +23,8 @@ public interface CommentService {
 
     List<Comment> getDownGroovedComments(long postId) throws UserNotFoundException;
 
-    int deleteComment(long commentId) throws NoSuchCommentException, NoSuchPostException, PostIsDeletedException;
+    int deleteComment(Long commentId, Long postId)
+            throws NoSuchCommentException, NoSuchPostException, PostIsDeletedException, CommentIsDeletedException;
 
     GroovyCommentHistory giveGrooviness(long commentId, GroovyEnum value, long postId)
             throws NoSuchCommentException, NoLoggedUserException, NoSuchPostException, CommentAlreadyGroovedException,

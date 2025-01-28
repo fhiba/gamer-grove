@@ -1,8 +1,11 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.exceptions.AlreadyModException;
+import ar.edu.itba.paw.exceptions.IllegalPageException;
 import ar.edu.itba.paw.exceptions.NoSuchCommunityException;
 import ar.edu.itba.paw.exceptions.NoSuchPostException;
+import ar.edu.itba.paw.exceptions.PageNotFoundException;
+import ar.edu.itba.paw.exceptions.UserIsNotModException;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.models.Community;
 import ar.edu.itba.paw.models.Mod;
@@ -249,5 +252,54 @@ public class ModderServiceImpl implements ModderService {
         }
 
         return isModderOfCommunity(possibleMod.get(), postFrom);
+    }
+
+    @Override
+    public PaginatedDataWrapper<Mod> findModsPaginated(String userName, String communityName, PaginationRequest request)
+            throws NoSuchCommunityException, IllegalPageException, PageNotFoundException {
+        if (request.getPageSize() < 1) {
+            throw new IllegalArgumentException();
+        }
+        if (request.getPageNumber() < 1) {
+            throw new IllegalPageException();
+        }
+        List<Mod> data;
+        Long count;
+        int offset = (request.getPageNumber() - 1) * request.getPageSize();
+        if (Objects.isNull(communityName)) {
+            count = md.findTotalMods(userName, null);
+            data = md.findModsPaginated(userName, null, request.getPageSize(), offset);
+        } else {
+
+            Community community = cs.findByName(communityName);
+
+            count = md.findTotalMods(userName, community.getId());
+
+            data = md.findModsPaginated(userName, community.getId(), request.getPageSize(), offset);
+        }
+        PaginatedDataWrapper<Mod> dataWrapper = new PaginatedDataWrapper<>(data, request.getPageNumber(),
+                count.intValue(),
+                request.getPageSize());
+
+        if (request.getPageNumber() > dataWrapper.getTotalPages() && dataWrapper.getTotalPages() != 0) {
+            throw new PageNotFoundException();
+        }
+
+        return dataWrapper;
+
+    }
+
+    @Override
+    @Transactional
+    public Boolean removeModder(final Long userId, final String communityName)
+            throws UserNotFoundException, NoSuchCommunityException, UserIsNotModException {
+        User possibleNewMod = us.findById(userId).orElseThrow(UserNotFoundException::new);
+        Community community = cs.findByName(communityName);
+        Mod mod = md.findByid(possibleNewMod, community).orElseThrow(UserIsNotModException::new);
+        md.removeModder(mod);
+        sendRemovedModNotification(possibleNewMod, community);
+        LOGGER.atInfo().setMessage("Mod {} removed from community {} successfully").addArgument(userId)
+                .addArgument(communityName).log();
+        return true;
     }
 }
