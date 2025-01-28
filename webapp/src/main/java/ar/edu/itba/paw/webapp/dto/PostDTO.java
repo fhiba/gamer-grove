@@ -14,39 +14,40 @@ import java.util.List;
 import java.util.function.Function;
 
 public class PostDTO {
+    private Long id;
     private URI self;
-    private  String title;
-    private  String body;
-
+    private String title;
+    private String body;
 
     private URI author;
 
     private URI community;
 
-    private  Boolean media;
-
-
+    private Boolean media;
 
     private LocalDateTime date;
 
-    private  Integer grooviness;
+    private Integer grooviness;
 
-    private  Boolean deleted;
+    private Boolean deleted;
 
     private String category;
 
     private List<URI> images;
+
     public static Function<Post, PostDTO> mapper(UriInfo uriInfo) {
         return p -> fromPost(uriInfo, p);
     }
 
     public static PostDTO fromPost(UriInfo uriInfo, Post p) {
         final PostDTO dto = new PostDTO();
+        dto.id = p.getId();
         dto.author = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(p.getAuthor().getId())).build();
         dto.body = p.getBody();
         dto.date = p.getDate();
         dto.category = p.getCategory();
-        dto.community = uriInfo.getBaseUriBuilder().path("communities").path(String.valueOf(p.getcommunity().getId())).build();
+        dto.community = uriInfo.getBaseUriBuilder().path("communities").path(String.valueOf(p.getcommunity().getId()))
+                .build();
         dto.deleted = p.getDeleted();
         dto.grooviness = p.getGrooviness();
         dto.title = p.getTitle();
