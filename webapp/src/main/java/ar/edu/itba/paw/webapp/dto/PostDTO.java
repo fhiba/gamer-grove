@@ -62,6 +62,14 @@ public class PostDTO {
         return dto;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public URI getSelf() {
         return self;
     }
