@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 interface Post {
   id: number;
@@ -14,7 +14,6 @@ const Post: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const { postId } = useParams();
-  console.log(postId);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -49,6 +48,7 @@ const Post: React.FC = () => {
 
   return (
     <div>
+      <Link to="/all">all</Link>
       <h1>{post.title}</h1>
       <p>{post.body}</p>
       <p>{post.grooviness}</p>
