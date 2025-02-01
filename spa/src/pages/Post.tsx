@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
+import Navbar from "../components/Navbar";
 interface Post {
   id: number;
   title: string;
@@ -31,6 +32,8 @@ const Post: React.FC = () => {
   const { postId } = useParams();
   const isAdmin = false;
   const isLogged = true;
+  const userName = "JaibaHardcode";
+  const defaultSearch = "Hola";
 
   useEffect(() => {
     const fetchData = async () => {
@@ -78,9 +81,17 @@ const Post: React.FC = () => {
   }
 
   return (
-    <main>
-      <div className="row">
-        <div className="column">
+    <div className="h-screen w-screen">
+      <Navbar
+        userName={userName}
+        isLoggedIn={isLogged}
+        defaultSearch={defaultSearch}
+        onSearch={(searchValue) => {
+          window.location.href = `/communities?searchTerms=${searchValue}`;
+        }}
+      />
+      <div className="grid grid-cols-3 gap-10">
+        <div>
           <Sidebar
             isAdmin={isAdmin}
             isLogged={isLogged}
@@ -88,27 +99,27 @@ const Post: React.FC = () => {
             currentPath={location.pathname}
           />
         </div>
-        <div className="column">
-          <h1>{post.title}</h1>
-          <p>{post.body}</p>
-          <p>{post.grooviness}</p>
+        <div className="grid grid-rows-2 gap-4">
+          <div>
+            <h1>{post.title}</h1>
+            <p>{post.body}</p>
+            <p>{post.grooviness}</p>
+          </div>
+          {comments.length > 0 ? (
+            <ul>
+              {comments.map((comment, i) => (
+                <li key={i}>
+                  <h2>{comment.body}</h2>
+                  <p>{comment.author}</p>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>No comments found.</p>
+          )}
         </div>
       </div>
-      <div>
-        {comments.length > 0 ? (
-          <ul>
-            {comments.map((comment, i) => (
-              <li key={i}>
-                <h2>{comment.body}</h2>
-                <p>{comment.author}</p>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>No comments found.</p>
-        )}
-      </div>
-    </main>
+    </div>
   );
 };
 
