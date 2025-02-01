@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-
+import Sidebar from "../components/Sidebar";
 interface Post {
   id: number;
   title: string;
@@ -9,23 +9,56 @@ interface Post {
   date: string;
 }
 
+interface Comment {
+  author: string;
+  body: string;
+}
+
+interface Community {
+  encodedName: string;
+  name: string;
+  portrait?: {
+    imageId: string;
+  } | null;
+}
+
 const Post: React.FC = () => {
   const [post, setPost] = useState<Post[]>([]);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [communities, setCommunities] = useState<Community[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const { postId } = useParams();
+  const isAdmin = false;
+  const isLogged = true;
 
   useEffect(() => {
-    const fetchPost = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:8080/paw-2024a-09/api/posts/${postId}`,
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch posts");
-        }
-        const data: Post[] = await response.json();
-        setPost(data);
+        setLoading(true);
+        const [postRes, commentsRes, communityRes] = await Promise.all([
+          fetch(`http://localhost:8080/paw-2024a-09/api/posts/${postId}`),
+          fetch(
+            `http://localhost:8080/paw-2024a-09/api/posts/${postId}/comments`,
+          ),
+          fetch(`http://localhost:8080/paw-2024a-09/api/communities`),
+        ]);
+
+        if (!postRes.ok) throw new Error("Failed to fetch post");
+        if (!commentsRes.ok && commentsRes.status !== 204)
+          throw new Error("Failed to fetch comments");
+        if (!communityRes.ok && communityRes.status !== 204)
+          throw new Error("Failed to fetch communities");
+        const postData = await postRes.json();
+
+        const commentsData =
+          commentsRes.status === 204 ? [] : await commentsRes.json();
+
+        const communityData =
+          communityRes.status === 204 ? [] : await communityRes.json();
+        setPost(postData);
+        setComments(commentsData);
+        setCommunities(communityData);
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "An unknown error occurred",
@@ -34,10 +67,8 @@ const Post: React.FC = () => {
         setLoading(false);
       }
     };
-
-    fetchPost();
-  }, []);
-
+    fetchData();
+  }, [postId]);
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -47,12 +78,37 @@ const Post: React.FC = () => {
   }
 
   return (
-    <div>
-      <Link to="/all">all</Link>
-      <h1>{post.title}</h1>
-      <p>{post.body}</p>
-      <p>{post.grooviness}</p>
-    </div>
+    <main>
+      <div className="row">
+        <div className="column">
+          <Sidebar
+            isAdmin={isAdmin}
+            isLogged={isLogged}
+            communities={communities}
+            currentPath={location.pathname}
+          />
+        </div>
+        <div className="column">
+          <h1>{post.title}</h1>
+          <p>{post.body}</p>
+          <p>{post.grooviness}</p>
+        </div>
+      </div>
+      <div>
+        {comments.length > 0 ? (
+          <ul>
+            {comments.map((comment, i) => (
+              <li key={i}>
+                <h2>{comment.body}</h2>
+                <p>{comment.author}</p>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No comments found.</p>
+        )}
+      </div>
+    </main>
   );
 };
 
