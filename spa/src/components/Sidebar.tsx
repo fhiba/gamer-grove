@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom"; // optional if you want client-side routing
 
 interface Community {
@@ -24,7 +24,6 @@ const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const isHome = currentPath.includes("/home");
   const isAll = currentPath.includes("/all") || currentPath.match(/\/$/);
-
   const homeAnchorClass = `fs-5 text-light sidebar-nav ${
     isHome ? "fw-bold" : "text-decoration-none"
   }`;
@@ -32,6 +31,33 @@ const Sidebar: React.FC<SidebarProps> = ({
   const allAnchorClass = `fs-5 text-light link sidebar-nav ${
     isAll ? "fw-bold" : "text-decoration-none"
   }`;
+
+  const [validPortraits, setValidPortraits] = useState({});
+
+  useEffect(() => {
+    const validateImages = async () => {
+      const updatedPortraits = {};
+
+      await Promise.all(
+        communities.map(async (community) => {
+          try {
+            const response = await fetch(community.portrait, {
+              method: "HEAD",
+            }); // Check if image exists
+            updatedPortraits[community.name] = response.ok
+              ? community.portrait
+              : "/images/default-community.png";
+          } catch {
+            updatedPortraits[community.name] = "/images/default-community.png";
+          }
+        }),
+      );
+
+      setValidPortraits(updatedPortraits);
+    };
+
+    validateImages();
+  }, [communities]);
 
   return (
     <div className="col-2 sidebar">
@@ -91,10 +117,13 @@ const Sidebar: React.FC<SidebarProps> = ({
                 <div className="card-body-community d-flex align-items-center mb-3">
                   <div className="d-flex justify-content-start me-2">
                     <img
-                      src={portraitSrc}
+                      src={
+                        validPortraits[community.name] ||
+                        "/images/default-community.png"
+                      }
                       className="very-small-profile-pic mb-1"
                       alt="Community portrait"
-                    />
+                    />{" "}
                   </div>
                   <div>
                     <h5 className="fw-semibold fs-6 card-subtitle text-break truncate-1-lines">

@@ -89,8 +89,8 @@ const All: React.FC = () => {
                 onClick={() => navigate(`/post/${post.id}`)}
                 style={{ cursor: "pointer", marginBottom: "10px" }}
               >
-                <h2>{post.title}</h2>
-                <p>{post.body}</p>
+                <h2 className="text-2xl font-bold">{post.title}</h2>
+                <p className="">{post.body}</p>
               </li>
             ))}
           </ul>
