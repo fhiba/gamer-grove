@@ -16,8 +16,7 @@ public class ImageDTO {
 
     private URI self;
 
-
-    private byte[]  imageFile;
+    private byte[] imageFile;
 
     public ImageDTO() {
     }
@@ -30,7 +29,7 @@ public class ImageDTO {
         ImageDTO imageDTO = new ImageDTO();
         imageDTO.imageFile = file.getFile();
         imageDTO.self = uriInfo.getBaseUriBuilder()
-                .path("images").path(String.valueOf(file.getImageId())).build();
+                .path("/api/images").path(String.valueOf(file.getImageId())).build();
 
         return imageDTO;
     }

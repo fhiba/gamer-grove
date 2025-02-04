@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
@@ -89,8 +90,17 @@ const All: React.FC = () => {
                 onClick={() => navigate(`/post/${post.id}`)}
                 style={{ cursor: "pointer", marginBottom: "10px" }}
               >
-                <h2 className="text-2xl font-bold">{post.title}</h2>
-                <p className="">{post.body}</p>
+                <div className="border border-gray-200 rounded-lg p-5">
+                  {" "}
+                  <h2 className="text-2xl font-bold">{post.title}</h2>
+                  <div className="content-between">
+                    <p className="text-gray-500">{post.body}</p>
+                    <p className="text-gray-500">
+                      {" "}
+                      {format(new Date(post.date), "MMMM d, yyyy h:mm a")}
+                    </p>
+                  </div>
+                </div>
               </li>
             ))}
           </ul>
