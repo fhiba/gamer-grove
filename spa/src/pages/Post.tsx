@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import { format } from "date-fns";
+import { fetchPostById, fetchComments, fetchCommunities } from "../api.js";
 interface Post {
   id: number;
   title: string;
@@ -40,26 +41,9 @@ const Post: React.FC = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [postRes, commentsRes, communityRes] = await Promise.all([
-          fetch(`http://localhost:8080/paw-2024a-09/api/posts/${postId}`),
-          fetch(
-            `http://localhost:8080/paw-2024a-09/api/posts/${postId}/comments`,
-          ),
-          fetch(`http://localhost:8080/paw-2024a-09/api/communities`),
-        ]);
-
-        if (!postRes.ok) throw new Error("Failed to fetch post");
-        if (!commentsRes.ok && commentsRes.status !== 204)
-          throw new Error("Failed to fetch comments");
-        if (!communityRes.ok && communityRes.status !== 204)
-          throw new Error("Failed to fetch communities");
-        const postData = await postRes.json();
-
-        const commentsData =
-          commentsRes.status === 204 ? [] : await commentsRes.json();
-
-        const communityData =
-          communityRes.status === 204 ? [] : await communityRes.json();
+        const postData = await fetchPostById(postId);
+        const commentsData = await fetchComments(postId);
+        const communityData = await fetchCommunities();
         setPost(postData);
         setComments(commentsData);
         setCommunities(communityData);
