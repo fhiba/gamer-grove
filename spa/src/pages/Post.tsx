@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
+import { format } from "date-fns";
 interface Post {
   id: number;
   title: string;
@@ -100,11 +101,12 @@ const Post: React.FC = () => {
           />
         </div>
         <div className="grid grid-rows-2 gap-4">
-          <div>
-            <h1>{post.title}</h1>
-            <p>{post.body}</p>
-            <p>{post.grooviness}</p>
-          </div>
+          <h2 className="text-5xl font-bold">{post.title}</h2>
+          <p>{post.body}</p>
+          <p className="text-gray-500">
+            {format(new Date(post.date), "MMMM d, yyyy h:mm a")}
+          </p>
+          <p>{post.grooviness}</p>
           {comments.length > 0 ? (
             <ul>
               {comments.map((comment, i) => (

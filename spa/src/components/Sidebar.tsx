@@ -29,7 +29,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   }`;
 
   const allAnchorClass = `fs-5 text-light link sidebar-nav ${
-    isAll ? "fw-bold" : "text-decoration-none"
+    isAll ? "fw-bold text-decoration-none" : "text-decoration-none"
   }`;
 
   const [validPortraits, setValidPortraits] = useState({});
@@ -60,7 +60,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   }, [communities]);
 
   return (
-    <div className="col-2 sidebar">
+    <div className="col-2 sidebar text-decoration-none">
       <div className="card sidebar-card m-auto">
         <div className="card-body">
           {isAdmin && (

@@ -1,29 +1,55 @@
 import React, { useEffect, useState } from "react";
+import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
-
+import Sidebar from "../components/Sidebar";
+import Navbar from "../components/Navbar";
+import PostComponent from "../components/PostComponent";
 interface Post {
   id: number;
   title: string;
   body: string;
+  grooviness: number;
+  date: string;
 }
 
+interface Community {
+  encodedName: string;
+  name: string;
+  portrait?: {
+    imageId: string;
+  } | null;
+}
 const Home: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [communities, setCommunities] = useState<Community[]>([]);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-
+  const isAdmin = false;
+  const isLogged = true;
+  const userName = "JaibaHardcode";
+  const defaultSearch = "Hola";
   useEffect(() => {
-    const fetchPosts = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch(
-          "http://localhost:8080/paw-2024a-09/api/posts",
-        );
-        if (!response.ok) {
+        setLoading(true);
+        const authToken = fetch("http://localhost:8080/paw-2024a-09/api/");
+        const [postRes, communityRes] = await Promise.all([
+          fetch(
+            "http://localhost:8080/paw-2024a-09/api/posts?followedCommunitiesPosts=true",
+          ),
+          fetch("http://localhost:8080/paw-2024a-09/api/communities"),
+        ]);
+        if (!postRes.ok) {
           throw new Error("Failed to fetch posts");
         }
-        const data: Post[] = await response.json();
-        setPosts(data);
+        if (!communityRes.ok && communityRes.status !== 204)
+          throw new Error("Failed to fetch communities");
+        const postData: Post[] = await postRes.json();
+        const communityData: Community[] = await communityRes.json();
+
+        setPosts(postData);
+        setCommunities(communityData);
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "An unknown error occurred",
@@ -33,7 +59,7 @@ const Home: React.FC = () => {
       }
     };
 
-    fetchPosts();
+    fetchData();
   }, []);
 
   if (loading) {
@@ -45,24 +71,40 @@ const Home: React.FC = () => {
   }
 
   return (
-    <div>
-      <h1>POR AHORA ES IGUAL A ALL(falta filtrar por followed communities)</h1>
-      {posts.length > 0 ? (
-        <ul>
-          {posts.map((post, i) => (
-            <li
-              key={i}
-              onClick={() => navigate(`/post/${post.id}`)}
-              style={{ cursor: "pointer", marginBottom: "10px" }}
-            >
-              <h2>{post.title}</h2>
-              <p>{post.body}</p>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>No posts found.</p>
-      )}
+    <div className="w-screen h-screen">
+      <Navbar
+        userName={userName}
+        isLoggedIn={isLogged}
+        defaultSearch={defaultSearch}
+        onSearch={(searchValue) => {
+          window.location.href = `/communities?searchTerms=${searchValue}`;
+        }}
+      />
+      <div className="grid grid-cols-3 gap-36">
+        <div>
+          <Sidebar
+            isAdmin={isAdmin}
+            isLogged={isLogged}
+            communities={communities}
+            currentPath={location.pathname}
+          />
+        </div>
+        {posts.length > 0 ? (
+          <ul>
+            {posts.map((post, i) => (
+              <li
+                key={i}
+                onClick={() => navigate(`/post/${post.id}`)}
+                style={{ cursor: "pointer", marginBottom: "10px" }}
+              >
+                <PostComponent post={post} />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No posts found.</p>
+        )}
+      </div>
     </div>
   );
 };

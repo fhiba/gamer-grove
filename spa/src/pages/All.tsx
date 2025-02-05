@@ -3,10 +3,13 @@ import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
+import PostComponent from "../components/PostComponent";
 interface Post {
   id: number;
   title: string;
   body: string;
+  grooviness: number;
+  date: string;
 }
 
 interface Community {
@@ -73,7 +76,7 @@ const All: React.FC = () => {
           window.location.href = `/communities?searchTerms=${searchValue}`;
         }}
       />
-      <div className="grid grid-cols-3 gap-10">
+      <div className="grid grid-cols-3 gap-36">
         <div>
           <Sidebar
             isAdmin={isAdmin}
@@ -90,17 +93,7 @@ const All: React.FC = () => {
                 onClick={() => navigate(`/post/${post.id}`)}
                 style={{ cursor: "pointer", marginBottom: "10px" }}
               >
-                <div className="border border-gray-200 rounded-lg p-5">
-                  {" "}
-                  <h2 className="text-2xl font-bold">{post.title}</h2>
-                  <div className="content-between">
-                    <p className="text-gray-500">{post.body}</p>
-                    <p className="text-gray-500">
-                      {" "}
-                      {format(new Date(post.date), "MMMM d, yyyy h:mm a")}
-                    </p>
-                  </div>
-                </div>
+                <PostComponent post={post} />
               </li>
             ))}
           </ul>
