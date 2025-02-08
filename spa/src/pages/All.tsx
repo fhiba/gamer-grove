@@ -4,23 +4,14 @@ import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import PostComponent from "../components/PostComponent";
-interface Post {
-  id: number;
-  title: string;
-  body: string;
-  grooviness: number;
-  date: string;
-}
+import { fetchPosts, fetchCommunities, fetchNews } from "../api.js";
+import { Post } from "../types/Post.js";
+import { Community } from "../types/Community.js";
+import PaginatedPosts from "../components/PaginatedPosts.js";
 
-interface Community {
-  encodedName: string;
-  name: string;
-  portrait?: {
-    imageId: string;
-  } | null;
-}
 const All: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
+  const [news, setNews] = useState<Post[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [communities, setCommunities] = useState<Community[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -33,19 +24,12 @@ const All: React.FC = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [postRes, communityRes] = await Promise.all([
-          fetch("http://localhost:8080/paw-2024a-09/api/posts"),
-          fetch("http://localhost:8080/paw-2024a-09/api/communities"),
-        ]);
-        if (!postRes.ok) {
-          throw new Error("Failed to fetch posts");
-        }
-        if (!communityRes.ok && communityRes.status !== 204)
-          throw new Error("Failed to fetch communities");
-        const postData: Post[] = await postRes.json();
-        const communityData: Community[] = await communityRes.json();
+        const newsData: Post[] = await fetchNews();
+        const postData: Post[] = await fetchPosts();
+        const communityData: Community[] = await fetchCommunities();
         setPosts(postData);
         setCommunities(communityData);
+        setNews(newsData);
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "An unknown error occurred",
@@ -65,7 +49,7 @@ const All: React.FC = () => {
   if (error) {
     return <div>Error: {error}</div>;
   }
-
+  console.log(posts.length);
   return (
     <div className="w-screen h-screen">
       <Navbar
@@ -86,19 +70,24 @@ const All: React.FC = () => {
           />
         </div>
         {posts.length > 0 ? (
+          <PaginatedPosts posts={posts} />
+        ) : (
+          <p>No posts found.</p>
+        )}
+        {news.length > 0 ? (
           <ul>
-            {posts.map((post, i) => (
+            {news.map((newsPost, i) => (
               <li
                 key={i}
-                onClick={() => navigate(`/post/${post.id}`)}
+                onClick={() => navigate(`/post/${newsPost.id}`)}
                 style={{ cursor: "pointer", marginBottom: "10px" }}
               >
-                <PostComponent post={post} />
+                <PostComponent post={newsPost} />
               </li>
             ))}
           </ul>
         ) : (
-          <p>No posts found.</p>
+          <p>No news found.</p>
         )}
       </div>
     </div>

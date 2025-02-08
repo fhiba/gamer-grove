@@ -1,31 +1,11 @@
 import React, { useEffect, useState } from "react";
 import UserPostsPage from "../components/UserPosts";
 import { useParams } from "react-router";
-interface User {
-  email: string;
-  author: string;
-  username: string;
-  locale: string; // "en" or "es"
-  isVerified: boolean;
-}
+import { fetchPosts, fetchCommunities, fetchUser } from "../api";
+import { Post } from "../types/Post.js";
+import { User } from "../types/User.js";
+import { Community } from "../types/Community.js";
 
-// Example interface for a single Post
-interface Post {
-  id: number;
-  communityName: string;
-  category: string;
-  title: string;
-  body: string;
-  grooviness: number;
-  date: string; // or Date if you parse it
-}
-interface Community {
-  encodedName: string;
-  name: string;
-  portrait?: {
-    imageId: string;
-  } | null;
-}
 const UserPosts: React.FC = () => {
   const [user, setUser] = useState<User>();
   const [posts, setPosts] = useState<Post[]>([]);
@@ -38,18 +18,9 @@ const UserPosts: React.FC = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [postRes, userRes, communityRes] = await Promise.all([
-          fetch(`http://localhost:8080/paw-2024a-09/api/posts`),
-          fetch(`http://localhost:8080/paw-2024a-09/api/users/${userId}`),
-          fetch(`http://localhost:8080/paw-2024a-09/api/communities`),
-        ]);
-        if (!userRes.ok) throw new Error("Failed to fetch user");
-        if (!postRes.ok) throw new Error("Failed to fetch posts");
-        const userData = await userRes.json();
-        const postData = await postRes.json();
-        const communityData = await communityRes.json();
-        if (!communityRes.ok && communityRes.status !== 204)
-          throw new Error("Failed to fetch communities");
+        const userData = await fetchUser(userId);
+        const postData = await fetchPosts();
+        const communityData = await fetchCommunities();
         const filteredPosts = postData.filter((post) => {
           const urlParts = post.author.split("/");
           const authorId = urlParts[urlParts.length - 1];

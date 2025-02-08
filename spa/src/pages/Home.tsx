@@ -4,52 +4,35 @@ import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import PostComponent from "../components/PostComponent";
-interface Post {
-  id: number;
-  title: string;
-  body: string;
-  grooviness: number;
-  date: string;
-}
+import { AuthContext } from "../context/AuthContext";
+import {
+  fetchFollowedCommunitiesPosts,
+  fetchCommunities,
+  fetchNews,
+} from "../api";
+import { useAuth } from "../context/AuthContext";
+import { Post } from "../types/Post.js";
+import { Community } from "../types/Community.js";
 
-interface Community {
-  encodedName: string;
-  name: string;
-  portrait?: {
-    imageId: string;
-  } | null;
-}
 const Home: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
+  const [news, setNews] = useState<Post[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [communities, setCommunities] = useState<Community[]>([]);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const isAdmin = false;
-  const isLogged = true;
-  const userName = "JaibaHardcode";
+  const { isLogged, isAdmin, userName, authToken } = useAuth();
   const defaultSearch = "Hola";
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const authToken = fetch("http://localhost:8080/paw-2024a-09/api/");
-        const [postRes, communityRes] = await Promise.all([
-          fetch(
-            "http://localhost:8080/paw-2024a-09/api/posts?followedCommunitiesPosts=true",
-          ),
-          fetch("http://localhost:8080/paw-2024a-09/api/communities"),
-        ]);
-        if (!postRes.ok) {
-          throw new Error("Failed to fetch posts");
-        }
-        if (!communityRes.ok && communityRes.status !== 204)
-          throw new Error("Failed to fetch communities");
-        const postData: Post[] = await postRes.json();
-        const communityData: Community[] = await communityRes.json();
-
+        const postData: Post[] = await fetchFollowedCommunitiesPosts(authToken);
+        const communityData: Community[] = await fetchCommunities();
+        const newsData: Post[] = await fetchNews();
         setPosts(postData);
         setCommunities(communityData);
+        setNews(newsData);
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "An unknown error occurred",
@@ -103,6 +86,21 @@ const Home: React.FC = () => {
           </ul>
         ) : (
           <p>No posts found.</p>
+        )}
+        {news.length > 0 ? (
+          <ul>
+            {news.map((newsPost, i) => (
+              <li
+                key={i}
+                onClick={() => navigate(`/post/${newsPost.id}`)}
+                style={{ cursor: "pointer", marginBottom: "10px" }}
+              >
+                <PostComponent post={newsPost} />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No news found.</p>
         )}
       </div>
     </div>

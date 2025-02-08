@@ -1,20 +1,26 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-const Navbar = () => {
+interface NavbarProps {
+  isLogged: boolean;
+  username: string | null;
+  defaultSearch: string;
+}
+
+const Navbar: React.FC<NavbarProps> = ({
+  username,
+  isLogged,
+  defaultSearch,
+}) => {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const isAuthenticated = true; // Replace with actual auth logic
-  const username = "User123"; // Replace with actual user data
 
   return (
-    <nav className="bg-gray-900 text-white py-4 px-6 flex justify-between items-center">
+    <nav className="shadow-current text-white py-4 px-6 flex justify-between items-center">
       <Link to="/" className="flex items-center space-x-2">
-        <img
-          src="https://via.placeholder.com/40"
-          alt="Logo"
-          className="w-10 h-10"
-        />
-        <span className="text-xl font-bold">Gamer Grove</span>
+        <img src="../images/default.jpg" className="w-10 h-10" />
+        <span className="text-xl font-bold decoration-black no-underline">
+          Gamer Grove
+        </span>
       </Link>
 
       <form className="flex items-center w-1/2 max-w-lg">
@@ -31,8 +37,9 @@ const Navbar = () => {
         </button>
       </form>
 
-      {isAuthenticated ? (
+      {isLogged ? (
         <div className="relative">
+          ${username}
           <button
             className="bg-gray-800 p-2 rounded-md text-white"
             onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
@@ -61,7 +68,7 @@ const Navbar = () => {
       ) : (
         <Link
           to="/login"
-          className="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-md text-white"
+          className="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-md text-white no-underline"
         >
           Login
         </Link>

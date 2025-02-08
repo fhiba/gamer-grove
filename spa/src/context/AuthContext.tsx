@@ -1,5 +1,11 @@
 // src/context/AuthContext.tsx
-import React, { createContext, useState, useEffect, ReactNode } from "react";
+import React, {
+  createContext,
+  useState,
+  useEffect,
+  ReactNode,
+  useContext,
+} from "react";
 import axios from "axios";
 
 // Define the shape of the context data
@@ -9,7 +15,12 @@ interface AuthContextType {
   isAuthenticated: boolean;
   login: (username: string, password: string) => Promise<void>;
   logout: () => void;
-  register: (username: string, password: string, repeatPassword: string, email?: string) => Promise<void>;
+  register: (
+    username: string,
+    password: string,
+    repeatPassword: string,
+    email?: string,
+  ) => Promise<void>;
 }
 
 // Create the context with default values (placeholder functions, etc.)
@@ -63,15 +74,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Example: sending a GET or POST to any endpoint with "Authorization" headers
       // Adjust this part based on how your Spring Boot server expects the credentials:
       // e.g. Basic Auth, or some custom header. For demonstration, let's assume Basic:
-      const response = await axios.get("http://localhost:8080/api", {
-        headers: {
-          Authorization: `Basic ${btoa(`${username}:${password}`)}`,
+      const response = await axios.get(
+        "http://localhost:8080/paw-2024a-09/api",
+        {
+          headers: {
+            Authorization: `Basic ${btoa(`${username}:${password}`)}`,
+          },
         },
-      });
-      console.log(response)
+      );
+      console.log(response);
       // The server is assumed to return an object with these tokens:
-      const { 
-        'x-gamergrove-authtoken': returnedAuthToken, 'x-gamergrove-refreshtoken': returnedRefreshToken } = response.headers;
+      const {
+        "x-gamergrove-authtoken": returnedAuthToken,
+        "x-gamergrove-refreshtoken": returnedRefreshToken,
+      } = response.headers;
 
       setAuthToken(returnedAuthToken);
       setRefreshToken(returnedRefreshToken);
@@ -94,24 +110,29 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    * REGISTER function
    * e.g. POST /users with the form data
    */
-  const register = async (username: string, password: string, repeatPassword: string, email?: string) => {
+  const register = async (
+    username: string,
+    password: string,
+    repeatPassword: string,
+    email?: string,
+  ) => {
     try {
-        
-        const response = await axios.post(
-            "http://localhost:8080/api/users", 
-            {
-                "username":username,
-                "email":email,
-                "password":password,
-                "repeatPassword": repeatPassword
-            }, 
-            {
-                headers: {
-                  'Content-Type': 'application/vnd.users.v1+json', // Set the content type
-                }
-            });
-        console.log("Registered user:", response.data);
-        // Possibly auto-login or do something else upon successful registration
+      const response = await axios.post(
+        "http://localhost:8080/api/users",
+        {
+          username: username,
+          email: email,
+          password: password,
+          repeatPassword: repeatPassword,
+        },
+        {
+          headers: {
+            "Content-Type": "application/vnd.users.v1+json", // Set the content type
+          },
+        },
+      );
+      console.log("Registered user:", response.data);
+      // Possibly auto-login or do something else upon successful registration
     } catch (error) {
       console.error("Registration error:", error);
       throw error; // re-throw to handle in UI
@@ -134,3 +155,5 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+
+export const useAuth = () => useContext(AuthContext);

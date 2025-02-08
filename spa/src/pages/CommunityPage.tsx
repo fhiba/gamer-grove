@@ -1,27 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { Community } from "../types/Community";
+import { fetchCommunity } from "../api";
 
-interface Community {
-  id: number;
-  name: string;
-}
-
-const Community: React.FC = () => {
+const CommunityPage: React.FC = () => {
   const [community, setCommunity] = useState<Community[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const { communityName } = useParams();
 
   useEffect(() => {
-    const fetchCommunity = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:8080/paw-2024a-09/api/communities/${communityName}`,
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch posts");
-        }
-        const data: Community[] = await response.json();
+        const data = await fetchCommunity(communityName);
         setCommunity(data);
       } catch (err) {
         setError(
@@ -32,7 +23,7 @@ const Community: React.FC = () => {
       }
     };
 
-    fetchCommunity();
+    fetchData();
   }, []);
 
   if (loading) {
@@ -50,4 +41,4 @@ const Community: React.FC = () => {
   );
 };
 
-export default Community;
+export default CommunityPage;

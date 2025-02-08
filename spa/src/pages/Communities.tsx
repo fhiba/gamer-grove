@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
-interface Community {
-  id: number;
-  name: string;
-}
+import { Community } from "../types/Community";
 
 const Communities: React.FC = () => {
   const [communities, setCommunities] = useState<Community[]>([]);

@@ -1,31 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import Sidebar from "../components/Sidebar";
-import Navbar from "../components/Navbar";
+import Sidebar from "../components/Sidebar.js";
+import Navbar from "../components/Navbar.js";
 import { format } from "date-fns";
 import { fetchPostById, fetchComments, fetchCommunities } from "../api.js";
-interface Post {
-  id: number;
-  title: string;
-  body: string;
-  grooviness: number;
-  date: string;
-}
+import { Post } from "../types/Post.js";
+import { Community } from "../types/Community.tsx";
+import { Comment } from "../types/Comment.tsx";
 
-interface Comment {
-  author: string;
-  body: string;
-}
-
-interface Community {
-  encodedName: string;
-  name: string;
-  portrait?: {
-    imageId: string;
-  } | null;
-}
-
-const Post: React.FC = () => {
+const PostPage: React.FC = () => {
   const [post, setPost] = useState<Post[]>([]);
   const [comments, setComments] = useState<Comment[]>([]);
   const [communities, setCommunities] = useState<Community[]>([]);
@@ -109,4 +92,4 @@ const Post: React.FC = () => {
   );
 };
 
-export default Post;
+export default PostPage;

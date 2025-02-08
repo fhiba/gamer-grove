@@ -21,7 +21,9 @@ public class PostDTO {
 
     private URI author;
 
-    private URI community;
+    private URI communityLink;
+
+    private String community;
 
     private Boolean media;
 
@@ -46,7 +48,9 @@ public class PostDTO {
         dto.body = p.getBody();
         dto.date = p.getDate();
         dto.category = p.getCategory();
-        dto.community = uriInfo.getBaseUriBuilder().path("communities").path(String.valueOf(p.getcommunity().getId()))
+        dto.community = p.getcommunity().getName();
+        dto.communityLink = uriInfo.getBaseUriBuilder().path("communities")
+                .path(String.valueOf(p.getcommunity().getId()))
                 .build();
         dto.deleted = p.getDeleted();
         dto.grooviness = p.getGrooviness();
@@ -54,7 +58,8 @@ public class PostDTO {
         dto.media = p.getMedia();
         dto.images = new ArrayList<>();
         for (File image : p.getImages()) {
-            dto.images.add(uriInfo.getBaseUriBuilder().path("images").path(String.valueOf(image.getImageId())).build());
+            dto.images.add(
+                    uriInfo.getBaseUriBuilder().path("images").path(String.valueOf(image.getImageId())).build());
         }
 
         dto.self = uriInfo.getBaseUriBuilder()
@@ -68,6 +73,18 @@ public class PostDTO {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public URI getCommunityLink() {
+        return communityLink;
+    }
+
+    public void setCommunityLink(URI communityLink) {
+        this.communityLink = communityLink;
+    }
+
+    public void setCommunity(String community) {
+        this.community = community;
     }
 
     public URI getSelf() {
@@ -102,12 +119,8 @@ public class PostDTO {
         this.author = author;
     }
 
-    public URI getCommunity() {
+    public String getCommunity() {
         return community;
-    }
-
-    public void setCommunity(URI community) {
-        this.community = community;
     }
 
     public Boolean getMedia() {

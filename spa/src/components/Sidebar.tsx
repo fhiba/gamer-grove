@@ -1,13 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom"; // optional if you want client-side routing
-
-interface Community {
-  encodedName: string;
-  name: string;
-  portrait?: {
-    imageId: string;
-  } | null;
-}
+import { Community } from "../types/Community";
 
 interface SidebarProps {
   isAdmin: boolean;
@@ -32,36 +25,9 @@ const Sidebar: React.FC<SidebarProps> = ({
     isAll ? "fw-bold text-decoration-none" : "text-decoration-none"
   }`;
 
-  const [validPortraits, setValidPortraits] = useState({});
-
-  useEffect(() => {
-    const validateImages = async () => {
-      const updatedPortraits = {};
-
-      await Promise.all(
-        communities.map(async (community) => {
-          try {
-            const response = await fetch(community.portrait, {
-              method: "HEAD",
-            }); // Check if image exists
-            updatedPortraits[community.name] = response.ok
-              ? community.portrait
-              : "/images/default-community.png";
-          } catch {
-            updatedPortraits[community.name] = "/images/default-community.png";
-          }
-        }),
-      );
-
-      setValidPortraits(updatedPortraits);
-    };
-
-    validateImages();
-  }, [communities]);
-
   return (
-    <div className="col-2 sidebar text-decoration-none">
-      <div className="card sidebar-card m-auto">
+    <div className=" sidebar text-decoration-none  h-screen">
+      <div className=" card sidebar-card m-auto">
         <div className="card-body">
           {isAdmin && (
             <div className="d-flex flex-column justify-content-center align-items-center">
@@ -103,27 +69,23 @@ const Sidebar: React.FC<SidebarProps> = ({
           )}
 
           {communities.map((community) => {
-            const hasPortrait = community?.portrait?.imageId;
+            const hasPortrait = community?.portrait !== null;
             const portraitSrc = hasPortrait
-              ? `/image/${community.portrait?.imageId}`
-              : "/images/default-community.png";
+              ? community.portrait
+              : "../images/default.jpg";
 
             return (
               <a
-                key={community.encodedName}
-                href={`/community/${community.encodedName}`}
+                key={community.name}
+                href={`/community/${community.name}`}
                 className="text-light text-decoration-none"
               >
                 <div className="card-body-community d-flex align-items-center mb-3">
                   <div className="d-flex justify-content-start me-2">
                     <img
-                      src={
-                        validPortraits[community.name] ||
-                        "/images/default-community.png"
-                      }
+                      src={portraitSrc}
                       className="very-small-profile-pic mb-1"
-                      alt="Community portrait"
-                    />{" "}
+                    />
                   </div>
                   <div>
                     <h5 className="fw-semibold fs-6 card-subtitle text-break truncate-1-lines">
