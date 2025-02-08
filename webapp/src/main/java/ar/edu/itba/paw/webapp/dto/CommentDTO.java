@@ -15,6 +15,8 @@ public class CommentDTO {
 
     private URI author;
 
+    private Long id;
+
     private String body;
 
     private LocalDateTime date;
@@ -35,9 +37,18 @@ public class CommentDTO {
         dto.post = uriInfo.getBaseUriBuilder().path("posts").path(String.valueOf(c.getPost().getId())).build();
         dto.body = c.getBody();
         dto.date = c.getDate();
+        dto.id = c.getId();
         dto.deleted = c.getDeleted();
         dto.grooviness = c.getGrooviness();
         return dto;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public URI getSelf() {

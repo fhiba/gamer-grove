@@ -85,6 +85,17 @@ export const fetchFollowedCommunitiesPosts = async (token) => {
   }
 };
 
+export const fetchCommunityPosts = async (communityName) => {
+  try {
+    const res = await api.get("/posts", {
+      params: { community: communityName },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching community posts:", communityName);
+    throw error;
+  }
+};
 export const fetchUser = async (id) => {
   try {
     const res = await api.get(`/users/${id}`);

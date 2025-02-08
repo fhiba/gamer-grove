@@ -17,7 +17,7 @@ const PostComponent: React.FC<PostProps> = ({ post, key }) => {
       href={`/post/${post.id}`}
       className="card-link text-decoration-none"
     >
-      <div className="card mb-3 border-none">
+      <div className="card mb-3 border-gray">
         <div className="card-body">
           <div className="title-container">
             <p className="fw-semibold card-subtitle">/{post.community}</p>

@@ -6,4 +6,5 @@ export interface Comment {
   grooviness: number;
   post: string;
   self: string;
+  id: number;
 }

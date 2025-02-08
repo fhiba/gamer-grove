@@ -73,6 +73,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             const portraitSrc = hasPortrait
               ? community.portrait
               : "../images/default.jpg";
+            console.log(portraitSrc);
 
             return (
               <a

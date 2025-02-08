@@ -8,6 +8,8 @@ import { fetchPosts, fetchCommunities, fetchNews } from "../api.js";
 import { Post } from "../types/Post.js";
 import { Community } from "../types/Community.js";
 import PaginatedPosts from "../components/PaginatedPosts.js";
+import { useAuth } from "../context/AuthContext.js";
+import { decodeToken, JwtPayload } from "../utils/jwt.js";
 
 const All: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -16,10 +18,18 @@ const All: React.FC = () => {
   const [communities, setCommunities] = useState<Community[]>([]);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const isAdmin = false;
-  const isLogged = true;
-  const userName = "JaibaHardcode";
-  const defaultSearch = "Hola";
+  const [decoded, setDecoded] = useState<JwtPayload | null>(null);
+  const { authToken } = useAuth();
+  if (authToken !== null) {
+    useEffect(() => {
+      const payload = decodeToken(authToken);
+      setDecoded(payload);
+    }, []);
+  }
+  const userName = decoded?.sub;
+  const isAdmin = decoded?.role === "ROLE_ADMIN" ? true : false;
+  const isLogged = decoded !== null ? true : false;
+  const defaultSearch = "";
   useEffect(() => {
     const fetchData = async () => {
       try {

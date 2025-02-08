@@ -45,7 +45,8 @@ public class CommunityDTO {
         dto.ratingCount = c.getRatingCount();
         dto.publisher = c.getPublisher();
         if (c.getPortrait() != null) {
-            dto.portrait = uriInfo.getBaseUriBuilder().path("images").path(String.valueOf(c.getPortrait().getImageId()))
+            dto.portrait = uriInfo.getBaseUriBuilder().path("/api/images")
+                    .path(String.valueOf(c.getPortrait().getImageId()))
                     .build();
         }
         dto.totalRating = c.getTotalRating();

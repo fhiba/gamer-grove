@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { Navbar } from "@material-tailwind/react";
 import { decodeToken, JwtPayload } from "../utils/jwt";
 import Sidebar from "../components/Sidebar";
 import PostComponent from "../components/PostComponent";
@@ -12,6 +11,7 @@ import {
 } from "../api.js";
 import { Post } from "../types/Post.tsx";
 import { Community } from "../types/Community.tsx";
+import Navbar from "../components/Navbar.tsx";
 
 export function HomeAlt() {
   const { authToken } = useAuth();
@@ -40,7 +40,7 @@ export function HomeAlt() {
     useEffect(() => {
       const payload = decodeToken(authToken);
       setDecoded(payload);
-    });
+    }, []);
   }
   useEffect(() => {
     const fetchData = async () => {
@@ -94,6 +94,7 @@ export function HomeAlt() {
   const isLogged = decoded !== null ? true : false;
   const isVerified = decoded?.role === "ROLE_VERIFIED";
   const isAdmin = decoded?.role === "ROLE_ADMIN";
+    console.log("Is Logged? ",isLogged)
   return (
     <>
       <Navbar
