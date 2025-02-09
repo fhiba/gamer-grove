@@ -61,4 +61,6 @@ public interface PostService {
             throws PageNotFoundException, IllegalPageException, NoLoggedUserException;
 
     PaginatedDataWrapper<Post> getPostsByUserPaginated(long id, PaginationRequest paginationRequest);
+
+    List<Post> getPostsByUserName(String userName);
 }

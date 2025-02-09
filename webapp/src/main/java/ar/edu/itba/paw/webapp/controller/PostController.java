@@ -103,6 +103,15 @@ public class PostController {
         return Response.ok(PostDTO.mapper(uriInfo).apply(post)).build();
     }
 
+    // @GET
+    // @Path("/{userName}")
+    // @Produces(MediaType.APPLICATION_JSON)
+    // public Response getPostByName(@Context UriInfo uriInfo, @PathParam("userName") final String userName)
+    //         throws NoSuchPostException {
+    //     List<Post> post = ps.getPostsByUserName(userName);
+    //     return Response.ok(PostDTO.mapper(uriInfo).apply(post)).build();
+    // }
+
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response createPost(

@@ -2,6 +2,7 @@ package ar.edu.itba.paw.webapp.auth;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 
@@ -9,6 +10,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.security.Keys;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,9 +18,16 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.util.FileCopyUtils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Date;
 
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
+
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.webapp.controller.UserController;
 
 @Component
 public class JwtUtil {
@@ -51,9 +60,9 @@ public class JwtUtil {
 
         } else {
             lifeTime = AUTH_TOKEN_LIFE_TIME;
+            claims.put("id", user.getId());
             claims.put(CLAIM_TYPE, JwtType.AUTH.toString());
             claims.put(CLAIM_ROLE, user.getOwner() ? ROLE_ADMIN : (user.isVerified() ? ROLE_VERIFIED : ROLE_USER));
-
         }
 
         return Jwts.builder()

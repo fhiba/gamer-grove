@@ -373,4 +373,7 @@ public class PostServiceImpl implements PostService {
                 post.getTitle(), post.getcommunity().getName(), Locale.of(authorUser.getLocale()));
     }
 
+    public List<Post> getPostsByUserName(String userName) {
+        return Collections.emptyList();
+    }
 }

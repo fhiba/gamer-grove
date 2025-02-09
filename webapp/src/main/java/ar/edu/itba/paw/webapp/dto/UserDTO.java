@@ -53,7 +53,7 @@ public class UserDTO {
         dto.self = uriInfo.getBaseUriBuilder()
                 .path("users").path(String.valueOf(u.getId())).build();
 
-        dto.posts = uriInfo.getBaseUriBuilder().path("posts").queryParam("author", u.getId()).build();
+        dto.posts = uriInfo.getBaseUriBuilder().path("posts").queryParam("author", u.getUsername()).build();
         dto.likedPosts = uriInfo.getBaseUriBuilder().path("posts").queryParam("likedBy", u.getId()).build();
         dto.followedCommunities = uriInfo.getBaseUriBuilder().path("communities").queryParam("followedBy", u.getId())
                 .build();

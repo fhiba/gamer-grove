@@ -9,6 +9,7 @@ import { User } from "../types/User";
 import { useAuth } from "../context/AuthContext";
 import { decodeToken } from "../utils/jwt";
 import { JwtPayload } from "jwt-decode";
+import PaginatedPosts from "./PaginatedPosts";
 
 interface UserPostsPageProps {
   user: User;
@@ -204,49 +205,7 @@ const UserPostsPage: React.FC<UserPostsPageProps> = ({
                   </div>
                 )}
 
-                {posts.map((post) => (
-                  <a
-                    key={post.id}
-                    href={`/post/${post.id}`}
-                    className="card-link text-decoration-none"
-                  >
-                    <div className="card mb-3">
-                      <div className="card-body">
-                        <div className="title-container">
-                          <p className="fw-semibold card-subtitle">
-                            /{post.community}
-                          </p>
-                          <span
-                            className={`badge rounded-pill mb-1 ${post.category}`}
-                          >
-                            {post.category}
-                          </span>
-                        </div>
-
-                        <h4 className="card-title fw-bold">{post.title}</h4>
-                        <p className="card-text post-body-home">{post.body}</p>
-
-                        <div className="d-flex row-cols-2 justify-content-between mt-1">
-                          <p>
-                            <small className="text-body-secondary">
-                              {formatPostDate(post.date)}
-                            </small>
-                          </p>
-                          <div className="d-flex justify-content-end align-items-end">
-                            <span className="badge text-bg-dark pillUpvoteHome bg-transparent border border-light rounded-2 border-1">
-                              {post.grooviness}
-                              <i
-                                className="fa fa-thumbs-up ms-2"
-                                aria-hidden="true"
-                              ></i>
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </a>
-                ))}
-
+                <PaginatedPosts postsResponse={posts} />
                 <div className="d-flex justify-content-center align-items-center">
                   <p>Pagination Footer Placeholder</p>
                 </div>
