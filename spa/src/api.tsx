@@ -24,7 +24,6 @@ export const fetchNews = async () => {
     const category = post.category;
     return category == "News";
   });
-  console.log(filteredPosts);
   return filteredPosts;
 };
 export const fetchPostById = async (id) => {
@@ -99,6 +98,42 @@ export const fetchCommunityPosts = async (communityName) => {
 export const fetchUser = async (id) => {
   try {
     const res = await api.get(`/users/${id}`);
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const postAddFollower = async (communityName, token) => {
+  try {
+    const res = await api.post(`/communities/${communityName}/followers`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const postComment = async (postId, body) => {
+  const res = await axios.post(`/posts/${postId}/comments`, { body: body });
+  return res.data;
+};
+
+export const deletePost = async (postId) => {
+  try {
+    const res = await axios.delete(`/posts/${postId}`);
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const deleteComment = async (postId, commentId) => {
+  try {
+    const res = await axios.delete(`/posts/${postId}/comments/${commentId}`);
     return res.data;
   } catch (error) {
     throw error;

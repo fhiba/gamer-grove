@@ -2,11 +2,15 @@ import React, { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
+  deleteComment,
+  deletePost,
   fetchComments,
   fetchCommunities,
   fetchCommunity,
   fetchPostById,
   fetchPosts,
+  postAddFollower,
+  postComment,
 } from "../api";
 import { Comment } from "../types/Comment";
 import { Community } from "../types/Community";
@@ -15,6 +19,7 @@ import { decodeToken, JwtPayload } from "../utils/jwt";
 import { useAuth } from "../context/AuthContext";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
+import { comment } from "postcss";
 
 const PostPage: React.FC = () => {
   const { postId } = useParams();
@@ -48,14 +53,12 @@ const PostPage: React.FC = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const postData: Post = await fetchPosts();
+        const postData: Post = await fetchPostById(postId);
         const commentsData: Comment[] = await fetchComments(postId);
         const communitiesData: Community[] = await fetchCommunities();
         setPost(postData);
         setComments(commentsData);
         setCommunities(communitiesData);
-        const communityData: Community = await fetchCommunity(post?.community);
-        setCommunity(communityData);
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "An unknown error occurred",
@@ -68,6 +71,18 @@ const PostPage: React.FC = () => {
     fetchData();
   }, [postId]);
 
+  useEffect(() => {
+    if (post && post.community) {
+      console.log("Fetching community with:", post.community);
+      fetchCommunity(post.community)
+        .then((communityData: Community) => {
+          setCommunity(communityData);
+        })
+        .catch((error) => {
+          console.error("Error fetching community:", error);
+        });
+    }
+  }, [post]);
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -75,16 +90,9 @@ const PostPage: React.FC = () => {
   if (error) {
     return <div>Error: {error}</div>;
   }
-  const handleFollow = () => {
+  const handleFollow = async () => {
     if (!community) return;
-    //TODO:send to api.tsx
-    axios
-      .post(`/api/communities/${community.name}/followers`)
-      .then((response) => {
-        // Toggle following state based on API response
-        setIsFollowing(response.data.isFollowing);
-      })
-      .catch((error) => console.error("Error updating follow status:", error));
+    postAddFollower(community.name, authToken);
   };
 
   const postGroovyUpdate = (updateType) => {
@@ -118,39 +126,28 @@ const PostPage: React.FC = () => {
       );
   };
 
-  const handleCommentSubmit = (e) => {
+  const handleCommentSubmit = async (e) => {
     e.preventDefault();
+    console.log("posting comment");
     const formData = new FormData(e.target);
     const body = formData.get("body");
-
-    //TODO:send to api.tsx
-    axios
-      .post(`/api/posts/${postId}/comments`, { body })
-      .then((response) => {
-        setComments((prev) => [...prev, response.data]);
-        e.target.reset();
-      })
-      .catch((error) => console.error("Error posting comment:", error));
+    try {
+      const data = await postComment(postId, body);
+      setComments((prev) => [...prev, data]);
+      e.target.reset();
+    } catch (error) {
+      console.error("Error posting comment:", error);
+    }
   };
 
-  const handlePostDelete = () => {
-    //TODO:send to api.tsx
-    axios
-      .post(`/api/posts/${postId}/delete`)
-      .then((response) => {
-        navigate("/");
-      })
-      .catch((error) => console.error("Error deleting post:", error));
+  const handlePostDelete = async () => {
+    deletePost(postId);
+    navigate("/");
   };
 
-  const handleCommentDelete = (commentId) => {
-    //TODO:send to api.tsx
-    axios
-      .post(`/api/comments/${commentId}/delete`)
-      .then((response) => {
-        setComments((prev) => prev.filter((c) => c.id !== commentId));
-      })
-      .catch((error) => console.error("Error deleting comment:", error));
+  const handleCommentDelete = async (commentId) => {
+    const data = await deleteComment(postId, commentId);
+    setComments((prev) => prev.filter((c) => c.id !== commentId));
   };
 
   if (!post) return <div>Loading...</div>;
@@ -166,7 +163,7 @@ const PostPage: React.FC = () => {
         }}
       />
 
-      <div className="container-fluid">
+      <div className="grid grid-cols-3">
         <div className="row min-vh-100">
           <Sidebar
             isAdmin={isAdmin}
@@ -174,10 +171,9 @@ const PostPage: React.FC = () => {
             communities={communities}
             currentPath={location.pathname}
           />
-
-          <div className="col-1" />
-
-          <div className="col-5">
+        </div>
+        <div>
+          <div>
             <div className="card border-0 bg-transparent">
               <div className="card-body">
                 <p className="fw-semibold card-subtitle mb-1">
@@ -380,7 +376,7 @@ const PostPage: React.FC = () => {
                     <div className="form-outline form-white mb-4">
                       <textarea
                         name="body"
-                        className="w-100 rounded-3 pt-2 ps-2"
+                        className="w-100 rounded-3 pt-2 ps-2 text-white"
                         rows="4"
                         placeholder="Enter your comment here..."
                       />
@@ -399,7 +395,6 @@ const PostPage: React.FC = () => {
                       key={i}
                       className="list-group-item d-flex justify-content-between align-items-start bg-body-secondary"
                     >
-                      //TODO: change to userId from user
                       <Link to={`/user/${comment.author}/userPosts`}>
                         <img
                           src="/images/default-avatar-icon.jpg"
@@ -567,10 +562,9 @@ const PostPage: React.FC = () => {
               </ul>
             </div>
           </div>
-
-          <div className="col-1" />
-
-          <div className="col-3 mt-3">
+        </div>
+        <div>
+          <div>
             {community && (
               <div className="card border-black bg-transparent">
                 <div className="card-body">
