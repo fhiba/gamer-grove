@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
@@ -10,9 +9,11 @@ import { Community } from "../types/Community.js";
 import PaginatedPosts from "../components/PaginatedPosts.js";
 import { useAuth } from "../context/AuthContext.js";
 import { decodeToken, JwtPayload } from "../utils/jwt.js";
+import { AxiosResponse } from "axios";
 
 const All: React.FC = () => {
-  const [posts, setPosts] = useState<Post[]>([]);
+  const [posts, setPosts] = useState<AxiosResponse>();
+  const [auxPosts, setAuxPosts] = useState<Post[]>([]);
   const [news, setNews] = useState<Post[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [communities, setCommunities] = useState<Community[]>([]);
@@ -35,11 +36,12 @@ const All: React.FC = () => {
       try {
         setLoading(true);
         const newsData: Post[] = await fetchNews();
-        const postData: Post[] = await fetchPosts();
+        const postResponse = await fetchPosts();
         const communityData: Community[] = await fetchCommunities();
-        setPosts(postData);
+        setPosts(postResponse);
         setCommunities(communityData);
         setNews(newsData);
+        setAuxPosts(postResponse.data);
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "An unknown error occurred",
@@ -59,7 +61,6 @@ const All: React.FC = () => {
   if (error) {
     return <div>Error: {error}</div>;
   }
-  console.log(posts.length);
   return (
     <div className="w-screen h-screen">
       <Navbar
@@ -79,8 +80,8 @@ const All: React.FC = () => {
             currentPath={location.pathname}
           />
         </div>
-        {posts.length > 0 ? (
-          <PaginatedPosts posts={posts} />
+        {auxPosts.length > 0 ? (
+          <PaginatedPosts postsResponse={posts} />
         ) : (
           <p>No posts found.</p>
         )}

@@ -1,36 +1,60 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import PostComponent from "./PostComponent";
+import { Post } from "../types/Post";
+import axios, { AxiosResponse } from "axios";
 
-const PaginatedPosts = ({ posts }) => {
-  const navigate = useNavigate();
-  const { page } = useParams(); // Get the page number from the URL
-  const postsPerPage = 10;
+interface PaginatedPostsProps {
+  postsResponse: AxiosResponse | undefined;
+}
 
-  const currentPage = Math.max(
-    1,
-    Math.min(Number(page) || 1, Math.ceil(posts.length / postsPerPage)),
-  );
+const PaginatedPosts: React.FC<PaginatedPostsProps> = ({ postsResponse }) => {
+  const [posts, setPosts] = useState<Post[]>(postsResponse.data);
 
-  const indexOfLastPost = currentPage * postsPerPage;
-  const indexOfFirstPost = indexOfLastPost - postsPerPage;
-  const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
-
-  const totalPages = Math.ceil(posts.length / postsPerPage);
-  console.log(posts.length);
-  console.log("total pages : ", totalPages);
-
-  const paginate = (pageNumber) => {
-    if (pageNumber >= 1 && pageNumber <= totalPages) {
-      navigate(`/posts/page/${pageNumber}`);
+  function parseLinkHeader(header) {
+    const links = {};
+    if (!header) {
+      return links;
     }
+
+    const parts = header.split(",");
+    parts.forEach((part) => {
+      const section = part.split(";");
+      if (section.length < 2) return;
+
+      const url = section[0].trim().replace(/^<|>$/g, "");
+
+      const relMatch = section[1].trim().match(/rel="(.*)"/);
+      if (relMatch && relMatch[1]) {
+        const rel = relMatch[1];
+        links[rel] = url;
+      }
+    });
+
+    return links;
+  }
+
+  let parsedLinks = parseLinkHeader(postsResponse?.headers.link);
+  const loadPreviousPage = () => {
+    console.log(parsedLinks["prev"]);
+    axios.get(parsedLinks["prev"]).then((response) => {
+      setPosts(response.data);
+      parsedLinks = parseLinkHeader(response.headers.link);
+    });
+  };
+
+  const loadNextPage = () => {
+    console.log(parsedLinks["next"]);
+    axios.get(parsedLinks["next"]).then((response) => {
+      setPosts(response.data);
+      parsedLinks = parseLinkHeader(response.headers.link);
+    });
   };
 
   return (
     <div>
-      {/* Render current posts */}
       <div>
-        {currentPosts.map((post, i) => (
+        {posts.map((post, i) => (
           <PostComponent post={post} key={i} />
         ))}
       </div>
@@ -44,48 +68,32 @@ const PaginatedPosts = ({ posts }) => {
         }}
       >
         <button
-          onClick={() => paginate(currentPage - 1)}
-          disabled={currentPage === 1}
+          onClick={() => loadPreviousPage()}
           style={{
             padding: "5px 10px",
-            backgroundColor: currentPage === 1 ? "#ddd" : "#333",
-            color: "#fff",
+            color: "#000",
             border: "none",
-            cursor: currentPage === 1 ? "not-allowed" : "pointer",
           }}
         >
           Previous
         </button>
-
-        {Array.from({ length: totalPages }, (_, index) => {
-          const pageNumber = index + 1;
-          return (
-            <button
-              key={pageNumber}
-              onClick={() => paginate(pageNumber)}
-              style={{
-                margin: "0 5px",
-                backgroundColor: currentPage === pageNumber ? "#333" : "#eee",
-                color: currentPage === pageNumber ? "#fff" : "#000",
-                border: "none",
-                padding: "5px 10px",
-                cursor: "pointer",
-              }}
-            >
-              {pageNumber}
-            </button>
-          );
-        })}
-
         <button
-          onClick={() => paginate(currentPage + 1)}
-          disabled={currentPage === totalPages}
+          style={{
+            margin: "0 5px",
+            border: "none",
+            padding: "5px 10px",
+            cursor: "pointer",
+            background: "black",
+          }}
+        >
+          {1}
+        </button>
+        <button
+          onClick={() => loadNextPage()}
           style={{
             padding: "5px 10px",
-            backgroundColor: currentPage === totalPages ? "#ddd" : "#333",
-            color: "#fff",
+            color: "#000",
             border: "none",
-            cursor: currentPage === totalPages ? "not-allowed" : "pointer",
           }}
         >
           Next

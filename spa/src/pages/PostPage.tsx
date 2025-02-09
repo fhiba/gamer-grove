@@ -8,8 +8,6 @@ import {
   fetchCommunities,
   fetchCommunity,
   fetchPostById,
-  fetchPosts,
-  postAddFollower,
   postComment,
 } from "../api";
 import { Comment } from "../types/Comment";
@@ -19,7 +17,7 @@ import { decodeToken, JwtPayload } from "../utils/jwt";
 import { useAuth } from "../context/AuthContext";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
-import { comment } from "postcss";
+import CommunityCard from "../components/CommunityCard";
 
 const PostPage: React.FC = () => {
   const { postId } = useParams();
@@ -90,10 +88,7 @@ const PostPage: React.FC = () => {
   if (error) {
     return <div>Error: {error}</div>;
   }
-  const handleFollow = async () => {
-    if (!community) return;
-    postAddFollower(community.name, authToken);
-  };
+
 
   const postGroovyUpdate = (updateType) => {
     //TODO:send to api.tsx
@@ -151,7 +146,7 @@ const PostPage: React.FC = () => {
   };
 
   if (!post) return <div>Loading...</div>;
-
+  console.log(comments);
   return (
     <div>
       <Navbar
@@ -387,227 +382,190 @@ const PostPage: React.FC = () => {
                   </form>
                 </div>
               )}
-
-              <ul className="list-group">
-                {comments.map((comment, i) =>
-                  !comment.deleted ? (
-                    <li
-                      key={i}
-                      className="list-group-item d-flex justify-content-between align-items-start bg-body-secondary"
-                    >
-                      <Link to={`/user/${comment.author}/userPosts`}>
-                        <img
-                          src="/images/default-avatar-icon.jpg"
-                          height="50"
-                          width="50"
-                          className="rounded-5"
-                          alt="Profile"
-                        />
-                      </Link>
-                      <div className="ms-2 me-auto">
-                        <Link
-                          to={`/user/${comment.author}/userPosts`}
-                          className="text-decoration-none text-dark"
-                        >
-                          <div className="fw-bold">{comment.author}</div>
+              {comments.length > 0 ? (
+                <ul className="list-group">
+                  {comments.map((comment, i) =>
+                    !comment.deleted ? (
+                      <li
+                        key={i}
+                        className="list-group-item d-flex justify-content-between align-items-start bg-body-secondary"
+                      >
+                        <Link to={`/user/${comment.author}/userPosts`}>
+                          <img
+                            src="/images/default-avatar-icon.jpg"
+                            height="50"
+                            width="50"
+                            className="rounded-5"
+                            alt="Profile"
+                          />
                         </Link>
-                        <p className="text-break">{comment.body}</p>
-                        <p>
-                          <small className="text-body-secondary">
-                            {new Date(comment.date).toLocaleString()}
-                          </small>
-                        </p>
-                      </div>
-                      <div className="d-flex align-items-center justify-content-center">
-                        <div className="d-flex flex-column">
-                          {upComments.includes(comment) ? (
-                            <>
-                              <button
-                                onClick={() =>
-                                  commentGroovyUpdate(true, comment.id)
-                                }
-                                className="btn"
-                              >
-                                <i className="fas fa-arrow-up text-primary" />
-                              </button>
-                              <span className="grooviness-count d-flex justify-content-center align-items-center">
-                                {comment.grooviness}
-                              </span>
-                              <button
-                                onClick={() =>
-                                  commentGroovyUpdate(false, comment.id)
-                                }
-                                className="btn"
-                              >
-                                <i className="fas fa-arrow-down" />
-                              </button>
-                            </>
-                          ) : downComments.includes(comment) ? (
-                            <>
-                              <button
-                                onClick={() =>
-                                  commentGroovyUpdate(true, comment.id)
-                                }
-                                className="btn"
-                              >
-                                <i className="fas fa-arrow-up" />
-                              </button>
-                              <span className="grooviness-count d-flex justify-content-center align-items-center">
-                                {comment.grooviness}
-                              </span>
-                              <button
-                                onClick={() =>
-                                  commentGroovyUpdate(false, comment.id)
-                                }
-                                className="btn"
-                              >
-                                <i className="fas fa-arrow-down text-danger" />
-                              </button>
-                            </>
-                          ) : (
-                            <>
-                              <button
-                                onClick={() =>
-                                  commentGroovyUpdate(true, comment.id)
-                                }
-                                className="btn"
-                              >
-                                <i className="fas fa-arrow-up" />
-                              </button>
-                              <span className="grooviness-count d-flex justify-content-center align-items-center">
-                                {comment.grooviness}
-                              </span>
-                              <button
-                                onClick={() =>
-                                  commentGroovyUpdate(false, comment.id)
-                                }
-                                className="btn"
-                              >
-                                <i className="fas fa-arrow-down" />
-                              </button>
-                            </>
-                          )}
+                        <div className="ms-2 me-auto">
+                          <Link
+                            to={`/user/${comment.author}/userPosts`}
+                            className="text-decoration-none text-dark"
+                          >
+                            <div className="fw-bold">{comment.author}</div>
+                          </Link>
+                          <p className="text-break">{comment.body}</p>
+                          <p>
+                            <small className="text-body-secondary">
+                              {new Date(comment.date).toLocaleString()}
+                            </small>
+                          </p>
                         </div>
-                      </div>
-                      <div className="d-flex justify-content-center align-items-center">
-                        {canDelete && (
-                          <>
-                            <button
-                              className="btn btn-danger btn-sm align-content-center"
-                              data-bs-toggle="modal"
-                              data-bs-target={`#deleteComment${comment.id}Modal`}
-                            >
-                              <i className="fas fa-trash" />
-                            </button>
-                            <div
-                              className="modal fade"
-                              id={`deleteComment${comment.id}Modal`}
-                              tabIndex="-1"
-                              aria-hidden="true"
-                            >
-                              <div className="modal-dialog modal-dialog-centered">
-                                <div className="modal-content">
-                                  <div className="modal-header">
-                                    <h1 className="modal-title fs-5">
-                                      Delete Comment
-                                    </h1>
-                                    <button
-                                      type="button"
-                                      className="btn-close"
-                                      data-bs-dismiss="modal"
-                                      aria-label="Close"
-                                    />
-                                  </div>
-                                  <div className="modal-footer">
-                                    <button
-                                      data-bs-dismiss="modal"
-                                      className="btn btn-secondary btn-sm"
-                                    >
-                                      Cancel
-                                    </button>
-                                    <button
-                                      className="btn btn-danger btn-sm"
-                                      onClick={() =>
-                                        handleCommentDelete(comment.id)
-                                      }
-                                    >
-                                      Delete Comment
-                                    </button>
+                        <div className="d-flex align-items-center justify-content-center">
+                          <div className="d-flex flex-column">
+                            {upComments.includes(comment) ? (
+                              <>
+                                <button
+                                  onClick={() =>
+                                    commentGroovyUpdate(true, comment.id)
+                                  }
+                                  className="btn"
+                                >
+                                  <i className="fas fa-arrow-up text-primary" />
+                                </button>
+                                <span className="grooviness-count d-flex justify-content-center align-items-center">
+                                  {comment.grooviness}
+                                </span>
+                                <button
+                                  onClick={() =>
+                                    commentGroovyUpdate(false, comment.id)
+                                  }
+                                  className="btn"
+                                >
+                                  <i className="fas fa-arrow-down" />
+                                </button>
+                              </>
+                            ) : downComments.includes(comment) ? (
+                              <>
+                                <button
+                                  onClick={() =>
+                                    commentGroovyUpdate(true, comment.id)
+                                  }
+                                  className="btn"
+                                >
+                                  <i className="fas fa-arrow-up" />
+                                </button>
+                                <span className="grooviness-count d-flex justify-content-center align-items-center">
+                                  {comment.grooviness}
+                                </span>
+                                <button
+                                  onClick={() =>
+                                    commentGroovyUpdate(false, comment.id)
+                                  }
+                                  className="btn"
+                                >
+                                  <i className="fas fa-arrow-down text-danger" />
+                                </button>
+                              </>
+                            ) : (
+                              <>
+                                <button
+                                  onClick={() =>
+                                    commentGroovyUpdate(true, comment.id)
+                                  }
+                                  className="btn"
+                                >
+                                  <i className="fas fa-arrow-up" />
+                                </button>
+                                <span className="grooviness-count d-flex justify-content-center align-items-center">
+                                  {comment.grooviness}
+                                </span>
+                                <button
+                                  onClick={() =>
+                                    commentGroovyUpdate(false, comment.id)
+                                  }
+                                  className="btn"
+                                >
+                                  <i className="fas fa-arrow-down" />
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                        <div className="d-flex justify-content-center align-items-center">
+                          {canDelete && (
+                            <>
+                              <button
+                                className="btn btn-danger btn-sm align-content-center"
+                                data-bs-toggle="modal"
+                                data-bs-target={`#deleteComment${comment.id}Modal`}
+                              >
+                                <i className="fas fa-trash" />
+                              </button>
+                              <div
+                                className="modal fade"
+                                id={`deleteComment${comment.id}Modal`}
+                                tabIndex="-1"
+                                aria-hidden="true"
+                              >
+                                <div className="modal-dialog modal-dialog-centered">
+                                  <div className="modal-content">
+                                    <div className="modal-header">
+                                      <h1 className="modal-title fs-5">
+                                        Delete Comment
+                                      </h1>
+                                      <button
+                                        type="button"
+                                        className="btn-close"
+                                        data-bs-dismiss="modal"
+                                        aria-label="Close"
+                                      />
+                                    </div>
+                                    <div className="modal-footer">
+                                      <button
+                                        data-bs-dismiss="modal"
+                                        className="btn btn-secondary btn-sm"
+                                      >
+                                        Cancel
+                                      </button>
+                                      <button
+                                        className="btn btn-danger btn-sm"
+                                        onClick={() =>
+                                          handleCommentDelete(comment.id)
+                                        }
+                                      >
+                                        Delete Comment
+                                      </button>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
-                            </div>
-                          </>
-                        )}
-                      </div>
-                    </li>
-                  ) : (
-                    <li
-                      key={comment.id}
-                      className="list-group-item d-flex justify-content-between align-items-start bg-body-secondary"
-                    >
-                      <div className="ms-2 me-auto">
-                        <div className="fw-bold">Anon</div>
-                        <p>Comment Deleted</p>
-                      </div>
-                    </li>
-                  ),
-                )}
-                <div className="d-flex justify-content-center align-items-center mt-3">
-                  {comments.length === 0 && (
-                    <span className="badge bg-danger">Invalid page number</span>
+                            </>
+                          )}
+                        </div>
+                      </li>
+                    ) : (
+                      <li
+                        key={comment.id}
+                        className="list-group-item d-flex justify-content-between align-items-start bg-body-secondary"
+                      >
+                        <div className="ms-2 me-auto">
+                          <div className="fw-bold">Anon</div>
+                          <p>Comment Deleted</p>
+                        </div>
+                      </li>
+                    ),
                   )}
-                  {comments.length > 0}
-                </div>
-              </ul>
+                  <div className="d-flex justify-content-center align-items-center mt-3">
+                    {comments.length === 0 && (
+                      <span className="badge bg-danger">
+                        Invalid page number
+                      </span>
+                    )}
+                    {comments.length > 0}
+                  </div>
+                </ul>
+              ) : (
+                <p>No comments found</p>
+              )}
             </div>
           </div>
         </div>
         <div>
           <div>
-            {community && (
-              <div className="card border-black bg-transparent">
-                <div className="card-body">
-                  <div className="card-title d-flex row-cols-2 justify-content-between">
-                    <Link
-                      to={`/community/${community.name}`}
-                      className="text-decoration-none"
-                    >
-                      <h5 className="card-title text-light fw-bold">
-                        {community.name}
-                      </h5>
-                    </Link>
-                    <div className="d-none"></div>
-                    {isFollowing ? (
-                      <button
-                        onClick={handleFollow}
-                        className="rounded-pill btn-outline-danger follow-button fw-bold"
-                        id="followButton"
-                      >
-                        Following
-                      </button>
-                    ) : (
-                      <button
-                        onClick={handleFollow}
-                        className="rounded-pill btn-outline-danger follow-button fw-bold"
-                        id="followButton"
-                      >
-                        Follow
-                      </button>
-                    )}
-                  </div>
-                  {community.category &&
-                    community.category.map((cat, index) => (
-                      <span key={index} className="cat-badge badge">
-                        {cat}
-                      </span>
-                    ))}
-                  <div className="card-subtitle text-body-secondary mt-3">
-                    {community.description}
-                  </div>
-                </div>
-              </div>
-            )}
+            <CommunityCard community={community} />
           </div>
         </div>
       </div>

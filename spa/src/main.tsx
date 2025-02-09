@@ -25,7 +25,14 @@ createRoot(document.getElementById("root")!).render(
     <AuthProvider>
       <BrowserRouter basename={import.meta.env.BASE_URL}>
         <Routes>
-          <Route path="/home" element={<HomeAlt />} />
+          <Route
+            path="/home"
+            element={
+              <ProtectedRoute>
+                <HomeAlt />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/all" element={<All />} />

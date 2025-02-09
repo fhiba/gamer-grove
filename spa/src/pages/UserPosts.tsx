@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import UserPostsPage from "../components/UserPosts";
 import { useParams } from "react-router";
-import { fetchPosts, fetchCommunities, fetchUser } from "../api";
+import { fetchPosts, fetchCommunities, fetchUser } from "../api.js";
 import { Post } from "../types/Post.js";
 import { User } from "../types/User.js";
 import { Community } from "../types/Community.js";

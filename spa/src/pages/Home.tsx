@@ -9,7 +9,7 @@ import {
   fetchFollowedCommunitiesPosts,
   fetchCommunities,
   fetchNews,
-} from "../api";
+} from "../api.js";
 import { useAuth } from "../context/AuthContext";
 import { Post } from "../types/Post.js";
 import { Community } from "../types/Community.js";

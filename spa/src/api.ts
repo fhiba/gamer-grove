@@ -12,19 +12,23 @@ const api = axios.create({
 export const fetchPosts = async () => {
   try {
     const res = await api.get("/posts");
-    return res.data;
+    return res;
   } catch (error) {
     throw error;
   }
 };
 
 export const fetchNews = async () => {
-  const posts = await fetchPosts();
-  const filteredPosts = posts.filter((post) => {
-    const category = post.category;
-    return category == "News";
-  });
-  return filteredPosts;
+  try {
+    const posts = await fetchPosts();
+    const filteredPosts = posts.data.filter((post) => {
+      const category = post.category;
+      return category == "News";
+    });
+    return filteredPosts;
+  } catch (error) {
+    throw error;
+  }
 };
 export const fetchPostById = async (id) => {
   try {
@@ -34,6 +38,7 @@ export const fetchPostById = async (id) => {
     throw error;
   }
 };
+
 export const fetchComments = async (id) => {
   try {
     const res = await api.get(`/posts/${id}/comments`);
@@ -42,6 +47,7 @@ export const fetchComments = async (id) => {
     throw error;
   }
 };
+
 export const fetchCommunities = async () => {
   try {
     const res = await api.get("/communities");

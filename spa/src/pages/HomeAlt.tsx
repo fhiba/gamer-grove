@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { redirect, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { decodeToken, JwtPayload } from "../utils/jwt";
 import Sidebar from "../components/Sidebar";
@@ -36,7 +36,9 @@ export function HomeAlt() {
 
   const location = useLocation();
   const navigate = useNavigate();
-  if (authToken !== null) {
+  if (authToken === null) {
+    redirect("/login");
+  } else {
     useEffect(() => {
       const payload = decodeToken(authToken);
       setDecoded(payload);
@@ -94,7 +96,7 @@ export function HomeAlt() {
   const isLogged = decoded !== null ? true : false;
   const isVerified = decoded?.role === "ROLE_VERIFIED";
   const isAdmin = decoded?.role === "ROLE_ADMIN";
-    console.log("Is Logged? ",isLogged)
+  console.log("Is Logged? ", isLogged);
   return (
     <>
       <Navbar
