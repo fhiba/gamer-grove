@@ -1,4 +1,5 @@
 import axios from "axios";
+import { User } from "./types/User";
 
 const BASE_URL = "http://localhost:8080/paw-2024a-09/api";
 
@@ -9,6 +10,7 @@ const api = axios.create({
   },
 });
 
+//DEVUELVE AXIOSRESPONSE
 export const fetchPosts = async () => {
   try {
     const res = await api.get("/posts");
@@ -18,6 +20,31 @@ export const fetchPosts = async () => {
   }
 };
 
+//DEVUELVE AXIOSRESPONSE
+export const fetchLikedPosts = async (userId) => {
+  try {
+    const response = await api.get("/posts", {
+      params: { likedBy: userId },
+    });
+    return response;
+  } catch (error) {
+    console.error("Error fetching posts:", error);
+    throw error;
+  }
+};
+
+//DEVUELVE AXIOSRESPONSE
+export const fetchPostsByUser = async (userId) => {
+  try {
+    const response = await api.get("/posts", {
+      params: { author: userId },
+    });
+    return response;
+  } catch (error) {
+    console.error("Error fetching posts:", error);
+    throw error;
+  }
+};
 export const fetchNews = async () => {
   try {
     const posts = await fetchPosts();
@@ -83,9 +110,19 @@ export const fetchFollowedCommunitiesPosts = async (token) => {
         Authorization: `Bearer ${token}`,
       },
     });
-    return response.data;
+    return response;
   } catch (error) {
     console.error("Error fetching posts:", error);
+    throw error;
+  }
+};
+
+export const fetchAuthor = async (authorEndpoint: string): Promise<User> => {
+  try {
+    const response = await axios.get(authorEndpoint);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching author:", error);
     throw error;
   }
 };

@@ -55,7 +55,7 @@ createRoot(document.getElementById("root")!).render(
             <Route path="likedPosts" element={<LikedPosts />} />
           </Route>
           <Route path="/profile">
-            <Route element={<Profile />} />
+            <Route path="/profile" element={<Profile />} />
             <Route path="userPosts" element={<UserPosts />} />
             <Route path="followed" element={<Followed />} />
             <Route path="likedPosts" element={<LikedPosts />} />

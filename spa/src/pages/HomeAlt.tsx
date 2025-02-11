@@ -12,6 +12,8 @@ import {
 import { Post } from "../types/Post.tsx";
 import { Community } from "../types/Community.tsx";
 import Navbar from "../components/Navbar.tsx";
+import PaginatedPosts from "../components/PaginatedPosts.tsx";
+import { AxiosResponse } from "axios";
 
 export function HomeAlt() {
   const { authToken } = useAuth();
@@ -19,7 +21,8 @@ export function HomeAlt() {
   const [decoded, setDecoded] = useState<JwtPayload | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [posts, setPosts] = useState<Post[]>([]);
+  const [posts, setPosts] = useState<AxiosResponse>();
+  const [auxPosts, setAuxPosts] = useState<Post[]>([]);
   const [communities, setCommunities] = useState<Community[]>([]);
   const [news, setNews] = useState<Post[]>([]);
   const [topPosts, setTopPosts] = useState<Post[]>([]);
@@ -48,10 +51,11 @@ export function HomeAlt() {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const postData: Post[] = await fetchFollowedCommunitiesPosts(authToken);
+        const postsRes = await fetchFollowedCommunitiesPosts(authToken);
         const communityData: Community[] = await fetchCommunities();
         const newsData: Post[] = await fetchNews();
-        setPosts(postData);
+        setPosts(postsRes);
+        setAuxPosts(postsRes.data);
         setCommunities(communityData);
         setNews(newsData);
       } catch (err) {
@@ -106,20 +110,15 @@ export function HomeAlt() {
           window.location.href = `/communities?searchTerms=${searchValue}`;
         }}
       />
-      <div className="container-fluid">
-        <div className="row min-vh-100">
-          <div className="col-2 bg-light">
-            <Sidebar
-              isAdmin={isAdmin}
-              isLogged={isLogged}
-              communities={communities}
-              currentPath={location.pathname}
-            />
-          </div>
-
-          <div className="col-1" />
-
-          <div className="col-5">
+      <div className="grid grid-cols-3 gap-36">
+        <Sidebar
+          isAdmin={isAdmin}
+          isLogged={isLogged}
+          communities={communities}
+          currentPath={location.pathname}
+        />
+        <div>
+          <div>
             <div className="card border-0">
               <div className="card-body">
                 <div className="d-flex justify-content-between">
@@ -170,16 +169,17 @@ export function HomeAlt() {
                   </div>
                 )}
 
-                {posts.map((post) => (
-                  <PostComponent post={post} />
-                ))}
+                {auxPosts.length > 0 ? (
+                  <PaginatedPosts postsResponse={posts} />
+                ) : (
+                  <p>No posts found.</p>
+                )}
               </div>
             </div>
           </div>
-
-          <div className="col-1" />
-
-          <div className="col-3 mt-5">
+        </div>
+        <div>
+          <div>
             <div className="card bg-transparent border-0">
               <div className="card-title news-title">
                 <h5>News</h5>
@@ -201,31 +201,30 @@ export function HomeAlt() {
                 ))}
               </div>
             </div>
-
-            {isLogged && !isVerified && (
-              <div className="toast show position-fixed bottom-0 end-0 m-3">
-                <div className="toast-body text-dark">
-                  Please verify your account!
-                  <div className="mt-2 pt-2 border-top">
-                    <a href="/auth/resend-verification">
-                      <button type="button" className="btn btn-primary btn-sm">
-                        Resend
-                      </button>
-                    </a>
-                    <button
-                      type="button"
-                      className="btn btn-secondary btn-sm"
-                      onClick={() => {
-                        // Hide this toast
-                      }}
-                    >
-                      Close
+          </div>
+          {isLogged && !isVerified && (
+            <div className="toast show position-fixed bottom-0 end-0 m-3">
+              <div className="toast-body text-dark">
+                Please verify your account!
+                <div className="mt-2 pt-2 border-top">
+                  <a href="/auth/resend-verification">
+                    <button type="button" className="btn btn-primary btn-sm">
+                      Resend
                     </button>
-                  </div>
+                  </a>
+                  <button
+                    type="button"
+                    className="btn btn-secondary btn-sm"
+                    onClick={() => {
+                      // Hide this toast
+                    }}
+                  >
+                    Close
+                  </button>
                 </div>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
 

@@ -1,36 +1,37 @@
 import React, { useEffect, useState } from "react";
-import UserPostsPage from "../components/UserPosts";
-import { useParams } from "react-router";
-import { fetchPosts, fetchCommunities } from "../api.js";
-import { AuthContext } from "../context/AuthContext.js";
+import UserPostsPage from "../components/UserTabComponent";
+import { fetchCommunities, fetchUser, fetchPostsByUser } from "../api.js";
+import { useAuth } from "../context/AuthContext.js";
 import { User } from "../types/User.js";
-import { Post } from "../types/Post.js";
 import { Community } from "../types/Community.js";
+import { decodeToken, JwtPayload } from "../utils/jwt.js";
+import { AxiosResponse } from "axios";
 
 const Profile: React.FC = () => {
   const [user, setUser] = useState<User>();
-  const [posts, setPosts] = useState<Post[]>([]);
+  const [posts, setPosts] = useState<AxiosResponse>();
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [communities, setCommunities] = useState<Community[]>([]);
-  const userId = AuthContext;
+  const [decoded, setDecoded] = useState<JwtPayload | null>(null);
+  const { authToken } = useAuth();
   useEffect(() => {
+    if (authToken !== null) {
+      const decodedToken = decodeToken(authToken);
+      setDecoded(decodedToken);
+    }
+  }, [authToken]);
+
+  useEffect(() => {
+    if (!decoded?.id) return;
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [userRes] = await Promise.all([
-          fetch(`http://localhost:8080/paw-2024a-09/api/users/${userId}`),
-        ]);
-        const userData = await userRes.json();
-        const postData = await fetchPosts();
+        const userData = await fetchUser(decoded.id);
+        const postData = await fetchPostsByUser(decoded.id);
         const communityData = await fetchCommunities();
-        const filteredPosts = postData.filter((post) => {
-          const urlParts = post.author.split("/");
-          const authorId = urlParts[urlParts.length - 1];
-          return authorId == userId;
-        });
         setUser(userData);
-        setPosts(filteredPosts);
+        setPosts(postData);
         setCommunities(communityData);
       } catch (err) {
         setError(
@@ -41,7 +42,7 @@ const Profile: React.FC = () => {
       }
     };
     fetchData();
-  }, [userId]);
+  }, [decoded]);
   if (loading) {
     return <div>Loading...</div>;
   }

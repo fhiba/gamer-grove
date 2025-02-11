@@ -3,12 +3,19 @@ import { useNavigate, useParams } from "react-router-dom";
 import PostComponent from "./PostComponent";
 import { Post } from "../types/Post";
 import axios, { AxiosResponse } from "axios";
+import { User } from "../types/User";
 
 interface PaginatedPostsProps {
   postsResponse: AxiosResponse | undefined;
+  tab: string;
+  user: User;
 }
 
-const PaginatedPosts: React.FC<PaginatedPostsProps> = ({ postsResponse }) => {
+const PaginatedPosts: React.FC<PaginatedPostsProps> = ({
+  postsResponse,
+  tab,
+  user,
+}) => {
   const [posts, setPosts] = useState<Post[]>(postsResponse.data);
 
   function parseLinkHeader(header) {

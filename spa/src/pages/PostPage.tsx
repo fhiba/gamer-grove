@@ -4,6 +4,7 @@ import axios from "axios";
 import {
   deleteComment,
   deletePost,
+  fetchAuthor,
   fetchComments,
   fetchCommunities,
   fetchCommunity,
@@ -18,12 +19,14 @@ import { useAuth } from "../context/AuthContext";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import CommunityCard from "../components/CommunityCard";
+import { User } from "../types/User";
 
 const PostPage: React.FC = () => {
   const { postId } = useParams();
   const navigate = useNavigate();
 
   const [post, setPost] = useState<Post>();
+  const [author, setAuthor] = useState<User>();
   const [comments, setComments] = useState<Comment[]>([]);
   const [community, setCommunity] = useState<Community>();
   const [communities, setCommunities] = useState<Community[]>([]);
@@ -54,7 +57,6 @@ const PostPage: React.FC = () => {
         const postData: Post = await fetchPostById(postId);
         const commentsData: Comment[] = await fetchComments(postId);
         const communitiesData: Community[] = await fetchCommunities();
-        setPost(postData);
         setComments(commentsData);
         setCommunities(communitiesData);
       } catch (err) {
@@ -70,7 +72,7 @@ const PostPage: React.FC = () => {
   }, [postId]);
 
   useEffect(() => {
-    if (post && post.community) {
+    if (post && post.community && post.author) {
       console.log("Fetching community with:", post.community);
       fetchCommunity(post.community)
         .then((communityData: Community) => {
@@ -78,6 +80,13 @@ const PostPage: React.FC = () => {
         })
         .catch((error) => {
           console.error("Error fetching community:", error);
+        });
+      fetchAuthor(post.author)
+        .then((authorData) => {
+          setAuthor(authorData);
+        })
+        .catch((error) => {
+          console.error("Error fetching post author:", error);
         });
     }
   }, [post]);
@@ -88,7 +97,6 @@ const PostPage: React.FC = () => {
   if (error) {
     return <div>Error: {error}</div>;
   }
-
 
   const postGroovyUpdate = (updateType) => {
     //TODO:send to api.tsx
@@ -159,14 +167,12 @@ const PostPage: React.FC = () => {
       />
 
       <div className="grid grid-cols-3">
-        <div className="row min-vh-100">
-          <Sidebar
-            isAdmin={isAdmin}
-            isLogged={isLogged}
-            communities={communities}
-            currentPath={location.pathname}
-          />
-        </div>
+        <Sidebar
+          isAdmin={isAdmin}
+          isLogged={isLogged}
+          communities={communities}
+          currentPath={location.pathname}
+        />
         <div>
           <div>
             <div className="card border-0 bg-transparent">
@@ -196,10 +202,10 @@ const PostPage: React.FC = () => {
                   <>
                     <h4 className="card-title fw-bold mb-0">{post.title}</h4>
                     <Link
-                      to={`/user/${post.author}/userPosts`}
+                      to={post.author}
                       className="text-decoration-none text-light"
                     >
-                      <p className="card-subtitle mb-4">u/{post.author}</p>
+                      <p className="card-subtitle mb-4">u/{author?.username}</p>
                     </Link>
                     <p className="card-text">{post.body}</p>
 

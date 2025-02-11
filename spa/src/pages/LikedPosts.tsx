@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
-import UserPostsPage from "../components/UserPosts";
+import UserTabComponent from "../components/UserTabComponent";
 import { useParams } from "react-router";
-import { fetchPosts, fetchCommunities, fetchUser } from "../api.js";
+import { fetchCommunities, fetchUser, fetchLikedPosts } from "../api.js";
 import { Post } from "../types/Post.js";
 import { User } from "../types/User.js";
 import { Community } from "../types/Community.js";
+import { AxiosResponse } from "axios";
+import Navbar from "../components/Navbar.js";
 
 const LikedPosts: React.FC = () => {
   const [user, setUser] = useState<User>();
-  const [posts, setPosts] = useState<Post[]>([]);
+  const [posts, setPosts] = useState<AxiosResponse>();
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [communities, setCommunities] = useState<Community[]>([]);
@@ -19,15 +21,10 @@ const LikedPosts: React.FC = () => {
       try {
         setLoading(true);
         const userData = await fetchUser(userId);
-        const postData = await fetchPosts();
+        const postData = await fetchLikedPosts(userId);
         const communityData = await fetchCommunities();
-        const filteredPosts = postData.filter((post) => {
-          const urlParts = post.author.split("/");
-          const authorId = urlParts[urlParts.length - 1];
-          return authorId == userId;
-        });
         setUser(userData);
-        setPosts(filteredPosts);
+        setPosts(postData);
         setCommunities(communityData);
       } catch (err) {
         setError(
@@ -46,7 +43,9 @@ const LikedPosts: React.FC = () => {
     return <div>Error: {error}</div>;
   }
 
-  return <UserPostsPage user={user} posts={posts} communities={communities} />;
+  return (
+    <UserTabComponent user={user} posts={posts} communities={communities} />
+  );
 };
 
 export default LikedPosts;

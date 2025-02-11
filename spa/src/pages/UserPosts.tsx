@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
-import UserPostsPage from "../components/UserPosts";
 import { useParams } from "react-router";
-import { fetchPosts, fetchCommunities, fetchUser } from "../api.js";
-import { Post } from "../types/Post.js";
+import { fetchCommunities, fetchUser, fetchPostsByUser } from "../api.js";
 import { User } from "../types/User.js";
 import { Community } from "../types/Community.js";
+import { decodeToken, JwtPayload } from "../utils/jwt.js";
+import { useAuth } from "../context/AuthContext.js";
+import { AxiosResponse } from "axios";
+import UserTabComponent from "../components/UserTabComponent.js";
 
 const UserPosts: React.FC = () => {
   const [user, setUser] = useState<User>();
-  const [posts, setPosts] = useState<Post[]>([]);
+  const [posts, setPosts] = useState<AxiosResponse>();
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [communities, setCommunities] = useState<Community[]>([]);
@@ -19,15 +21,10 @@ const UserPosts: React.FC = () => {
       try {
         setLoading(true);
         const userData = await fetchUser(userId);
-        const postData = await fetchPosts();
+        const postData = await fetchPostsByUser(userId);
         const communityData = await fetchCommunities();
-        const filteredPosts = postData.filter((post) => {
-          const urlParts = post.author.split("/");
-          const authorId = urlParts[urlParts.length - 1];
-          return authorId == userId;
-        });
         setUser(userData);
-        setPosts(filteredPosts);
+        setPosts(postData);
         setCommunities(communityData);
       } catch (err) {
         setError(
@@ -46,7 +43,9 @@ const UserPosts: React.FC = () => {
     return <div>Error: {error}</div>;
   }
 
-  return <UserPostsPage user={user} posts={posts} communities={communities} />;
+  return (
+    <UserTabComponent user={user} posts={posts} communities={communities} />
+  );
 };
 
 export default UserPosts;

@@ -26,7 +26,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   }`;
 
   return (
-    <div className=" sidebar text-decoration-none  h-screen">
+    <div className="w-3/4 sidebar text-decoration-none  h-screen">
       <div className=" card sidebar-card m-auto">
         <div className="card-body">
           {isAdmin && (

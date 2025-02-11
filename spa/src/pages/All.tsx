@@ -64,7 +64,7 @@ const All: React.FC = () => {
   return (
     <div className="w-screen h-screen">
       <Navbar
-        userName={userName}
+        userName={decoded?.sub}
         isLoggedIn={isLogged}
         defaultSearch={defaultSearch}
         onSearch={(searchValue) => {

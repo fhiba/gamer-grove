@@ -37,7 +37,7 @@ const Navbar: React.FC<NavbarProps> = ({
         </button>
       </form>
 
-      {isLogged ? (
+      {!isLogged ? (
         <div className="relative">
           ${username}
           <button
