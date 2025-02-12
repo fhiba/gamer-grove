@@ -16,7 +16,7 @@ const All: React.FC = () => {
   const [auxPosts, setAuxPosts] = useState<Post[]>([]);
   const [news, setNews] = useState<Post[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [communities, setCommunities] = useState<Community[]>([]);
+  const [communities, setCommunities] = useState<AxiosResponse>();
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const [decoded, setDecoded] = useState<JwtPayload | null>(null);
@@ -37,7 +37,7 @@ const All: React.FC = () => {
         setLoading(true);
         const newsData: Post[] = await fetchNews();
         const postResponse = await fetchPosts();
-        const communityData: Community[] = await fetchCommunities();
+        const communityData = await fetchCommunities();
         setPosts(postResponse);
         setCommunities(communityData);
         setNews(newsData);
@@ -76,7 +76,7 @@ const All: React.FC = () => {
           <Sidebar
             isAdmin={isAdmin}
             isLogged={isLogged}
-            communities={communities}
+            communities={communities.data}
             currentPath={location.pathname}
           />
         </div>

@@ -23,7 +23,7 @@ export function HomeAlt() {
   const [loading, setLoading] = useState<boolean>(true);
   const [posts, setPosts] = useState<AxiosResponse>();
   const [auxPosts, setAuxPosts] = useState<Post[]>([]);
-  const [communities, setCommunities] = useState<Community[]>([]);
+  const [communities, setCommunities] = useState<AxiosResponse>();
   const [news, setNews] = useState<Post[]>([]);
   const [topPosts, setTopPosts] = useState<Post[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
@@ -52,7 +52,7 @@ export function HomeAlt() {
       try {
         setLoading(true);
         const postsRes = await fetchFollowedCommunitiesPosts(authToken);
-        const communityData: Community[] = await fetchCommunities();
+        const communityData = await fetchCommunities();
         const newsData: Post[] = await fetchNews();
         setPosts(postsRes);
         setAuxPosts(postsRes.data);
@@ -95,7 +95,7 @@ export function HomeAlt() {
   };
 
   const isLogged = decoded !== null ? true : false;
-  const isVerified = decoded?.role === "ROLE_VERIFIED";
+  const isVerified = decoded?.role !== "ROLE_USER";
   const isAdmin = decoded?.role === "ROLE_ADMIN";
   console.log("Is Logged? ", isLogged);
   return (
@@ -111,7 +111,7 @@ export function HomeAlt() {
         <Sidebar
           isAdmin={isAdmin}
           isLogged={isLogged}
-          communities={communities}
+          communities={communities.data}
           currentPath={location.pathname}
         />
         <div>

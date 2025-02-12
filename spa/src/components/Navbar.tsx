@@ -13,66 +13,80 @@ const Navbar: React.FC<NavbarProps> = ({
   defaultSearch,
 }) => {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState(defaultSearch);
 
   return (
-    <nav className="shadow-current text-white py-4 px-6 flex justify-between items-center">
-      <Link to="/" className="flex items-center space-x-2">
-        <img src="../images/default.jpg" className="w-10 h-10" />
-        <span className="text-xl font-bold decoration-black no-underline">
-          Gamer Grove
-        </span>
-      </Link>
+    <nav className=" text-white py-4 px-6 shadow-md">
+      <div className="container mx-auto flex items-center justify-between">
+        <div className="flex items-center space-x-2">
+          <Link
+            to="/"
+            className="flex items-center !no-underline text-white left-0"
+          >
+            <img src="/images/favicon.ico" className="w-10 h-10" />
+            <span className="text-xl font-bold ml-2">Gamer Grove</span>
+          </Link>
+        </div>
 
-      <form className="flex items-center w-1/2 max-w-lg">
-        <input
-          type="search"
-          placeholder="Search Community..."
-          className="px-4 py-2 rounded-l-md w-full bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring focus:border-green-400"
-        />
-        <button
-          type="submit"
-          className="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-r-md text-white"
+        <form
+          action="/communities"
+          method="get"
+          className="flex items-center w-1/2 max-w-lg"
         >
-          Search
-        </button>
-      </form>
+          <input
+            type="search"
+            name="searchTerms"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search Community..."
+            className="form-control w-full bg-gray-800 text-white border border-gray-700 rounded-pill px-3 py-2"
+          />
+          <button type="submit" className="btn btn-outline-success px-4">
+            Search
+          </button>
+        </form>
 
-      {!isLogged ? (
-        <div className="relative">
-          ${username}
-          <button
-            className="bg-gray-800 p-2 rounded-md text-white"
-            onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-          ></button>
-          {isUserMenuOpen && (
-            <ul className="absolute right-0 mt-2 w-48 bg-gray-800 text-white rounded-md shadow-lg">
-              <li>
-                <Link
-                  to="/profile"
-                  className="block px-4 py-2 hover:bg-gray-700"
-                >
-                  Profile
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/logout"
-                  className="block px-4 py-2 hover:bg-gray-700"
-                >
-                  Logout
-                </Link>
-              </li>
-            </ul>
+        <div className="flex items-center space-x-4">
+          {!isLogged ? (
+            <div className="relative">
+              <span className="text-white">Hi, {username}!</span>
+              <button
+                className="bg-gray-800 p-2 rounded-md ml-2"
+                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+              >
+                <i className="fa fa-user" aria-hidden="true"></i>
+              </button>
+              {isUserMenuOpen && (
+                <ul className="absolute right-0 mt-2 w-48 bg-gray-800 text-white rounded-md shadow-lg">
+                  <li>
+                    <Link
+                      to="/profile"
+                      className="block px-4 py-2 hover:bg-gray-700"
+                    >
+                      Profile
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/logout"
+                      className="block px-4 py-2 hover:bg-gray-700"
+                    >
+                      Logout
+                    </Link>
+                  </li>
+                </ul>
+              )}
+            </div>
+          ) : (
+            <Link
+              to="/login"
+              className="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-md text-white no-underline"
+            >
+              Login
+            </Link>
           )}
         </div>
-      ) : (
-        <Link
-          to="/login"
-          className="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-md text-white no-underline"
-        >
-          Login
-        </Link>
-      )}
+      </div>
     </nav>
   );
 };

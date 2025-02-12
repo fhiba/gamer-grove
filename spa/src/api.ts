@@ -1,5 +1,6 @@
 import axios from "axios";
 import { User } from "./types/User";
+import { Post } from "./types/Post";
 
 const BASE_URL = "http://localhost:8080/paw-2024a-09/api";
 
@@ -21,7 +22,7 @@ export const fetchPosts = async () => {
 };
 
 //DEVUELVE AXIOSRESPONSE
-export const fetchLikedPosts = async (userId) => {
+export const fetchLikedPosts = async (userId: number) => {
   try {
     const response = await api.get("/posts", {
       params: { likedBy: userId },
@@ -34,7 +35,7 @@ export const fetchLikedPosts = async (userId) => {
 };
 
 //DEVUELVE AXIOSRESPONSE
-export const fetchPostsByUser = async (userId) => {
+export const fetchPostsByUser = async (userId: number) => {
   try {
     const response = await api.get("/posts", {
       params: { author: userId },
@@ -48,7 +49,7 @@ export const fetchPostsByUser = async (userId) => {
 export const fetchNews = async () => {
   try {
     const posts = await fetchPosts();
-    const filteredPosts = posts.data.filter((post) => {
+    const filteredPosts = posts.data.filter((post: Post) => {
       const category = post.category;
       return category == "News";
     });
@@ -57,7 +58,7 @@ export const fetchNews = async () => {
     throw error;
   }
 };
-export const fetchPostById = async (id) => {
+export const fetchPostById = async (id: number) => {
   try {
     const res = await api.get(`/posts/${id}`);
     return res.data;
@@ -66,7 +67,7 @@ export const fetchPostById = async (id) => {
   }
 };
 
-export const fetchComments = async (id) => {
+export const fetchComments = async (id: number) => {
   try {
     const res = await api.get(`/posts/${id}/comments`);
     return res.data;
@@ -78,13 +79,13 @@ export const fetchComments = async (id) => {
 export const fetchCommunities = async () => {
   try {
     const res = await api.get("/communities");
-    return res.data;
+    return res;
   } catch (error) {
     throw error;
   }
 };
 
-export const fetchCommunity = async (communityName) => {
+export const fetchCommunity = async (communityName: string) => {
   try {
     const res = await api.get(`/communities/${communityName}`);
     return res.data;
@@ -93,7 +94,7 @@ export const fetchCommunity = async (communityName) => {
   }
 };
 
-export const fetchCommunityRating = async (communityName) => {
+export const fetchCommunityRating = async (communityName: string) => {
   try {
     const res = await api.get(`/communities/${communityName}/ratings`);
     return res.data;
@@ -106,6 +107,21 @@ export const fetchFollowedCommunitiesPosts = async (token) => {
   try {
     const response = await api.get("/posts", {
       params: { followedCommunitiesPosts: true },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response;
+  } catch (error) {
+    console.error("Error fetching posts:", error);
+    throw error;
+  }
+};
+export const fetchFollowedCommunities = async (token, id) => {
+  try {
+    const response = await api.get("/communities/", {
+      params: { followedBy: id },
+
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -132,7 +148,7 @@ export const fetchCommunityPosts = async (communityName: string) => {
     const res = await api.get("/posts", {
       params: { community: communityName },
     });
-    return res.data;
+    return res;
   } catch (error) {
     console.error("Error fetching community posts:", communityName);
     throw error;
@@ -182,3 +198,13 @@ export const deleteComment = async (postId: number, commentId: number) => {
     throw error;
   }
 };
+
+export const fetchCategories = async () => {
+  return ["action"];
+};
+
+export const postPost = async () => {};
+
+export const postRating = async () => {};
+
+export const deleteRating = async () => {};

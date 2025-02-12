@@ -36,7 +36,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                   Manage Moderators
                 </button>
               </a>
-              <a href="/new-community" className="w-100">
+              <a href="/newCommunity" className="w-100">
                 <button className="btn btn-outline-success w-100">
                   Add Community
                 </button>

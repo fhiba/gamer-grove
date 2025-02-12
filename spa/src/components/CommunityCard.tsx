@@ -3,14 +3,19 @@ import { Community } from "../types/Community";
 import { decodeToken, JwtPayload } from "../utils/jwt";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router";
-import { postAddFollower } from "../api";
+import { fetchFollowedCommunities, postAddFollower } from "../api";
+import { User } from "../types/User";
 
 interface CommunityCardComponents {
-  community: Community | undefined;
+  community: Community;
+  user: User | null;
 }
 //TODO:traer los campos que faltan como isFollowing y etc, utilizar authcontext
 // community included en (followedBy userId) => como consigo el userId si solo tengo el jwt??
-const CommunityCard: React.FC<CommunityCardComponents> = ({ community }) => {
+const CommunityCard: React.FC<CommunityCardComponents> = ({
+  community,
+  user,
+}) => {
   const [decoded, setDecoded] = useState<JwtPayload | null>(null);
   const { authToken } = useAuth();
   const navigate = useNavigate();
@@ -21,31 +26,31 @@ const CommunityCard: React.FC<CommunityCardComponents> = ({ community }) => {
     useEffect(() => {
       const payload = decodeToken(authToken);
       setDecoded(payload);
-    }, []);
+    }, [authToken]);
+  }
+  if (decoded?.id !== null) {
+    useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const followedData = await fetchFollowedCommunities(
+            authToken,
+            decoded?.id,
+          );
+          setFollowed(followedData.data);
+        } catch (err) {
+          setError(
+            err instanceof Error ? err.message : "An unknown error occurred",
+          );
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchData();
+    }, [user]);
   }
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const followedData = await fetchFollowedCommunities();
-        setFollowed(followedData);
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "An unknown error occurred",
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  const userName = decoded?.sub;
-  const isAdmin = decoded?.role === "ROLE_ADMIN" ? true : false;
-  const isLogged = decoded !== null ? true : false;
-  const defaultSearch = "";
-
+  const isFollowing = followedCommunities.includes(community);
   const handleFollow = async () => {
     if (!community) return;
     postAddFollower(community.name, authToken);
@@ -95,7 +100,7 @@ const CommunityCard: React.FC<CommunityCardComponents> = ({ community }) => {
                   {cat}
                 </span>
               ))}
-            <div className="card-subtitle text-body-secondary mt-3">
+            <div className="card-subtitle  mt-3 !text-gray-500">
               {community.description}
             </div>
           </div>

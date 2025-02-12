@@ -1,14 +1,21 @@
-import React, { useState } from "react";
-import PostComponent from "./PostComponent";
-import { Post } from "../types/Post";
+import React, { useEffect, useState } from "react";
 import axios, { AxiosResponse } from "axios";
+import { User } from "../types/User";
+import { Community } from "../types/Community";
+import CommunityCard from "./CommunityCard";
 
-interface PaginatedPostsProps {
-  postsResponse: AxiosResponse | undefined;
+interface PaginatedCommunitiesProps {
+  communitiesResponse: AxiosResponse | undefined;
+  tab: string;
+  user: User;
 }
 
-const PaginatedPosts: React.FC<PaginatedPostsProps> = ({ postsResponse }) => {
-  const [posts, setPosts] = useState<Post[]>(postsResponse.data);
+const PaginatedCommunityCards: React.FC<PaginatedCommunitiesProps> = ({
+  communitiesResponse,
+}) => {
+  const [communities, setCommunities] = useState<Community[]>(
+    communitiesResponse.data,
+  );
 
   function parseLinkHeader(header) {
     const links = {};
@@ -33,11 +40,11 @@ const PaginatedPosts: React.FC<PaginatedPostsProps> = ({ postsResponse }) => {
     return links;
   }
 
-  let parsedLinks = parseLinkHeader(postsResponse?.headers.link);
+  let parsedLinks = parseLinkHeader(communitiesResponse?.headers.link);
   const loadPreviousPage = () => {
     console.log(parsedLinks["prev"]);
     axios.get(parsedLinks["prev"]).then((response) => {
-      setPosts(response.data);
+      setCommunities(response.data);
       parsedLinks = parseLinkHeader(response.headers.link);
     });
   };
@@ -45,7 +52,7 @@ const PaginatedPosts: React.FC<PaginatedPostsProps> = ({ postsResponse }) => {
   const loadNextPage = () => {
     console.log(parsedLinks["next"]);
     axios.get(parsedLinks["next"]).then((response) => {
-      setPosts(response.data);
+      setCommunities(response.data);
       parsedLinks = parseLinkHeader(response.headers.link);
     });
   };
@@ -53,8 +60,8 @@ const PaginatedPosts: React.FC<PaginatedPostsProps> = ({ postsResponse }) => {
   return (
     <div>
       <div>
-        {posts.map((post, i) => (
-          <PostComponent post={post} key={i} />
+        {communities.map((community, i) => (
+          <CommunityCard community={community} key={i} />
         ))}
       </div>
 
@@ -102,4 +109,4 @@ const PaginatedPosts: React.FC<PaginatedPostsProps> = ({ postsResponse }) => {
   );
 };
 
-export default PaginatedPosts;
+export default PaginatedCommunityCards;
