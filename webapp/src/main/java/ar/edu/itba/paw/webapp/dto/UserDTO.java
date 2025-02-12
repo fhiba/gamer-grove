@@ -40,18 +40,16 @@ public class UserDTO {
         dto.owner = u.getOwner();
         dto.verified = u.getVerified();
         dto.locale = u.getLocale();
-        // Check if the user has an image
         if (u.getImage() != null) {
             dto.profileImage = uriInfo.getBaseUriBuilder()
                     .path("images")
                     .path(String.valueOf(u.getImage().getImageId()))
                     .build();
         } else {
-            // If there's no image, you can set a default image URI or leave it null
             dto.profileImage = null;
         }
         dto.self = uriInfo.getBaseUriBuilder()
-                .path("users").path(String.valueOf(u.getId())).build();
+                .path("/api/users").path(String.valueOf(u.getId())).build();
 
         dto.posts = uriInfo.getBaseUriBuilder().path("posts").queryParam("author", u.getUsername()).build();
         dto.likedPosts = uriInfo.getBaseUriBuilder().path("posts").queryParam("likedBy", u.getId()).build();

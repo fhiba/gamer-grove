@@ -71,7 +71,7 @@ grid {
   border: none;
 }
 .card {
-  background-color: transparent;
+  background-color: #1c1919 !important;
   border: none !important;
 }
 

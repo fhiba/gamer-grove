@@ -59,6 +59,7 @@ const PostPage: React.FC = () => {
         const communitiesData: Community[] = await fetchCommunities();
         setComments(commentsData);
         setCommunities(communitiesData);
+        setPost(postData);
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "An unknown error occurred",
@@ -180,7 +181,7 @@ const PostPage: React.FC = () => {
                 <p className="fw-semibold card-subtitle mb-1">
                   <Link
                     to={`/community/${post.community}`}
-                    className="text-decoration-none text-light text-body-primary"
+                    className="text-decoration-none text-light text-body-primary text-white"
                   >
                     c/{post.community}
                   </Link>
@@ -207,7 +208,7 @@ const PostPage: React.FC = () => {
                     >
                       <p className="card-subtitle mb-4">u/{author?.username}</p>
                     </Link>
-                    <p className="card-text">{post.body}</p>
+                    <p className="card-text text-white">{post.body}</p>
 
                     {post.media && post.images.length > 0 && (
                       <div id="carouselExample" className="carousel slide">
@@ -306,12 +307,12 @@ const PostPage: React.FC = () => {
 
                     <div className="d-flex align-items-center">
                       <p className="card-text mb-0">
-                        <small className="text-body-secondary">
+                        <small className=" text-gray-500">
                           {new Date(post.date).toLocaleString()}
                         </small>
                       </p>
                       <span
-                        className="grooviness-count"
+                        className="text-gray-500"
                         style={{ marginLeft: "1rem" }}
                       >
                         {post.grooviness}
@@ -370,9 +371,9 @@ const PostPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="card bg-body-secondary">
+            <div className="card ">
               {!post.deleted && (
-                <div className="card-body comment-card">
+                <div className="card-body ">
                   <form onSubmit={handleCommentSubmit}>
                     <div className="form-outline form-white mb-4">
                       <textarea
@@ -564,7 +565,9 @@ const PostPage: React.FC = () => {
                   </div>
                 </ul>
               ) : (
-                <p>No comments found</p>
+                <p className="align-items-center text-gray-500">
+                  No comments found
+                </p>
               )}
             </div>
           </div>

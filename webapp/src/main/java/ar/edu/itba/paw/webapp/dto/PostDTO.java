@@ -44,7 +44,7 @@ public class PostDTO {
     public static PostDTO fromPost(UriInfo uriInfo, Post p) {
         final PostDTO dto = new PostDTO();
         dto.id = p.getId();
-        dto.author = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(p.getAuthor().getId())).build();
+        dto.author = uriInfo.getBaseUriBuilder().path("/api/users").path(String.valueOf(p.getAuthor().getId())).build();
         dto.body = p.getBody();
         dto.date = p.getDate();
         dto.category = p.getCategory();

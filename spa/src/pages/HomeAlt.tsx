@@ -35,17 +35,17 @@ export function HomeAlt() {
   const [toastHeader, setToastHeader] = useState("");
   const [toastBody, setToastBody] = useState("");
 
-  const [pageNumber, setPageNumber] = useState<number>(1);
-
   const location = useLocation();
   const navigate = useNavigate();
   if (authToken === null) {
+    console.log("Not logged in");
     redirect("/login");
   } else {
     useEffect(() => {
       const payload = decodeToken(authToken);
       setDecoded(payload);
-    }, []);
+      console.log(decoded?.sub);
+    }, [authToken]);
   }
   useEffect(() => {
     const fetchData = async () => {
@@ -80,17 +80,14 @@ export function HomeAlt() {
 
   const filterPosts = (cat: string) => {
     setCategory(cat);
-    setPageNumber(1);
 
     const params = new URLSearchParams(location.search);
     params.set("category", cat);
-    params.set("pageNumber", "1");
     navigate({ search: params.toString() });
   };
 
   const handleOrderChange = (ord: string) => {
     setOrder(ord);
-    setPageNumber(1);
     const params = new URLSearchParams(location.search);
     params.set("order", ord);
     params.set("pageNumber", "1");
@@ -158,7 +155,7 @@ export function HomeAlt() {
                   </a>
                 </div>
 
-                {posts.length === 0 && (
+                {posts.data.length === 0 && (
                   <div className="text-center w-100">
                     <h6>No posts found</h6>
                     <a href="/all">
@@ -216,7 +213,7 @@ export function HomeAlt() {
                     type="button"
                     className="btn btn-secondary btn-sm"
                     onClick={() => {
-                      // Hide this toast
+                      setShowToast(false);
                     }}
                   >
                     Close

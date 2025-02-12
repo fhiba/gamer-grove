@@ -127,7 +127,7 @@ export const fetchAuthor = async (authorEndpoint: string): Promise<User> => {
   }
 };
 
-export const fetchCommunityPosts = async (communityName) => {
+export const fetchCommunityPosts = async (communityName: string) => {
   try {
     const res = await api.get("/posts", {
       params: { community: communityName },
@@ -138,7 +138,7 @@ export const fetchCommunityPosts = async (communityName) => {
     throw error;
   }
 };
-export const fetchUser = async (id) => {
+export const fetchUser = async (id: number) => {
   try {
     const res = await api.get(`/users/${id}`);
     return res.data;
@@ -147,7 +147,7 @@ export const fetchUser = async (id) => {
   }
 };
 
-export const postAddFollower = async (communityName, token) => {
+export const postAddFollower = async (communityName: string, token) => {
   try {
     const res = await api.post(`/communities/${communityName}/followers`, {
       headers: {
@@ -160,12 +160,12 @@ export const postAddFollower = async (communityName, token) => {
   }
 };
 
-export const postComment = async (postId, body) => {
+export const postComment = async (postId: number, body: string) => {
   const res = await axios.post(`/posts/${postId}/comments`, { body: body });
   return res.data;
 };
 
-export const deletePost = async (postId) => {
+export const deletePost = async (postId: number) => {
   try {
     const res = await axios.delete(`/posts/${postId}`);
     return res.data;
@@ -174,7 +174,7 @@ export const deletePost = async (postId) => {
   }
 };
 
-export const deleteComment = async (postId, commentId) => {
+export const deleteComment = async (postId: number, commentId: number) => {
   try {
     const res = await axios.delete(`/posts/${postId}/comments/${commentId}`);
     return res.data;
