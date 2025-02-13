@@ -62,6 +62,8 @@ public interface CommunityService {
 
     void updateCommunityImageId(long id, long imageId);
 
+    void updatePortrait(final String communityName, byte[] image) throws NoSuchCommunityException;
+
     void editCommunityInfo(String communityName, String description, String publisher, String developer,
             byte[] image, String categories) throws NoSuchCommunityException;
 

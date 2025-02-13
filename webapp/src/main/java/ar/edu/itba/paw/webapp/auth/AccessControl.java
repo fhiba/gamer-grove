@@ -1,5 +1,7 @@
 package ar.edu.itba.paw.webapp.auth;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
@@ -8,11 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import ar.edu.itba.paw.services.CommunityService;
 import ar.edu.itba.paw.services.PostService;
 import ar.edu.itba.paw.services.UserService;
-import ar.edu.itba.paw.webapp.mapper.ExceptionMapper;
-import ar.edu.itba.paw.exceptions.NoLoggedUserException;
 import ar.edu.itba.paw.exceptions.NoSuchPostException;
+import ar.edu.itba.paw.models.Community;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
 
@@ -26,6 +28,9 @@ public class AccessControl {
 
     @Autowired
     private PostService ps;
+
+    @Autowired
+    private CommunityService cs;
 
     @Transactional(readOnly = true)
     public boolean checkUser(HttpServletRequest request, Long userId) {
@@ -76,5 +81,22 @@ public class AccessControl {
             return false;
         }
         return post.getcommunity().getModders().contains(user.get());
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isModCommunity(HttpServletRequest request, String communityName) {
+        Optional<User> user = us.getLoggedUser();
+        if (!user.isPresent()) {
+            return false;
+        }
+
+        String decodedName = URLDecoder.decode(communityName, StandardCharsets.UTF_8);
+        Community c;
+        try {
+            c = cs.findByName(decodedName);
+        } catch (Exception e) {
+            return true;
+        }
+        return c.getModders().contains(user.get());
     }
 }

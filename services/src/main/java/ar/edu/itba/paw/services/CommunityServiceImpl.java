@@ -359,4 +359,12 @@ public class CommunityServiceImpl implements CommunityService {
         return r;
 
     }
+
+    @Override
+    @Transactional
+    public void updatePortrait(String communityName, byte[] image) throws NoSuchCommunityException {
+        String decodedName = URLDecoder.decode(communityName, StandardCharsets.UTF_8);
+        fileService.uploadCommunityImage(decodedName, image);
+
+    }
 }

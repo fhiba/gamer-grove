@@ -22,7 +22,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.access.expression.WebExpressionVoter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -54,6 +53,8 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
     private static final String OR = " or ";
     private static final String ACCESS_CONTROL_IS_MOD_POST = HAS_ROLE_USER + AND
             + "@accessControl.isModPost(request, #postId)";
+    private static final String ACCESS_CONTROL_IS_MOD_COMMUNITY = HAS_ROLE_USER + AND
+            + "@accessControl.isModCommunity(request, #communityName)";
 
     @Autowired
     private PawUserDetailsService userDetailsService;
@@ -190,19 +191,13 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 // update locale
                 .requestMatchers(HttpMethod.PUT, "/api/users/{userId}/locale")
                 .access(ACCESS_CONTROL_CHECK_USER + AND + HAS_ROLE_VERIFIED)
-
-                // images
-                .requestMatchers(HttpMethod.GET, "/api/images/{id}")
+                // HAANDLE POST AND PUT
+                .requestMatchers(HttpMethod.POST, "/api/users/{userId}/profile-picture")
+                .access(ACCESS_CONTROL_CHECK_USER + AND + HAS_ROLE_VERIFIED)
+                .requestMatchers(HttpMethod.PUT, "/api/users/{userId}/profile-picture")
+                .access(ACCESS_CONTROL_CHECK_USER + AND + HAS_ROLE_VERIFIED)
+                .requestMatchers(HttpMethod.GET, "/api/users/{userId}/profile-picture")
                 .permitAll()
-
-                // create image
-                .requestMatchers(HttpMethod.POST, "/api/images")
-                .access(HAS_ROLE_VERIFIED)
-
-                // update image
-                .requestMatchers(HttpMethod.PUT, "/api/images/{id}")
-                .access(ACCESS_CONTROL_USER_HAS_IMAGE + AND + HAS_ROLE_VERIFIED + AND
-                        + ACCESS_CONTROL_IMAGE_IS_USER_IMAGE)
 
                 // get all comunities paginated
                 .requestMatchers(HttpMethod.GET, "/api/communities")
@@ -211,6 +206,18 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 // get comunity by name
                 .requestMatchers(HttpMethod.GET, "/api/communities/{communityName}")
                 .permitAll()
+
+                .requestMatchers(HttpMethod.GET, "/api/communities/{communityName}/portrait")
+                .permitAll()
+
+                .requestMatchers(HttpMethod.POST, "/api/communities/{communityName}/portrait")
+                .access(HAS_ROLE_ADMIN + OR + ACCESS_CONTROL_IS_MOD_COMMUNITY)
+
+                .requestMatchers(HttpMethod.PUT, "/api/communities/{communityName}/portrait")
+                .access(HAS_ROLE_ADMIN + OR + ACCESS_CONTROL_IS_MOD_COMMUNITY)
+
+                .requestMatchers(HttpMethod.PATCH, "/api/communities/{communityName}")
+                .access(HAS_ROLE_ADMIN + OR + ACCESS_CONTROL_IS_MOD_COMMUNITY)
 
                 // create community
                 .requestMatchers(HttpMethod.POST, "/api/communities")
@@ -283,6 +290,11 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 .requestMatchers(HttpMethod.DELETE, "/api/mods/{communityName}/{userId}")
                 .access(HAS_ROLE_ADMIN)
 
+                .requestMatchers(HttpMethod.GET, "/api/communities/categories")
+                .permitAll()
+
+                .requestMatchers(HttpMethod.GET, "/api/posts/categories")
+                .permitAll()
                 .antMatchers("/api/**")
                 .permitAll() // Disable client-side cache handling
                 .and().headers().cacheControl().disable()

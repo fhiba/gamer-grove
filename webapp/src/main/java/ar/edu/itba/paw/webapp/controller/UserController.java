@@ -2,6 +2,7 @@ package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.exceptions.IllegalPageException;
 import ar.edu.itba.paw.exceptions.NoLoggedUserException;
+import ar.edu.itba.paw.exceptions.NoSuchImageException;
 import ar.edu.itba.paw.exceptions.NoSuchTokenException;
 import ar.edu.itba.paw.exceptions.PageNotFoundException;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
@@ -12,6 +13,9 @@ import ar.edu.itba.paw.services.CommunityService;
 import ar.edu.itba.paw.services.ModderService;
 import ar.edu.itba.paw.services.PostService;
 import ar.edu.itba.paw.services.UserService;
+
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +28,14 @@ import ar.edu.itba.paw.webapp.dto.ResetPasswordDTO;
 import ar.edu.itba.paw.webapp.dto.LocaleDTO;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.net.URI;
 import java.util.*;
 
 import ar.edu.itba.paw.webapp.mediaType.VendorType;
+import ar.edu.itba.paw.webapp.validators.interfaces.FileMustBeImageConstraint;
 
 @Path("/api/users")
 @Component
@@ -37,6 +43,7 @@ public class UserController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
+    private final static int MAX_FILE_SIZE = (int) 5 * 1000 * 1000;
     @Autowired
     private UserService us;
     @Autowired
@@ -60,6 +67,60 @@ public class UserController {
                 .path(String.valueOf(user.getId())).build();
 
         return Response.created(uri).build();
+    }
+
+    @POST
+    @Path("/{id}/profile-picture")
+    @Consumes(value = { MediaType.MULTIPART_FORM_DATA })
+    public Response createImage(@Size(max = MAX_FILE_SIZE, message = "{FileSize}") @FormDataParam("image") byte[] bytes,
+            @FileMustBeImageConstraint(message = "{Image}") @FormDataParam("image") final FormDataBodyPart fileDetails)
+            throws NoLoggedUserException {
+
+        us.updateProfile(null, bytes);
+
+        File file = us.getLoggedUser().get().getImage();
+        URI uri = uriInfo.getBaseUriBuilder()
+                .path("images")
+                .path(String.valueOf(file.getImageId()))
+                .build();
+        return Response.ok()
+                .contentLocation(uri)
+                .build();
+    }
+
+    // Hay que hacer el Access Control para que solo puedan entrar si ya tiene una
+    // image
+    // con pedro lo decidimos asi por motivos REST ya que no se esta creando una
+    // nueva entidad
+    @PUT
+    @Path("/{id}/profile-picture")
+    @Consumes(value = { MediaType.MULTIPART_FORM_DATA })
+    public Response updateImage(@Size(max = MAX_FILE_SIZE, message = "{FileSize}") @FormDataParam("image") byte[] bytes,
+            @FileMustBeImageConstraint(message = "{Image}") @FormDataParam("image") final FormDataBodyPart fileDetails)
+            throws NoLoggedUserException {
+        us.updateProfile(null, bytes);
+
+        File file = us.getLoggedUser().get().getImage();
+        URI uri = uriInfo.getBaseUriBuilder()
+                .path("images")
+                .path(String.valueOf(file.getImageId()))
+                .build();
+        return Response.ok()
+                .contentLocation(uri)
+                .build();
+    }
+
+    @GET
+    @Path("/{id}/profile-picture")
+    @Produces(value = { "images/jpeg", "images/png", "images/jpg", "images/gif" })
+    public Response getProfilePicture(@PathParam("id") final long id)
+            throws NoSuchImageException, UserNotFoundException {
+        final User user = us.findById(id).orElseThrow(UserNotFoundException::new);
+        final File profilePicture = user.getImage();
+        if (profilePicture == null) {
+            throw new NoSuchImageException();
+        }
+        return Response.ok(profilePicture.getFile()).build();
     }
 
     @GET

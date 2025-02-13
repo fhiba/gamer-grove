@@ -30,10 +30,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.*;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Component;
 
 import javax.ws.rs.*;
 
+import ar.edu.itba.paw.webapp.dto.CategoryDTO;
 import ar.edu.itba.paw.webapp.dto.CommentCreationDTO;
 import ar.edu.itba.paw.webapp.dto.CommentDTO;
 import ar.edu.itba.paw.webapp.dto.GrooveDTO;
@@ -46,7 +49,8 @@ import ar.edu.itba.paw.webapp.dto.PostDTO;
 public class PostController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PostController.class);
-
+    private static final List<String> categories = new ArrayList<>(
+            Arrays.stream(PostCategories.values()).map(PostCategories::getCategory).collect(Collectors.toList()));
     @Autowired
     private PostService ps;
     @Autowired
@@ -294,5 +298,15 @@ public class PostController {
             throws NoSuchCommentException, PostIsDeletedException, NoSuchPostException, CommentIsDeletedException {
         commentService.deleteComment(commentId, postId);
         return Response.ok().build();
+    }
+
+    @GET
+    @Path("/categories")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getCategories() {
+        List<CategoryDTO> categoriesDtos = categories.stream().map(CategoryDTO::fromCategory).toList();
+        return Response.ok(new GenericEntity<>(categoriesDtos) {
+        }).build();
+
     }
 }
