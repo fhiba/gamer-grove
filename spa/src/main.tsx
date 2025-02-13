@@ -20,47 +20,54 @@ import Login from "./pages/Login.tsx";
 import Register from "./pages/Register.tsx";
 import ProtectedRoute from "./components/ProtectedRoute.tsx";
 import HomeAlt from "./pages/HomeAlt.tsx";
+import { HelmetProvider } from "react-helmet-async";
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <AuthProvider>
       <BrowserRouter basename={import.meta.env.BASE_URL}>
-        <Routes>
-          <Route
-            path="/home"
-            element={
-              <ProtectedRoute>
-                <HomeAlt />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/all" element={<All />} />
-          <Route path="/" element={<All />} />
-          <Route path="/community/:communityName" element={<CommunityPage />} />
-          <Route path="/post/:postId" element={<PostPage />} />
-          <Route path="/communities" element={<Communities />} />
-          <Route
-            path="/manageMods"
-            element={
-              <ProtectedRoute>
-                <ManageMods />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/newCommunity" element={<NewCommunity />} />
-          <Route path="/user/:userId">
-            <Route path="userPosts" element={<UserPosts />} />
-            <Route path="followed" element={<Followed />} />
-            <Route path="likedPosts" element={<LikedPosts />} />
-          </Route>
-          <Route path="/profile">
-            <Route path="/profile" element={<Profile />} />
-            <Route path="userPosts" element={<UserPosts />} />
-            <Route path="followed" element={<Followed />} />
-            <Route path="likedPosts" element={<LikedPosts />} />
-          </Route>
-        </Routes>
+        <HelmetProvider>
+          <Routes>
+            <Route
+              path="/home"
+              element={
+                <ProtectedRoute>
+                  <HomeAlt />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/all" element={<All />} />
+            <Route path="/" element={<All />} />
+            <Route
+              path="/community/:communityName"
+              element={<CommunityPage />}
+            />
+            <Route path="/post/:postId" element={<PostPage />} />
+            <Route path="/communities" element={<Communities />} />
+            <Route
+              path="/manageMods"
+              element={
+                <ProtectedRoute>
+                  <ManageMods />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/newCommunity" element={<NewCommunity />} />
+            <Route path="/user/:userId">
+              <Route path="userPosts" element={<UserPosts />} />
+              <Route path="followed" element={<Followed />} />
+              <Route path="likedPosts" element={<LikedPosts />} />
+            </Route>
+            <Route path="/profile">
+              <Route path="/profile" element={<Profile />} />
+              <Route path="userPosts" element={<UserPosts />} />
+              <Route path="followed" element={<Followed />} />
+              <Route path="likedPosts" element={<LikedPosts />} />
+            </Route>
+          </Routes>
+        </HelmetProvider>
       </BrowserRouter>
     </AuthProvider>
   </StrictMode>,

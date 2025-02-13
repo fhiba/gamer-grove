@@ -29,7 +29,8 @@ const All: React.FC = () => {
   }
   const userName = decoded?.sub;
   const isAdmin = decoded?.role === "ROLE_ADMIN" ? true : false;
-  const isLogged = decoded !== null ? true : false;
+  const isLogged = userName !== null ? true : false;
+  console.log("is logged:", isLogged);
   const defaultSearch = "";
   useEffect(() => {
     const fetchData = async () => {
@@ -62,7 +63,7 @@ const All: React.FC = () => {
     return <div>Error: {error}</div>;
   }
   return (
-    <div className="w-screen h-screen">
+    <div className="w-screen ">
       <Navbar
         userName={decoded?.sub}
         isLoggedIn={isLogged}
@@ -76,7 +77,7 @@ const All: React.FC = () => {
           <Sidebar
             isAdmin={isAdmin}
             isLogged={isLogged}
-            communities={communities.data}
+            communities={communities?.data}
             currentPath={location.pathname}
           />
         </div>

@@ -1,6 +1,7 @@
 // src/pages/RegisterPage.tsx
 import React, { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
+import { Helmet } from "react-helmet-async";
 
 const Register: React.FC = () => {
   const { register } = useContext(AuthContext);
@@ -26,50 +27,56 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div>
-      <h1>Register</h1>
-      {message && <p style={{ color: "green" }}>{message}</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Email (not optional):</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-        <div>
-          <label>Username:</label>
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Password:</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Repeat Password:</label>
-          <input
-            type="password"
-            value={repeatPassword}
-            onChange={(e) => setRepeatPassword(e.target.value)}
-            required
-          />
-        </div>
-        
-        <button type="submit">Register</button>
-      </form>
-    </div>
+    <>
+      <Helmet>
+        <title>Register</title>
+        <link rel="icon" type="image/x-icon" />
+      </Helmet>
+      <div>
+        <h1>Register</h1>
+        {message && <p style={{ color: "green" }}>{message}</p>}
+        {error && <p style={{ color: "red" }}>{error}</p>}
+        <form onSubmit={handleSubmit}>
+          <div>
+            <label>Email (not optional):</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          <div>
+            <label>Username:</label>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label>Password:</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label>Repeat Password:</label>
+            <input
+              type="password"
+              value={repeatPassword}
+              onChange={(e) => setRepeatPassword(e.target.value)}
+              required
+            />
+          </div>
+
+          <button type="submit">Register</button>
+        </form>
+      </div>
+    </>
   );
 };
 

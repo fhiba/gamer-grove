@@ -1,6 +1,7 @@
 import axios from "axios";
 import { User } from "./types/User";
 import { Post } from "./types/Post";
+import { Moderator } from "./types/Moderators";
 
 const BASE_URL = "http://localhost:8080/paw-2024a-09/api";
 
@@ -103,7 +104,7 @@ export const fetchCommunityRating = async (communityName: string) => {
   }
 };
 
-export const fetchFollowedCommunitiesPosts = async (token) => {
+export const fetchFollowedCommunitiesPosts = async (token: string) => {
   try {
     const response = await api.get("/posts", {
       params: { followedCommunitiesPosts: true },
@@ -117,7 +118,7 @@ export const fetchFollowedCommunitiesPosts = async (token) => {
     throw error;
   }
 };
-export const fetchFollowedCommunities = async (token, id) => {
+export const fetchFollowedCommunities = async (token: string, id: number) => {
   try {
     const response = await api.get("/communities/", {
       params: { followedBy: id },
@@ -163,7 +164,30 @@ export const fetchUser = async (id: number) => {
   }
 };
 
-export const postAddFollower = async (communityName: string, token) => {
+export const fetchModeratos = async (
+  token: string | null,
+  username?: string,
+  community?: string,
+) => {
+  try {
+    const params: Record<string, string> = {};
+
+    if (username) params.username = username;
+    if (community) params.community = community;
+
+    const res = await axios.get(`/api/mods`, {
+      params,
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching moderators:", error);
+    throw error;
+  }
+};
+
+export const postAddFollower = async (communityName: string, token: string) => {
   try {
     const res = await api.post(`/communities/${communityName}/followers`, {
       headers: {

@@ -6,13 +6,14 @@ import { User } from "../types/User.js";
 import { Community } from "../types/Community.js";
 import { decodeToken, JwtPayload } from "../utils/jwt.js";
 import { AxiosResponse } from "axios";
+import { Helmet } from "react-helmet-async";
 
 const Profile: React.FC = () => {
   const [user, setUser] = useState<User>();
   const [posts, setPosts] = useState<AxiosResponse>();
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [communities, setCommunities] = useState<Community[]>([]);
+  const [communities, setCommunities] = useState<AxiosResponse>();
   const [decoded, setDecoded] = useState<JwtPayload | null>(null);
   const { authToken } = useAuth();
   useEffect(() => {
@@ -50,7 +51,15 @@ const Profile: React.FC = () => {
     return <div>Error: {error}</div>;
   }
 
-  return <UserPostsPage user={user} posts={posts} communities={communities} />;
+  return (
+    <>
+      <Helmet>
+        <title>Profile</title>
+        <link rel="icon" type="image/x-icon" />
+      </Helmet>
+      <UserPostsPage user={user} posts={posts} communities={communities} />;
+    </>
+  );
 };
 
 export default Profile;

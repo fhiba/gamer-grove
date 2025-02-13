@@ -12,7 +12,7 @@ import { AxiosResponse } from "axios";
 interface UserPostsPageProps {
   user: User;
   posts: AxiosResponse;
-  communities: Community[];
+  communities: AxiosResponse;
 }
 
 const UserTabComponent: React.FC<UserPostsPageProps> = ({
@@ -95,16 +95,16 @@ const UserTabComponent: React.FC<UserPostsPageProps> = ({
         </div>
       )}
 
-      <div className="grid grid-cols-2">
-        <div className="w-1/3">
+      <div className="grid grid-cols-3 gap-36">
+        <div className="h-screen">
           <Sidebar
             isAdmin={isAdmin}
             isLogged={isLogged}
-            communities={communities}
+            communities={communities.data}
             currentPath={window.location.pathname}
           />
         </div>
-        <div className="left-0 justify-content-center">
+        <div className="left-0 justify-content-center col-span-2 mr-56">
           <div className="card border-light border-0">
             <div className="card-body">
               <div>
@@ -137,7 +137,7 @@ const UserTabComponent: React.FC<UserPostsPageProps> = ({
                     onSubmit={handleFormSubmit}
                     encType="multipart/form-data"
                   >
-                    <label className="form-label fw-semibold">
+                    <label className="form-label fw-semibold !text-gray-500">
                       Update Profile Picture
                     </label>
                     <input
@@ -145,10 +145,13 @@ const UserTabComponent: React.FC<UserPostsPageProps> = ({
                       accept="image/*"
                       className="form-control w-50"
                       onChange={handleFileChange}
+                      src={user.profileImage}
                     />
 
                     <div className="w-25 mt-3">
-                      <label className="form-label fw-semibold">Language</label>
+                      <label className="form-label fw-semibold !text-gray-500">
+                        Language
+                      </label>
                       <select
                         className="form-select"
                         value={locale}

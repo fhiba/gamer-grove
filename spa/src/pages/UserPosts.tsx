@@ -7,6 +7,7 @@ import { decodeToken, JwtPayload } from "../utils/jwt.js";
 import { useAuth } from "../context/AuthContext.js";
 import { AxiosResponse } from "axios";
 import UserTabComponent from "../components/UserTabComponent.js";
+import { Helmet } from "react-helmet-async";
 
 const UserPosts: React.FC = () => {
   const [user, setUser] = useState<User>();
@@ -44,7 +45,13 @@ const UserPosts: React.FC = () => {
   }
 
   return (
-    <UserTabComponent user={user} posts={posts} communities={communities} />
+    <>
+      <Helmet>
+        <title>User Posts</title>
+        <link rel="icon" type="image/x-icon" />
+      </Helmet>
+      <UserTabComponent user={user} posts={posts} communities={communities} />
+    </>
   );
 };
 

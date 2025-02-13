@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 interface NavbarProps {
   isLogged: boolean;
-  username: string | null;
+  username: string | undefined;
   defaultSearch: string;
 }
 
@@ -14,7 +14,6 @@ const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState(defaultSearch);
-
   return (
     <nav className=" text-white py-4 px-6 shadow-md">
       <div className="container mx-auto flex items-center justify-between">
@@ -47,7 +46,7 @@ const Navbar: React.FC<NavbarProps> = ({
         </form>
 
         <div className="flex items-center space-x-4">
-          {!isLogged ? (
+          {isLogged ? (
             <div className="relative">
               <span className="text-white">Hi, {username}!</span>
               <button

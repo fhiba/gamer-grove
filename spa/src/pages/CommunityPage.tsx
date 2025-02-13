@@ -23,6 +23,7 @@ import { useAuth } from "../context/AuthContext";
 import { decodeToken, JwtPayload } from "../utils/jwt";
 import Navbar from "../components/Navbar";
 import PaginatedPosts from "../components/PaginatedPosts";
+import { Helmet } from "react-helmet-async";
 
 interface RatingData {
   rating: number;
@@ -30,7 +31,7 @@ interface RatingData {
 
 const CommunityPage: React.FC = () => {
   const [community, setCommunity] = useState<Community | null>(null);
-  const [communities, setCommunities] = useState<Community[]>([]);
+  const [communities, setCommunities] = useState<AxiosResponse>();
   const [posts, setPosts] = useState<AxiosResponse>();
   const [categories, setCategories] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -69,14 +70,14 @@ const CommunityPage: React.FC = () => {
   }
   const userName = decoded?.sub;
   const isAdmin = decoded?.role === "ROLE_ADMIN" ? true : false;
-  const isLogged = decoded !== null ? true : false;
+  const isLogged = decoded?.sub !== null ? true : false;
   const defaultSearch = "";
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         const communityData: Community = await fetchCommunity(communityName);
-        const communitiesData: Community[] = await fetchCommunities();
+        const communitiesData = await fetchCommunities();
         const postsData: AxiosResponse =
           await fetchCommunityPosts(communityName);
         const categoriesData: string[] = await fetchCategories();
@@ -147,267 +148,280 @@ const CommunityPage: React.FC = () => {
   }
 
   return (
-    <div>
-      <Navbar
-        userName={userName}
-        isLoggedIn={isLogged}
-        defaultSearch={defaultSearch}
-        onSearch={(searchValue) => {
-          window.location.href = `/communities?searchTerms=${searchValue}`;
-        }}
-      />
-      <Modal
-        show={showCreatePostModal}
-        onHide={() => setShowCreatePostModal(false)}
-        size="lg"
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>Create Post</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form
-            onSubmit={handleCreatePostSubmit}
-            encType="multipart/form-data"
-            id="postForm"
-          >
-            <Form.Group controlId="titleInput" className="mb-3">
-              <Form.Label>Title</Form.Label>
-              <Form.Control
-                type="text"
-                name="title"
-                value={newPost.title}
-                onChange={handleNewPostChange}
-              />
-            </Form.Group>
-            <Form.Group controlId="bodyInput" className="mb-3">
-              <Form.Label>Body</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={3}
-                name="body"
-                value={newPost.body}
-                onChange={handleNewPostChange}
-              />
-            </Form.Group>
-            <Form.Group controlId="categorySelect" className="mb-3">
-              <Form.Label>Category</Form.Label>
-              <Form.Select
-                name="category"
-                value={newPost.category}
-                onChange={handleNewPostChange}
-              >
-                <option value="" disabled>
-                  Choose Category
-                </option>
-                {categories.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat}
+    <>
+      <Helmet>
+        <title>Community</title>
+        <link rel="icon" type="image/x-icon" />
+      </Helmet>
+      <div>
+        <Navbar
+          userName={userName}
+          isLogged={isLogged}
+          defaultSearch={defaultSearch}
+          onSearch={(searchValue) => {
+            window.location.href = `/communities?searchTerms=${searchValue}`;
+          }}
+        />
+        <Modal
+          show={showCreatePostModal}
+          onHide={() => setShowCreatePostModal(false)}
+          size="lg"
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Create Post</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form
+              onSubmit={handleCreatePostSubmit}
+              encType="multipart/form-data"
+              id="postForm"
+            >
+              <Form.Group controlId="titleInput" className="mb-3">
+                <Form.Label>Title</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="title"
+                  value={newPost.title}
+                  onChange={handleNewPostChange}
+                />
+              </Form.Group>
+              <Form.Group controlId="bodyInput" className="mb-3">
+                <Form.Label>Body</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  name="body"
+                  value={newPost.body}
+                  onChange={handleNewPostChange}
+                />
+              </Form.Group>
+              <Form.Group controlId="categorySelect" className="mb-3">
+                <Form.Label>Category</Form.Label>
+                <Form.Select
+                  name="category"
+                  value={newPost.category}
+                  onChange={handleNewPostChange}
+                >
+                  <option value="" disabled>
+                    Choose Category
                   </option>
-                ))}
-              </Form.Select>
-            </Form.Group>
-            <Form.Group controlId="fileInput" className="mb-3">
-              <Form.Label>Image</Form.Label>
-              <Form.Control
-                type="file"
-                name="files"
-                multiple
-                accept="image/*"
-                onChange={handleFileChange}
-              />
-              <div id="photo-upload__preview" className="d-flex flex-row mt-2">
-                {filePreviews.map((src, index) => (
-                  <img
-                    key={index}
-                    src={src}
-                    alt="Preview"
-                    style={{
-                      width: "100px",
-                      height: "100px",
-                      objectFit: "cover",
-                      marginRight: "5px",
-                    }}
-                  />
-                ))}
-              </div>
-            </Form.Group>
-            <Modal.Footer>
-              <Button
-                variant="secondary"
-                onClick={() => setShowCreatePostModal(false)}
-              >
-                Close
-              </Button>
-              <Button type="submit" variant="primary">
-                Create Post
-              </Button>
-            </Modal.Footer>
-          </Form>
-        </Modal.Body>
-      </Modal>
-
-      <Modal
-        show={showRatingModal}
-        onHide={() => setShowRatingModal(false)}
-        centered
-      >
-        {currentRating === null ? (
-          <>
-            <Modal.Header closeButton>
-              <Modal.Title>Rate Community</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <Form id="ratingForm">
-                <Form.Group className="mb-3">
-                  <Form.Label>Rating</Form.Label>
-                  <div>
-                    <Rating
-                      count={5}
-                      size={24}
-                      activeColor="#ffd700"
-                      value={newRating}
-                      onChange={(newValue) => setNewRating(newValue)}
-                    />
-                  </div>
-                </Form.Group>
-              </Form>
-            </Modal.Body>
-            <Modal.Footer>
-              <Button
-                variant="secondary"
-                onClick={() => setShowRatingModal(false)}
-              >
-                Cancel
-              </Button>
-              <Button variant="primary" onClick={handleRatingSubmit}>
-                Submit Rating
-              </Button>
-            </Modal.Footer>
-          </>
-        ) : (
-          <>
-            <Modal.Header closeButton>
-              <Modal.Title>Your Rating</Modal.Title>
-            </Modal.Header>
-            <Modal.Body className="d-flex align-items-center justify-content-between">
-              <Rating
-                count={5}
-                size={24}
-                value={currentRating.rating}
-                edit={false}
-              />
-              <Button variant="danger" onClick={handleDeleteRating}>
-                Delete Rating
-              </Button>
-            </Modal.Body>
-            <Modal.Footer>
-              <Button
-                variant="secondary"
-                onClick={() => setShowRatingModal(false)}
-              >
-                Confirm
-              </Button>
-            </Modal.Footer>
-          </>
-        )}
-      </Modal>
-
-      <div className="grid grid-flow-col">
-        <div className="col-span-1">
-          <Sidebar
-            communities={communities}
-            isAdmin={isAdmin}
-            isLogged={isLogged}
-            currentPath={window.location.pathname}
-          />
-        </div>
-        <div className="col-span-2 justify-center">
-          <div className="card border-0">
-            <div className="card-body">
-              <div className="grid grid-cols-2">
-                <div className="w-1/2">
-                  {community.portrait ? (
+                  {categories.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Form.Group>
+              <Form.Group controlId="fileInput" className="mb-3">
+                <Form.Label>Image</Form.Label>
+                <Form.Control
+                  type="file"
+                  name="files"
+                  multiple
+                  accept="image/*"
+                  onChange={handleFileChange}
+                />
+                <div
+                  id="photo-upload__preview"
+                  className="d-flex flex-row mt-2"
+                >
+                  {filePreviews.map((src, index) => (
                     <img
-                      src={community.portrait}
-                      className="w-100 rounded-1 img-thumbnail"
+                      key={index}
+                      src={src}
+                      alt="Preview"
+                      style={{
+                        width: "100px",
+                        height: "100px",
+                        objectFit: "cover",
+                        marginRight: "5px",
+                      }}
                     />
-                  ) : (
-                    <img
-                      src="/images/default.png"
-                      className="w-100 rounded-1 img-thumbnail"
-                    />
-                  )}
+                  ))}
                 </div>
-                <div>
-                  <div className="d-flex justify-content-between align-items-center">
-                    <h1 className="card-title fw-bold">c/{community.name}</h1>
+              </Form.Group>
+              <Modal.Footer>
+                <Button
+                  variant="secondary"
+                  onClick={() => setShowCreatePostModal(false)}
+                >
+                  Close
+                </Button>
+                <Button type="submit" variant="primary">
+                  Create Post
+                </Button>
+              </Modal.Footer>
+            </Form>
+          </Modal.Body>
+        </Modal>
+
+        <Modal
+          show={showRatingModal}
+          onHide={() => setShowRatingModal(false)}
+          centered
+        >
+          {currentRating === null ? (
+            <>
+              <Modal.Header closeButton>
+                <Modal.Title>Rate Community</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <Form id="ratingForm">
+                  <Form.Group className="mb-3">
+                    <Form.Label>Rating</Form.Label>
                     <div>
-                      <Button variant="outline-info" onClick={() => {}}>
-                        Follow
-                      </Button>
+                      <Rating
+                        count={5}
+                        size={24}
+                        activeColor="#ffd700"
+                        value={newRating}
+                        onChange={(newValue) => setNewRating(newValue)}
+                      />
                     </div>
-                  </div>
-                  <div className="mt-2">
-                    {community.category.map((cat, index) => (
-                      <Link
-                        key={index}
-                        to={`/communities?searchTerms=&categories=${cat}`}
-                        className="text-decoration-none"
-                      >
-                        <span className="fs-6 pe-auto btn btn-secondary cat-badge p-1 badge">
-                          {cat}
-                        </span>
-                      </Link>
-                    ))}
-                  </div>
-                  <div className="mt-2">
-                    <h6 className=" !text-gray-500">
-                      Developer:{community.developer}
-                    </h6>
-                    <h6 className=" !text-gray-500">
-                      Publisher: {community.publisher}
-                    </h6>
-                  </div>
-                  <div className="d-flex align-items-center">
-                    {community.ratingCount === 0 ? (
-                      <h6 className="fw-bold">Rating: No Rating</h6>
+                  </Form.Group>
+                </Form>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button
+                  variant="secondary"
+                  onClick={() => setShowRatingModal(false)}
+                >
+                  Cancel
+                </Button>
+                <Button variant="primary" onClick={handleRatingSubmit}>
+                  Submit Rating
+                </Button>
+              </Modal.Footer>
+            </>
+          ) : (
+            <>
+              <Modal.Header closeButton>
+                <Modal.Title>Your Rating</Modal.Title>
+              </Modal.Header>
+              <Modal.Body className="d-flex align-items-center justify-content-between">
+                <Rating
+                  count={5}
+                  size={24}
+                  value={currentRating.rating}
+                  edit={false}
+                />
+                <Button variant="danger" onClick={handleDeleteRating}>
+                  Delete Rating
+                </Button>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button
+                  variant="secondary"
+                  onClick={() => setShowRatingModal(false)}
+                >
+                  Confirm
+                </Button>
+              </Modal.Footer>
+            </>
+          )}
+        </Modal>
+
+        <div className="grid grid-flow-col">
+          <div className="col-span-1">
+            <Sidebar
+              communities={communities?.data}
+              isAdmin={isAdmin}
+              isLogged={isLogged}
+              currentPath={window.location.pathname}
+            />
+          </div>
+          <div className="col-span-2 justify-center mr-56">
+            <div className="card border-0">
+              <div className="card-body">
+                <div className="grid grid-cols-2">
+                  <div className="w-1/2">
+                    {community.portrait ? (
+                      <img
+                        src={community.portrait}
+                        className="w-100 rounded-1 img-thumbnail"
+                      />
                     ) : (
-                      <>
-                        <h6 className="fw-bold me-2 !text-gray-500">Rating:</h6>
-                        <Rating
-                          count={5}
-                          size={20}
-                          value={community.totalRating / community.ratingCount}
-                          edit={false}
-                        />
-                        <p className="ms-2 !text-gray-500">
-                          ({community.ratingCount})
-                        </p>
-                      </>
+                      <img
+                        src="/images/default.png"
+                        className="w-100 rounded-1 img-thumbnail"
+                      />
                     )}
                   </div>
-                  <h5 className="card-subtitle  mt-3 mb-1">
-                    {community.description}
-                  </h5>
+                  <div>
+                    <div className="d-flex justify-content-between align-items-center">
+                      <h1 className="card-title fw-bold">c/{community.name}</h1>
+                      <div>
+                        <Button variant="outline-info" onClick={() => {}}>
+                          Follow
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="mt-2">
+                      {community.category.map((cat, index) => (
+                        <Link
+                          key={index}
+                          to={`/communities?searchTerms=&categories=${cat}`}
+                          className="text-decoration-none"
+                        >
+                          <span className="fs-6 pe-auto btn btn-secondary cat-badge p-1 badge">
+                            {cat}
+                          </span>
+                        </Link>
+                      ))}
+                    </div>
+                    <div className="mt-2">
+                      <h6 className=" !text-gray-500">
+                        Developer:{community.developer}
+                      </h6>
+                      <h6 className=" !text-gray-500">
+                        Publisher: {community.publisher}
+                      </h6>
+                    </div>
+                    <div className="d-flex align-items-center">
+                      {community.ratingCount === 0 ? (
+                        <h6 className="fw-bold">Rating: No Rating</h6>
+                      ) : (
+                        <>
+                          <h6 className="fw-bold me-2 !text-gray-500">
+                            Rating:
+                          </h6>
+                          <Rating
+                            count={5}
+                            size={20}
+                            value={
+                              community.totalRating / community.ratingCount
+                            }
+                            edit={false}
+                          />
+                          <p className="ms-2 !text-gray-500">
+                            ({community.ratingCount})
+                          </p>
+                        </>
+                      )}
+                    </div>
+                    <h5 className="card-subtitle  mt-3 mb-1">
+                      {community.description}
+                    </h5>
+                  </div>
                 </div>
-              </div>
-              <div className="d-flex justify-content-between mb-3">
-                {canEdit && (
-                  <Link to={`/community/${community.name}/info`}>
-                    <Button variant="primary">Edit Community</Button>
-                  </Link>
+                <div className="d-flex justify-content-between mb-3">
+                  {canEdit && (
+                    <Link to={`/community/${community.name}/info`}>
+                      <Button variant="primary">Edit Community</Button>
+                    </Link>
+                  )}
+                </div>
+                {posts?.data.length === 0 ? (
+                  <h3 className="text-center mt-5">No posts yet</h3>
+                ) : (
+                  <PaginatedPosts postsResponse={posts} />
                 )}
               </div>
-              {posts.data.length === 0 ? (
-                <h3 className="text-center mt-5">No posts yet</h3>
-              ) : (
-                <PaginatedPosts postsResponse={posts} />
-              )}
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

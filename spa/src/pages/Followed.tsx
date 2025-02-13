@@ -1,7 +1,15 @@
-import React from "react";
+import { Helmet } from "react-helmet-async";
 
 const Followed = () => {
-  return <div>Followed</div>;
+  return (
+    <>
+      <Helmet>
+        <title>Followed Communities</title>
+        <link rel="icon" type="image/x-icon" />
+      </Helmet>
+      <div>Followed</div>
+    </>
+  );
 };
 
 export default Followed;

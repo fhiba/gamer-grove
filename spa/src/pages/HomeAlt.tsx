@@ -10,10 +10,10 @@ import {
   fetchFollowedCommunitiesPosts,
 } from "../api.js";
 import { Post } from "../types/Post.tsx";
-import { Community } from "../types/Community.tsx";
 import Navbar from "../components/Navbar.tsx";
 import PaginatedPosts from "../components/PaginatedPosts.tsx";
 import { AxiosResponse } from "axios";
+import { Helmet } from "react-helmet-async";
 
 export function HomeAlt() {
   const { authToken } = useAuth();
@@ -94,15 +94,18 @@ export function HomeAlt() {
     navigate({ search: params.toString() });
   };
 
-  const isLogged = decoded !== null ? true : false;
+  const isLogged = decoded?.sub !== null ? true : false;
   const isVerified = decoded?.role !== "ROLE_USER";
   const isAdmin = decoded?.role === "ROLE_ADMIN";
-  console.log("Is Logged? ", isLogged);
   return (
     <>
+      <Helmet>
+        <title>Home</title>
+        <link rel="icon" type="image/x-icon" />
+      </Helmet>
       <Navbar
         username={decoded?.sub}
-        isLoggedIn={isLogged}
+        isLogged={isLogged}
         onSearch={(searchValue) => {
           window.location.href = `/communities?searchTerms=${searchValue}`;
         }}
@@ -111,7 +114,7 @@ export function HomeAlt() {
         <Sidebar
           isAdmin={isAdmin}
           isLogged={isLogged}
-          communities={communities.data}
+          communities={communities?.data}
           currentPath={location.pathname}
         />
         <div>

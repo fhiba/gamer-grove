@@ -8,7 +8,7 @@ import { decodeToken, JwtPayload } from "../utils/jwt";
 import Navbar from "../components/Navbar";
 import { AxiosResponse } from "axios";
 import PaginatedCommunityCards from "../components/PaginatedCommunityCards";
-import PaginatedPosts from "../components/PaginatedPosts";
+import { Helmet } from "react-helmet-async";
 
 const CommunitiesPage: React.FC = () => {
   const [communities, setCommunities] = useState<AxiosResponse>();
@@ -114,157 +114,164 @@ const CommunitiesPage: React.FC = () => {
   }
 
   return (
-    <div>
-      <Navbar
-        userName={userName}
-        isLoggedIn={isLogged}
-        defaultSearch={defaultSearch}
-        onSearch={(searchValue) => {
-          window.location.href = `/communities?searchTerms=${searchValue}`;
-        }}
-      />
-      <Modal
-        show={showOnboardingModal}
-        onHide={() => setShowOnboardingModal(false)}
-        backdrop="static"
-        keyboard={false}
-        size="lg"
-      >
-        <Modal.Body className="text-black">
-          {!isVerified ? (
-            <div>
-              <p>Please verify your account.</p>
-              <Link to="/auth/resend-verification">
-                <Button variant="primary" size="sm">
-                  Resend Verification Email
-                </Button>
-              </Link>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => setShowOnboardingModal(false)}
-              className="text-black">
-                Close
-              </Button>
-            </div>
-          ) : (
-            <>
-              <Modal.Header closeButton>
-                <Modal.Title>Verification Successful</Modal.Title>
-              </Modal.Header>
-              <Modal.Body>
-                <p>Welcome! Please complete your onboarding.</p>
-              </Modal.Body>
-              <Modal.Footer>
-                <Button
-                  variant="primary"
-                  onClick={() => setShowOnboardingModal(false)}
-                >
-                  Done
-                </Button>
-              </Modal.Footer>
-            </>
-          )}
-        </Modal.Body>
-      </Modal>
-
-      <Modal
-        show={showUnverifiedModal}
-        onHide={() => setShowUnverifiedModal(false)}
-        centered
-        size="lg"
-      >
-        <Modal.Header>
-          <Modal.Title className="text-black">
-            You need to verify your account!
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body className="text-black">
-          <p>Check your email and verify your account before continuing.</p>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button
-            variant="primary"
-            onClick={() => setShowUnverifiedModal(false)}
-          >
-            Done
-          </Button>
-        </Modal.Footer>
-      </Modal>
-
-      {showToast && (
-        <Toast
-          onClose={() => setShowToast(false)}
-          show={showToast}
-          delay={5000}
-          autohide
-          style={{ position: "fixed", bottom: 20, right: 20 }}
+    <>
+      <Helmet>
+        <title>Communities</title>
+        <link rel="icon" type="image/x-icon" />
+      </Helmet>
+      <div>
+        <Navbar
+          userName={userName}
+          isLoggedIn={isLogged}
+          defaultSearch={defaultSearch}
+          onSearch={(searchValue) => {
+            window.location.href = `/communities?searchTerms=${searchValue}`;
+          }}
+        />
+        <Modal
+          show={showOnboardingModal}
+          onHide={() => setShowOnboardingModal(false)}
+          backdrop="static"
+          keyboard={false}
+          size="lg"
         >
-          <Toast.Header>
-            <strong className="me-auto">{toastHeader}</strong>
-          </Toast.Header>
-          <Toast.Body>{toastBody}</Toast.Body>
-        </Toast>
-      )}
+          <Modal.Body className="text-black">
+            {!isVerified ? (
+              <div>
+                <p>Please verify your account.</p>
+                <Link to="/auth/resend-verification">
+                  <Button variant="primary" size="sm">
+                    Resend Verification Email
+                  </Button>
+                </Link>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => setShowOnboardingModal(false)}
+                  className="text-black"
+                >
+                  Close
+                </Button>
+              </div>
+            ) : (
+              <>
+                <Modal.Header closeButton>
+                  <Modal.Title>Verification Successful</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  <p>Welcome! Please complete your onboarding.</p>
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button
+                    variant="primary"
+                    onClick={() => setShowOnboardingModal(false)}
+                  >
+                    Done
+                  </Button>
+                </Modal.Footer>
+              </>
+            )}
+          </Modal.Body>
+        </Modal>
 
-      <div className="grid grid-cols-3">
-        <div className="col-span-1">
-          <Sidebar
-            communities={communities.data}
-            isAdmin={isAdmin}
-            isLoggedIn={isLogged}
-            currentPath={window.location.pathname}
-          />
-        </div>
-        <div className="col-span-1">
-          <div className="card border-0 text-decoration-none">
-            <div className="card-body">
-              {communities.data.length === 0 ? (
-                <div className="d-flex flex-column align-items-center">
-                  <h4>No communities available</h4>
-                  <Link to="/communities" className="btn btn-primary">
-                    Search All Communities
-                  </Link>
-                </div>
-              ) : (
-                <PaginatedCommunityCards communitiesResponse={communities} />
-              )}
+        <Modal
+          show={showUnverifiedModal}
+          onHide={() => setShowUnverifiedModal(false)}
+          centered
+          size="lg"
+        >
+          <Modal.Header>
+            <Modal.Title className="text-black">
+              You need to verify your account!
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body className="text-black">
+            <p>Check your email and verify your account before continuing.</p>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              variant="primary"
+              onClick={() => setShowUnverifiedModal(false)}
+            >
+              Done
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
+        {showToast && (
+          <Toast
+            onClose={() => setShowToast(false)}
+            show={showToast}
+            delay={5000}
+            autohide
+            style={{ position: "fixed", bottom: 20, right: 20 }}
+          >
+            <Toast.Header>
+              <strong className="me-auto">{toastHeader}</strong>
+            </Toast.Header>
+            <Toast.Body>{toastBody}</Toast.Body>
+          </Toast>
+        )}
+
+        <div className="grid grid-cols-3">
+          <div className="col-span-1">
+            <Sidebar
+              communities={communities.data}
+              isAdmin={isAdmin}
+              isLoggedIn={isLogged}
+              currentPath={window.location.pathname}
+            />
+          </div>
+          <div className="col-span-1">
+            <div className="card border-0 text-decoration-none">
+              <div className="card-body">
+                {communities.data.length === 0 ? (
+                  <div className="d-flex flex-column align-items-center">
+                    <h4>No communities available</h4>
+                    <Link to="/communities" className="btn btn-primary">
+                      Search All Communities
+                    </Link>
+                  </div>
+                ) : (
+                  <PaginatedCommunityCards communitiesResponse={communities} />
+                )}
+              </div>
             </div>
           </div>
-        </div>
 
-        <div>
-          <div className="card border-0 text-decoration-none">
-            <div className="card-b text-gray-500">
-              <h5>Filter by Category</h5>
-              <div
-                id="categoryPills"
-                className="d-flex flex-row flex-wrap mb-3"
-              >
-                {categories.map((cat) => (
-                  <div
-                    key={cat}
-                    className={`card flex-row align-items-center border m-1 btn p-0 ${selectedCategories.includes(cat) ? "border-primary" : "border-light"}`}
-                    onClick={() =>
-                      selectedCategories.includes(cat)
-                        ? removeCategory(cat)
-                        : addCategory(cat)
-                    }
-                  >
-                    <div className="card-body d-flex flex-row p-2 align-items-center justify-content-center">
-                      <p className="m-0 me-1">{cat}</p>
+          <div>
+            <div className="card border-0 text-decoration-none">
+              <div className="card-b text-gray-500">
+                <h5>Filter by Category</h5>
+                <div
+                  id="categoryPills"
+                  className="d-flex flex-row flex-wrap mb-3"
+                >
+                  {categories.map((cat) => (
+                    <div
+                      key={cat}
+                      className={`card flex-row align-items-center border m-1 btn p-0 ${selectedCategories.includes(cat) ? "border-primary" : "border-light"}`}
+                      onClick={() =>
+                        selectedCategories.includes(cat)
+                          ? removeCategory(cat)
+                          : addCategory(cat)
+                      }
+                    >
+                      <div className="card-body d-flex flex-row p-2 align-items-center justify-content-center">
+                        <p className="m-0 me-1">{cat}</p>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
+                <Button variant="primary" onClick={handleCategoryFormSubmit}>
+                  Apply Filters
+                </Button>
               </div>
-              <Button variant="primary" onClick={handleCategoryFormSubmit}>
-                Apply Filters
-              </Button>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

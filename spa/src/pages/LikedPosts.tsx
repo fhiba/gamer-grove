@@ -7,6 +7,7 @@ import { User } from "../types/User.js";
 import { Community } from "../types/Community.js";
 import { AxiosResponse } from "axios";
 import Navbar from "../components/Navbar.js";
+import { Helmet } from "react-helmet-async";
 
 const LikedPosts: React.FC = () => {
   const [user, setUser] = useState<User>();
@@ -44,7 +45,13 @@ const LikedPosts: React.FC = () => {
   }
 
   return (
-    <UserTabComponent user={user} posts={posts} communities={communities} />
+    <>
+      <Helmet>
+        <title>Login</title>
+        <link rel="icon" type="image/x-icon" />
+      </Helmet>
+      <UserTabComponent user={user} posts={posts} communities={communities} />
+    </>
   );
 };
 
