@@ -250,7 +250,7 @@ const CommunitiesPage: React.FC = () => {
                   {categories.map((cat) => (
                     <div
                       key={cat}
-                      className={`card flex-row align-items-center border m-1 btn p-0 ${selectedCategories.includes(cat) ? "border-primary" : "border-light"}`}
+                      className={`card flex-row align-items-center border  btn  ${selectedCategories.includes(cat) ? "border-primary " : "!border-gray"}`}
                       onClick={() =>
                         selectedCategories.includes(cat)
                           ? removeCategory(cat)
@@ -258,7 +258,7 @@ const CommunitiesPage: React.FC = () => {
                       }
                     >
                       <div className="card-body d-flex flex-row p-2 align-items-center justify-content-center">
-                        <p className="m-0 me-1">{cat}</p>
+                        <p className="m-0 me-1 text-gray-500">{cat}</p>
                       </div>
                     </div>
                   ))}

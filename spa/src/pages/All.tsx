@@ -78,8 +78,8 @@ const All: React.FC = () => {
             window.location.href = `/communities?searchTerms=${searchValue}`;
           }}
         />
-        <div className="grid grid-cols-3 gap-36">
-          <div>
+        <div className="grid grid-cols-6 gap-36">
+          <div className="col-span-2">
             <Sidebar
               isAdmin={isAdmin}
               isLogged={isLogged}
@@ -87,26 +87,31 @@ const All: React.FC = () => {
               currentPath={location.pathname}
             />
           </div>
-          {auxPosts.length > 0 ? (
-            <PaginatedPosts postsResponse={posts} />
-          ) : (
-            <p>No posts found.</p>
-          )}
-          {news.length > 0 ? (
-            <ul>
-              {news.map((newsPost, i) => (
-                <li
-                  key={i}
-                  onClick={() => navigate(`/post/${newsPost.id}`)}
-                  style={{ cursor: "pointer", marginBottom: "10px" }}
-                >
-                  <PostComponent post={newsPost} />
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No news found.</p>
-          )}
+          <div className="col-span-2">
+            {" "}
+            {auxPosts.length > 0 ? (
+              <PaginatedPosts postsResponse={posts} />
+            ) : (
+              <p>No posts found.</p>
+            )}
+          </div>
+          <div className="col-span-2">
+            {news.length > 0 ? (
+              <ul>
+                {news.map((newsPost, i) => (
+                  <li
+                    key={i}
+                    onClick={() => navigate(`/post/${newsPost.id}`)}
+                    style={{ cursor: "pointer", marginBottom: "10px" }}
+                  >
+                    <PostComponent post={newsPost} />
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>No news found.</p>
+            )}
+          </div>
         </div>
       </div>
     </>

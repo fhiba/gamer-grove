@@ -66,7 +66,7 @@ const CommunityPage: React.FC = () => {
     useEffect(() => {
       const payload = decodeToken(authToken);
       setDecoded(payload);
-    }, [authToken]);
+    }, []);
   }
   const userName = decoded?.sub;
   const isAdmin = decoded?.role === "ROLE_ADMIN" ? true : false;
@@ -379,7 +379,9 @@ const CommunityPage: React.FC = () => {
                     </div>
                     <div className="d-flex align-items-center">
                       {community.ratingCount === 0 ? (
-                        <h6 className="fw-bold">Rating: No Rating</h6>
+                        <h6 className="!text-gray-500">
+                          Rating: No Rating
+                        </h6>
                       ) : (
                         <>
                           <h6 className="fw-bold me-2 !text-gray-500">
