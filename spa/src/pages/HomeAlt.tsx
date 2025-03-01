@@ -110,7 +110,7 @@ export function HomeAlt() {
           window.location.href = `/communities?searchTerms=${searchValue}`;
         }}
       />
-      <div className="grid grid-cols-3 gap-36">
+      <div className="grid grid-cols-3 gap-36 !h-screen">
         <Sidebar
           isAdmin={isAdmin}
           isLogged={isLogged}

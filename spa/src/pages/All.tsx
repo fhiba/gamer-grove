@@ -10,6 +10,7 @@ import PaginatedPosts from "../components/PaginatedPosts.js";
 import { useAuth } from "../context/AuthContext.js";
 import { decodeToken, JwtPayload } from "../utils/jwt.js";
 import { AxiosResponse } from "axios";
+import { Helmet } from "react-helmet-async";
 
 const All: React.FC = () => {
   const [posts, setPosts] = useState<AxiosResponse>();
@@ -63,46 +64,52 @@ const All: React.FC = () => {
     return <div>Error: {error}</div>;
   }
   return (
-    <div className="w-screen ">
-      <Navbar
-        userName={decoded?.sub}
-        isLoggedIn={isLogged}
-        defaultSearch={defaultSearch}
-        onSearch={(searchValue) => {
-          window.location.href = `/communities?searchTerms=${searchValue}`;
-        }}
-      />
-      <div className="grid grid-cols-3 gap-36">
-        <div>
-          <Sidebar
-            isAdmin={isAdmin}
-            isLogged={isLogged}
-            communities={communities?.data}
-            currentPath={location.pathname}
-          />
+    <>
+      <Helmet>
+        <title>All</title>
+        <link rel="icon" type="image/x-icon" />
+      </Helmet>
+      <div className="w-screen ">
+        <Navbar
+          userName={decoded?.sub}
+          isLoggedIn={isLogged}
+          defaultSearch={defaultSearch}
+          onSearch={(searchValue) => {
+            window.location.href = `/communities?searchTerms=${searchValue}`;
+          }}
+        />
+        <div className="grid grid-cols-3 gap-36">
+          <div>
+            <Sidebar
+              isAdmin={isAdmin}
+              isLogged={isLogged}
+              communities={communities?.data}
+              currentPath={location.pathname}
+            />
+          </div>
+          {auxPosts.length > 0 ? (
+            <PaginatedPosts postsResponse={posts} />
+          ) : (
+            <p>No posts found.</p>
+          )}
+          {news.length > 0 ? (
+            <ul>
+              {news.map((newsPost, i) => (
+                <li
+                  key={i}
+                  onClick={() => navigate(`/post/${newsPost.id}`)}
+                  style={{ cursor: "pointer", marginBottom: "10px" }}
+                >
+                  <PostComponent post={newsPost} />
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>No news found.</p>
+          )}
         </div>
-        {auxPosts.length > 0 ? (
-          <PaginatedPosts postsResponse={posts} />
-        ) : (
-          <p>No posts found.</p>
-        )}
-        {news.length > 0 ? (
-          <ul>
-            {news.map((newsPost, i) => (
-              <li
-                key={i}
-                onClick={() => navigate(`/post/${newsPost.id}`)}
-                style={{ cursor: "pointer", marginBottom: "10px" }}
-              >
-                <PostComponent post={newsPost} />
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>No news found.</p>
-        )}
       </div>
-    </div>
+    </>
   );
 };
 

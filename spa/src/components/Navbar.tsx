@@ -23,7 +23,7 @@ const Navbar: React.FC<NavbarProps> = ({
             className="flex items-center !no-underline text-white left-0"
           >
             <img src="/images/favicon.ico" className="w-10 h-10" />
-            <span className="text-xl font-bold ml-2">Gamer Grove</span>
+            <span className="text-2xl font-bold ml-2">Gamer Grove</span>
           </Link>
         </div>
 
@@ -38,9 +38,9 @@ const Navbar: React.FC<NavbarProps> = ({
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search Community..."
-            className="form-control w-full bg-gray-800 text-white border border-gray-700 rounded-pill px-3 py-2"
+            className="form-control w-full bg-gray-800 text-white border border-gray-700 rounded-b-sm px-3"
           />
-          <button type="submit" className="btn btn-outline-success px-4">
+          <button type="submit" className="btn btn-outline-success px-4 !ml-2">
             Search
           </button>
         </form>
@@ -79,7 +79,7 @@ const Navbar: React.FC<NavbarProps> = ({
           ) : (
             <Link
               to="/login"
-              className="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-md text-white no-underline"
+              className="btn btn-outline-primary px-4 py-2 rounded-md !no-underline"
             >
               Login
             </Link>

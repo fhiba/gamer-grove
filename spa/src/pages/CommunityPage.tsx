@@ -70,7 +70,7 @@ const CommunityPage: React.FC = () => {
   }
   const userName = decoded?.sub;
   const isAdmin = decoded?.role === "ROLE_ADMIN" ? true : false;
-  const isLogged = decoded?.sub !== null ? true : false;
+  const isLogged = decoded?.sub !== undefined ? true : false;
   const defaultSearch = "";
   useEffect(() => {
     const fetchData = async () => {
@@ -321,7 +321,7 @@ const CommunityPage: React.FC = () => {
           )}
         </Modal>
 
-        <div className="grid grid-flow-col">
+        <div className="grid grid-cols-4 grid-flow-col h-screen">
           <div className="col-span-1">
             <Sidebar
               communities={communities?.data}
@@ -330,7 +330,7 @@ const CommunityPage: React.FC = () => {
               currentPath={window.location.pathname}
             />
           </div>
-          <div className="col-span-2 justify-center mr-56">
+          <div className="col-span-3 justify-center mr-56">
             <div className="card border-0">
               <div className="card-body">
                 <div className="grid grid-cols-2">
