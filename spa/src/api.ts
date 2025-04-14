@@ -77,6 +77,7 @@ export const fetchComments = async (id: number) => {
   }
 };
 
+//DEVUELVE AXIOSRESPONSE
 export const fetchCommunities = async () => {
   try {
     const res = await api.get("/communities");
@@ -104,6 +105,7 @@ export const fetchCommunityRating = async (communityName: string) => {
   }
 };
 
+//DEVUELVE AXIOSRESPONSE
 export const fetchFollowedCommunitiesPosts = async (token: string) => {
   try {
     const response = await api.get("/posts", {
@@ -118,6 +120,8 @@ export const fetchFollowedCommunitiesPosts = async (token: string) => {
     throw error;
   }
 };
+
+//DEVUELVE AXIOSRESPONSE
 export const fetchFollowedCommunities = async (token: string, id: number) => {
   try {
     const response = await api.get("/communities/", {
@@ -144,6 +148,7 @@ export const fetchAuthor = async (authorEndpoint: string): Promise<User> => {
   }
 };
 
+//DEVUELVE AXIOSRESPONSE
 export const fetchCommunityPosts = async (communityName: string) => {
   try {
     const res = await api.get("/posts", {
@@ -164,14 +169,13 @@ export const fetchUser = async (id: number) => {
   }
 };
 
-export const fetchModeratos = async (
+export const fetchModerators = async (
   token: string | null,
   username?: string,
   community?: string,
 ) => {
   try {
     const params: Record<string, string> = {};
-
     if (username) params.username = username;
     if (community) params.community = community;
 
@@ -179,6 +183,16 @@ export const fetchModeratos = async (
       params,
       headers: { Authorization: `Bearer ${token}` },
     });
+
+    console.log("API response:", res.data);
+
+    if (
+      !res.data ||
+      (typeof res.data === "object" && Object.keys(res.data).length === 0)
+    ) {
+      console.warn("Empty response from API");
+      return [];
+    }
 
     return res.data;
   } catch (error) {
